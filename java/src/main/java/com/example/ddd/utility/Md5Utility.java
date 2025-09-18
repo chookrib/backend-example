@@ -5,7 +5,7 @@ public class Md5Utility {
     /**
      * 计算字符串的MD5值
      */
-    public static String md5(String input) {
+    public static String generateMd5(String input) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             byte[] array = md.digest(input.getBytes());

@@ -57,7 +57,8 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/{id}", method = RequestMethod.GET)
     public Result get(@PathVariable String id) {
-        User entity = userRepository.selectById(id);
+        // User entity = userRepository.selectById(id);
+        User entity = null;
         return Result.successData(entity);
     }
 

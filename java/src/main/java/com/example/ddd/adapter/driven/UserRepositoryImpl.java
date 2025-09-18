@@ -27,13 +27,19 @@ public class UserRepositoryImpl implements UserRepository {
     public UserRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+
+        this.jdbcTemplate.execute("""
+            create table if not exists t_user
+            (u_id text primary key, u_username text, u_password text, u_nickname text, u_mobile text, u_email text,
+            u_created_at text)
+            """);
     }
 
     /**
      * 转换
      */
     private User toUser(SqlRowSet sqlRowSet) {
-        return new User(
+        return User.restoreUser(
                 sqlRowSet.getString("u_id"),
                 sqlRowSet.getString("u_username"),
                 sqlRowSet.getString("u_password"),
@@ -50,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository {
                 insert into t_user
                     (u_id, u_username, u_password, u_nickname, u_mobile, u_email, u_created_at)
                 values
-                    (?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?)
                 """;
         jdbcTemplate.update(sql,
                 entity.getId(),

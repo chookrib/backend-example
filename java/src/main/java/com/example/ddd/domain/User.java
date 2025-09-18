@@ -75,7 +75,7 @@ public class User {
         User user = new User();
         user.id = IdUtility.generateId();
         user.username = username;
-        user.password = Md5Utility.md5(password);
+        user.password = Md5Utility.generateMd5(password);
         user.nickname = nickname;
         user.mobile = mobile;
         user.email = email;
@@ -87,7 +87,7 @@ public class User {
      * 登录，成功返回令牌
      */
     public String login(String password) {
-        if (!this.password.equals(Md5Utility.md5(password))) {
+        if (!this.password.equals(Md5Utility.generateMd5(password))) {
             throw new DomainException("密码错误");
         }
 
