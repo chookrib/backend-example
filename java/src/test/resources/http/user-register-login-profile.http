@@ -1,5 +1,5 @@
 
-### 初始化
+### 准备
 < {%
     const rnd = $random.name.username;
     client.global.set('username', rnd);

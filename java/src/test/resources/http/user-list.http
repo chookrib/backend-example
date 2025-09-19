@@ -1,4 +1,4 @@
-### 注册
+### 用户列表
 POST http://{{host}}/api/admin/user/list
 Content-Type: application/json
 
