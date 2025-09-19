@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Json返回值定义
+ * Controller返回值定义
  */
 public class Result {
 

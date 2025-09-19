@@ -8,3 +8,6 @@ spring:
     username:
     password:
 
+application:
+  user-jwt-expires-day: 30
+  user-jwt-secret: jwt-secret

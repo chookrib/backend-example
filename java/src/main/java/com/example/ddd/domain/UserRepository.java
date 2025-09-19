@@ -38,26 +38,8 @@ public interface UserRepository {
     List<User> selectByIds(List<String> ids);
 
     /**
-     * 查询记录数
-     */
-    int selectCount(UserCriteria criteria);
-
-    /**
-     * 查询
-     */
-    List<User> select(UserCriteria criteria);
-
-    /**
-     * 分页查询，pageIndex从1开始
-     */
-    List<User> selectByPage(int pageIndex, int pageSize, UserCriteria criteria);
-
-    // =================================================================================================================
-
-    /**
      * 根据用户名查询，找不到返回null
      */
     User selectByUsername(String username);
-
 }
 

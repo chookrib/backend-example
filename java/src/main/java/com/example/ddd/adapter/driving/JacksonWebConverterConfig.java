@@ -9,7 +9,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 /**
- * Jackson全局配置
+ * Jackson Web转换配置
  */
 @Configuration
 public class JacksonWebConverterConfig {
@@ -21,6 +21,11 @@ public class JacksonWebConverterConfig {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
                 //.indentOutput(true)
                 .simpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .serializerByType(java.time.LocalDateTime.class,
+                        new com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer(
+                                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                        )
+                )
                 .serializerByType(Long.TYPE, new ToStringSerializer())              //long转String
                 .serializerByType(Long.class, new ToStringSerializer())             //Long转String
                 ;

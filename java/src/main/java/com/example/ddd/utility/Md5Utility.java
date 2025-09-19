@@ -1,5 +1,8 @@
 package com.example.ddd.utility;
 
+/**
+ * MD5工具类
+ */
 public class Md5Utility {
 
     /**

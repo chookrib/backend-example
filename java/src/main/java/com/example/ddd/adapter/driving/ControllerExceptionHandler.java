@@ -1,7 +1,5 @@
 package com.example.ddd.adapter.driving;
 
-import com.example.ddd.domain.NotLoginException;
-import com.example.ddd.domain.ValidationException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +29,6 @@ public class ControllerExceptionHandler {
     }
 
     /**
-     * ValidationException异常处理器
-     */
-    @ExceptionHandler(value = ValidationException.class)
-    @ResponseBody
-    public Result validationExceptionHandler(HttpServletResponse response, ValidationException e) {
-        return Result.error(ResultCodes.ERROR_VALIDATION, e.getMessage());
-    }
-
-    /**
      * 默认异常处理器
      */
     @ExceptionHandler(value = Exception.class)
@@ -47,14 +36,17 @@ public class ControllerExceptionHandler {
     public Result defaultExceptionHandler(HttpServletResponse response, Exception e) {
         logger.error("捕捉到未处理的异常: {}", e.getMessage());
 
-        // 404异常设置状态码
-        if(e instanceof NoResourceFoundException) {
+        // NoResourceFoundException异常设置状态码404
+        if (e instanceof NoResourceFoundException) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+        else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         //String message = e.getMessage();
         String message = e.toString();
-        if(message == null) {
+        if (message == null) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             message = errors.toString();

@@ -21,9 +21,9 @@ public class WellKnownController {
     @ResponseBody
     public String info() {
         return "File-Name: " + Application.getFileName() +
-                System.lineSeparator() +
-                "Build-Time: " + Application.getBuildTime() +
-                System.lineSeparator();
+               System.lineSeparator() +
+               "Build-Time: " + Application.getBuildTime() +
+               System.lineSeparator();
     }
 
     /**

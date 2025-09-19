@@ -15,22 +15,18 @@ public class JwtUtility {
     /**
      * 编码JWT令牌
      */
-    public static String encode(Map<String, ?> payload, Date expiresAt, String algorithm) {
+    public static String encode(Map<String, ?> payload, Date expiresAt, String secret) {
         return JWT.create()
-                //.withIssuer("")
-                //.withSubject("")
-                //.withIssuedAt(new Date())
-                //.withClaim("id", id)
                 .withPayload(payload)
                 .withExpiresAt(expiresAt)
-                .sign(Algorithm.HMAC256(algorithm));
+                .sign(Algorithm.HMAC256(secret));
     }
 
     /**
      * 解析JWT令牌
      */
-    public static Map<String, Claim> decode(String jwt, String algorithm) {
-        DecodedJWT decodedJWT =  JWT.require(Algorithm.HMAC256(algorithm))
+    public static Map<String, Claim> decode(String jwt, String secret) {
+        DecodedJWT decodedJWT =  JWT.require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(jwt);
         return decodedJWT.getClaims();

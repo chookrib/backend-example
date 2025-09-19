@@ -1,0 +1,279 @@
+package com.example.ddd.adapter.driven;
+
+import com.example.ddd.application.UserDto;
+import com.example.ddd.application.UserQueryCriteria;
+import com.example.ddd.application.UserQueryHandler;
+import com.example.ddd.application.UserQuerySort;
+import com.example.ddd.domain.User;
+import com.example.ddd.domain.UserRepository;
+import com.example.ddd.domain.UserUniqueChecker;
+import com.example.ddd.utility.ValueUtility;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 用户持久化适配器
+ */
+@Repository
+public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker, UserQueryHandler {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public UserPersistenceAdapter(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+
+        // 创建表
+        this.jdbcTemplate.execute("""
+                create table if not exists t_user (u_id text primary key, u_username text, u_password text, u_nickname text,
+                u_mobile text, u_email text, u_is_admin integer u_created_at text)
+                """);
+    }
+
+    //==================================================================================================================
+    // UserRepository
+
+    /**
+     * 转换成Entity
+     */
+    private User toUser(SqlRowSet sqlRowSet) {
+        return User.restoreUser(
+                sqlRowSet.getString("u_id"),
+                sqlRowSet.getString("u_username"),
+                sqlRowSet.getString("u_password"),
+                sqlRowSet.getString("u_nickname"),
+                sqlRowSet.getString("u_mobile"),
+                sqlRowSet.getString("u_email"),
+                sqlRowSet.getBoolean("u_is_admin"),
+                ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
+        );
+    }
+
+    @Override
+    public void insert(User entity) {
+        String sql = """
+                insert into t_user
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_email, u_is_admin, u_created_at)
+                values
+                    (?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+        jdbcTemplate.update(sql,
+                entity.getId(),
+                entity.getUsername(),
+                entity.getPassword(),
+                entity.getNickname(),
+                entity.getMobile(),
+                entity.getEmail(),
+                entity.isAdmin(),
+                ValueUtility.toDateTimeString(entity.getCreatedAt())
+        );
+    }
+
+    @Override
+    public void update(User entity) {
+        String sql = """
+                update t_user
+                set
+                    u_username = ?,
+                    u_password = ?,
+                    u_nickname = ?,
+                    u_mobile = ?,
+                    u_email = ?,
+                    u_is_admin = ?,
+                    u_created_at = ?
+                where
+                    u_id = ?
+                """;
+        jdbcTemplate.update(sql,
+                entity.getUsername(),
+                entity.getPassword(),
+                entity.getNickname(),
+                entity.getMobile(),
+                entity.getEmail(),
+                entity.isAdmin(),
+                ValueUtility.toDateTimeString(entity.getCreatedAt()),
+                entity.getId()
+        );
+    }
+
+    @Override
+    public void deleteById(String id) {
+        jdbcTemplate.update("delete from t_user where u_id = ?", id);
+    }
+
+    @Override
+    public User selectById(String id) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_id = ?", id);
+        if (sqlRowSet.next()) {
+            return toUser(sqlRowSet);
+        }
+        return null;
+    }
+
+    @Override
+    public User selectByIdReq(String id) {
+        User entity = selectById(id);
+        if (entity == null)
+            throw new RepositoryException("没有找到用户：" + id);
+        return entity;
+    }
+
+    @Override
+    public List<User> selectByIds(List<String> ids) {
+        List<User> entities = new ArrayList<>();
+        if (ids == null || ids.isEmpty())
+            return entities;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("ids", ids);
+        String sql = "select * from t_user where u_id in (:ids)";
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(sql, params);
+        while (sqlRowSet.next()) {
+            User entity = toUser(sqlRowSet);
+            entities.add(entity);
+        }
+        return entities;
+    }
+
+    @Override
+    public User selectByUsername(String username) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_username = ?", username);
+        if (sqlRowSet.next()) {
+            return toUser(sqlRowSet);
+        }
+        return null;
+    }
+
+    //==================================================================================================================
+    // UserUniqueChecker
+
+    @Override
+    public boolean isUsernameUnique(String username) {
+        User user = selectByUsername(username);
+        return user == null;
+    }
+
+    //==================================================================================================================
+    // UserQueryHandler
+
+    /**
+     * 转换成Dto
+     */
+    private UserDto toUserDto(SqlRowSet sqlRowSet) {
+        return new UserDto(
+                sqlRowSet.getString("u_id"),
+                sqlRowSet.getString("u_username"),
+                //sqlRowSet.getString("u_password"),
+                sqlRowSet.getString("u_nickname"),
+                sqlRowSet.getString("u_mobile"),
+                sqlRowSet.getString("u_email"),
+                sqlRowSet.getBoolean("u_is_admin"),
+                ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
+        );
+    }
+
+    /**
+     * 构造查询语句
+     */
+    private String createQueryCriteriaSql(UserQueryCriteria criteria, Map<String, Object> paramMap) {
+        if (criteria == null)
+            return "";
+
+        List<String> sqlList = new ArrayList<>();
+        if (!StringUtils.isBlank(criteria.getKeyword())) {
+            sqlList.add("u_username like :keyword or u_nickname like :keyword");
+            paramMap.put("keyword", "%" + criteria.getKeyword() + "%");
+        }
+
+        if (!sqlList.isEmpty())
+            return " where " + StringUtils.join(sqlList, " and ");
+        return "";
+    }
+
+    private String createQuerySortSql(UserQuerySort... sort) {
+        List<String> sqlList = new ArrayList<>();
+        if (sort != null) {
+            for (UserQuerySort s : sort) {
+                switch (s) {
+                    case CreatedAtAsc -> sqlList.add("u_created_at asc");
+                    case CreatedAtDesc -> sqlList.add("u_created_at desc");
+                    case UsernameAsc -> sqlList.add("u_username asc");
+                    case UsernameDesc -> sqlList.add("u_username desc");
+                }
+            }
+        }
+
+        if (sqlList.isEmpty())
+            return " order by u_created_at desc, u_id desc";
+        else
+            return " order by " + StringUtils.join(sqlList, ", ");
+    }
+
+    @Override
+    public UserDto queryById(String id) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_id = ?", id);
+        if (sqlRowSet.next()) {
+            return toUserDto(sqlRowSet);
+        }
+        return null;
+    }
+
+    @Override
+    public UserDto queryByIdReq(String id) {
+        UserDto dto = queryById(id);
+        if (dto == null)
+            throw new QueryException("没有找到用户：" + id);
+        return dto;
+    }
+
+    @Override
+    public int queryCount(UserQueryCriteria criteria) {
+        Map<String, Object> paramMap = new HashMap<>();
+        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
+        return namedParameterJdbcTemplate.queryForObject(
+                "select count(*) from t_user" + criteriaSql, paramMap, int.class);
+    }
+
+    @Override
+    public List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sort) {
+        Map<String, Object> paramMap = new HashMap<>();
+        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
+        String sortSql = createQuerySortSql(sort);
+
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
+                "select * from t_user" + criteriaSql + sortSql, paramMap);
+        List<UserDto> list = new ArrayList<>();
+        while (sqlRowSet.next()) {
+            list.add(toUserDto(sqlRowSet));
+        }
+        return list;
+    }
+
+    @Override
+    public List<UserDto> queryByPage(int pageIndex, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort) {
+        Map<String, Object> paramMap = new HashMap<>();
+        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
+        String sortSql = createQuerySortSql(sort);
+
+        paramMap.put("limitOffset", (pageIndex - 1) * pageSize);
+        paramMap.put("limitCount", pageSize);
+
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
+                "select * from t_user" + criteriaSql + sortSql +
+                " limit :limitOffset, :limitCount", paramMap);
+        List<UserDto> list = new ArrayList<>();
+        while (sqlRowSet.next()) {
+            list.add(toUserDto(sqlRowSet));
+        }
+        return list;
+    }
+}
