@@ -65,10 +65,10 @@ public class UserDto {
         this.createdAt = createdAt;
     }
 
-    /**
-     * 将用户对象转换为Map
-     */
-    public Map<String, ?> fromUser(User user) {
-        return JacksonUtility.convertValue(user);
-    }
+    ///**
+    // * 将用户对象转换为Map
+    // */
+    //public Map<String, ?> fromUser(User user) {
+    //    return JacksonUtility.convertValue(user);
+    //}
 }
