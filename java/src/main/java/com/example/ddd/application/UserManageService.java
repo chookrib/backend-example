@@ -22,8 +22,8 @@ public class UserManageService {
     /**
      * 设置用户管理员状态
      */
-    public void setAdmin(String userId, boolean isAdmin) {
-        User user = userRepository.selectByIdReq(userId);
+    public void setAdmin(String id, boolean isAdmin) {
+        User user = userRepository.selectByIdReq(id);
         user.setAdmin(isAdmin);
         userRepository.update(user);
     }

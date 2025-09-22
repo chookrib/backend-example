@@ -122,7 +122,7 @@ public class User {
             throw new DomainException("密码错误");
         }
 
-        this.password = Md5Utility.generateMd5(password);
+        this.password = Md5Utility.generateMd5(newPassword);
     }
 
     /**
