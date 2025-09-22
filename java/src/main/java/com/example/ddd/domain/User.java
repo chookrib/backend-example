@@ -1,7 +1,5 @@
 package com.example.ddd.domain;
 
-import com.example.ddd.application.ApplicationException;
-import com.example.ddd.utility.IdUtility;
 import com.example.ddd.utility.Md5Utility;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,7 +68,7 @@ public class User {
      * 注册用户
      */
     public static User registerUser(
-            String username, String password, String nickname, UserUniqueChecker userUniqueChecker) {
+            String id, String username, String password, String nickname, UserUniqueChecker userUniqueChecker) {
         if(StringUtils.isBlank(username))
             throw new DomainException("用户名不能为空");
 
@@ -89,7 +87,7 @@ public class User {
         }
 
         User user = new User();
-        user.id = IdUtility.generateId();
+        user.id = id;
         user.username = username;
         user.password = Md5Utility.generateMd5(password);
         user.nickname = nickname;
@@ -118,10 +116,10 @@ public class User {
      */
     public void modifyPassword(String oldPassword, String newPassword) {
         if(StringUtils.isBlank(newPassword))
-            throw new RuntimeException("密码不能为空");
+            throw new DomainException("密码不能为空");
 
         if (!isPasswordMatch(oldPassword)) {
-            throw new ApplicationException("密码错误");
+            throw new DomainException("密码错误");
         }
 
         this.password = Md5Utility.generateMd5(password);
@@ -161,7 +159,7 @@ public class User {
      * 创建用户
      */
     public static User createUser(
-            String username, String password, String nickname, String mobile, UserUniqueChecker userUniqueChecker) {
+            String id, String username, String password, String nickname, String mobile, UserUniqueChecker userUniqueChecker) {
         if(StringUtils.isBlank(username))
             throw new DomainException("用户名不能为空");
 
@@ -183,7 +181,7 @@ public class User {
         }
 
         User user = new User();
-        user.id = IdUtility.generateId();
+        user.id = id;
         user.username = username;
         user.password = Md5Utility.generateMd5(password);
         user.nickname = nickname;

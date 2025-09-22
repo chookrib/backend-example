@@ -1,12 +1,9 @@
 package com.example.ddd.application;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.example.ddd.domain.SmsGateway;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
-import com.example.ddd.domain.UserUniqueChecker;
 import com.example.ddd.utility.JwtUtility;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

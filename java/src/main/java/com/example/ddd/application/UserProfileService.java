@@ -1,15 +1,13 @@
 package com.example.ddd.application;
 
-import com.auth0.jwt.interfaces.Claim;
-import com.example.ddd.domain.*;
-import com.example.ddd.utility.JwtUtility;
+import com.example.ddd.domain.SmsGateway;
+import com.example.ddd.domain.User;
+import com.example.ddd.domain.UserRepository;
+import com.example.ddd.domain.UserUniqueChecker;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 用户资料服务
@@ -35,7 +33,7 @@ public class UserProfileService {
      * 仅演示使用，不具备防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        User user = User.registerUser(username, password, nickname, userUniqueChecker);
+        User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, userUniqueChecker);
         userRepository.insert(user);
         return user.getId();
     }

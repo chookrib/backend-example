@@ -32,7 +32,7 @@ public class UserManageService {
      * 创建用户信息，管理员操作
      */
     public String createUser(String username, String password, String nickname, String mobile) {
-        User user = User.createUser(username, password, nickname, mobile, userUniqueChecker);
+        User user = User.createUser(IdGenerator.generateId(), username, password, nickname, mobile, userUniqueChecker);
         userRepository.insert(user);
         return user.getId();
     }

@@ -1,11 +1,11 @@
-package com.example.ddd.utility;
+package com.example.ddd.application;
 
 import com.fasterxml.uuid.Generators;
 
 /**
- * Id工具类
+ * Id生成器
  */
-public class IdUtility {
+public class IdGenerator {
 
     /**
      * 生成唯一Id

@@ -1,9 +1,9 @@
-package com.example.ddd.application;
+package com.example.ddd.adapter.driving;
 
 /**
- * 分页信息
+ * 分页验证器
  */
-public class PageInfoDto {
+public class PageInfoValidator {
 
     private int pageNum;
     private int pageSize;
@@ -24,8 +24,8 @@ public class PageInfoDto {
     /**
      * 验证并修正分页参数
      */
-    public static PageInfoDto validation(int pageNum, int pageSize, int totalCount) {
-        PageInfoDto pageInfo = new PageInfoDto();
+    public static PageInfoValidator validation(int pageNum, int pageSize, int totalCount) {
+        PageInfoValidator pageInfo = new PageInfoValidator();
         pageInfo.pageNum = pageNum;
         pageInfo.pageSize = pageSize;
         pageInfo.totalCount = totalCount;
