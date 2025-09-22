@@ -1,12 +1,15 @@
 package com.example.ddd.application;
 
-import com.example.ddd.domain.EmailGateway;
-import com.example.ddd.domain.User;
-import com.example.ddd.domain.UserRepository;
-import com.example.ddd.domain.UserUniqueChecker;
+import com.auth0.jwt.interfaces.Claim;
+import com.example.ddd.domain.*;
+import com.example.ddd.utility.JwtUtility;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用户资料服务
@@ -14,53 +17,73 @@ import org.springframework.stereotype.Service;
 @Component
 public class UserProfileService {
 
-    @Value("${application.user-jwt-expires-day}")
-    private int jwtExpiresDay;
-
-    @Value("${application.user-jwt-secret}")
-    private String jwtSecret;
-
     private final UserRepository userRepository;
     private final UserUniqueChecker userUniqueChecker;
-    private final EmailGateway emailGateway;
+    private final SmsGateway smsGateway;
+
+    private HashMap<String, String> mobileCodeMap = new HashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
 
     public UserProfileService(
-            UserRepository userRepository, UserUniqueChecker userUniqueChecker, EmailGateway emailGateway) {
+            UserRepository userRepository, UserUniqueChecker userUniqueChecker, SmsGateway smsGateway) {
         this.userRepository = userRepository;
         this.userUniqueChecker = userUniqueChecker;
-        this.emailGateway = emailGateway;
+        this.smsGateway = smsGateway;
     }
 
     /**
      * 注册
+     * 仅演示使用，不具备防止恶意注册功能
      */
-    public String register(String username, String password, String nickname, String mobile, String email) {
-        User user = User.createUser(username, password, nickname, mobile, email, userUniqueChecker);
+    public String register(String username, String password, String nickname) {
+        User user = User.registerUser(username, password, nickname, userUniqueChecker);
         userRepository.insert(user);
-        emailGateway.sendEmail(email, "注册成功", "欢迎您，" + nickname + "，注册成功！");
         return user.getId();
     }
 
     /**
-     * 登录，返回AccessToken
+     * 修改密码
      */
-    public String login(String username, String password) {
-        User user = userRepository.selectByUsername(username);
-        if(user == null || !user.isPasswordMatch(password)) {
-            throw new ApplicationException("密码错误");
-        }
-        return user.encodeAccessToken(jwtExpiresDay, jwtSecret);
+    public void modifyPassword(String userId, String oldPassword, String newPassword) {
+        User user = userRepository.selectByIdReq(userId);
+        user.modifyPassword(oldPassword, newPassword);
+        userRepository.update(user);
     }
 
     /**
-     * 根据AccessToken取登录用户Id
+     * 修改昵称
      */
-    public String decodeAccessToken(String accessToken) {
-        try {
-            return User.decodeAccessToken(accessToken, jwtSecret);
-        }
-        catch (Exception e) {
-            return "";
-        }
+    public void modifyNickname(String userId, String nickname) {
+        // 可在此添加用户名修改次数限制
+        User user = userRepository.selectByIdReq(userId);
+        user.modifyNickname(nickname, userUniqueChecker);
+        userRepository.update(user);
+    }
+
+    /**
+     * 发送绑定手机验证码
+     */
+    public void sendMobileCode(String userId, String mobile) {
+        if(StringUtils.isBlank(mobile))
+            throw new ApplicationException("手机号不能为空");
+
+        User user = userRepository.selectByIdReq(userId);
+        String code = String.format("%04d", (int)(Math.random() * 10000));
+        mobileCodeMap.put(user.getId() + "_" + mobile, code);
+        smsGateway.sendCode(mobile, code);
+    }
+
+    /**
+     * 修改手机
+     */
+    public void bindMobile(String userId, String mobile, String code)  {
+        if(StringUtils.isBlank(code))
+            throw new ApplicationException("验证码不能为空");
+
+        User user = userRepository.selectByIdReq(userId);
+        if(!mobileCodeMap.getOrDefault(user.getId() + "_" + mobile, "").equals(code))
+            throw new ApplicationException("手机验证码错误");
+
+        user.modifyMobile(mobile, userUniqueChecker);
+        userRepository.update(user);
     }
 }

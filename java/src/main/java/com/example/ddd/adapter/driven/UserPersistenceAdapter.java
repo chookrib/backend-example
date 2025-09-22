@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,10 +32,15 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 
-        // 创建表
+        // 创建表及默认管理员
         this.jdbcTemplate.execute("""
-                create table if not exists t_user (u_id text primary key, u_username text, u_password text, u_nickname text,
-                u_mobile text, u_email text, u_is_admin integer u_created_at text)
+                create table if not exists t_user (u_id text primary key, u_username text, u_password text,
+                u_nickname text, u_mobile text, u_is_admin integer u_created_at text);
+                """);
+        this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
+        this.jdbcTemplate.execute("""
+                insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                values ('0', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', '管理员', '', 1, datetime('now', 'localtime'))
                 """);
     }
 
@@ -53,7 +57,6 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 sqlRowSet.getString("u_password"),
                 sqlRowSet.getString("u_nickname"),
                 sqlRowSet.getString("u_mobile"),
-                sqlRowSet.getString("u_email"),
                 sqlRowSet.getBoolean("u_is_admin"),
                 ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
         );
@@ -63,9 +66,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     public void insert(User entity) {
         String sql = """
                 insert into t_user
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_email, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
                 values
-                    (?, ?, ?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?)
                 """;
         jdbcTemplate.update(sql,
                 entity.getId(),
@@ -73,7 +76,6 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getMobile(),
-                entity.getEmail(),
                 entity.isAdmin(),
                 ValueUtility.toDateTimeString(entity.getCreatedAt())
         );
@@ -88,7 +90,6 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                     u_password = ?,
                     u_nickname = ?,
                     u_mobile = ?,
-                    u_email = ?,
                     u_is_admin = ?,
                     u_created_at = ?
                 where
@@ -99,7 +100,6 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getMobile(),
-                entity.getEmail(),
                 entity.isAdmin(),
                 ValueUtility.toDateTimeString(entity.getCreatedAt()),
                 entity.getId()
@@ -147,7 +147,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
 
     @Override
     public User selectByUsername(String username) {
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_username = ?", username);
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_username) = lower(?)", username);
         if (sqlRowSet.next()) {
             return toUser(sqlRowSet);
         }
@@ -163,6 +163,18 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         return user == null;
     }
 
+    @Override
+    public boolean isNicknameUnique(String nickname) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_nickname) = lower(?)", nickname);
+        return !sqlRowSet.next();
+    }
+
+    @Override
+    public boolean isMobileUnique(String mobile) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_mobile) = lower(?)", mobile);
+        return !sqlRowSet.next();
+    }
+
     //==================================================================================================================
     // UserQueryHandler
 
@@ -176,7 +188,6 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 //sqlRowSet.getString("u_password"),
                 sqlRowSet.getString("u_nickname"),
                 sqlRowSet.getString("u_mobile"),
-                sqlRowSet.getString("u_email"),
                 sqlRowSet.getBoolean("u_is_admin"),
                 ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
         );
@@ -260,17 +271,16 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     @Override
-    public List<UserDto> queryByPage(int pageIndex, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort) {
+    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort) {
         Map<String, Object> paramMap = new HashMap<>();
         String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
         String sortSql = createQuerySortSql(sort);
 
-        paramMap.put("limitOffset", (pageIndex - 1) * pageSize);
+        paramMap.put("limitOffset", (pageNum - 1) * pageSize);
         paramMap.put("limitCount", pageSize);
 
         SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
-                "select * from t_user" + criteriaSql + sortSql +
-                " limit :limitOffset, :limitCount", paramMap);
+                "select * from t_user" + criteriaSql + sortSql + " limit :limitOffset, :limitCount", paramMap);
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
             list.add(toUserDto(sqlRowSet));

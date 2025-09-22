@@ -78,7 +78,7 @@
 //
 //            String accessToken = request.getHeader("Access-Token");
 //
-//            String userId = userProfileService.decodeAccessToken(accessToken);
+//            String userId = userProfileService.getLoginUserId(accessToken);
 //            if (StringUtils.isBlank(userId)) {
 //                throw new NotLoginException();
 //            }

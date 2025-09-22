@@ -27,7 +27,7 @@ public interface UserQueryHandler {
     List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sort);
 
     /**
-     * 分页查询，pageIndex从1开始
+     * 分页查询
      */
-    List<UserDto> queryByPage(int pageIndex, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort);
+    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort);
 }

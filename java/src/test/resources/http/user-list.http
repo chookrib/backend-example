@@ -1,9 +1,0 @@
-### 用户列表
-POST http://{{host}}/api/admin/user/list
-Content-Type: application/json
-
-{
-  "pageIndex": 1,
-  "pageSize": 10
-}
-

@@ -1,0 +1,133 @@
+package com.example.ddd.adapter.driving;
+
+import com.example.ddd.application.UserAuthService;
+import com.example.ddd.application.UserDto;
+import com.example.ddd.application.UserProfileService;
+import com.example.ddd.application.UserQueryHandler;
+import com.example.ddd.utility.JacksonUtility;
+import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * 用户Controller
+ */
+@RestController
+public class UserController {
+    private final UserAuthService userAuthService;
+    private final UserProfileService userProfileService;
+    private final UserQueryHandler userQueryHandler;
+
+    public UserController(
+            UserAuthService userAuthService, UserProfileService userProfileService, UserQueryHandler userQueryHandler) {
+        this.userAuthService = userAuthService;
+        this.userProfileService = userProfileService;
+        this.userQueryHandler = userQueryHandler;
+    }
+
+    /**
+     * 注册
+     */
+    @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
+    public Result register(@RequestBody String requestBody) {
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String username = json.path("username").asText();
+        String password = json.path("password").asText();
+        String confirmPassword = json.path("confirmPassword").asText();
+        String nickname = json.path("nickname").asText();
+
+        if(!confirmPassword.equals(password)) {
+            throw new ControllerException("两次输入的密码不一致");
+        }
+
+        String id = userProfileService.register(username, password, nickname);
+        return Result.successData(id);
+    }
+
+    /**
+     * 登录
+     */
+    @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
+    public Result login(@RequestBody String requestBody) {
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String username = json.path("username").asText();
+        String password = json.path("password").asText();
+
+        String accessToken = userAuthService.login(username, password);
+        return Result.successData(accessToken);
+    }
+
+    /**
+     * 取用户资料
+     */
+    @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
+    public Result profile(HttpServletRequest request) {
+        String userId = RequestHelper.requireLoginUserId(request);
+        UserDto dto = userQueryHandler.queryById(userId);
+        return Result.successData(dto);
+    }
+
+    /**
+     * 修改密码
+     */
+    @RequestMapping(value = "/api/user/modify-password", method = RequestMethod.POST)
+    public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
+        String userId = RequestHelper.requireLoginUserId(request);
+
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String oldPassword = json.path("oldPassword").asText();
+        String newPassword = json.path("newPassword").asText();
+        String confirmPassword = json.path("confirmPassword").asText();
+
+        if(!confirmPassword.equals(newPassword)) {
+            throw new ControllerException("两次输入的密码不一致");
+        }
+
+        userProfileService.modifyPassword(userId, oldPassword, newPassword);
+        return Result.success();
+    }
+
+    /**
+     * 修改昵称
+     */
+    @RequestMapping(value = "/api/user/modify-nickname", method = RequestMethod.POST)
+    public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
+        String userId = RequestHelper.requireLoginUserId(request);
+
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String nickname = json.path("nickname").asText();
+        userProfileService.modifyNickname(userId, nickname);
+        return Result.success();
+    }
+
+    /**
+     * 发送手机验证码
+     */
+    @RequestMapping(value = "/api/user/send-mobile-code", method = RequestMethod.POST)
+    public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
+        String userId = RequestHelper.requireLoginUserId(request);
+
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String mobile = json.path("mobile").asText();
+
+        userProfileService.sendMobileCode(userId, mobile);
+        return Result.success();
+    }
+
+    /**
+     * 绑定手机
+     */
+    @RequestMapping(value = "/api/user/bind-mobile", method = RequestMethod.POST)
+    public Result modifyMobile(HttpServletRequest request, @RequestBody String requestBody) {
+        String userId = RequestHelper.requireLoginUserId(request);
+
+        JsonNode json = JacksonUtility.readTree(requestBody);
+        String mobile = json.path("mobile").asText();
+        String code = json.path("code").asText();
+        userProfileService.bindMobile(userId, mobile, code);
+        return Result.success();
+    }
+}
