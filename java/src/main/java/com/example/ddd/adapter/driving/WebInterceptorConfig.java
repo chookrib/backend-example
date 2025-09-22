@@ -1,12 +1,7 @@
-/**
- * 推荐手工在路由方法中进行显式认证鉴权，直观且可控，防止遗漏
- * 如需全局拦截器认证鉴权，可参考此代码
- */
-
 //package com.example.ddd.adapter.driving;
 //
 //import com.example.ddd.application.UserProfileService;
-//import com.example.ddd.domain.User;
+//import io.micrometer.common.util.StringUtils;
 //import jakarta.servlet.http.HttpServletRequest;
 //import jakarta.servlet.http.HttpServletResponse;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +34,8 @@
 //        //排除所有地址
 //        //globalInterceptor.excludePathPatterns("/**");
 //
+//        // 需要特别注意拦截配置，以防遗漏
+//
 //        //排除地址
 //        globalInterceptor.excludePathPatterns("/api/register");
 //        globalInterceptor.excludePathPatterns("/api/login");
@@ -48,8 +45,8 @@
 //    }
 //
 //    @Bean
-//    public AuthInterceptor getGlobalHandlerInterceptor() {
-//        return new AuthInterceptor();
+//    public AccessTokenInterceptor getGlobalHandlerInterceptor() {
+//        return new AccessTokenInterceptor();
 //    }
 //
 //    ///**
@@ -70,7 +67,7 @@
 //    /**
 //     * 认证拦截器
 //     */
-//    public class AuthInterceptor implements HandlerInterceptor {
+//    public class AccessTokenInterceptor implements HandlerInterceptor {
 //
 //        @Autowired
 //        private UserProfileService userProfileService;
@@ -81,10 +78,12 @@
 //
 //            String accessToken = request.getHeader("Access-Token");
 //
-//            User user = userProfileService.getLoginUser(accessToken);
-//            if (user == null) {
+//            String userId = userProfileService.decodeAccessToken(accessToken);
+//            if (StringUtils.isBlank(userId)) {
 //                throw new NotLoginException();
 //            }
+//            request.setAttribute("userId", userId);
+//            //request.getAttribute("userId").toString();
 //
 //            return true;
 //        }

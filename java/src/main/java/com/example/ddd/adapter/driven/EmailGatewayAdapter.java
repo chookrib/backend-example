@@ -4,12 +4,13 @@ import com.example.ddd.domain.EmailGateway;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
  * 邮件接口实现适配器
  */
-@Service
+@Component
 public class EmailGatewayAdapter implements EmailGateway {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailGatewayAdapter.class);

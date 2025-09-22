@@ -2,13 +2,15 @@ package com.example.ddd.adapter.driving;
 
 import com.example.ddd.application.UserProfileService;
 import com.example.ddd.domain.User;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
  * 请求处理器
  */
-@Service
+@Component
 public class RequestHandler {
 
     private final UserProfileService userProfileService;
@@ -20,24 +22,28 @@ public class RequestHandler {
     /**
      * 获取登录用户Id，未登录返回空字符串
      */
-    public String getLoginUser(HttpServletRequest request) {
+    public String getLoginUserId(HttpServletRequest request) {
         String accessToken = request.getHeader("Access-Token");
-        try {
-            return userProfileService.decodeUserId(accessToken);
-        } catch (Exception e) {
-            return "";
-        }
+        return userProfileService.decodeAccessToken(accessToken);
     }
 
     /**
      * 获取登录用户Id，未登录抛异常
      */
-    public String getLoginUserIdReq(HttpServletRequest request) {
-        String accessToken = request.getHeader("Access-Token");
-        try {
-            return userProfileService.decodeUserId(accessToken);
-        } catch (Exception e) {
+    public String requireLoginUserId(HttpServletRequest request) {
+        String userId = getLoginUserId(request);
+        if(StringUtils.isBlank(userId)) {
             throw new NotLoginException();
         }
+        return userId;
+    }
+
+    /**
+     * 修正分页索引，当超过总数时，返回最后一页索引
+     */
+    public static int fixPageIndex(int pageIndex, int pageSize, int totalCount) {
+        if(pageSize * (pageIndex - 1) >= totalCount)
+            return Math.max(1, (totalCount + pageSize - 1));
+        return pageIndex;
     }
 }

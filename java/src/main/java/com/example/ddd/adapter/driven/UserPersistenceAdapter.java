@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Map;
 /**
  * 用户持久化适配器
  */
-@Repository
+@Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker, UserQueryHandler {
 
     private final JdbcTemplate jdbcTemplate;

@@ -62,8 +62,8 @@ public class UserProfileController {
      * 取用户资料
      */
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
-    public Result profile(HttpServletRequest request, @RequestBody(required = false) String requestBody) {
-        String id = requestHandler.getLoginUserIdReq(request);
+    public Result profile(HttpServletRequest request) {
+        String id = requestHandler.requireLoginUserId(request);
         UserDto dto = userQueryHandler.queryById(id);
         return Result.successData(dto);
     }

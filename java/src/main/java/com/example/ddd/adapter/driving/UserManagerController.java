@@ -5,6 +5,7 @@ import com.example.ddd.application.UserQueryCriteria;
 import com.example.ddd.application.UserQueryHandler;
 import com.example.ddd.utility.JacksonUtility;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,16 +19,19 @@ import java.util.Map;
 public class UserManagerController {
 
     private final UserQueryHandler userQueryHandler;
+    private final RequestHandler requestHandler;
 
-    public UserManagerController(UserQueryHandler userQueryHandler) {
+    public UserManagerController(UserQueryHandler userQueryHandler, RequestHandler requestHandler) {
         this.userQueryHandler = userQueryHandler;
+        this.requestHandler = requestHandler;
     }
 
     /**
      * 用户列表
      */
     @RequestMapping(value = "/api/admin/user/list", method = RequestMethod.POST)
-    public Result userList(@RequestBody String requestBody) {
+    public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
+        requestHandler.requireLoginUserId(request);
 
         JsonNode json = JacksonUtility.readTree(requestBody);
         int pageIndex = json.path("pageIndex").asInt(1);
@@ -52,7 +56,8 @@ public class UserManagerController {
      * 用户列表
      */
     @RequestMapping(value = "/api/admin/user/get/", method = RequestMethod.GET)
-    public Result userGet(@RequestParam String id) {
+    public Result userGet(HttpServletRequest request, @RequestParam String id) {
+        requestHandler.requireLoginUserId(request);
 
         UserDto dto = userQueryHandler.queryById(id);
         return Result.successData(dto);

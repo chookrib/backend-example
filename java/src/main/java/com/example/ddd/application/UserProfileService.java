@@ -5,12 +5,13 @@ import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
  * 用户资料服务
  */
-@Service
+@Component
 public class UserProfileService {
 
     @Value("${application.user-jwt-expires-day}")
@@ -54,7 +55,12 @@ public class UserProfileService {
     /**
      * 根据AccessToken取登录用户Id
      */
-    public String decodeUserId(String accessToken) {
-        return User.decodeAccessToken(accessToken, jwtSecret);
+    public String decodeAccessToken(String accessToken) {
+        try {
+            return User.decodeAccessToken(accessToken, jwtSecret);
+        }
+        catch (Exception e) {
+            return "";
+        }
     }
 }

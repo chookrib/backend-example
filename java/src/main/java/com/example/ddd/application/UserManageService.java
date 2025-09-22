@@ -2,12 +2,13 @@ package com.example.ddd.application;
 
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
  * 用户管理服务
  */
-@Service
+@Component
 public class UserManageService {
 
     private final UserRepository userRepository;
