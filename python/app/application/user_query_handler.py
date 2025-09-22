@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 from app.application.user_dto import UserDto
 from app.application.user_query_criteria import UserQueryCriteria
+from app.application.user_query_sort import UserQuerySort
+
 
 class UserQueryHandler(ABC):
     """用户Repository接口"""
@@ -19,10 +21,10 @@ class UserQueryHandler(ABC):
         pass
 
     @abstractmethod
-    def query(self, criteria: UserQueryCriteria) -> list[UserDto]:
+    def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
         pass
 
     @abstractmethod
-    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria) -> list[UserDto]:
+    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
         pass
 

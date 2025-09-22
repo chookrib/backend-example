@@ -65,7 +65,7 @@ public class UserProfileService {
             throw new ApplicationException("手机号不能为空");
 
         User user = userRepository.selectByIdReq(userId);
-        String code = String.format("%04d", (int)(Math.random() * 10000));
+        String code = String.format("%06d", (int)(Math.random() * 1000000));
         mobileCodeMap.put(user.getId() + "_" + mobile, code);
         smsGateway.sendCode(mobile, code);
     }
@@ -78,10 +78,12 @@ public class UserProfileService {
             throw new ApplicationException("验证码不能为空");
 
         User user = userRepository.selectByIdReq(userId);
-        if(!mobileCodeMap.getOrDefault(user.getId() + "_" + mobile, "").equals(code))
+        String key = user.getId() + "_" + mobile;
+        if(!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("手机验证码错误");
 
         user.modifyMobile(mobile, userUniqueChecker);
         userRepository.update(user);
+        mobileCodeMap.remove(key);
     }
 }

@@ -35,7 +35,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         // 创建表及默认管理员
         this.jdbcTemplate.execute("""
                 create table if not exists t_user (u_id text primary key, u_username text, u_password text,
-                u_nickname text, u_mobile text, u_is_admin integer u_created_at text);
+                u_nickname text, u_mobile text, u_is_admin integer u_created_at text)
                 """);
         this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
         this.jdbcTemplate.execute("""
@@ -124,7 +124,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     public User selectByIdReq(String id) {
         User entity = selectById(id);
         if (entity == null)
-            throw new RepositoryException("没有找到用户：" + id);
+            throw new RepositoryException(String.format("用户 %s 不存在", id));
         return entity;
     }
 
@@ -200,34 +200,36 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         if (criteria == null)
             return "";
 
-        List<String> sqlList = new ArrayList<>();
+        List<String> sqls = new ArrayList<>();
         if (!StringUtils.isBlank(criteria.getKeyword())) {
-            sqlList.add("u_username like :keyword or u_nickname like :keyword");
+            sqls.add("u_username like :keyword or u_nickname like :keyword");
             paramMap.put("keyword", "%" + criteria.getKeyword() + "%");
         }
 
-        if (!sqlList.isEmpty())
-            return " where " + StringUtils.join(sqlList, " and ");
+        if (!sqls.isEmpty())
+            return " where " + StringUtils.join(sqls, " and ");
         return "";
     }
 
-    private String createQuerySortSql(UserQuerySort... sort) {
-        List<String> sqlList = new ArrayList<>();
-        if (sort != null) {
-            for (UserQuerySort s : sort) {
-                switch (s) {
-                    case CreatedAtAsc -> sqlList.add("u_created_at asc");
-                    case CreatedAtDesc -> sqlList.add("u_created_at desc");
-                    case UsernameAsc -> sqlList.add("u_username asc");
-                    case UsernameDesc -> sqlList.add("u_username desc");
+    private String createQuerySortSql(UserQuerySort... sorts) {
+        List<String> sqls = new ArrayList<>();
+        if (sorts != null) {
+            for (UserQuerySort sort : sorts) {
+                switch (sort) {
+                    case CreatedAtAsc -> sqls.add("u_created_at asc");
+                    case CreatedAtDesc -> sqls.add("u_created_at desc");
+                    case UsernameAsc -> sqls.add("u_username asc");
+                    case UsernameDesc -> sqls.add("u_username desc");
                 }
             }
         }
 
-        if (sqlList.isEmpty())
+        if (sqls.isEmpty())
             return " order by u_created_at desc, u_id desc";
-        else
-            return " order by " + StringUtils.join(sqlList, ", ");
+        else {
+            sqls.add("u_id desc");
+            return " order by " + StringUtils.join(sqls, ", ");
+        }
     }
 
     @Override
@@ -243,7 +245,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     public UserDto queryByIdReq(String id) {
         UserDto dto = queryById(id);
         if (dto == null)
-            throw new QueryException("没有找到用户：" + id);
+            throw new QueryException(String.format("用户 %s 不存在", id));
         return dto;
     }
 
@@ -276,11 +278,11 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
         String sortSql = createQuerySortSql(sort);
 
-        paramMap.put("limitOffset", (pageNum - 1) * pageSize);
         paramMap.put("limitCount", pageSize);
+        paramMap.put("limitOffset", (pageNum - 1) * pageSize);
 
         SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
-                "select * from t_user" + criteriaSql + sortSql + " limit :limitOffset, :limitCount", paramMap);
+                "select * from t_user" + criteriaSql + sortSql + " limit :limitCount offset :limitOffset", paramMap);
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
             list.add(toUserDto(sqlRowSet));

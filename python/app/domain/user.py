@@ -149,7 +149,7 @@ class User(BaseModel):
         return User(
             id=id,
             username=username,
-            password=password,
+            password=md5_utility.generate_md5(password),
             nickname=nickname,
             mobile=mobile,
             is_admin=False,

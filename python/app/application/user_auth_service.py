@@ -14,7 +14,9 @@ class UserAuthService:
         if user is None or not user.is_password_match(password):
             raise ApplicationException("密码错误")
 
-        return jwt_utility.encode(settings.USER_JWT_SECRET, datetime.now() + timedelta(days=settings.USER_JWT_EXPIRES_DAY), {"id": user.id})
+        return jwt_utility.encode(
+            settings.USER_JWT_SECRET, datetime.now() + timedelta(days=settings.USER_JWT_EXPIRES_DAY),
+            {"id": user.id})
 
     def get_login_user_id(self, access_token: str) -> str:
         try:
