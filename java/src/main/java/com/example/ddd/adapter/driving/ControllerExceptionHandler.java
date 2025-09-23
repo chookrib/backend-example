@@ -37,12 +37,10 @@ public class ControllerExceptionHandler {
         logger.error("捕捉到未处理的异常: {}", e.getMessage());
 
         // NoResourceFoundException异常设置状态码404
-        if (e instanceof NoResourceFoundException) {
+        if (e instanceof NoResourceFoundException)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-        else {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+        //else
+        //    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         //String message = e.getMessage();
         String message = e.toString();

@@ -40,5 +40,3 @@ class UserRepository(ABC):
     def select_by_username(self, username: str) -> User | None:
         """根据用户名查询，找不到返回null"""
         pass
-
-

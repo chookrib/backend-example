@@ -1,5 +1,5 @@
-
 from abc import ABC, abstractmethod
+
 
 class UserUniqueChecker(ABC):
     """用户唯一性检查接口"""
@@ -18,4 +18,3 @@ class UserUniqueChecker(ABC):
     def is_mobile_unique(self, mobile: str) -> bool:
         """检查手机号是否唯一"""
         pass
-

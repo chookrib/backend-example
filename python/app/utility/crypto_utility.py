@@ -1,4 +1,3 @@
-
 import hashlib
 from datetime import datetime
 from typing import Any
@@ -25,4 +24,3 @@ def decode_jwt(token: str, key: str) -> dict[str, Any]:
 def encode_md5(input: str) -> str:
     """MD5编码"""
     return hashlib.md5(input.encode('utf-8')).hexdigest()
-

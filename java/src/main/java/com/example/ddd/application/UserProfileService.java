@@ -60,11 +60,11 @@ public class UserProfileService {
      * 发送手机验证码
      */
     public void sendMobileCode(String userId, String mobile) {
-        if(ValueUtility.isBlank(mobile))
+        if (ValueUtility.isBlank(mobile))
             throw new ApplicationException("手机号不能为空");
 
         User user = userRepository.selectByIdReq(userId);
-        String code = String.format("%06d", (int)(Math.random() * 1000000));
+        String code = String.format("%06d", (int) (Math.random() * 1000000));
         mobileCodeMap.put(user.getId() + "_" + mobile, code);
         smsGateway.sendCode(mobile, code);
     }
@@ -72,13 +72,13 @@ public class UserProfileService {
     /**
      * 绑定手机
      */
-    public void bindMobile(String userId, String mobile, String code)  {
-        if(ValueUtility.isBlank(code))
+    public void bindMobile(String userId, String mobile, String code) {
+        if (ValueUtility.isBlank(code))
             throw new ApplicationException("验证码不能为空");
 
         User user = userRepository.selectByIdReq(userId);
         String key = user.getId() + "_" + mobile;
-        if(!mobileCodeMap.getOrDefault(key, "").equals(code))
+        if (!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("手机验证码错误");
 
         user.modifyMobile(mobile, userUniqueChecker);

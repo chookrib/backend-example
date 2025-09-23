@@ -38,7 +38,7 @@ public class Application {
             InputStream inputStream = applicationContext.getClass().getClassLoader()
                     .getResourceAsStream("META-INF/MANIFEST.MF");
 
-            if(inputStream == null) {
+            if (inputStream == null) {
                 logger.warn("获取 Build-Time 失败: META-INF/MANIFEST.MF 文件不存在");
                 return "";
             }
@@ -47,7 +47,7 @@ public class Application {
             props.load(inputStream);
 
             for (String key : props.stringPropertyNames()) {
-                if(key.equals("Build-Time")) {
+                if (key.equals("Build-Time")) {
                     return props.getProperty(key);
                 }
             }

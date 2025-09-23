@@ -14,9 +14,9 @@ from app.utility import value_utility
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-user_auth_service = ioc_container.resolve(UserAuthService)          # type: ignore
-user_profile_service = ioc_container.resolve(UserProfileService)    # type: ignore
-user_query_handler = ioc_container.resolve(UserQueryHandler)        # type: ignore
+user_auth_service = ioc_container.resolve(UserAuthService)  # type: ignore
+user_profile_service = ioc_container.resolve(UserProfileService)  # type: ignore
+user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
 
 
 @router.post("/api/user/register")

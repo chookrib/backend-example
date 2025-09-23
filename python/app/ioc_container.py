@@ -42,30 +42,35 @@ class IocContainer:
             raise Exception(f"{cls} 未注册或未实例化")
         return self._instances[cls]
 
+
 # 实例化容器
 ioc_container = IocContainer()
 
 from app.domain.sms_gateway import SmsGateway
 from app.adapter.driven.sms_gateway_adapter import SmsGatewayAdapter
+
 ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)  # type: ignore
 
 from app.domain.user_repository import UserRepository
 from app.adapter.driven.user_persistence_adapter import UserPersistenceAdapter
+
 ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)  # type: ignore
 
 from app.domain.user_unique_checker import UserUniqueChecker
+
 ioc_container.register(cls=UserUniqueChecker, provider_cls=UserPersistenceAdapter)  # type: ignore
 
 from app.application.user_query_handler import UserQueryHandler
+
 ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)  # type: ignore
 
 from app.application.user_auth_service import UserAuthService
 from app.application.user_profile_service import UserProfileService
 from app.application.user_manage_service import UserManageService
+
 ioc_container.register(cls=UserAuthService)
 ioc_container.register(cls=UserProfileService)
 ioc_container.register(cls=UserManageService)
 
 # for k, v in ioc_container._instances.items():
 #     print(f"{k}: {v}")
-

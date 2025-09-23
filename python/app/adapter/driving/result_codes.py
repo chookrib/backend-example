@@ -6,4 +6,3 @@ SUCCESS = 0
 ERROR_DEFAULT = 1
 # 未登录
 ERROR_NOT_LOGIN = -1
-

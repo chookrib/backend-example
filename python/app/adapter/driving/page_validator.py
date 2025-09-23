@@ -1,6 +1,4 @@
-
-
-def validation(page_num:int, page_size:int, total_count:int) -> tuple[int, int, int]:
+def validation(page_num: int, page_size: int, total_count: int) -> tuple[int, int, int]:
     """验证并修正分页参数"""
 
     if page_size < 1:

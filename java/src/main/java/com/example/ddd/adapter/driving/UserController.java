@@ -39,7 +39,7 @@ public class UserController {
         String confirmPassword = json.path("confirmPassword").asText().trim();
         String nickname = json.path("nickname").asText().trim();
 
-        if(!confirmPassword.equals(password)) {
+        if (!confirmPassword.equals(password)) {
             throw new ControllerException("两次输入的密码不一致");
         }
 
@@ -82,7 +82,7 @@ public class UserController {
         String newPassword = json.path("newPassword").asText().trim();
         String confirmPassword = json.path("confirmPassword").asText().trim();
 
-        if(!confirmPassword.equals(newPassword)) {
+        if (!confirmPassword.equals(newPassword)) {
             throw new ControllerException("两次输入的密码不一致");
         }
 

@@ -2,13 +2,14 @@ from typing import Any
 
 from app.adapter.driving import result_codes
 
+
 class Result:
     """Controller返回结果"""
 
     def __init__(self, code: int, message: str = "", data: Any = None):
         self.code = code
         self.message = message
-        self.data = data    # data if data is not None else {}
+        self.data = data  # data if data is not None else {}
         self.success = code == result_codes.SUCCESS
 
     def to_dict(self):

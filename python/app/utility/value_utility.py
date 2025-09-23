@@ -27,6 +27,7 @@ def to_str_req(value, name: str = "") -> str:
 
     return s
 
+
 # ======================================================================================================================
 
 def to_int_or_none(value) -> int | None:
@@ -48,12 +49,14 @@ def to_int_or_default(value, default: int) -> int:
         return default
     return i
 
+
 def to_int_req(value, name: str = "") -> int:
     """取整数值，失败抛出异常"""
     i = to_int_or_none(value)
     if i is None:
         raise Exception(f"取整数值 {name} 失败" if name else f"取整数值失败")
     return i
+
 
 # ======================================================================================================================
 
@@ -86,6 +89,7 @@ def to_bool_req(value, name: str = "") -> bool:
         raise Exception(f"取布尔值 {name} 失败" if name else f"取布尔值失败")
     return b
 
+
 # ======================================================================================================================
 
 def to_datetime_or_none(value) -> datetime | None:
@@ -115,6 +119,7 @@ def to_datetime_req(value, name: str = "") -> datetime:
         raise Exception(f"取日期时间值 {name} 失败" if name else f"取日期时间值失败")
     return dt
 
+
 # ======================================================================================================================
 
 def to_decimal_or_none(value) -> Decimal | None:
@@ -128,6 +133,7 @@ def to_decimal_or_none(value) -> Decimal | None:
     except Exception:
         return None
 
+
 def to_decimal_or_default(value, default: Decimal) -> Decimal:
     """取Decimal值，失败返回默认值"""
     d = to_decimal_or_none(value)
@@ -135,10 +141,10 @@ def to_decimal_or_default(value, default: Decimal) -> Decimal:
         return default
     return d
 
+
 def to_decimal_req(value, name: str = "") -> Decimal:
     """取Decimal值，失败抛出异常"""
     d = to_decimal_or_none(value)
     if d is None:
         raise Exception(f"取Decimal值 {name} 失败" if name else f"取Decimal值失败")
     return d
-

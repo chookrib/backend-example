@@ -8,4 +8,3 @@ class SmsGateway(ABC):
     def send_code(self, mobile: str, code: str) -> None:
         """发送验证码"""
         pass
-

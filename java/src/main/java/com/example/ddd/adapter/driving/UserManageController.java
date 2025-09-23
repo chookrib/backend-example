@@ -1,6 +1,9 @@
 package com.example.ddd.adapter.driving;
 
-import com.example.ddd.application.*;
+import com.example.ddd.application.UserDto;
+import com.example.ddd.application.UserManageService;
+import com.example.ddd.application.UserQueryCriteria;
+import com.example.ddd.application.UserQueryHandler;
 import com.example.ddd.utility.JacksonUtility;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,9 +51,9 @@ public class UserManageController {
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("page", Map.of(
-                "pageNum", pageInfo.getPageNum(),
-                "pageSize", pageInfo.getPageSize(),
-                "totalCount", pageInfo.getTotalCount()
+                        "pageNum", pageInfo.getPageNum(),
+                        "pageSize", pageInfo.getPageSize(),
+                        "totalCount", pageInfo.getTotalCount()
                 )
         );
         return Result.okData(map);

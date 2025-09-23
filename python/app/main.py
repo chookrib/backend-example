@@ -130,7 +130,7 @@ def custom_jsonable_encoder(obj, **kwargs):
             return o.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(o, decimal.Decimal):
             return str(o)
-        if isinstance(o, int) and abs(o) > 2 ** 53 - 1:     # long转字符串
+        if isinstance(o, int) and abs(o) > 2 ** 53 - 1:  # long转字符串
             return str(o)
         # if isinstance(o, dict):
         #     return {k: custom_default(v) for k, v in o.items()}
@@ -154,8 +154,10 @@ from app.adapter.driving import well_known_controller
 
 app.include_router(well_known_controller.router)
 from app.adapter.driving import user_controller
+
 app.include_router(user_controller.router)
 from app.adapter.driving import user_manage_controller
+
 app.include_router(user_manage_controller.router)
 
 if __name__ == "__main__":

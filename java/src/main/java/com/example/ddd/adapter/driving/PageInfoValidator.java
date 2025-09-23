@@ -30,18 +30,18 @@ public class PageInfoValidator {
         pageInfo.pageSize = pageSize;
         pageInfo.totalCount = totalCount;
 
-        if(pageInfo.pageSize < 1)
+        if (pageInfo.pageSize < 1)
             pageInfo.pageSize = 1;
-        if(pageInfo.totalCount < 0)
+        if (pageInfo.totalCount < 0)
             pageInfo.totalCount = 0;
 
         int maxPageNum = pageInfo.totalCount / pageInfo.pageSize;
-        if(pageInfo.totalCount % pageInfo.pageSize > 0)
+        if (pageInfo.totalCount % pageInfo.pageSize > 0)
             maxPageNum++;
 
-        if(pageInfo.pageNum > maxPageNum)
+        if (pageInfo.pageNum > maxPageNum)
             pageInfo.pageNum = maxPageNum;
-        if(pageInfo.pageNum < 1)
+        if (pageInfo.pageNum < 1)
             pageInfo.pageNum = 1;
         return pageInfo;
     }
