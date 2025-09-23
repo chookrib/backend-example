@@ -114,11 +114,11 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         response = await call_next(request)
         return response
     except Exception as e:
-        logger.error(f"ASGI Exception: {str(e)}", exc_info=True)
+        logger.error(f"捕捉到未处理的异常: {str(e)}", exc_info=True)
         return JSONResponse(
             content=Result.error(
                 code=result_codes.ERROR_NOT_LOGIN,
-                message=f"ASGI Exception: {str(e)}"
+                message=f"{str(e)}"
             ).to_dict()
         )
 
