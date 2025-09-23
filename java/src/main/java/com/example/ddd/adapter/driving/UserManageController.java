@@ -46,14 +46,14 @@ public class UserManageController {
         }
 
         int totalCount = userQueryHandler.queryCount(criteria);
-        PageInfoValidator pageInfo = PageInfoValidator.validation(pageNum, pageSize, totalCount);
-        List<UserDto> list = userQueryHandler.queryByPage(pageInfo.getPageNum(), pageInfo.getPageSize(), criteria);
+        PagingValidator paging = PagingValidator.validation(pageNum, pageSize, totalCount);
+        List<UserDto> list = userQueryHandler.queryByPage(paging.getPageNum(), paging.getPageSize(), criteria);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("page", Map.of(
-                        "pageNum", pageInfo.getPageNum(),
-                        "pageSize", pageInfo.getPageSize(),
-                        "totalCount", pageInfo.getTotalCount()
+                        "pageNum", paging.getPageNum(),
+                        "pageSize", paging.getPageSize(),
+                        "totalCount", paging.getTotalCount()
                 )
         );
         return Result.okData(map);

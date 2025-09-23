@@ -3,7 +3,7 @@ package com.example.ddd.adapter.driving;
 /**
  * 分页参数验证器
  */
-public class PageInfoValidator {
+public class PagingValidator {
 
     private int pageNum;
     private int pageSize;
@@ -24,8 +24,8 @@ public class PageInfoValidator {
     /**
      * 验证并修正分页参数
      */
-    public static PageInfoValidator validation(int pageNum, int pageSize, int totalCount) {
-        PageInfoValidator pageInfo = new PageInfoValidator();
+    public static PagingValidator validation(int pageNum, int pageSize, int totalCount) {
+        PagingValidator pageInfo = new PagingValidator();
         pageInfo.pageNum = pageNum;
         pageInfo.pageSize = pageSize;
         pageInfo.totalCount = totalCount;
