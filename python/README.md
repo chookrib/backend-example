@@ -1,1 +1,3 @@
-ddd-example-python
+# ddd-example-python
+
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
