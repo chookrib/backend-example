@@ -10,7 +10,7 @@ from app.application.user_query_sort import UserQuerySort
 from app.domain.user import User
 from app.domain.user_repository import UserRepository
 from app.domain.user_unique_checker import UserUniqueChecker
-from app.utility import value_utility
+from app.utility import value_utility, crypto_utility
 
 
 class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
@@ -22,11 +22,14 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         self.cursor = self.conn.cursor()
         self.cursor.execute(
             "create table if not exists t_user (u_id text primary key, u_username text, u_password text, " +
-            "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)")
+            "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)"
+        )
         self.cursor.execute("delete from t_user where lower(u_username) = 'admin'")
         self.cursor.execute(
             "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
-            "values ('0', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', '管理员', '', 1, datetime('now', 'localtime'))")
+            "values ('0', 'admin', '" + crypto_utility.encode_md5(
+                "password") + "', '管理员', '', 1, datetime('now', 'localtime'))"
+        )
         self.conn.commit()
 
     def __del__(self):

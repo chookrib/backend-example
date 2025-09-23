@@ -7,6 +7,7 @@ import com.example.ddd.application.UserQuerySort;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
+import com.example.ddd.utility.CryptoUtility;
 import com.example.ddd.utility.ValueUtility;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -37,10 +38,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 u_nickname text, u_mobile text, u_is_admin integer u_created_at text)
                 """);
         this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
-        this.jdbcTemplate.execute("""
-                insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
-                values ('0', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', '管理员', '', 1, datetime('now', 'localtime'))
-                """);
+        this.jdbcTemplate.execute(
+                "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
+                "values ('0', 'admin', '" + CryptoUtility.encodeMd5("password") + "', '管理员', '', 1, datetime('now', 'localtime'))"
+        );
     }
 
     //==================================================================================================================
