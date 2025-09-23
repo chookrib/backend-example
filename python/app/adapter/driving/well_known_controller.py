@@ -16,8 +16,8 @@ def info():
     return Response(content=commit_info, media_type="text/plain")
 
 
-@router.get("/.well-known/exception")
-def exception():
+@router.get("/.well-known/test-exception")
+def test_exception():
     """测试异常处理"""
     try:
         1 / 0
