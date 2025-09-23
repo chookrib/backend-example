@@ -141,7 +141,7 @@ class User(BaseModel):
             if not user_unique_checker.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
-            if not mobile and not user_unique_checker.is_mobile_unique(mobile):
+            if mobile and not user_unique_checker.is_mobile_unique(mobile):
                 raise DomainException("手机已存在")
 
         return User(
@@ -166,13 +166,13 @@ class User(BaseModel):
             raise DomainException("昵称不能为空")
 
         if user_unique_checker is not None:
-            if not user_unique_checker.is_username_unique(username):
+            if username.lower() != self.username.lower() and not user_unique_checker.is_username_unique(username):
                 raise DomainException("用户名已存在")
 
-            if not user_unique_checker.is_nickname_unique(nickname):
+            if nickname.lower() != self.nickname.lower() and not user_unique_checker.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
-            if not mobile and not user_unique_checker.is_mobile_unique(mobile):
+            if not mobile and mobile.lower() != self.mobile.lower() and not user_unique_checker.is_mobile_unique(mobile):
                 raise DomainException("手机已存在")
 
         self.username = username

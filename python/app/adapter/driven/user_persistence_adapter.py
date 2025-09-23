@@ -60,7 +60,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                                 entity.nickname,
                                 entity.mobile,
                                 int(entity.is_admin),
-                                entity.created_at
+                                value_utility.to_datetime_str(entity.created_at)
                             ))
         self.conn.commit()
 
@@ -80,7 +80,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                                 entity.nickname,
                                 entity.mobile,
                                 int(entity.is_admin),
-                                entity.created_at,
+                                value_utility.to_datetime_str(entity.created_at),
                                 entity.id
                             ))
         self.conn.commit()

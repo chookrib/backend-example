@@ -208,7 +208,7 @@ public class User {
             if (!nickname.equalsIgnoreCase(this.nickname) && !userUniqueChecker.isNicknameUnique(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!mobile.equalsIgnoreCase(this.mobile) && !userUniqueChecker.isMobileUnique(mobile))
+            if (!ValueUtility.isBlank(mobile) && !mobile.equalsIgnoreCase(this.mobile) && !userUniqueChecker.isMobileUnique(mobile))
                 throw new DomainException("手机已存在");
         }
 

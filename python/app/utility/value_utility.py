@@ -92,6 +92,11 @@ def to_bool_req(value, name: str = "") -> bool:
 
 # ======================================================================================================================
 
+def to_datetime_str(value: datetime) -> str:
+    """日期时间转字符串"""
+    return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
 def to_datetime_or_none(value) -> datetime | None:
     """取日期时间，失败返回None"""
     if value is None:
