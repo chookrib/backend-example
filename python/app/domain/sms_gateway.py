@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class SmsGateway(ABC):
-    """短信接口"""
+    """短信Gateway接口"""
 
     @abstractmethod
     def send_code(self, mobile: str, code: str) -> None:

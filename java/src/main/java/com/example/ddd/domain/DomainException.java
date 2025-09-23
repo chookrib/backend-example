@@ -1,7 +1,7 @@
 package com.example.ddd.domain;
 
 /**
- * Domain层异常
+ * Domain异常
  */
 public class DomainException extends RuntimeException {
     public DomainException() {

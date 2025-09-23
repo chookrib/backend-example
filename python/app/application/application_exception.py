@@ -1,3 +1,3 @@
 class ApplicationException(Exception):
-    """Application层异常"""
+    """Application异常"""
     pass

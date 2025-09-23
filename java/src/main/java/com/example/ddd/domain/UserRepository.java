@@ -18,22 +18,22 @@ public interface UserRepository {
     void update(User entity);
 
     /**
-     * 删除
+     * 根据Id删除
      */
     void deleteById(String id);
 
     /**
-     * 根据id查询，找不到返回null
+     * 根据Id查询，找不到返回null
      */
     User selectById(String id);
 
     /**
-     * 根据id查询，找不到抛出异常
+     * 根据Id查询，找不到抛出异常
      */
     User selectByIdReq(String id);
 
     /**
-     * 根据id集合查询
+     * 根据Id集合查询
      */
     List<User> selectByIds(List<String> ids);
 

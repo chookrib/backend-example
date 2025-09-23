@@ -1,7 +1,7 @@
 package com.example.ddd.domain;
 
 /**
- * 短信接口
+ * 短信Gateway接口
  */
 public interface SmsGateway {
     /**

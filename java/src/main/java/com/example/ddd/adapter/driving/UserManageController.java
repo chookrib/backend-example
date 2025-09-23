@@ -38,7 +38,7 @@ public class UserManageController {
         JsonNode criteriaJson = json.path("criteria");
         UserQueryCriteria criteria = new UserQueryCriteria();
         if (!criteriaJson.isMissingNode()) {
-            String keyword = criteriaJson.path("keyword").asText();
+            String keyword = criteriaJson.path("keyword").asText().trim();
             criteria.setKeyword(keyword);
         }
 
@@ -53,7 +53,7 @@ public class UserManageController {
                 "totalCount", pageInfo.getTotalCount()
                 )
         );
-        return Result.successData(map);
+        return Result.okData(map);
     }
 
     /**
@@ -63,25 +63,25 @@ public class UserManageController {
     public Result userGet(HttpServletRequest request, @RequestParam String id) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        UserDto dto = userQueryHandler.queryById(id);
-        return Result.successData(dto);
+        UserDto userDto = userQueryHandler.queryById(id);
+        return Result.okData(userDto);
     }
 
     /**
-     * 修改用户
+     * 创建用户
      */
     @RequestMapping(value = "/api/admin/user/create", method = RequestMethod.POST)
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
         JsonNode json = JacksonUtility.readTree(requestBody);
-        String username = json.path("username").asText();
-        String password = json.path("password").asText();
-        String nickname = json.path("nickname").asText();
-        String mobile = json.path("mobile").asText();
+        String username = json.path("username").asText().trim();
+        String password = json.path("password").asText().trim();
+        String nickname = json.path("nickname").asText().trim();
+        String mobile = json.path("mobile").asText().trim();
 
         String userId = userManageService.createUser(username, password, nickname, mobile);
-        return Result.successData(userId);
+        return Result.okData(userId);
     }
 
     /**
@@ -92,13 +92,13 @@ public class UserManageController {
         RequestHelper.requireLoginUserAdmin(request);
 
         JsonNode json = JacksonUtility.readTree(requestBody);
-        String id = json.path("id").asText();
-        String username = json.path("username").asText();
-        String nickname = json.path("nickname").asText();
-        String mobile = json.path("mobile").asText();
+        String id = json.path("id").asText().trim();
+        String username = json.path("username").asText().trim();
+        String nickname = json.path("nickname").asText().trim();
+        String mobile = json.path("mobile").asText().trim();
 
         userManageService.modifyUser(id, username, nickname, mobile);
-        return Result.success();
+        return Result.ok();
     }
 
 
@@ -110,9 +110,9 @@ public class UserManageController {
         RequestHelper.requireLoginUserAdmin(request);
 
         JsonNode json = JacksonUtility.readTree(requestBody);
-        String id = json.path("id").asText();
+        String id = json.path("id").asText().trim();
 
         userManageService.removeUser(id);
-        return Result.success();
+        return Result.ok();
     }
 }

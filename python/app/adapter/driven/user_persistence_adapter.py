@@ -1,5 +1,5 @@
-import os
 import sqlite3
+from pathlib import Path
 
 from app.adapter.driven.query_exception import QueryException
 from app.adapter.driven.repository_exception import RepositoryException
@@ -14,22 +14,19 @@ from app.utility import value_utility
 
 
 class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
+    """用户持久化Adapter"""
 
     def __init__(self):
-        self.conn = sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'db.db'))
+        self.conn = sqlite3.connect(str(Path(__file__).resolve().parents[4] / 'db.db'))
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         self.cursor.execute(
-            """
-            create table if not exists t_user (u_id text primary key, u_username text, u_password text,
-            u_nickname text, u_mobile text, u_is_admin integer u_created_at text)
-            """)
+            "create table if not exists t_user (u_id text primary key, u_username text, u_password text, " +
+            "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)")
         self.cursor.execute("delete from t_user where lower(u_username) = 'admin'")
         self.cursor.execute(
-            """
-            insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
-            values ('0', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', '管理员', '', 1, datetime('now', 'localtime'))
-            """)
+            "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
+            "values ('0', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', '管理员', '', 1, datetime('now', 'localtime'))")
         self.conn.commit()
 
     def __del__(self):
@@ -39,6 +36,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             self.conn.close()
 
     def to_user(self, row: sqlite3.Row) -> User:
+        """转换成Entity"""
         row_dict = dict(row)
         return User.restore_user(
             id=row_dict.get("u_id", ""),
@@ -46,38 +44,45 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             password=row_dict.get("u_password", ""),
             nickname=row_dict.get("u_nickname", ""),
             mobile=row_dict.get("u_mobile", ""),
-            is_admin=bool(row_dict.get("u_is_admin", 0)),
+            is_admin=bool(row_dict.get("u_is_admin", False)),
             created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
         )
 
     def insert(self, entity: User) -> None:
         self.cursor.execute("""
-              insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
-              values (?, ?, ?, ?, ?, ?, ?)
-              """, (
-            entity.id,
-            entity.username,
-            entity.password,
-            entity.nickname,
-            entity.mobile,
-            int(entity.is_admin),
-            entity.created_at
-        ))
+                            insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin,
+                                                u_created_at)
+                            values (?, ?, ?, ?, ?, ?, ?)
+                            """, (
+                                entity.id,
+                                entity.username,
+                                entity.password,
+                                entity.nickname,
+                                entity.mobile,
+                                int(entity.is_admin),
+                                entity.created_at
+                            ))
         self.conn.commit()
 
     def update(self, entity: User) -> None:
         self.cursor.execute("""
-              update t_user set u_username = ?, u_password = ?, u_nickname = ?, u_mobile = ?, u_is_admin  = ?,
-              u_created_at = ? where u_id = ?
-              """, (
-            entity.username,
-            entity.password,
-            entity.nickname,
-            entity.mobile,
-            int(entity.is_admin),
-            entity.created_at,
-            entity.id
-        ))
+                            update t_user
+                            set u_username   = ?,
+                                u_password   = ?,
+                                u_nickname   = ?,
+                                u_mobile     = ?,
+                                u_is_admin   = ?,
+                                u_created_at = ?
+                            where u_id = ?
+                            """, (
+                                entity.username,
+                                entity.password,
+                                entity.nickname,
+                                entity.mobile,
+                                int(entity.is_admin),
+                                entity.created_at,
+                                entity.id
+                            ))
         self.conn.commit()
 
     def delete_by_id(self, id: str) -> None:
@@ -87,7 +92,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     def select_by_id(self, id: str) -> User | None:
         row = self.cursor.execute(
-            "select * from t_user where u_id = ?",(id,)).fetchone()
+            "select * from t_user where u_id = ?", (id,)).fetchone()
         if row:
             return self.to_user(row)
         return None
@@ -117,19 +122,19 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     # ==================================================================================================================
 
-    async def is_username_unique(self, username: str) -> bool:
+    def is_username_unique(self, username: str) -> bool:
         row = self.cursor.execute(
             "select 1 from t_user where u_username = ?", (username,)
         ).fetchone()
         return row is None
 
-    async def is_nickname_unique(self, nickname: str) -> bool:
+    def is_nickname_unique(self, nickname: str) -> bool:
         row = self.cursor.execute(
             "select 1 from t_user where u_nickname = ?", (nickname,)
         ).fetchone()
         return row is None
 
-    async def is_mobile_unique(self, mobile: str) -> bool:
+    def is_mobile_unique(self, mobile: str) -> bool:
         row = self.cursor.execute(
             "select 1 from t_user where u_mobile = ?", (mobile,)
         ).fetchone()
@@ -138,6 +143,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     # ==================================================================================================================
 
     def to_user_dto(self, row: sqlite3.Row) -> UserDto:
+        """转换成DTO"""
         row_dict = dict(row)
         return UserDto(
             id=row_dict.get("u_id", ""),
@@ -145,24 +151,12 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             # password=row_dict.get("u_password", ""),
             nickname=row_dict.get("u_nickname", ""),
             mobile=row_dict.get("u_mobile", ""),
-            is_admin=bool(row_dict.get("u_is_admin", 0)),
+            is_admin=bool(row_dict.get("u_is_admin", False)),
             created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
         )
 
-    def query_by_id(self, id: str) -> UserDto | None:
-        row = self.cursor.execute(
-            "select * from t_user where u_id = ?", (id,)).fetchone()
-        if row:
-            return self.to_user_dto(row)
-        return None
-
-    def query_by_id_req(self, id: str) -> UserDto:
-        user = self.query_by_id(id)
-        if not user:
-            raise QueryException(f"用户 {id} 不存在")
-        return user
-
     def create_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:
+        """构造查询SQL"""
         sqls = []
         params = []
         if criteria.keyword:
@@ -175,6 +169,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             return " where " + " and ".join(sqls), params
 
     def create_query_sort_sql(self, *sorts: UserQuerySort) -> str:
+        """构造排序SQL"""
         sqls = []
         if sorts:
             for sort in sorts:
@@ -194,6 +189,19 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             sqls.append("u_id desc")
             return " order by " + ", ".join(sqls)
 
+    def query_by_id(self, id: str) -> UserDto | None:
+        row = self.cursor.execute(
+            "select * from t_user where u_id = ?", (id,)).fetchone()
+        if row:
+            return self.to_user_dto(row)
+        return None
+
+    def query_by_id_req(self, id: str) -> UserDto:
+        user = self.query_by_id(id)
+        if not user:
+            raise QueryException(f"用户 {id} 不存在")
+        return user
+
     def query_count(self, criteria: UserQueryCriteria) -> int:
         criteria_sql, params = self.create_query_criteria_sql(criteria)
         row = self.cursor.execute(f"select count(*) from t_user {criteria_sql}", params).fetchone()
@@ -207,7 +215,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         ).fetchall()
         return [self.to_user_dto(row) for row in rows]
 
-    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
+    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[
+        UserDto]:
         criteria_sql, params = self.create_query_criteria_sql(criteria)
         sort_sql = self.create_query_sort_sql(*sorts)
         offset = (page_num - 1) * page_size

@@ -6,7 +6,7 @@ from app.application.user_query_sort import UserQuerySort
 
 
 class UserQueryHandler(ABC):
-    """用户Repository接口"""
+    """用户查询Handler接口"""
 
     @abstractmethod
     def query_by_id(self, id: str) -> UserDto | None:

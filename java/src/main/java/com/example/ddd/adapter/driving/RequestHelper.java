@@ -32,7 +32,7 @@ public class RequestHelper {
     }
 
     /**
-     * 获取登录管理员用户
+     * 获取登录管理员用户，失败抛异常
      */
     public static UserDto requireLoginUserAdmin(HttpServletRequest request) {
         String userId = requireLoginUserId(request);

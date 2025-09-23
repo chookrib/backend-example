@@ -5,14 +5,17 @@ class UserUniqueChecker(ABC):
     """用户唯一性检查接口"""
 
     @abstractmethod
-    async def is_username_unique(self, username: str) -> bool:
+    def is_username_unique(self, username: str) -> bool:
+        """检查用户名是否唯一"""
         pass
 
     @abstractmethod
-    async def is_nickname_unique(self, nickname: str) -> bool:
+    def is_nickname_unique(self, nickname: str) -> bool:
+        """检查昵称是否唯一"""
         pass
 
     @abstractmethod
-    async def is_mobile_unique(self, mobile: str) -> bool:
+    def is_mobile_unique(self, mobile: str) -> bool:
+        """检查手机号是否唯一"""
         pass
 

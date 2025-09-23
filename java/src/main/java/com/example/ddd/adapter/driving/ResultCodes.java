@@ -1,7 +1,7 @@
 package com.example.ddd.adapter.driving;
 
 /**
- * Controller返回码定义
+ * Result返回码定义
  */
 public class ResultCodes {
 

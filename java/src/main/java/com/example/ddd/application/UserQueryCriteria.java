@@ -1,7 +1,7 @@
 package com.example.ddd.application;
 
 /**
- * 用户查询条件
+ * 用户查询Criteria
  */
 public class UserQueryCriteria {
     private String keyword;

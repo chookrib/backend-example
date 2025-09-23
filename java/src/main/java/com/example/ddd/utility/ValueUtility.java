@@ -1,19 +1,75 @@
 package com.example.ddd.utility;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.time.LocalDateTime;
 
 /**
- * 值转换工具类
+ * 值 Utility
  */
 public class ValueUtility {
 
     /**
+     * 判断字符串是否null或空字符串
+     */
+    public static boolean isBlank(String str) {
+        return str == null || str.isBlank();    // isEmpty()
+    }
+
+    //==================================================================================================================
+
+    /**
+     * 取Integer，失败返回null
+     */
+    public static Integer toIntOrNull(String value) {
+        if (ValueUtility.isBlank(value))
+            return null;
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 取int，失败返回默认值
+     */
+    public static int toIntOrDefault(String value, int defaultValue) {
+        if (ValueUtility.isBlank(value))
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * 取int，失败抛出异常
+     */
+    public static int toIntReq(String value, String name) {
+        if (ValueUtility.isBlank(value))
+            throw new RuntimeException(ValueUtility.isBlank(name) ? "取整数值失败" : String.format("取整数值 %s 失败", name));
+
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(ValueUtility.isBlank(name) ? "取整数值失败" : String.format("取整数值 %s 失败", name));
+        }
+    }
+
+    /**
+     * 取int，失败抛出异常
+     */
+    public static int toIntReq(String value) {
+        return toIntReq(value, "");
+    }
+
+    //==================================================================================================================
+
+    /**
      * 日期时间转字符串
      */
-    public static String toDateTimeString(LocalDateTime value){
+    public static String toDateTimeStr(LocalDateTime value) {
         if (value == null)
             return "";
 
@@ -21,7 +77,7 @@ public class ValueUtility {
     }
 
     /**
-     * 字符串转日期时间
+     * 取日期时间，失败返回默认值
      */
     public static LocalDateTime toDateTimeOrDefault(String value, LocalDateTime defaultValue) {
         //try {
@@ -30,7 +86,7 @@ public class ValueUtility {
         //    return null;
         //}
 
-        if (StringUtils.isBlank(value))
+        if (ValueUtility.isBlank(value))
             return defaultValue;
 
         try {
@@ -41,66 +97,27 @@ public class ValueUtility {
     }
 
     /**
-     * 字符串转日期时间
+     * 取日期时间，失败返回null
      */
-    public static LocalDateTime toDateTimeOrNull(String value){
+    public static LocalDateTime toDateTimeOrNull(String value) {
         return toDateTimeOrDefault(value, null);
     }
 
     /**
-     * 字符串转日期时间
+     * 取日期时间，失败抛出异常
      */
-    public static LocalDateTime toDateTimeReq(String value){
+    public static LocalDateTime toDateTimeReq(String value, String name) {
         LocalDateTime dateTime = toDateTimeOrDefault(value, null);
         if (dateTime == null) {
-            // throw new IllegalArgumentException("无效的日期时间格式");
-            throw new RuntimeException("无效的日期时间格式");
+            throw new RuntimeException(ValueUtility.isBlank(name) ? "取日期时间值失败" : String.format("取日期时间值 %s 失败", name));
         }
         return dateTime;
     }
 
-    //==================================================================================================================
-
     /**
-     * 字符串转Integer，不成功返回null
+     * 取日期时间，失败抛出异常
      */
-    public static Integer toIntOrNull(String value) {
-        if(StringUtils.isBlank(value))
-            return null;
-
-        try {
-            return Integer.valueOf(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    public static LocalDateTime toDateTimeReq(String value) {
+        return toDateTimeReq(value, "");
     }
-
-    /**
-     * 字符串转转int，不成功时返回默认值
-     */
-    public static int toIntOrDefault(String value, int defaultValue) {
-        if(StringUtils.isBlank(value))
-            return defaultValue;
-
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * 字符串转转int，不成功时抛出异常
-     */
-    public static int toIntReq(String value, String message) {
-        if(StringUtils.isBlank(value))
-            throw new RuntimeException(message);
-
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException(message);
-        }
-    }
-
 }

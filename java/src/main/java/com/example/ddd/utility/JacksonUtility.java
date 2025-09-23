@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 
 /**
- * Jackson工具类
+ * Jackson Utility
  */
 public class JacksonUtility {
 

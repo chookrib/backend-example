@@ -6,7 +6,7 @@ import com.example.ddd.domain.UserUniqueChecker;
 import org.springframework.stereotype.Component;
 
 /**
- * 用户管理服务
+ * 用户管理Service
  */
 @Component
 public class UserManageService {
@@ -29,7 +29,7 @@ public class UserManageService {
     }
 
     /**
-     * 创建用户信息，管理员操作
+     * 创建用户
      */
     public String createUser(String username, String password, String nickname, String mobile) {
         User user = User.createUser(IdGenerator.generateId(), username, password, nickname, mobile, userUniqueChecker);
@@ -38,7 +38,7 @@ public class UserManageService {
     }
 
     /**
-     * 修改用户信息，管理员操作
+     * 修改用户
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
         User user = userRepository.selectByIdReq(id);
@@ -47,7 +47,7 @@ public class UserManageService {
     }
 
     /**
-     * 删除用户，管理员操作
+     * 删除用户
      */
     public void removeUser(String id) {
         userRepository.deleteById(id);

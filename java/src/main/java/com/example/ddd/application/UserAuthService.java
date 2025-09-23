@@ -3,7 +3,7 @@ package com.example.ddd.application;
 import com.auth0.jwt.interfaces.Claim;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
-import com.example.ddd.utility.JwtUtility;
+import com.example.ddd.utility.CryptoUtility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 用户认证服务
+ * 用户认证Service
  */
 @Component
 public class UserAuthService {
@@ -39,16 +39,16 @@ public class UserAuthService {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
-        return JwtUtility.encode(map,
+        return CryptoUtility.encodeJwt(map,
                 new Date(System.currentTimeMillis() + jwtExpiresDay * 24 * 60 * 60 * 1000L), jwtSecret);
     }
 
     /**
-     * 根据AccessToken取登录用户Id
+     * 根据AccessToken获取登录用户Id
      */
     public String getLoginUserId(String accessToken) {
         try {
-            Map<String, Claim> token = JwtUtility.decode(accessToken, jwtSecret);
+            Map<String, Claim> token = CryptoUtility.decodeJwt(accessToken, jwtSecret);
             return token.get("id").asString();
         } catch (Exception e) {
             return "";

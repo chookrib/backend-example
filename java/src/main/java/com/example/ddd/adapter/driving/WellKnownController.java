@@ -15,7 +15,7 @@ public class WellKnownController {
     private static final Logger logger = LoggerFactory.getLogger(WellKnownController.class);
 
     /**
-     * 应用信息
+     * 应用信息，显示非涉密信息
      */
     @RequestMapping(value = "/.well-known/info", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
@@ -27,14 +27,13 @@ public class WellKnownController {
     }
 
     /**
-     * 测试异常
+     * 测试异常处理
      */
     @RequestMapping(value = "/.well-known/exception", method = RequestMethod.GET)
     @ResponseBody
     public Result exception() {
         throw new RuntimeException("测试异常");
     }
-
 }
 
 

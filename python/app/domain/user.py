@@ -4,11 +4,11 @@ from pydantic import BaseModel
 
 from app.domain.domain_exception import DomainException
 from app.domain.user_unique_checker import UserUniqueChecker
-from app.utility import md5_utility
+from app.utility import crypto_utility
 
 
 class User(BaseModel):
-    """用户"""
+    """用户Entity"""
 
     id: str
     username: str
@@ -27,7 +27,7 @@ class User(BaseModel):
             mobile: str,
             is_admin: bool,
             created_at: datetime
-    ) -> User:
+    ) -> "User":
         """还原用户"""
 
         return User(
@@ -46,7 +46,7 @@ class User(BaseModel):
             username: str,
             password: str,
             nickname: str,
-            user_unique_checker: UserUniqueChecker | None) -> User:
+            user_unique_checker: UserUniqueChecker | None) -> "User":
         """注册用户"""
 
         if not username:
@@ -68,7 +68,7 @@ class User(BaseModel):
         return User(
             id=id,
             username=username,
-            password=md5_utility.generate_md5(password),
+            password=crypto_utility.encode_md5(password),
             nickname=nickname,
             mobile="",
             is_admin=False,
@@ -76,25 +76,25 @@ class User(BaseModel):
         )
 
     def is_password_match(self, password: str) -> bool:
-        return md5_utility.generate_md5(password) == self.password
+        """检查密码是否匹配"""
+        return crypto_utility.encode_md5(password) == self.password
 
     def set_admin(self, is_admin: bool) -> None:
+        """设置是否为管理员"""
         self.is_admin = is_admin
 
     def modify_password(self, old_password: str, new_password: str) -> None:
         """修改密码"""
-
         if not new_password:
             raise DomainException("密码不能为空")
 
         if not self.is_password_match(old_password):
             raise DomainException("密码错误")
 
-        self.password = md5_utility.generate_md5(new_password)
+        self.password = crypto_utility.encode_md5(new_password)
 
     def modify_nickname(self, nickname: str, user_unique_checker: UserUniqueChecker | None) -> None:
         """修改昵称"""
-
         if not nickname:
             raise DomainException("昵称不能为空")
 
@@ -106,7 +106,6 @@ class User(BaseModel):
 
     def modify_mobile(self, mobile: str, user_unique_checker: UserUniqueChecker | None) -> None:
         """修改手机"""
-
         if not mobile:
             raise DomainException("昵称不能为空")
 
@@ -124,9 +123,8 @@ class User(BaseModel):
             nickname: str,
             mobile: str,
             user_unique_checker: UserUniqueChecker | None
-    ) -> User:
+    ) -> "User":
         """创建用户"""
-
         if not username:
             raise DomainException("用户名不能为空")
 
@@ -149,7 +147,7 @@ class User(BaseModel):
         return User(
             id=id,
             username=username,
-            password=md5_utility.generate_md5(password),
+            password=crypto_utility.encode_md5(password),
             nickname=nickname,
             mobile=mobile,
             is_admin=False,
@@ -160,7 +158,7 @@ class User(BaseModel):
                nickname: str,
                mobile: str,
                user_unique_checker: UserUniqueChecker | None):
-
+        """修改用户"""
         if not username:
             raise DomainException("用户名不能为空")
 

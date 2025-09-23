@@ -1,7 +1,7 @@
 package com.example.ddd.application;
 
 /**
- * 用户查询排序
+ * 用户查询Sort
  */
 public enum UserQuerySort {
     CreatedAtAsc(1, "创建时间升序"),

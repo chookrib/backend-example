@@ -1,7 +1,7 @@
 package com.example.ddd.application;
 
 /**
- * Application层异常
+ * Application异常
  */
 public class ApplicationException extends RuntimeException {
     public ApplicationException() {

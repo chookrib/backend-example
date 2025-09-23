@@ -8,7 +8,6 @@ import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
 import com.example.ddd.utility.ValueUtility;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 用户持久化适配器
+ * 用户持久化Adapter
  */
 @Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker, UserQueryHandler {
@@ -77,7 +76,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getNickname(),
                 entity.getMobile(),
                 entity.isAdmin(),
-                ValueUtility.toDateTimeString(entity.getCreatedAt())
+                ValueUtility.toDateTimeStr(entity.getCreatedAt())
         );
     }
 
@@ -101,7 +100,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getNickname(),
                 entity.getMobile(),
                 entity.isAdmin(),
-                ValueUtility.toDateTimeString(entity.getCreatedAt()),
+                ValueUtility.toDateTimeStr(entity.getCreatedAt()),
                 entity.getId()
         );
     }
@@ -179,7 +178,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     // UserQueryHandler
 
     /**
-     * 转换成Dto
+     * 转换成DTO
      */
     private UserDto toUserDto(SqlRowSet sqlRowSet) {
         return new UserDto(
@@ -194,23 +193,26 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     /**
-     * 构造查询语句
+     * 构造查询SQL
      */
     private String createQueryCriteriaSql(UserQueryCriteria criteria, Map<String, Object> paramMap) {
         if (criteria == null)
             return "";
 
         List<String> sqls = new ArrayList<>();
-        if (!StringUtils.isBlank(criteria.getKeyword())) {
+        if (!ValueUtility.isBlank(criteria.getKeyword())) {
             sqls.add("u_username like :keyword or u_nickname like :keyword");
             paramMap.put("keyword", "%" + criteria.getKeyword() + "%");
         }
 
         if (!sqls.isEmpty())
-            return " where " + StringUtils.join(sqls, " and ");
+            return " where " + String.join(" and ", sqls);
         return "";
     }
 
+    /**
+     * 构造排序SQL
+     */
     private String createQuerySortSql(UserQuerySort... sorts) {
         List<String> sqls = new ArrayList<>();
         if (sorts != null) {
@@ -228,7 +230,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
             return " order by u_created_at desc, u_id desc";
         else {
             sqls.add("u_id desc");
-            return " order by " + StringUtils.join(sqls, ", ");
+            return " order by " + String.join(", ", sqls);
         }
     }
 

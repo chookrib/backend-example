@@ -1,0 +1,72 @@
+### 登录
+< {%
+    const rnd = $random.name.username;
+    client.global.set('username', rnd);
+    // console.log('client.global', client.global);
+    // request.variables.set('username', rnd);
+    // console.log(.variables);
+%}
+POST http://{{host}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data);
+%}
+
+### 创建
+POST http://{{host}}/api/admin/user/create
+Content-Type: application/json
+Access-Token: {{accessToken}}
+
+{
+  "username": "{{username}}",
+  "password": "password",
+  "confirmPassword": "password",
+  "nickname": "{{username}}",
+  "mobile": ""
+}
+
+> {%
+    client.global.set("userId", response.body.data);
+%}
+
+### 创建后获取
+GET http://{{host}}/api/admin/user/get?id={{userId}}
+Access-Token: {{accessToken}}
+
+### 更新
+POST http://{{host}}/api/admin/user/modify
+Content-Type: application/json
+Access-Token: {{accessToken}}
+
+{
+  "id": "{{userId}}",
+  "username": "{{username}}",
+  "password": "password",
+  "confirmPassword": "password",
+  "nickname": "{{username}}",
+  "mobile": "138{{$random.integer(10000000, 99999999)}}"
+}
+
+### 更新后获取
+GET http://{{host}}/api/admin/user/get?id={{userId}}
+Access-Token: {{accessToken}}
+
+### 删除
+POST http://{{host}}/api/admin/user/remove
+Access-Token: {{accessToken}}
+
+{
+  "id": "{{userId}}"
+}
+
+### 删除后获取
+GET http://{{host}}/api/admin/user/get?id={{userId}}
+Access-Token: {{accessToken}}
+
+

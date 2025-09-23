@@ -4,13 +4,13 @@ import com.example.ddd.domain.SmsGateway;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
-import org.apache.commons.lang3.StringUtils;
+import com.example.ddd.utility.ValueUtility;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 /**
- * 用户资料服务
+ * 用户资料Service
  */
 @Component
 public class UserProfileService {
@@ -29,8 +29,7 @@ public class UserProfileService {
     }
 
     /**
-     * 注册
-     * 仅演示使用，不具备防止恶意注册功能
+     * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
         User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, userUniqueChecker);
@@ -58,10 +57,10 @@ public class UserProfileService {
     }
 
     /**
-     * 发送绑定手机验证码
+     * 发送手机验证码
      */
     public void sendMobileCode(String userId, String mobile) {
-        if(StringUtils.isBlank(mobile))
+        if(ValueUtility.isBlank(mobile))
             throw new ApplicationException("手机号不能为空");
 
         User user = userRepository.selectByIdReq(userId);
@@ -71,10 +70,10 @@ public class UserProfileService {
     }
 
     /**
-     * 修改手机
+     * 绑定手机
      */
     public void bindMobile(String userId, String mobile, String code)  {
-        if(StringUtils.isBlank(code))
+        if(ValueUtility.isBlank(code))
             throw new ApplicationException("验证码不能为空");
 
         User user = userRepository.selectByIdReq(userId);

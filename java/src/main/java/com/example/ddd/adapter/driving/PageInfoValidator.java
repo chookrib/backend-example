@@ -1,7 +1,7 @@
 package com.example.ddd.adapter.driving;
 
 /**
- * 分页验证器
+ * 分页参数验证器
  */
 public class PageInfoValidator {
 

@@ -1,12 +1,12 @@
 package com.example.ddd.domain;
 
-import com.example.ddd.utility.Md5Utility;
-import org.apache.commons.lang3.StringUtils;
+import com.example.ddd.utility.CryptoUtility;
+import com.example.ddd.utility.ValueUtility;
 
 import java.time.LocalDateTime;
 
 /**
- * 用户
+ * 用户Entity
  */
 public class User {
 
@@ -69,13 +69,13 @@ public class User {
      */
     public static User registerUser(
             String id, String username, String password, String nickname, UserUniqueChecker userUniqueChecker) {
-        if(StringUtils.isBlank(username))
+        if(ValueUtility.isBlank(username))
             throw new DomainException("用户名不能为空");
 
-        if(StringUtils.isBlank(password))
+        if(ValueUtility.isBlank(password))
             throw new DomainException("密码不能为空");
 
-        if(StringUtils.isBlank(nickname))
+        if(ValueUtility.isBlank(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueChecker != null) {
@@ -89,7 +89,7 @@ public class User {
         User user = new User();
         user.id = id;
         user.username = username;
-        user.password = Md5Utility.generateMd5(password);
+        user.password = CryptoUtility.encodeMd5(password);
         user.nickname = nickname;
         user.mobile = "";
         user.isAdmin = false;
@@ -101,7 +101,7 @@ public class User {
      * 检查密码是否匹配
      */
     public boolean isPasswordMatch(String password) {
-        return this.password.equals(Md5Utility.generateMd5(password));
+        return this.password.equals(CryptoUtility.encodeMd5(password));
     }
 
     /**
@@ -115,21 +115,21 @@ public class User {
      * 修改密码
      */
     public void modifyPassword(String oldPassword, String newPassword) {
-        if(StringUtils.isBlank(newPassword))
+        if(ValueUtility.isBlank(newPassword))
             throw new DomainException("密码不能为空");
 
         if (!isPasswordMatch(oldPassword)) {
             throw new DomainException("密码错误");
         }
 
-        this.password = Md5Utility.generateMd5(newPassword);
+        this.password = CryptoUtility.encodeMd5(newPassword);
     }
 
     /**
      * 修改昵称
      */
     public void modifyNickname(String nickname, UserUniqueChecker userUniqueChecker) {
-        if(StringUtils.isBlank(nickname))
+        if(ValueUtility.isBlank(nickname))
             throw new DomainException("昵称不能为空");
 
         if(!nickname.equalsIgnoreCase(this.nickname) && userUniqueChecker != null) {
@@ -144,7 +144,7 @@ public class User {
      * 修改手机
      */
     public void modifyMobile(String mobile, UserUniqueChecker userUniqueChecker) {
-        if(StringUtils.isBlank(mobile))
+        if(ValueUtility.isBlank(mobile))
             throw new DomainException("手机不能为空");
 
         if(!mobile.equalsIgnoreCase(this.mobile) && userUniqueChecker != null) {
@@ -160,13 +160,13 @@ public class User {
      */
     public static User createUser(
             String id, String username, String password, String nickname, String mobile, UserUniqueChecker userUniqueChecker) {
-        if(StringUtils.isBlank(username))
+        if(ValueUtility.isBlank(username))
             throw new DomainException("用户名不能为空");
 
-        if(StringUtils.isBlank(password))
+        if(ValueUtility.isBlank(password))
             throw new DomainException("密码不能为空");
 
-        if(StringUtils.isBlank(nickname))
+        if(ValueUtility.isBlank(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueChecker != null) {
@@ -176,14 +176,14 @@ public class User {
             if(!userUniqueChecker.isNicknameUnique(nickname))
                 throw new DomainException("昵称已存在");
 
-            if(!StringUtils.isBlank(mobile) && !userUniqueChecker.isMobileUnique(mobile))
+            if(!ValueUtility.isBlank(mobile) && !userUniqueChecker.isMobileUnique(mobile))
                 throw new DomainException("手机已存在");
         }
 
         User user = new User();
         user.id = id;
         user.username = username;
-        user.password = Md5Utility.generateMd5(password);
+        user.password = CryptoUtility.encodeMd5(password);
         user.nickname = nickname;
         user.mobile = mobile;
         user.isAdmin = false;
@@ -192,13 +192,13 @@ public class User {
     }
 
     /**
-     * 修改用户信息
+     * 修改用户
      */
     public void modify(String username, String nickname, String mobile, UserUniqueChecker userUniqueChecker) {
-        if(StringUtils.isBlank(username))
+        if(ValueUtility.isBlank(username))
             throw new DomainException("用户名不能为空");
 
-        if(StringUtils.isBlank(nickname))
+        if(ValueUtility.isBlank(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueChecker != null) {

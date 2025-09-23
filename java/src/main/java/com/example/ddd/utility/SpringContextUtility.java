@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring上下文工具类
+ * Spring Context Utlity
  */
 @Component
 public class SpringContextUtility implements ApplicationContextAware {

@@ -3,7 +3,7 @@ package com.example.ddd.application;
 import java.util.List;
 
 /**
- * 用户查询处理器
+ * 用户查询Handler接口
  */
 public interface UserQueryHandler {
     /**
