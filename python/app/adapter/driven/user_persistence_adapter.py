@@ -38,6 +38,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         if hasattr(self, 'conn') and self.conn:
             self.conn.close()
 
+    # ==================================================================================================================
+    # UserRepository
+
     def to_user(self, row: sqlite3.Row) -> User:
         """转换成Entity"""
         row_dict = dict(row)
@@ -124,6 +127,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         return None
 
     # ==================================================================================================================
+    # UserUniqueChecker
 
     def is_username_unique(self, username: str) -> bool:
         row = self.cursor.execute(
@@ -144,6 +148,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         return row is None
 
     # ==================================================================================================================
+    # UserQueryHandler
 
     def to_user_dto(self, row: sqlite3.Row) -> UserDto:
         """转换成DTO"""
@@ -158,7 +163,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
         )
 
-    def create_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:
+    def build_query_criteria(self, criteria: UserQueryCriteria) -> tuple[str, list]:
         """构造查询SQL"""
         sqls = []
         params = []
@@ -171,26 +176,25 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         else:
             return " where " + " and ".join(sqls), params
 
-    def create_query_sort_sql(self, *sorts: UserQuerySort) -> str:
+    def build_query_sort(self, *sorts: UserQuerySort) -> str:
         """构造排序SQL"""
         sqls = []
-        if sorts:
-            for sort in sorts:
-                match sort:
-                    case UserQuerySort.CREATED_AT_ASC:
-                        sqls.append("u_created_at asc")
-                    case UserQuerySort.CREATED_AT_DESC:
-                        sqls.append("u_created_at desc")
-                    case UserQuerySort.USERNAME_ASC:
-                        sqls.append("u_username asc")
-                    case UserQuerySort.USERNAME_DESC:
-                        sqls.append("u_username desc")
+        for s in sorts:
+            match s:
+                case UserQuerySort.CREATED_AT_ASC:
+                    sqls.append("u_created_at asc")
+                case UserQuerySort.CREATED_AT_DESC:
+                    sqls.append("u_created_at desc")
+                case UserQuerySort.USERNAME_ASC:
+                    sqls.append("u_username asc")
+                case UserQuerySort.USERNAME_DESC:
+                    sqls.append("u_username desc")
 
         if not sqls:
-            return " order by u_created_at desc, u_id desc"
-        else:
-            sqls.append("u_id desc")
-            return " order by " + ", ".join(sqls)
+            sqls.append("u_created_at desc")
+
+        sqls.append("u_id desc")
+        return " order by " + ", ".join(sqls)
 
     def query_by_id(self, id: str) -> UserDto | None:
         row = self.cursor.execute(
@@ -206,13 +210,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         return user
 
     def query_count(self, criteria: UserQueryCriteria) -> int:
-        criteria_sql, params = self.create_query_criteria_sql(criteria)
+        criteria_sql, params = self.build_query_criteria(criteria)
         row = self.cursor.execute(f"select count(*) from t_user {criteria_sql}", params).fetchone()
         return row[0] if row else 0
 
     def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
-        criteria_sql, params = self.create_query_criteria_sql(criteria)
-        sort_sql = self.create_query_sort_sql(*sorts)
+        criteria_sql, params = self.build_query_criteria(criteria)
+        sort_sql = self.build_query_sort(*sorts)
         rows = self.cursor.execute(
             f"select * from t_user {criteria_sql} {sort_sql}", params
         ).fetchall()
@@ -220,8 +224,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[
         UserDto]:
-        criteria_sql, params = self.create_query_criteria_sql(criteria)
-        sort_sql = self.create_query_sort_sql(*sorts)
+        criteria_sql, params = self.build_query_criteria(criteria)
+        sort_sql = self.build_query_sort(*sorts)
         offset = (page_num - 1) * page_size
         rows = self.cursor.execute(
             f"select * from t_user {criteria_sql} {sort_sql} limit ? offset ?",

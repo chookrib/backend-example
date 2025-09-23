@@ -196,7 +196,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     /**
      * 构造查询SQL
      */
-    private String createQueryCriteriaSql(UserQueryCriteria criteria, Map<String, Object> paramMap) {
+    private String buildQueryCriteria(UserQueryCriteria criteria, Map<String, Object> paramMap) {
         if (criteria == null)
             return "";
 
@@ -214,25 +214,22 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     /**
      * 构造排序SQL
      */
-    private String createQuerySortSql(UserQuerySort... sorts) {
+    private String buildQuerySort(UserQuerySort... sorts) {
         List<String> sqls = new ArrayList<>();
-        if (sorts != null) {
-            for (UserQuerySort sort : sorts) {
-                switch (sort) {
-                    case CREATED_AT_ASC -> sqls.add("u_created_at asc");
-                    case CREATED_AT_DESC -> sqls.add("u_created_at desc");
-                    case USERNAME_ASC -> sqls.add("u_username asc");
-                    case USERNAME_DESC -> sqls.add("u_username desc");
-                }
+        for (UserQuerySort s : sorts) {
+            switch (s) {
+                case CREATED_AT_ASC -> sqls.add("u_created_at asc");
+                case CREATED_AT_DESC -> sqls.add("u_created_at desc");
+                case USERNAME_ASC -> sqls.add("u_username asc");
+                case USERNAME_DESC -> sqls.add("u_username desc");
             }
         }
 
         if (sqls.isEmpty())
-            return " order by u_created_at desc, u_id desc";
-        else {
-            sqls.add("u_id desc");
-            return " order by " + String.join(", ", sqls);
-        }
+            sqls.add("u_created_at desc");
+
+        sqls.add("u_id desc");
+        return " order by " + String.join(", ", sqls);
     }
 
     @Override
@@ -255,16 +252,16 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     @Override
     public int queryCount(UserQueryCriteria criteria) {
         Map<String, Object> paramMap = new HashMap<>();
-        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
+        String criteriaSql = buildQueryCriteria(criteria, paramMap);
         return namedParameterJdbcTemplate.queryForObject(
                 "select count(*) from t_user" + criteriaSql, paramMap, int.class);
     }
 
     @Override
-    public List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sort) {
+    public List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sorts) {
         Map<String, Object> paramMap = new HashMap<>();
-        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
-        String sortSql = createQuerySortSql(sort);
+        String criteriaSql = buildQueryCriteria(criteria, paramMap);
+        String sortSql = buildQuerySort(sorts);
 
         SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
                 "select * from t_user" + criteriaSql + sortSql, paramMap);
@@ -276,10 +273,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     @Override
-    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort) {
+    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sorts) {
         Map<String, Object> paramMap = new HashMap<>();
-        String criteriaSql = createQueryCriteriaSql(criteria, paramMap);
-        String sortSql = createQuerySortSql(sort);
+        String criteriaSql = buildQueryCriteria(criteria, paramMap);
+        String sortSql = buildQuerySort(sorts);
 
         paramMap.put("limitCount", pageSize);
         paramMap.put("limitOffset", (pageNum - 1) * pageSize);

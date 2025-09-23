@@ -34,7 +34,8 @@ async def user_list(request: Request):
     page_num, page_size, total_count = paging_validator.validation(page_num, page_size, total_count)
     list = user_query_handler.query_by_page(page_num, page_size, criteria)
     return Result.ok(data={
-        "list": [user.to_json() for user in list],
+        # "list": [user.to_json() for user in list],
+        "list": list,
         "paging": {
             "pageNum": page_num,
             "pageSize": page_size,
@@ -49,7 +50,8 @@ async def user_get(request: Request, id: str):
     request_helper.require_login_user_admin(request)
 
     user_dto = user_query_handler.query_by_id_req(id)
-    return Result.ok(data=user_dto.to_json())
+    # return Result.ok(data=user_dto.to_json())
+    return Result.ok(data=user_dto)
 
 
 @router.post("/api/admin/user/create")

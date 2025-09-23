@@ -51,7 +51,8 @@ async def profile(request: Request):
     """取用户资料"""
     user_id = request_helper.require_login_user_id(request)
     user_dto = user_query_handler.query_by_id_req(user_id)
-    return Result.ok(data=user_dto.to_json())
+    # return Result.ok(data=user_dto.to_json())
+    return Result.ok(data=user_dto)
 
 
 @router.post("/api/user/modify-password")

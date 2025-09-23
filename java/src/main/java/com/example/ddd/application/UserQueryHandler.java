@@ -24,10 +24,10 @@ public interface UserQueryHandler {
     /**
      * 查询
      */
-    List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sort);
+    List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sorts);
 
     /**
      * 分页查询
      */
-    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sort);
+    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sorts);
 }
