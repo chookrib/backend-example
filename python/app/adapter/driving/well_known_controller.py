@@ -19,4 +19,7 @@ def info():
 @router.get("/.well-known/exception")
 def exception():
     """测试异常处理"""
-    raise Exception("测试Exception")
+    try:
+        1 / 0
+    except Exception as e:
+        raise Exception("测试Exception") from e

@@ -177,13 +177,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         if sorts:
             for sort in sorts:
                 match sort:
-                    case UserQuerySort.CreateAtAsc:
+                    case UserQuerySort.CREATED_AT_ASC:
                         sqls.append("u_created_at asc")
-                    case UserQuerySort.CreateAtDesc:
+                    case UserQuerySort.CREATED_AT_DESC:
                         sqls.append("u_created_at desc")
-                    case UserQuerySort.UsernameAsc:
-                        sqls.append("u_username desc")
-                    case UserQuerySort.UsernameDesc:
+                    case UserQuerySort.USERNAME_ASC:
+                        sqls.append("u_username asc")
+                    case UserQuerySort.USERNAME_DESC:
                         sqls.append("u_username desc")
 
         if not sqls:

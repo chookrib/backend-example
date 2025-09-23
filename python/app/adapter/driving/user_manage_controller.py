@@ -35,7 +35,7 @@ async def user_list(request: Request):
     list = user_query_handler.query_by_page(page_num, page_size, criteria)
     return Result.ok(data={
         "list": [user.to_json() for user in list],
-        "page": {
+        "paging": {
             "pageNum": page_num,
             "pageSize": page_size,
             "totalCount": total_count

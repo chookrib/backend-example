@@ -219,10 +219,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         if (sorts != null) {
             for (UserQuerySort sort : sorts) {
                 switch (sort) {
-                    case CreatedAtAsc -> sqls.add("u_created_at asc");
-                    case CreatedAtDesc -> sqls.add("u_created_at desc");
-                    case UsernameAsc -> sqls.add("u_username asc");
-                    case UsernameDesc -> sqls.add("u_username desc");
+                    case CREATED_AT_ASC -> sqls.add("u_created_at asc");
+                    case CREATED_AT_DESC -> sqls.add("u_created_at desc");
+                    case USERNAME_ASC -> sqls.add("u_username asc");
+                    case USERNAME_DESC -> sqls.add("u_username desc");
                 }
             }
         }

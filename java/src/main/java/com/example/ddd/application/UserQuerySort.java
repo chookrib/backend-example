@@ -4,10 +4,10 @@ package com.example.ddd.application;
  * 用户查询Sort
  */
 public enum UserQuerySort {
-    CreatedAtAsc(1, "创建时间升序"),
-    CreatedAtDesc(-1, "创建时间倒序"),
-    UsernameAsc(2, "用户名升序"),
-    UsernameDesc(-2, "用户名降序");
+    CREATED_AT_ASC(1, "创建时间升序"),
+    CREATED_AT_DESC(-1, "创建时间倒序"),
+    USERNAME_ASC(2, "用户名升序"),
+    USERNAME_DESC(-2, "用户名降序");
 
     private int value;      //值
     private String text;    //文本

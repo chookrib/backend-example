@@ -50,7 +50,7 @@ public class UserManageController {
         List<UserDto> list = userQueryHandler.queryByPage(paging.getPageNum(), paging.getPageSize(), criteria);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
-        map.put("page", Map.of(
+        map.put("paging", Map.of(
                         "pageNum", paging.getPageNum(),
                         "pageSize", paging.getPageSize(),
                         "totalCount", paging.getTotalCount()

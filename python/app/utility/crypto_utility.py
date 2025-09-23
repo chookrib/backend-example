@@ -2,7 +2,7 @@ import hashlib
 from datetime import datetime
 from typing import Any
 
-from jose import jwt, JWTError
+from jose import jwt
 
 
 def encode_jwt(key: str, exp: datetime, claims: dict[str, Any] | None = None) -> str:
@@ -17,7 +17,7 @@ def decode_jwt(token: str, key: str) -> dict[str, Any]:
     """JWT解码"""
     payload = jwt.decode(token, key)
     if "exp" not in payload or datetime.fromtimestamp(payload["exp"]) < datetime.now():
-        raise JWTError("JWT令牌已过期")
+        raise Exception("JWT令牌已过期")
     return payload
 
 
