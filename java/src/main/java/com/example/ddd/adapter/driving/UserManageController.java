@@ -67,7 +67,9 @@ public class UserManageController {
         RequestHelper.requireLoginUserAdmin(request);
 
         UserDto userDto = userQueryHandler.queryById(id);
-        return Result.okData(userDto);
+        return Result.okData(Map.of(
+                "detail", userDto
+        ));
     }
 
     /**
@@ -84,7 +86,9 @@ public class UserManageController {
         String mobile = json.path("mobile").asText().trim();
 
         String userId = userManageService.createUser(username, password, nickname, mobile);
-        return Result.okData(userId);
+        return Result.okData(Map.of(
+                "id", userId
+        ));
     }
 
     /**

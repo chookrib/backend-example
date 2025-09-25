@@ -152,15 +152,15 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     def to_user_dto(self, row: sqlite3.Row) -> UserDto:
         """转换成DTO"""
-        row_dict = dict(row)
+        user = self.to_user(row)
         return UserDto(
-            id=row_dict.get("u_id", ""),
-            username=row_dict.get("u_username", ""),
-            # password=row_dict.get("u_password", ""),
-            nickname=row_dict.get("u_nickname", ""),
-            mobile=row_dict.get("u_mobile", ""),
-            is_admin=bool(row_dict.get("u_is_admin", False)),
-            created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
+            id=user.id,
+            username=user.username,
+            # password=user.password,
+            nickname=user.nickname,
+            mobile=user.mobile,
+            is_admin=user.is_admin,
+            created_at=user.created_at
         )
 
     def build_query_criteria(self, criteria: UserQueryCriteria) -> tuple[str, list]:

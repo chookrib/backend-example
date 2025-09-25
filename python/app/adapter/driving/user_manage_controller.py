@@ -51,7 +51,7 @@ async def user_get(request: Request, id: str):
 
     user_dto = user_query_handler.query_by_id_req(id)
     # return Result.ok(data=user_dto.to_json())
-    return Result.ok(data=user_dto)
+    return Result.ok(data={"detail": user_dto})
 
 
 @router.post("/api/admin/user/create")
@@ -66,7 +66,7 @@ async def user_create(request: Request):
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
 
     user_id = user_manage_service.create_user(username, password, nickname, mobile)
-    return Result.ok(data=user_id)
+    return Result.ok(data={"id": user_id})
 
 
 @router.post("/api/admin/user/modify")

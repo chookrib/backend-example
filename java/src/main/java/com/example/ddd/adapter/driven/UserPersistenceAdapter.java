@@ -182,14 +182,15 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
      * 转换成DTO
      */
     private UserDto toUserDto(SqlRowSet sqlRowSet) {
+        User user = toUser(sqlRowSet);
         return new UserDto(
-                sqlRowSet.getString("u_id"),
-                sqlRowSet.getString("u_username"),
-                //sqlRowSet.getString("u_password"),
-                sqlRowSet.getString("u_nickname"),
-                sqlRowSet.getString("u_mobile"),
-                sqlRowSet.getBoolean("u_is_admin"),
-                ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
+                user.getId(),
+                user.getUsername(),
+                // user.getPassword(),
+                user.getNickname(),
+                user.getMobile(),
+                user.isAdmin(),
+                user.getCreatedAt()
         );
     }
 

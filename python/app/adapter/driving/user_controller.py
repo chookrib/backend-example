@@ -32,7 +32,7 @@ async def register(request: Request):
         raise ControllerException("两次输入的密码不一致")
 
     user_id = user_profile_service.register(username, password, nickname)
-    return Result.ok(data=user_id)
+    return Result.ok(data={"id": user_id})
 
 
 @router.post("/api/user/login")
@@ -43,7 +43,7 @@ async def login(request: Request):
     password = value_utility.to_str_or_empty(request_json.get("password"))
 
     access_token = user_auth_service.login(username, password)
-    return Result.ok(data=access_token)
+    return Result.ok(data={"accessToken": access_token})
 
 
 @router.get("/api/user/profile")
@@ -52,7 +52,7 @@ async def profile(request: Request):
     user_id = request_helper.require_login_user_id(request)
     user_dto = user_query_handler.query_by_id_req(user_id)
     # return Result.ok(data=user_dto.to_json())
-    return Result.ok(data=user_dto)
+    return Result.ok(data={"profile": user_dto})
 
 
 @router.post("/api/user/modify-password")

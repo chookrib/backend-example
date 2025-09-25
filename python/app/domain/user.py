@@ -29,7 +29,6 @@ class User(BaseModel):
             created_at: datetime
     ) -> "User":
         """还原用户"""
-
         return User(
             id=id,
             username=username,
@@ -48,7 +47,6 @@ class User(BaseModel):
             nickname: str,
             user_unique_checker: UserUniqueChecker | None) -> "User":
         """注册用户"""
-
         if not username:
             raise DomainException("用户名不能为空")
 

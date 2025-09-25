@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 /**
  * 用户Controller
  */
@@ -44,7 +46,9 @@ public class UserController {
         }
 
         String userId = userProfileService.register(username, password, nickname);
-        return Result.okData(userId);
+        return Result.okData(Map.of(
+                "id", userId
+        ));
     }
 
     /**
@@ -57,7 +61,9 @@ public class UserController {
         String password = json.path("password").asText().trim();
 
         String accessToken = userAuthService.login(username, password);
-        return Result.okData(accessToken);
+        return Result.okData(Map.of(
+                "accessToken", accessToken
+        ));
     }
 
     /**
@@ -67,7 +73,9 @@ public class UserController {
     public Result profile(HttpServletRequest request) {
         String userId = RequestHelper.requireLoginUserId(request);
         UserDto userDto = userQueryHandler.queryById(userId);
-        return Result.okData(userDto);
+        return Result.okData(Map.of(
+                "profile", userDto
+        ));
     }
 
     /**
