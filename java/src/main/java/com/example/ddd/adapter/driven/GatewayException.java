@@ -1,9 +1,10 @@
 package com.example.ddd.adapter.driven;
 
 /**
- * Gateway异常
+ * Gateway Exception
  */
 public class GatewayException extends RuntimeException {
+
     public GatewayException() {
         super();
     }

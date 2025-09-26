@@ -3,7 +3,7 @@ package com.example.ddd.application;
 import com.fasterxml.uuid.Generators;
 
 /**
- * Id生成器
+ * Id 生成器
  */
 public class IdGenerator {
 

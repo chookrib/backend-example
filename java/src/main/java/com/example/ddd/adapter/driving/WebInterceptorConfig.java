@@ -65,7 +65,7 @@
 //    //}
 //
 //    /**
-//     * 认证拦截器
+//     * AccessToken 验证拦截器
 //     */
 //    public class AccessTokenInterceptor implements HandlerInterceptor {
 //

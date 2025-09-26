@@ -3,7 +3,7 @@ package com.example.ddd.application;
 import java.time.LocalDateTime;
 
 /**
- * 用户DTO
+ * 用户 DTO
  */
 public class UserDto {
 

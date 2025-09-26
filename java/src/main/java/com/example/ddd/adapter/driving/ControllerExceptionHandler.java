@@ -20,7 +20,7 @@ public class ControllerExceptionHandler {
     protected static final Logger logger = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     /**
-     * NotLoginException异常处理器
+     * NotLoginException 异常处理器
      */
     @ExceptionHandler(value = NotLoginException.class)
     @ResponseBody
@@ -34,9 +34,10 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public Result defaultExceptionHandler(HttpServletResponse response, Exception e) {
+
         logger.error("捕捉到未处理的异常: {}", e.getMessage());
 
-        // NoResourceFoundException异常设置状态码404
+        // NoResourceFoundException 设置状态码 404
         if (e instanceof NoResourceFoundException)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         //else

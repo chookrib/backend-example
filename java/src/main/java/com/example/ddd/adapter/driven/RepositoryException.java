@@ -1,9 +1,10 @@
 package com.example.ddd.adapter.driven;
 
 /**
- * Repository异常
+ * Repository Exception
  */
 public class RepositoryException extends RuntimeException {
+
     public RepositoryException() {
         super();
     }

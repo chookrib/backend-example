@@ -18,7 +18,6 @@ public class Application {
     public static ConfigurableApplicationContext applicationContext;
 
     public static void main(String[] args) {
-
         applicationContext = SpringApplication.run(Application.class, args);
         logger.info("Started File-Name: {} Build-Time: {}", getFileName(), getBuildTime());
     }
