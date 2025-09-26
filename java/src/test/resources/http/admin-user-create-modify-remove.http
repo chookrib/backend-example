@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.data);
+    client.global.set("accessToken", response.body.data.accessToken);
 %}
 
 ### 创建
@@ -32,7 +32,7 @@ Access-Token: {{accessToken}}
 }
 
 > {%
-    client.global.set("userId", response.body.data);
+    client.global.set("userId", response.body.data.id);
 %}
 
 ### 创建后获取

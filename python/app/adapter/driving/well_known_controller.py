@@ -3,6 +3,9 @@ import subprocess
 
 from fastapi import APIRouter, Response
 
+from app.adapter.driving.result import Result
+from app.utility import json_utility
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -23,3 +26,14 @@ def test_exception():
         1 / 0
     except Exception as e:
         raise Exception("测试Exception") from e
+
+@router.get("/.well-known/test-json")
+def test_json():
+    """测试数据输出"""
+    return Result.ok(data=json_utility.test_data())
+
+@router.get("/.well-known/test-json-class")
+def test_json_class():
+    """测试数据输出"""
+    return Result.ok(data=json_utility.TestDataClass())
+

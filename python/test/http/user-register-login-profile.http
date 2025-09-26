@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.data);
+    client.global.set("accessToken", response.body.data.accessToken);
 %}
 
 ### 取用户信息

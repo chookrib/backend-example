@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from app.adapter.driving import result_codes
 from app.adapter.driving.result import Result
 from app.config import settings
+from app.utility import json_utility
 
 # 设置日志格式
 logging.basicConfig(
@@ -122,32 +123,8 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
             ).to_dict()
         )
 
-
-# 用于FastAPI返回时转换数据的自定义jsonable_encoder
-def custom_jsonable_encoder(obj, **kwargs):
-    def custom_default(o):
-        if isinstance(o, datetime):
-            return o.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(o, decimal.Decimal):
-            return str(o)
-        if isinstance(o, int) and abs(o) > 2 ** 53 - 1:  # long转字符串
-            return str(o)
-        # if isinstance(o, dict):
-        #     return {k: custom_default(v) for k, v in o.items()}
-        # if isinstance(o, list):
-        #     return [custom_default(item) for item in o]
-        return jsonable_encoder(o)
-
-    # try:
-    #     result = json.loads(json.dumps(obj, default=custom_default))
-    # except Exception as e:
-    #     print(f"custom_jsonable_encoder {e}")
-    # return result
-    return json.loads(json.dumps(obj, default=custom_default))
-
-
-# 替换FastAPI的jsonable_encoder
-encoders.jsonable_encoder = custom_jsonable_encoder  # type: ignore
+# 替换 FastAPI 默认 jsonable_encoder
+encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 
 # 注册路由
 from app.adapter.driving import well_known_controller
