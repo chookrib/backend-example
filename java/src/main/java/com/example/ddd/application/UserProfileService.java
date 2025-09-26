@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 /**
- * 用户资料Service
+ * 用户资料 Service
  */
 @Component
 public class UserProfileService {

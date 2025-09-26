@@ -1,4 +1,4 @@
 class RepositoryException(Exception):
-    """Repository异常"""
+    """Repository Exception"""
 
     pass

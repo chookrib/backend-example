@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 用户认证Service
+ * 用户认证 Service
  */
 @Component
 public class UserAuthService {
@@ -39,8 +39,10 @@ public class UserAuthService {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
-        return CryptoUtility.encodeJwt(map,
-                new Date(System.currentTimeMillis() + jwtExpiresDay * 24 * 60 * 60 * 1000L), jwtSecret);
+        return CryptoUtility.encodeJwt(
+                map,
+                new Date(System.currentTimeMillis() + jwtExpiresDay * 24 * 60 * 60 * 1000L),
+                jwtSecret);
     }
 
     /**

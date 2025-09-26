@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * 短信接口Adapter
+ * 短信 Gateway 接口 Adapter
  */
 @Component
 public class SmsGatewayAdapter implements SmsGateway {

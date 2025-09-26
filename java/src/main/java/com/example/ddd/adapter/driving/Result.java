@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Controller返回结果
+ * Controller 返回结果
  */
 public class Result {
 

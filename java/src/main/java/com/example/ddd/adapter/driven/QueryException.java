@@ -1,9 +1,10 @@
 package com.example.ddd.adapter.driven;
 
 /**
- * Query异常
+ * Query Exception
  */
 public class QueryException extends RuntimeException {
+
     public QueryException() {
         super();
     }

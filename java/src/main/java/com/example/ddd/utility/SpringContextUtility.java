@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SpringContextUtility implements ApplicationContextAware {
+
     private static ApplicationContext context;
 
     @Override

@@ -6,7 +6,7 @@ import com.example.ddd.domain.UserUniqueChecker;
 import org.springframework.stereotype.Component;
 
 /**
- * 用户管理Service
+ * 用户管理 Service
  */
 @Component
 public class UserManageService {

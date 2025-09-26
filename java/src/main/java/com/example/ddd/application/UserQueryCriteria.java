@@ -1,9 +1,10 @@
 package com.example.ddd.application;
 
 /**
- * 用户查询Criteria
+ * 用户 Query Criteria
  */
 public class UserQueryCriteria {
+
     private String keyword;
 
     public String getKeyword() {

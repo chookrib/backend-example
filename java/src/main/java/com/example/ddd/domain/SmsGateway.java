@@ -1,9 +1,10 @@
 package com.example.ddd.domain;
 
 /**
- * 短信Gateway接口
+ * 短信 Gateway 接口
  */
 public interface SmsGateway {
+
     /**
      * 发送验证码
      */

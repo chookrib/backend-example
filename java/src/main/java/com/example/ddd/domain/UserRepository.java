@@ -3,7 +3,7 @@ package com.example.ddd.domain;
 import java.util.List;
 
 /**
- * 用户Repository接口
+ * 用户 Repository 接口
  */
 public interface UserRepository {
 

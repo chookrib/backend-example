@@ -15,8 +15,9 @@ import java.math.BigDecimal;
  */
 @Configuration
 public class JacksonWebConverterConfig {
+
     /**
-     * 配置Spring MVC的JSON转换器
+     * 配置 Spring MVC 的JSON转换器
      */
     @Bean
     public HttpMessageConverters jacksonWebConverters() {

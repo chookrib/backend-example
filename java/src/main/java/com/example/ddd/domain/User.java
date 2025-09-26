@@ -6,7 +6,7 @@ import com.example.ddd.utility.ValueUtility;
 import java.time.LocalDateTime;
 
 /**
- * 用户Entity
+ * 用户 Entity
  */
 public class User {
 

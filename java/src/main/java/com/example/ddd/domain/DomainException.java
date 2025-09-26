@@ -1,12 +1,11 @@
 package com.example.ddd.domain;
 
 /**
- * Domain异常
+ * Domain Exception
  */
 public class DomainException extends RuntimeException {
-    public DomainException() {
-        super();
-    }
+
+    public DomainException() { super(); }
 
     public DomainException(String message) {
         super(message);

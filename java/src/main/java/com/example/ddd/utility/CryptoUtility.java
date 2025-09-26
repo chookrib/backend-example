@@ -9,9 +9,10 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * 加密Utility
+ * 加密 Utility
  */
 public class CryptoUtility {
+
     /**
      * JWT编码
      */

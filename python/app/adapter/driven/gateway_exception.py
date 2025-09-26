@@ -1,4 +1,4 @@
 class GatewayException(Exception):
-    """Gateway异常"""
+    """Gateway Exception"""
 
     pass

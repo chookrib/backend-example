@@ -3,9 +3,10 @@ package com.example.ddd.application;
 import java.util.List;
 
 /**
- * 用户查询Handler接口
+ * 用户 Query Handler 接口
  */
 public interface UserQueryHandler {
+
     /**
      * 根据id查询，找不到返回null
      */

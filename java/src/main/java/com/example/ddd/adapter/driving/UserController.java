@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 /**
- * 用户Controller
+ * 用户 Controller
  */
 @RestController
 public class UserController {
+
     private final UserAuthService userAuthService;
     private final UserProfileService userProfileService;
     private final UserQueryHandler userQueryHandler;

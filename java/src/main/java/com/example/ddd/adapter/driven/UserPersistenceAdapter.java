@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 用户持久化Adapter
+ * 用户持久化 Adapter
  */
 @Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker, UserQueryHandler {

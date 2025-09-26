@@ -1,9 +1,10 @@
 package com.example.ddd.application;
 
 /**
- * 用户查询Sort
+ * 用户 Query Sort
  */
 public enum UserQuerySort {
+
     CREATED_AT_ASC(1, "创建时间升序"),
     CREATED_AT_DESC(-1, "创建时间倒序"),
     USERNAME_ASC(2, "用户名升序"),

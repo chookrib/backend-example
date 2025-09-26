@@ -1,4 +1,4 @@
 class DomainException(Exception):
-    """Domain异常"""
+    """Domain Exception"""
 
     pass

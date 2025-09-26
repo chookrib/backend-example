@@ -1,4 +1,4 @@
 class QueryException(Exception):
-    """Query异常"""
+    """Query Exception"""
 
     pass

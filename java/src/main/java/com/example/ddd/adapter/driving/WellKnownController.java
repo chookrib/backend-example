@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class WellKnownController {
+
     private static final Logger logger = LoggerFactory.getLogger(WellKnownController.class);
 
     /**

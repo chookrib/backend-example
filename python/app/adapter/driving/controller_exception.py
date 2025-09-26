@@ -1,4 +1,4 @@
 class ControllerException(Exception):
-    """Controller异常"""
+    """Controller Exception"""
 
     pass
