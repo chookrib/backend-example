@@ -44,7 +44,7 @@ public class WellKnownController {
     @RequestMapping(value = "/.well-known/test-json", method = RequestMethod.GET)
     @ResponseBody
     public Result testJson() {
-        JacksonUtility.TestClass c = new JacksonUtility().new TestClass();
+        JacksonUtility.TestDataClass c = new JacksonUtility().new TestDataClass();
         return Result.okData(c);
     }
 
@@ -54,7 +54,7 @@ public class WellKnownController {
     @RequestMapping(value = "/.well-known/test-json-ref", method = RequestMethod.GET)
     @ResponseBody
     public Result testJsonRef() {
-        JacksonUtility.TestClassRef c = new JacksonUtility().new TestClassRef();
+        JacksonUtility.TestDataClassRef c = new JacksonUtility().new TestDataClassRef();
         return Result.okData(c);
     }
 }

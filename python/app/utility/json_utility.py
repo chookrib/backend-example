@@ -66,7 +66,7 @@ def custom_jsonable_encoder(obj, **kwargs):
 # 以下为用于JSON转换测试的数据定义
 
 class TestDataEnum(int, Enum):
-    """用于测试JSON的枚举"""
+    """用于测试JSON转换的枚举"""
     ENUM_1 = 1
     ENUM_2 = 2
     ENUM_3 = 3
@@ -74,29 +74,30 @@ class TestDataEnum(int, Enum):
 
 # class TestDataClass():
 class TestDataClass(BaseModel):
-    """用于测试JSON转换的类"""
+    """用于测试JSON转换的数据类"""
     c_none: None = None
-    c_str: str = "str"
+    c_str_empty: str = ""
+    c_str_test: str = "test"
     c_true: bool = True
     c_false: bool = False
     # int 大小没有限制
-    c_int_0: int = 0
+    c_int_zero: int = 0
     c_int32_min: int = -2 ** 31  # -2147483648
     c_int32_max: int = 2 ** 31 - 1  # 2147483647
     c_int64_min: int = -2 ** 63  # -9223372036854775808
     c_int64_max: int = 2 ** 63 - 1  # 9223372036854775807   sys.maxsize
     # Decimal 大小没有限制
-    c_decimal_0: Decimal = Decimal('0')
+    c_decimal_zero: Decimal = Decimal('0')
     c_decimal: Decimal = Decimal("12.34")
+    c_datetime_now: datetime = datetime.now()
     c_datetime_min: datetime = datetime.min  # 0001-01-01 00:00:00
     c_datetime_max: datetime = datetime.max  # 9999-12-31 23:59:59.999999
-    c_datetime_now: datetime = datetime.now()
+    c_date_today: date = date.today()
     c_date_min: date = date.min  # 0001-01-01
     c_date_max: date = date.max  # 9999-12-31
-    c_date_today: date = date.today()
+    c_time_now: time = datetime.now().time()
     c_time_min: time = time.min  # 00:00:00
     c_time_max: time = time.max  # 23:59:59.999999
-    c_time_now: time = datetime.now().time()
     c_enum: TestDataEnum = TestDataEnum.ENUM_1
 
 
@@ -106,52 +107,54 @@ def test_data():
     def _test_data():
         return {
             "none": None,
-            "str": "str",
+            "str_empty": "",
+            "str_test": "test",
             "true": True,
             "false": False,
-            "int_0": 0,
+            "int_zero": 0,
             "int_32_min": -2 ** 31,
             "int_32_max": 2 ** 31 - 1,
             "int_64_min": -2 ** 63,
             "int_64_max": 2 ** 63 - 1,
-            "decimal_0": Decimal("0"),
+            "decimal_zero": Decimal("0"),
             "decimal": Decimal("12.34"),
+            "datetime_now": datetime.now(),
             "datetime_min": datetime.min,
             "datetime_max": datetime.max,
-            "datetime_now": datetime.now(),
+            "date_today": date.today(),
             "date_min": date.min,
             "date_max": date.max,
-            "date_today": date.today(),
+            "time_now": datetime.now().time(),
             "time_min": time.min,
             "time_max": time.max,
-            "time_now": datetime.now().time(),
             "enum": TestDataEnum.ENUM_2,
         }
 
     return {
         "none": None,
-        "str": "str",
+        "str_empty": "",
+        "str_test": "test",
         "true": True,
         "false": False,
-        "int_0": 0,
+        "int_zero": 0,
         "int_32_min": -2 ** 31,
         "int_32_max": 2 ** 31 - 1,
         "int_64_min": -2 ** 63,
         "int_64_max": 2 ** 63 - 1,
-        "decimal_0": Decimal("0"),
+        "decimal_zero": Decimal("0"),
         "decimal": Decimal("12.34"),
+        "datetime_now": datetime.now(),
         "datetime_min": datetime.min,
         "datetime_max": datetime.max,
-        "datetime_now": datetime.now(),
+        "date_today": date.today(),
         "date_min": date.min,
         "date_max": date.max,
-        "date_today": date.today(),
+        "time_now": datetime.now().time(),
         "time_min": time.min,
         "time_max": time.max,
-        "time_now": datetime.now().time(),
         "enum": TestDataEnum.ENUM_3,
 
-        "object": _test_data(),
+        "data": _test_data(),
         "dict": {"a": _test_data(), "b": _test_data()},
         "list": [_test_data(), _test_data()],
         "tuple": (_test_data(), _test_data()),

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,9 +57,12 @@ public class JacksonUtility {
     // 以下为用于JSON转换测试的数据定义
 
     /**
-     * 测试类
+     * 用于测试JSON转换的数据类
      */
-    public class TestClass {
+    public class TestDataClass {
+
+        private Object objectNull = null;
+        //private Object objectNew = new Object();
 
         private String stringNull = null;
         private String stringEmpty = "";
@@ -70,41 +76,54 @@ public class JacksonUtility {
         private Boolean booleanClassFalse = Boolean.FALSE;
 
         private int intZero = 0;
-        private int intMin = Integer.MIN_VALUE;
-        private int intMax = Integer.MAX_VALUE;
+        private int intMin = Integer.MIN_VALUE;     //-2147483648
+        private int intMax = Integer.MAX_VALUE;     //2147483647
 
         private Integer intClassNull = null;
         private Integer intClassZero = 0;
-        private Integer intClassMin = Integer.MIN_VALUE;
-        private Integer intClassMax = Integer.MAX_VALUE;
+        private Integer intClassMin = Integer.MIN_VALUE;    //-2147483648
+        private Integer intClassMax = Integer.MAX_VALUE;    //2147483647
 
         private long longZero = 0;
-        private long longMin = Long.MIN_VALUE;
-        private long longMax = Long.MAX_VALUE;
+        private long longMin = Long.MIN_VALUE;      //-9223372036854775808
+        private long longMax = Long.MAX_VALUE;      //9223372036854775807
 
         private Long longClassNull = null;
         private Long longClassZero = 0L;
-        private Long longClassMin = Long.MIN_VALUE;
-        private Long longClassMax = Long.MAX_VALUE;
+        private Long longClassMin = Long.MIN_VALUE;     //-9223372036854775808
+        private Long longClassMax = Long.MAX_VALUE;     //9223372036854775807
 
         private BigDecimal bigDecimalNull = null;
-        private BigDecimal bigDecimalMin = BigDecimal.valueOf(Double.MIN_VALUE);
-        private BigDecimal bigDecimalMax = BigDecimal.valueOf(Double.MAX_VALUE);
+        private BigDecimal bigDecimalMin = BigDecimal.valueOf(Double.MIN_VALUE);    //5e-324    "4.9E-324"
+        private BigDecimal bigDecimalMax = BigDecimal.valueOf(Double.MAX_VALUE);    //1.7976931348623157e+308   "1.7976931348623157E+308"
 
         private Date dateNull = null;
         private Date dateNow = new Date();
-        private Date dateMin = new Date(0L);
-        private Date dateMax = new Date(Long.MAX_VALUE);
+        private Date dateMin = new Date(0L);            //0     "1970-01-01 08:00:00"
+        private Date dateMax = new Date(Long.MAX_VALUE);    //9.223372036854776e+18     "292278994-08-17 15:12:55"
 
-        private Date dateNullDate = null;
-        private Date dateNowDate = new Date();
-        private Date dateMinDate = new Date(0L);
-        private Date dateMaxDate = new Date(Long.MAX_VALUE);
+        private LocalDateTime localDateTimeNull = null;
+        private LocalDateTime localDateTimeNow = LocalDateTime.now();
+        private LocalDateTime localDateTimeMin = LocalDateTime.MIN;     //"-999999999-01-01T00:00:00"
+        private LocalDateTime localDateTimeMax = LocalDateTime.MAX;     //"+999999999-12-31T23:59:59.999999999"
 
-        private TestEnum enumNull = null;
-        private TestEnum enum1 = TestEnum.TEST_ENUM_1;
-        private TestEnum enum2 = TestEnum.TEST_ENUM_2;
-        private TestEnum enum3 = TestEnum.TEST_ENUM_3;
+        private LocalDate localDateNull = null;
+        private LocalDate localDateNow = LocalDate.now();
+        private LocalDate localDateMin = LocalDate.MIN;         //"-999999999-01-01"
+        private LocalDate localDateMax = LocalDate.MAX;         //"+999999999-12-31"
+
+        private LocalTime localTimeNull = null;
+        private LocalTime localTimeNow = LocalTime.now();
+        private LocalTime localTimeMin = LocalTime.MIN;     //"00:00:00"
+        private LocalTime localTimeMax = LocalTime.MAX;     //"23:59:59.999999999"
+
+        private TestDataEnum enumNull = null;
+        private TestDataEnum enum1 = TestDataEnum.ENUM_1;
+        private TestDataEnum enum2 = TestDataEnum.ENUM_2;
+
+        public Object getObjectNull() { return objectNull; }
+
+        //public Object getObjectNew() { return objectNew; }
 
         public String getStringTest() { return stringTest; }
 
@@ -164,53 +183,67 @@ public class JacksonUtility {
 
         public Date getDateMax() { return dateMax; }
 
-        public Date getDateNullDate() { return dateNullDate; }
+        public LocalDateTime getLocalDateTimeNull() { return localDateTimeNull; }
 
-        public Date getDateNowDate() { return dateNowDate; }
+        public LocalDateTime getLocalDateTimeNow() { return localDateTimeNow; }
 
-        public Date getDateMinDate() { return dateMinDate; }
+        public LocalDateTime getLocalDateTimeMin() { return localDateTimeMin; }
 
-        public Date getDateMaxDate() { return dateMaxDate; }
+        public LocalDateTime getLocalDateTimeMax() { return localDateTimeMax; }
 
-        public TestEnum getEnumNull() { return enumNull; }
+        public LocalDate getLocalDateNull() { return localDateNull; }
 
-        public TestEnum getEnum1() { return enum1; }
+        public LocalDate getLocalDateNow() { return localDateNow; }
 
-        public TestEnum getEnum2() { return enum2; }
+        public LocalDate getLocalDateMin() { return localDateMin; }
 
-        public TestEnum getEnum3() { return enum3; }
+        public LocalDate getLocalDateMax() { return localDateMax; }
+
+        public LocalTime getLocalTimeNull() { return localTimeNull; }
+
+        public LocalTime getLocalTimeNow() { return localTimeNow; }
+
+        public LocalTime getLocalTimeMin() { return localTimeMin; }
+
+        public LocalTime getLocalTimeMax() { return localTimeMax; }
+
+        public TestDataEnum getEnumNull() { return enumNull; }
+
+        public TestDataEnum getEnum1() { return enum1; }
+
+        public TestDataEnum getEnum2() { return enum2; }
     }
 
     /**
-     * 测试类引用
+     * 用于测试JSON转换的数据类引用
      */
-    public class TestClassRef {
+    public class TestDataClassRef {
 
-        private TestClass cls = new TestClass();
-        private ArrayList<TestClass> arrayList = new ArrayList<>();
+        private TestDataClass cls = new TestDataClass();
+        private ArrayList<TestDataClass> list = new ArrayList<>();
         private Map<String, Object> map = new HashMap<>();
 
-        public TestClassRef() {
-            arrayList.add(new TestClass());
-            map.put("mapKey", new TestClass());
+        public TestDataClassRef() {
+            list.add(new TestDataClass());
+            map.put("a", new TestDataClass());
         }
 
-        public TestClass getCls() { return cls; }
+        public TestDataClass getCls() { return cls; }
 
-        public ArrayList<TestClass> getArrayList() { return arrayList; }
+        public ArrayList<TestDataClass> getList() { return list; }
 
         public Map<String, Object> getMap() { return map; }
     }
 
 
     /**
-     * 测试枚举
+     * 用于测试JSON转换的枚举
      */
-    public enum TestEnum {
+    public enum TestDataEnum {
 
-        TEST_ENUM_1(1, "枚举1"),
-        TEST_ENUM_2(2, "枚举2"),
-        TEST_ENUM_3(3, "枚举3");
+        ENUM_1(1, "枚举1"),
+        ENUM_2(2, "枚举2"),
+        ENUM_3(3, "枚举3");
 
         private int value;      //值
         private String text;    //文本
@@ -219,7 +252,7 @@ public class JacksonUtility {
 
         public String getText() { return text; }
 
-        TestEnum(int value, String text) {
+        TestDataEnum(int value, String text) {
             this.value = value;
             this.text = text;
         }
@@ -227,8 +260,8 @@ public class JacksonUtility {
         /**
          * 根据值取枚举，找不到返回null
          */
-        public static TestEnum getByValue(int value) {
-            for (TestEnum item : TestEnum.values()) {
+        public static TestDataEnum getByValue(int value) {
+            for (TestDataEnum item : TestDataEnum.values()) {
                 if (item.value == value) {
                     return item;
                 }
