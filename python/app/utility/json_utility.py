@@ -1,13 +1,10 @@
-import decimal
-import json
-import sys
 from datetime import datetime, date, time
+from decimal import Decimal
 from enum import Enum
-
-from pydantic import BaseModel
 
 from fastapi import encoders
 from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
 
 
 def to_camel_case(string: str) -> str:
@@ -28,6 +25,9 @@ def custom_jsonable_encoder(obj, **kwargs):
     if obj is None:
         return None
 
+    if isinstance(obj, str):
+        return obj
+
     if isinstance(obj, bool):
         return obj
     if isinstance(obj, int):
@@ -35,8 +35,9 @@ def custom_jsonable_encoder(obj, **kwargs):
             return str(obj)
         else:
             return obj
-    if isinstance(obj, decimal.Decimal):
+    if isinstance(obj, Decimal):
         return str(obj)
+    # datetime 继承于 date，故需先处理 datetime
     if isinstance(obj, datetime):
         return obj.strftime("%Y-%m-%d %H:%M:%S")  # 不处理默认为 yyyy-MM-dd hh:mm:ss.SSSSSS
     if isinstance(obj, date):
@@ -64,11 +65,11 @@ def custom_jsonable_encoder(obj, **kwargs):
 # ======================================================================================================================
 # 以下为用于JSON转换测试的数据定义
 
-class TestEnum(int, Enum):
+class TestDataEnum(int, Enum):
     """用于测试JSON的枚举"""
-    TEST_ENUM_1 = 1
-    TEST_ENUM_2 = 2
-    TEST_ENUM_3 = 3
+    ENUM_1 = 1
+    ENUM_2 = 2
+    ENUM_3 = 3
 
 
 # class TestDataClass():
@@ -78,15 +79,25 @@ class TestDataClass(BaseModel):
     c_str: str = "str"
     c_true: bool = True
     c_false: bool = False
-    c_int: int = 1
-    c_long_min: int = -sys.maxsize -3      # -9223372036854775808
-    c_long: int = sys.maxsize
-    c_decimal_min: decimal.Decimal = decimal.Decimal('-Infinity')
-    c_decimal: decimal.Decimal = decimal.Decimal("12.34")
-    c_datetime: datetime = datetime.now()
-    c_date: date = datetime.now().date()
-    c_time: time = datetime.now().time()
-    c_enum: TestEnum = TestEnum.TEST_ENUM_3
+    # int 大小没有限制
+    c_int_0: int = 0
+    c_int32_min: int = -2 ** 31  # -2147483648
+    c_int32_max: int = 2 ** 31 - 1  # 2147483647
+    c_int64_min: int = -2 ** 63  # -9223372036854775808
+    c_int64_max: int = 2 ** 63 - 1  # 9223372036854775807   sys.maxsize
+    # Decimal 大小没有限制
+    c_decimal_0: Decimal = Decimal('0')
+    c_decimal: Decimal = Decimal("12.34")
+    c_datetime_min: datetime = datetime.min  # 0001-01-01 00:00:00
+    c_datetime_max: datetime = datetime.max  # 9999-12-31 23:59:59.999999
+    c_datetime_now: datetime = datetime.now()
+    c_date_min: date = date.min  # 0001-01-01
+    c_date_max: date = date.max  # 9999-12-31
+    c_date_today: date = date.today()
+    c_time_min: time = time.min  # 00:00:00
+    c_time_max: time = time.max  # 23:59:59.999999
+    c_time_now: time = datetime.now().time()
+    c_enum: TestDataEnum = TestDataEnum.ENUM_1
 
 
 def test_data():
@@ -98,13 +109,23 @@ def test_data():
             "str": "str",
             "true": True,
             "false": False,
-            "int": 1,
-            "long": sys.maxsize,
-            "decimal": decimal.Decimal("12.34"),
-            "datetime": datetime.now(),
-            "date": datetime.now().date(),
-            "time": datetime.now().time(),
-            "enum": TestEnum.TEST_ENUM_1,
+            "int_0": 0,
+            "int_32_min": -2 ** 31,
+            "int_32_max": 2 ** 31 - 1,
+            "int_64_min": -2 ** 63,
+            "int_64_max": 2 ** 63 - 1,
+            "decimal_0": Decimal("0"),
+            "decimal": Decimal("12.34"),
+            "datetime_min": datetime.min,
+            "datetime_max": datetime.max,
+            "datetime_now": datetime.now(),
+            "date_min": date.min,
+            "date_max": date.max,
+            "date_today": date.today(),
+            "time_min": time.min,
+            "time_max": time.max,
+            "time_now": datetime.now().time(),
+            "enum": TestDataEnum.ENUM_2,
         }
 
     return {
@@ -112,13 +133,23 @@ def test_data():
         "str": "str",
         "true": True,
         "false": False,
-        "int": 1,
-        "long": sys.maxsize,
-        "decimal": decimal.Decimal("12.34"),
-        "datetime": datetime.now(),
-        "date": datetime.now().date(),
-        "time": datetime.now().time(),
-        "enum": TestEnum.TEST_ENUM_2,
+        "int_0": 0,
+        "int_32_min": -2 ** 31,
+        "int_32_max": 2 ** 31 - 1,
+        "int_64_min": -2 ** 63,
+        "int_64_max": 2 ** 63 - 1,
+        "decimal_0": Decimal("0"),
+        "decimal": Decimal("12.34"),
+        "datetime_min": datetime.min,
+        "datetime_max": datetime.max,
+        "datetime_now": datetime.now(),
+        "date_min": date.min,
+        "date_max": date.max,
+        "date_today": date.today(),
+        "time_min": time.min,
+        "time_max": time.max,
+        "time_now": datetime.now().time(),
+        "enum": TestDataEnum.ENUM_3,
 
         "object": _test_data(),
         "dict": {"a": _test_data(), "b": _test_data()},
