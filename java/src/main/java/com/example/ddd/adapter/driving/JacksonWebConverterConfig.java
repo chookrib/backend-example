@@ -29,6 +29,16 @@ public class JacksonWebConverterConfig {
                                 java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                         )
                 )
+                .serializerByType(java.time.LocalDate.class,                        // LocalDate转String
+                        new com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer(
+                                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        )
+                )
+                .serializerByType(java.time.LocalTime.class,                        // LocalTime转String
+                        new com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer(
+                                java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
+                        )
+                )
                 .serializerByType(Long.TYPE, new ToStringSerializer())              // long转String
                 .serializerByType(Long.class, new ToStringSerializer())             // Long转String
                 .serializerByType(BigDecimal.class, new ToStringSerializer())       // BigDecimal转String

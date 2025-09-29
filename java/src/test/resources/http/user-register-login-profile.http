@@ -1,6 +1,7 @@
-
 ### 准备
 < {%
+    client.global.clearAll();
+
     const rnd = $random.name.username;
     client.global.set('username', rnd);
     // console.log('client.global', client.global);
@@ -33,7 +34,7 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set('accessToken', response.body.data.accessToken);
 %}
 
 ### 取用户信息

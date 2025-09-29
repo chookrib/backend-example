@@ -1,6 +1,7 @@
 package com.example.ddd.adapter.driving;
 
 import com.example.ddd.Application;
+import com.example.ddd.utility.JacksonUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,26 @@ public class WellKnownController {
     @ResponseBody
     public Result testException() {
         throw new RuntimeException("测试异常");
+    }
+
+    /**
+     * 测试JSON数据输出
+     */
+    @RequestMapping(value = "/.well-known/test-json", method = RequestMethod.GET)
+    @ResponseBody
+    public Result testJson() {
+        JacksonUtility.TestClass c = new JacksonUtility().new TestClass();
+        return Result.okData(c);
+    }
+
+    /**
+     * 测试JSON数据输出
+     */
+    @RequestMapping(value = "/.well-known/test-json-ref", method = RequestMethod.GET)
+    @ResponseBody
+    public Result testJsonRef() {
+        JacksonUtility.TestClassRef c = new JacksonUtility().new TestClassRef();
+        return Result.okData(c);
     }
 }
 

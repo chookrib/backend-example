@@ -1,7 +1,8 @@
 import decimal
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, date, time
+from enum import Enum
 
 from pydantic import BaseModel
 
@@ -37,7 +38,14 @@ def custom_jsonable_encoder(obj, **kwargs):
     if isinstance(obj, decimal.Decimal):
         return str(obj)
     if isinstance(obj, datetime):
-        return obj.strftime("%Y-%m-%d %H:%M:%S")
+        return obj.strftime("%Y-%m-%d %H:%M:%S")  # 不处理默认为 yyyy-MM-dd hh:mm:ss.SSSSSS
+    if isinstance(obj, date):
+        return obj.strftime("%Y-%m-%d")  # 不处理默认为 yyyy-MM-dd
+    if isinstance(obj, time):
+        return obj.strftime("%H:%M:%S")  # 不处理默认为 hh:mm:ss.SSSSSS
+
+    if isinstance(obj, Enum):  # 枚举需处理，否则未定义枚举类型的枚举进入 hasattr(obj, "__dict__") 会死循环
+        return obj.value
 
     if isinstance(obj, dict):
         return {k: custom_jsonable_encoder(v, **kwargs) for k, v in obj.items()}
@@ -53,6 +61,16 @@ def custom_jsonable_encoder(obj, **kwargs):
     return str(obj)
 
 
+# ======================================================================================================================
+# 以下为用于JSON转换测试的数据定义
+
+class TestEnum(int, Enum):
+    """用于测试JSON的枚举"""
+    TEST_ENUM_1 = 1
+    TEST_ENUM_2 = 2
+    TEST_ENUM_3 = 3
+
+
 # class TestDataClass():
 class TestDataClass(BaseModel):
     """用于测试JSON转换的类"""
@@ -61,9 +79,14 @@ class TestDataClass(BaseModel):
     c_true: bool = True
     c_false: bool = False
     c_int: int = 1
+    c_long_min: int = -sys.maxsize -3      # -9223372036854775808
     c_long: int = sys.maxsize
+    c_decimal_min: decimal.Decimal = decimal.Decimal('-Infinity')
     c_decimal: decimal.Decimal = decimal.Decimal("12.34")
     c_datetime: datetime = datetime.now()
+    c_date: date = datetime.now().date()
+    c_time: time = datetime.now().time()
+    c_enum: TestEnum = TestEnum.TEST_ENUM_3
 
 
 def test_data():
@@ -79,6 +102,9 @@ def test_data():
             "long": sys.maxsize,
             "decimal": decimal.Decimal("12.34"),
             "datetime": datetime.now(),
+            "date": datetime.now().date(),
+            "time": datetime.now().time(),
+            "enum": TestEnum.TEST_ENUM_1,
         }
 
     return {
@@ -90,6 +116,9 @@ def test_data():
         "long": sys.maxsize,
         "decimal": decimal.Decimal("12.34"),
         "datetime": datetime.now(),
+        "date": datetime.now().date(),
+        "time": datetime.now().time(),
+        "enum": TestEnum.TEST_ENUM_2,
 
         "object": _test_data(),
         "dict": {"a": _test_data(), "b": _test_data()},

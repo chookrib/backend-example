@@ -27,13 +27,14 @@ def test_exception():
     except Exception as e:
         raise Exception("测试Exception") from e
 
+
 @router.get("/.well-known/test-json")
 def test_json():
-    """测试数据输出"""
+    """测试JSON数据输出"""
     return Result.ok(data=json_utility.test_data())
+
 
 @router.get("/.well-known/test-json-class")
 def test_json_class():
-    """测试数据输出"""
+    """测试JSON数据输出"""
     return Result.ok(data=json_utility.TestDataClass())
-
