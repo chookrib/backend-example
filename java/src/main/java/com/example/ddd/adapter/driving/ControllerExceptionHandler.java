@@ -43,8 +43,8 @@ public class ControllerExceptionHandler {
         //else
         //    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        //String message = e.getMessage();
-        String message = e.toString();
+        String message = e.getMessage();
+        // String message = e.toString();
         if (message == null) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
