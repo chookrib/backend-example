@@ -19,7 +19,7 @@ def info():
     return Response(content=commit_info, media_type="text/plain")
 
 
-@router.get("/.well-known/test-exception")
+@router.get("/.well-known/test/exception")
 def test_exception():
     """测试异常处理"""
     try:
@@ -28,13 +28,13 @@ def test_exception():
         raise Exception("测试Exception") from e
 
 
-@router.get("/.well-known/test-json")
+@router.get("/.well-known/test/json")
 def test_json():
     """测试JSON数据输出"""
     return Result.ok(data=json_utility.test_data())
 
 
-@router.get("/.well-known/test-json-class")
+@router.get("/.well-known/test/json-class")
 def test_json_class():
     """测试JSON数据输出"""
     return Result.ok(data=json_utility.TestDataClass())

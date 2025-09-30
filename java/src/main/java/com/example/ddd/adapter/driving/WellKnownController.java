@@ -1,7 +1,7 @@
 package com.example.ddd.adapter.driving;
 
 import com.example.ddd.Application;
-import com.example.ddd.utility.JacksonUtility;
+import com.example.ddd.utility.JsonUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -32,29 +32,29 @@ public class WellKnownController {
     /**
      * 测试异常处理
      */
-    @RequestMapping(value = "/.well-known/test-exception", method = RequestMethod.GET)
+    @RequestMapping(value = "/.well-known/test/exception", method = RequestMethod.GET)
     @ResponseBody
     public Result testException() {
         throw new RuntimeException("测试异常");
     }
 
     /**
-     * 测试JSON数据输出
+     * 测试 JSON 数据输出
      */
-    @RequestMapping(value = "/.well-known/test-json", method = RequestMethod.GET)
+    @RequestMapping(value = "/.well-known/test/json", method = RequestMethod.GET)
     @ResponseBody
     public Result testJson() {
-        JacksonUtility.TestDataClass c = new JacksonUtility().new TestDataClass();
+        JsonUtility.TestDataClass c = new JsonUtility().new TestDataClass();
         return Result.okData(c);
     }
 
     /**
-     * 测试JSON数据输出
+     * 测试 JSON 数据输出
      */
-    @RequestMapping(value = "/.well-known/test-json-ref", method = RequestMethod.GET)
+    @RequestMapping(value = "/.well-known/test/json-ref", method = RequestMethod.GET)
     @ResponseBody
     public Result testJsonRef() {
-        JacksonUtility.TestDataClassRef c = new JacksonUtility().new TestDataClassRef();
+        JsonUtility.TestDataClassRef c = new JsonUtility().new TestDataClassRef();
         return Result.okData(c);
     }
 }

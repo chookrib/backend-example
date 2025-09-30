@@ -4,7 +4,7 @@ import com.example.ddd.application.UserDto;
 import com.example.ddd.application.UserManageService;
 import com.example.ddd.application.UserQueryCriteria;
 import com.example.ddd.application.UserQueryHandler;
-import com.example.ddd.utility.JacksonUtility;
+import com.example.ddd.utility.JsonUtility;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ public class UserManageController {
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JacksonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.readTree(requestBody);
         int pageNum = json.path("pageNum").asInt(1);
         int pageSize = json.path("pageSize").asInt(1);
 
@@ -79,7 +79,7 @@ public class UserManageController {
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JacksonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.readTree(requestBody);
         String username = json.path("username").asText().trim();
         String password = json.path("password").asText().trim();
         String nickname = json.path("nickname").asText().trim();
@@ -98,7 +98,7 @@ public class UserManageController {
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JacksonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.readTree(requestBody);
         String id = json.path("id").asText().trim();
         String username = json.path("username").asText().trim();
         String nickname = json.path("nickname").asText().trim();
@@ -116,7 +116,7 @@ public class UserManageController {
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JacksonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.readTree(requestBody);
         String id = json.path("id").asText().trim();
 
         userManageService.removeUser(id);

@@ -11,13 +11,13 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import java.math.BigDecimal;
 
 /**
- * Jackson Web转换配置
+ * Jackson Web 转换配置
  */
 @Configuration
 public class JacksonWebConverterConfig {
 
     /**
-     * 配置 Spring MVC 的JSON转换器
+     * 配置 Spring MVC JSON 转换器
      */
     @Bean
     public HttpMessageConverters jacksonWebConverters() {

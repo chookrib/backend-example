@@ -14,7 +14,7 @@ import java.util.Map;
 public class CryptoUtility {
 
     /**
-     * JWT编码
+     * JWT 编码
      */
     public static String encodeJwt(Map<String, ?> payload, Date expiresAt, String secret) {
         return JWT.create()
@@ -24,7 +24,7 @@ public class CryptoUtility {
     }
 
     /**
-     * JWT解码
+     * JWT 解码
      */
     public static Map<String, Claim> decodeJwt(String jwt, String secret) {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secret))
@@ -34,7 +34,7 @@ public class CryptoUtility {
     }
 
     /**
-     * MD5编码
+     * MD5 编码
      */
     public static String encodeMd5(String input) {
         try {

@@ -16,10 +16,10 @@ import java.util.Map;
 /**
  * Jackson Utility
  */
-public class JacksonUtility {
+public class JsonUtility {
 
     /**
-     * 读取JsonNode
+     * 读取 JsonNode
      */
     public static JsonNode readTree(String json) {
         try {
@@ -30,7 +30,7 @@ public class JacksonUtility {
     }
 
     /**
-     * 将对象转换为Json字符串
+     * 将对象转换为 JSON 字符串
      */
     public static String writeValueAsString(Object object) {
         try {
@@ -57,7 +57,7 @@ public class JacksonUtility {
     // 以下为用于JSON转换测试的数据定义
 
     /**
-     * 用于测试JSON转换的数据类
+     * 用于测试 JSON 转换的数据类
      */
     public class TestDataClass {
 
@@ -215,7 +215,7 @@ public class JacksonUtility {
     }
 
     /**
-     * 用于测试JSON转换的数据类引用
+     * 用于测试 JSON 转换的数据类
      */
     public class TestDataClassRef {
 
@@ -237,7 +237,7 @@ public class JacksonUtility {
 
 
     /**
-     * 用于测试JSON转换的枚举
+     * 用于测试 JSON 转换的枚举
      */
     public enum TestDataEnum {
 
@@ -258,7 +258,7 @@ public class JacksonUtility {
         }
 
         /**
-         * 根据值取枚举，找不到返回null
+         * 根据值取枚举，找不到返回 null
          */
         public static TestDataEnum getByValue(int value) {
             for (TestDataEnum item : TestDataEnum.values()) {

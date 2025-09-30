@@ -59,6 +59,6 @@ public class UserDto {
     // * 将用户对象转换为Map
     // */
     //public Map<String, ?> fromUser(User user) {
-    //    return JacksonUtility.convertValue(user);
+    //    return JsonUtility.convertValue(user);
     //}
 }

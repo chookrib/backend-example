@@ -23,22 +23,22 @@ public interface UserRepository {
     void deleteById(String id);
 
     /**
-     * 根据Id查询，找不到返回null
+     * 根据 Id 查询，找不到返回 null
      */
     User selectById(String id);
 
     /**
-     * 根据Id查询，找不到抛出异常
+     * 根据 Id 查询，找不到抛出异常
      */
     User selectByIdReq(String id);
 
     /**
-     * 根据Id集合查询
+     * 根据 Id 集合查询
      */
     List<User> selectByIds(List<String> ids);
 
     /**
-     * 根据用户名查询，找不到返回null
+     * 根据用户名查询，找不到返回 null
      */
     User selectByUsername(String username);
 }

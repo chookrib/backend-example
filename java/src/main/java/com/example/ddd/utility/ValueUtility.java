@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class ValueUtility {
 
     /**
-     * 判断字符串是否null或空字符串
+     * 判断字符串是否为 null 或空字符串
      */
     public static boolean isBlank(String str) {
         return str == null || str.isBlank();    // isEmpty()
@@ -17,7 +17,7 @@ public class ValueUtility {
     //==================================================================================================================
 
     /**
-     * 取Integer，失败返回null
+     * String 转 Integer，失败返回 null
      */
     public static Integer toIntOrNull(String value) {
         if (ValueUtility.isBlank(value))
@@ -30,7 +30,7 @@ public class ValueUtility {
     }
 
     /**
-     * 取int，失败返回默认值
+     * String 转 int，失败返回默认值
      */
     public static int toIntOrDefault(String value, int defaultValue) {
         if (ValueUtility.isBlank(value))
@@ -44,7 +44,7 @@ public class ValueUtility {
     }
 
     /**
-     * 取int，失败抛出异常
+     * String 转 int，失败抛出异常
      */
     public static int toIntReq(String value, String name) {
         if (ValueUtility.isBlank(value))
@@ -58,7 +58,7 @@ public class ValueUtility {
     }
 
     /**
-     * 取int，失败抛出异常
+     * String 转 int，失败抛出异常
      */
     public static int toIntReq(String value) {
         return toIntReq(value, "");
@@ -67,7 +67,7 @@ public class ValueUtility {
     //==================================================================================================================
 
     /**
-     * 日期时间转字符串
+     * LocalDateTime 格式化 String
      */
     public static String toDateTimeStr(LocalDateTime value) {
         if (value == null)
@@ -77,7 +77,7 @@ public class ValueUtility {
     }
 
     /**
-     * 取日期时间，失败返回默认值
+     * String 转 LocalDateTime，失败返回默认值
      */
     public static LocalDateTime toDateTimeOrDefault(String value, LocalDateTime defaultValue) {
         //try {
@@ -97,14 +97,14 @@ public class ValueUtility {
     }
 
     /**
-     * 取日期时间，失败返回null
+     * String 转 LocalDateTime，失败返回 null
      */
     public static LocalDateTime toDateTimeOrNull(String value) {
         return toDateTimeOrDefault(value, null);
     }
 
     /**
-     * 取日期时间，失败抛出异常
+     * String 转 LocalDateTime，失败抛出异常，指定异常信息中名称
      */
     public static LocalDateTime toDateTimeReq(String value, String name) {
         LocalDateTime dateTime = toDateTimeOrDefault(value, null);
@@ -115,7 +115,7 @@ public class ValueUtility {
     }
 
     /**
-     * 取日期时间，失败抛出异常
+     * String 转 LocalDateTime，失败抛出异常
      */
     public static LocalDateTime toDateTimeReq(String value) {
         return toDateTimeReq(value, "");

@@ -30,7 +30,7 @@ public class UserAuthService {
     }
 
     /**
-     * 登录，返回AccessToken
+     * 登录，返回 AccessToken
      */
     public String login(String username, String password) {
         User user = userRepository.selectByUsername(username);
@@ -46,7 +46,7 @@ public class UserAuthService {
     }
 
     /**
-     * 根据AccessToken获取登录用户Id
+     * 根据 AccessToken 获取登录用户 Id
      */
     public String getLoginUserId(String accessToken) {
         try {

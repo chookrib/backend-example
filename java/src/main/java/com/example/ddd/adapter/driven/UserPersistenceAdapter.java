@@ -48,7 +48,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     // UserRepository
 
     /**
-     * 转换成Entity
+     * 转换成 Entity
      */
     private User toUser(SqlRowSet sqlRowSet) {
         return User.restoreUser(
@@ -179,7 +179,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     // UserQueryHandler
 
     /**
-     * 转换成DTO
+     * 转换成 DTO
      */
     private UserDto toUserDto(SqlRowSet sqlRowSet) {
         User user = toUser(sqlRowSet);
@@ -195,7 +195,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     /**
-     * 构造查询SQL
+     * 构造查询 SQL
      */
     private String buildQueryCriteria(UserQueryCriteria criteria, Map<String, Object> paramMap) {
         if (criteria == null)
@@ -213,7 +213,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     /**
-     * 构造排序SQL
+     * 构造排序 SQL
      */
     private String buildQuerySort(UserQuerySort... sorts) {
         List<String> sqls = new ArrayList<>();
