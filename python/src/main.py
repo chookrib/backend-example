@@ -9,10 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.adapter.driving import result_codes
-from app.adapter.driving.result import Result
-from app.config import settings
-from app.utility import json_utility
+from src.adapter.driving import result_codes
+from src.adapter.driving.result import Result
+from src.config import settings
+from src.utility import json_utility
 
 # 设置日志格式
 logging.basicConfig(
@@ -82,7 +82,7 @@ app = FastAPI(
 
 
 # 未登录异常处理
-from app.adapter.driving.not_login_exception import NotLoginException
+from src.adapter.driving.not_login_exception import NotLoginException
 
 
 @app.exception_handler(NotLoginException)
@@ -124,14 +124,11 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
 encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 
 # 注册路由
-from app.adapter.driving import well_known_controller
-
+from src.adapter.driving import well_known_controller
+from src.adapter.driving import user_controller
+from src.adapter.driving import user_manage_controller
 app.include_router(well_known_controller.router)
-from app.adapter.driving import user_controller
-
 app.include_router(user_controller.router)
-from app.adapter.driving import user_manage_controller
-
 app.include_router(user_manage_controller.router)
 
 if __name__ == "__main__":

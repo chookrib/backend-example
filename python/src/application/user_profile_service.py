@@ -1,10 +1,10 @@
-from app.application.application_exception import ApplicationException
-from app.domain import user_repository
-from app.domain.user_unique_checker import UserUniqueChecker
-from app.domain.user_repository import UserRepository
-from app.domain.sms_gateway import SmsGateway
-from app.domain.user import User
-from app.application import id_generator
+from src.application.application_exception import ApplicationException
+from src.domain import user_repository
+from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_repository import UserRepository
+from src.domain.sms_gateway import SmsGateway
+from src.domain.user import User
+from src.application import id_generator
 import random
 
 

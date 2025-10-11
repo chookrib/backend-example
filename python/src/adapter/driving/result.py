@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.adapter.driving import result_codes
+from src.adapter.driving import result_codes
 
 
 class Result:

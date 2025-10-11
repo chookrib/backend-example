@@ -66,7 +66,7 @@ public class UserManageController {
     public Result userGet(HttpServletRequest request, @RequestParam String id) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        UserDto userDto = userQueryHandler.queryById(id);
+        UserDto userDto = userQueryHandler.queryByIdReq(id);
         return Result.okData(Map.of(
                 "detail", userDto
         ));

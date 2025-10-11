@@ -3,8 +3,8 @@ import subprocess
 
 from fastapi import APIRouter, Response
 
-from app.adapter.driving.result import Result
-from app.utility import json_utility
+from src.adapter.driving.result import Result
+from src.utility import json_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

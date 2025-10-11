@@ -1,8 +1,8 @@
-from app.adapter.driving.not_login_exception import NotLoginException
-from app.application.user_auth_service import UserAuthService
-from app.application.user_dto import UserDto
-from app.application.user_query_handler import UserQueryHandler
-from app.ioc_container import ioc_container
+from src.adapter.driving.not_login_exception import NotLoginException
+from src.application.user_auth_service import UserAuthService
+from src.application.user_dto import UserDto
+from src.application.user_query_handler import UserQueryHandler
+from src.ioc_container import ioc_container
 
 user_auth_service = ioc_container.resolve(UserAuthService)  # type: ignore
 user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore

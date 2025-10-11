@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from app.application.user_dto import UserDto
-from app.application.user_query_criteria import UserQueryCriteria
-from app.application.user_query_sort import UserQuerySort
+from src.application.user_dto import UserDto
+from src.application.user_query_criteria import UserQueryCriteria
+from src.application.user_query_sort import UserQuerySort
 
 
 class UserQueryHandler(ABC):

@@ -1,16 +1,16 @@
 import sqlite3
 from pathlib import Path
 
-from app.adapter.driven.query_exception import QueryException
-from app.adapter.driven.repository_exception import RepositoryException
-from app.application.user_dto import UserDto
-from app.application.user_query_criteria import UserQueryCriteria
-from app.application.user_query_handler import UserQueryHandler
-from app.application.user_query_sort import UserQuerySort
-from app.domain.user import User
-from app.domain.user_repository import UserRepository
-from app.domain.user_unique_checker import UserUniqueChecker
-from app.utility import value_utility, crypto_utility
+from src.adapter.driven.query_exception import QueryException
+from src.adapter.driven.repository_exception import RepositoryException
+from src.application.user_dto import UserDto
+from src.application.user_query_criteria import UserQueryCriteria
+from src.application.user_query_handler import UserQueryHandler
+from src.application.user_query_sort import UserQuerySort
+from src.domain.user import User
+from src.domain.user_repository import UserRepository
+from src.domain.user_unique_checker import UserUniqueChecker
+from src.utility import value_utility, crypto_utility
 
 
 class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
@@ -42,7 +42,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     # UserRepository
 
     def to_user(self, row: sqlite3.Row) -> User:
-        """转换成Entity"""
+        """转换成 Entity"""
         row_dict = dict(row)
         return User.restore_user(
             id=row_dict.get("u_id", ""),

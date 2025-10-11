@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-from app.application.application_exception import ApplicationException
-from app.config import settings
-from app.domain.user_repository import UserRepository
-from app.utility import crypto_utility
+from src.application.application_exception import ApplicationException
+from src.config import settings
+from src.domain.user_repository import UserRepository
+from src.utility import crypto_utility
 
 
 class UserAuthService:

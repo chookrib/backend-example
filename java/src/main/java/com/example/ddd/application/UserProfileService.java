@@ -1,5 +1,7 @@
 package com.example.ddd.application;
 
+import com.example.ddd.application.lock.LockKeys;
+import com.example.ddd.application.lock.LockService;
 import com.example.ddd.domain.SmsGateway;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
@@ -18,23 +20,30 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserUniqueChecker userUniqueChecker;
     private final SmsGateway smsGateway;
+    private final LockService lockService;
 
     private HashMap<String, String> mobileCodeMap = new HashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
 
     public UserProfileService(
-            UserRepository userRepository, UserUniqueChecker userUniqueChecker, SmsGateway smsGateway) {
+            UserRepository userRepository,
+            UserUniqueChecker userUniqueChecker,
+            SmsGateway smsGateway,
+            LockService lockService) {
         this.userRepository = userRepository;
         this.userUniqueChecker = userUniqueChecker;
         this.smsGateway = smsGateway;
+        this.lockService = lockService;
     }
 
     /**
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, userUniqueChecker);
-        userRepository.insert(user);
-        return user.getId();
+        return lockService.executeWithLock(LockKeys.USER, () -> {
+            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, userUniqueChecker);
+            userRepository.insert(user);
+            return user.getId();
+        });
     }
 
     /**
@@ -50,10 +59,11 @@ public class UserProfileService {
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        // 可在此添加用户名修改次数限制
-        User user = userRepository.selectByIdReq(userId);
-        user.modifyNickname(nickname, userUniqueChecker);
-        userRepository.update(user);
+        lockService.executeWithLock(LockKeys.USER, () -> {
+            User user = userRepository.selectByIdReq(userId);
+            user.modifyNickname(nickname, userUniqueChecker);
+            userRepository.update(user);
+        });
     }
 
     /**

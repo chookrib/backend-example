@@ -1,6 +1,6 @@
 import logging
 
-from app.domain.sms_gateway import SmsGateway
+from src.domain.sms_gateway import SmsGateway
 
 logger = logging.getLogger(__name__)
 

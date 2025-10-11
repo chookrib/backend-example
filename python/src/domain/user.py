@@ -2,9 +2,9 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.domain.domain_exception import DomainException
-from app.domain.user_unique_checker import UserUniqueChecker
-from app.utility import crypto_utility
+from src.domain.domain_exception import DomainException
+from src.domain.user_unique_checker import UserUniqueChecker
+from src.utility import crypto_utility
 
 
 class User(BaseModel):

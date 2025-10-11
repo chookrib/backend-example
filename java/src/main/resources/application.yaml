@@ -8,6 +8,12 @@ spring:
     username:
     password:
 
-application:
+  # 启用 Redission 时需删除
+  autoconfigure:
+    exclude:
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
+
+app:
   user-jwt-expires-day: 30
   user-jwt-secret: jwt-secret
+

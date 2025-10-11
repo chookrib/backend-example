@@ -1,7 +1,7 @@
-from app.application import id_generator
-from app.domain.user import User
-from app.domain.user_repository import UserRepository
-from app.domain.user_unique_checker import UserUniqueChecker
+from src.application import id_generator
+from src.domain.user import User
+from src.domain.user_repository import UserRepository
+from src.domain.user_unique_checker import UserUniqueChecker
 
 
 class UserManageService:

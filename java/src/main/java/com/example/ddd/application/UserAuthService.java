@@ -17,10 +17,10 @@ import java.util.Map;
 @Component
 public class UserAuthService {
 
-    @Value("${application.user-jwt-expires-day}")
+    @Value("${app.user-jwt-expires-day}")
     private int jwtExpiresDay;
 
-    @Value("${application.user-jwt-secret}")
+    @Value("${app.user-jwt-secret}")
     private String jwtSecret;
 
     private final UserRepository userRepository;

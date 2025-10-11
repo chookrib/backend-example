@@ -2,13 +2,13 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from app.adapter.driving import request_helper, paging_validator
-from app.adapter.driving.result import Result
-from app.application.user_manage_service import UserManageService
-from app.application.user_query_criteria import UserQueryCriteria
-from app.application.user_query_handler import UserQueryHandler
-from app.ioc_container import ioc_container
-from app.utility import value_utility
+from src.adapter.driving import request_helper, paging_validator
+from src.adapter.driving.result import Result
+from src.application.user_manage_service import UserManageService
+from src.application.user_query_criteria import UserQueryCriteria
+from src.application.user_query_handler import UserQueryHandler
+from src.ioc_container import ioc_container
+from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
