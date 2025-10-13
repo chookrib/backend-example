@@ -8,7 +8,7 @@ spring:
     username:
     password:
 
-  # 启用 Redission 时需删除
+  # 启用 Redission 时需删除这里的配置以便使 Redission 自动配置
   autoconfigure:
     exclude:
       - org.redisson.spring.starter.RedissonAutoConfigurationV2
