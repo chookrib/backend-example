@@ -97,6 +97,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     async def select_by_id(self, id: str) -> User | None:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
@@ -114,12 +115,14 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             return []
         placeholders = ",".join("?" for _ in ids)
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute(f"select * from t_user where u_id in ({placeholders})", ids) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_user(row) for row in rows]
 
     async def select_by_username(self, username: str) -> User | None:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
@@ -131,18 +134,23 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     async def is_username_unique(self, username: str) -> bool:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
+                print(row)
                 return row is None
 
     async def is_nickname_unique(self, nickname: str) -> bool:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_nickname = ?", (nickname,)) as cursor:
                 row = await cursor.fetchone()
+                print(row)
                 return row is None
 
     async def is_mobile_unique(self, mobile: str) -> bool:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_mobile = ?", (mobile,)) as cursor:
                 row = await cursor.fetchone()
                 return row is None
@@ -198,6 +206,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
 
     async def query_by_id(self, id: str) -> UserDto | None:
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
@@ -213,6 +222,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     async def query_count(self, criteria: UserQueryCriteria) -> int:
         criteria_sql, params = self.build_query_criteria(criteria)
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute(f"select count(*) from t_user {criteria_sql}", params) as cursor:
                 row = await cursor.fetchone()
                 return row[0] if row else 0
@@ -221,6 +231,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute(f"select * from t_user {criteria_sql} {sort_sql}", params) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_user_dto(row) for row in rows]
@@ -231,6 +242,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         sort_sql = self.build_query_sort(*sorts)
         offset = (page_num - 1) * page_size
         async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
             async with db.execute(
                     f"select * from t_user {criteria_sql} {sort_sql} limit ? offset ?",
                     params + [page_size, offset]

@@ -65,10 +65,13 @@ ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter
 
 # 注册非接口类没有顺序要求
 # 注册 Application Service
+from src.application.lock.lock_service import LockService
+from src.application.lock.asyncio_lock_service import AsyncioLockService
 from src.application.user_auth_service import UserAuthService
 from src.application.user_profile_service import UserProfileService
 from src.application.user_manage_service import UserManageService
 
+ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)    # type: ignore
 ioc_container.register(cls=UserAuthService)
 ioc_container.register(cls=UserProfileService)
 ioc_container.register(cls=UserManageService)

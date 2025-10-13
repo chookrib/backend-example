@@ -31,7 +31,7 @@ async def register(request: Request):
     if password != confirm_password:
         raise ControllerException("两次输入的密码不一致")
 
-    user_id = user_profile_service.register(username, password, nickname)
+    user_id = await user_profile_service.register(username, password, nickname)
     return Result.ok(data={"id": user_id})
 
 
@@ -42,7 +42,7 @@ async def login(request: Request):
     username = value_utility.to_str_or_empty(request_json.get("username"))
     password = value_utility.to_str_or_empty(request_json.get("password"))
 
-    access_token = user_auth_service.login(username, password)
+    access_token = await user_auth_service.login(username, password)
     return Result.ok(data={"accessToken": access_token})
 
 
@@ -50,7 +50,7 @@ async def login(request: Request):
 async def profile(request: Request):
     """取用户资料"""
     user_id = request_helper.require_login_user_id(request)
-    user_dto = user_query_handler.query_by_id_req(user_id)
+    user_dto = await user_query_handler.query_by_id_req(user_id)
     # return Result.ok(data=user_dto.to_json())
     return Result.ok(data={"profile": user_dto})
 

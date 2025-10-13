@@ -1,33 +1,37 @@
+import random
+
+from src.application import id_generator
 from src.application.application_exception import ApplicationException
-from src.domain import user_repository
-from src.domain.user_unique_checker import UserUniqueChecker
-from src.domain.user_repository import UserRepository
+from src.application.lock import lock_keys
+from src.application.lock.lock_service import LockService
 from src.domain.sms_gateway import SmsGateway
 from src.domain.user import User
-from src.application import id_generator
-import random
+from src.domain.user_repository import UserRepository
+from src.domain.user_unique_checker import UserUniqueChecker
 
 
 class UserProfileService:
     """用户资料Service"""
 
     def __init__(self, user_repository: UserRepository, user_unique_checker: UserUniqueChecker,
-                 sms_gateway: SmsGateway):
+                 sms_gateway: SmsGateway, lock_service: LockService) -> None:
         self.user_repository = user_repository
         self.user_unique_checker = user_unique_checker
         self.sms_gateway = sms_gateway
+        self.lock_service = lock_service
         self.mobile_code: dict[str, str] = {}
 
     async def register(self, username: str, password: str, nickname: str) -> str:
         """注册，仅演示使用，未防止恶意注册"""
-        user = User.register_user(
-            id=id_generator.generate_id(),
-            username=username,
-            password=password,
-            nickname=nickname,
-            user_unique_checker=self.user_unique_checker)
-        await self.user_repository.insert(user)
-        return user.id
+        async with self.lock_service.lock(lock_keys.USER):
+            user = await User.register_user(
+                id=id_generator.generate_id(),
+                username=username,
+                password=password,
+                nickname=nickname,
+                user_unique_checker=self.user_unique_checker)
+            await self.user_repository.insert(user)
+            return user.id
 
     async def modify_password(self, user_id: str, old_password: str, new_password: str) -> None:
         """修改密码"""
@@ -37,9 +41,10 @@ class UserProfileService:
 
     async def modify_nickname(self, user_id: str, nickname: str) -> None:
         """修改昵称"""
-        user = await self.user_repository.select_by_id_req(user_id)
-        user.modify_nickname(nickname, self.user_unique_checker)
-        await self.user_repository.update(user)
+        async with self.lock_service.lock(lock_keys.USER):
+            user = await self.user_repository.select_by_id_req(user_id)
+            await user.modify_nickname(nickname, self.user_unique_checker)
+            await self.user_repository.update(user)
 
     async def send_mobile_code(self, user_id: str, mobile: str) -> None:
         """发送手机验证码"""
@@ -61,6 +66,6 @@ class UserProfileService:
         key = user.id + "_" + mobile
         if self.mobile_code.get(key, "") != code:
             raise ApplicationException("手机验证码错误")
-        user.modify_mobile(mobile, self.user_unique_checker)
+        await user.modify_mobile(mobile, self.user_unique_checker)
         await self.user_repository.update(user)
         self.mobile_code.pop(key, None)
