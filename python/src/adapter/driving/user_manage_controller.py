@@ -20,7 +20,7 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
 @router.post("/api/admin/user/list")
 async def user_list(request: Request):
     """用户列表"""
-    request_helper.require_login_user_admin(request)
+    await request_helper.require_login_user_admin(request)
 
     request_json = await request.json()
     page_num = value_utility.to_int_or_default(request_json.get("pageNum"), 1)
@@ -30,9 +30,9 @@ async def user_list(request: Request):
     criteria = UserQueryCriteria()
     criteria.keyword = value_utility.to_str_or_empty(criteria_json.get("keyword"))
 
-    total_count = user_query_handler.query_count(criteria)
+    total_count = await user_query_handler.query_count(criteria)
     page_num, page_size, total_count = paging_validator.validation(page_num, page_size, total_count)
-    list = user_query_handler.query_by_page(page_num, page_size, criteria)
+    list = await user_query_handler.query_by_page(page_num, page_size, criteria)
     return Result.ok(data={
         # "list": [user.to_json() for user in list],
         "list": list,
@@ -47,9 +47,9 @@ async def user_list(request: Request):
 @router.get("/api/admin/user/get")
 async def user_get(request: Request, id: str):
     """用户详情"""
-    request_helper.require_login_user_admin(request)
+    await request_helper.require_login_user_admin(request)
 
-    user_dto = user_query_handler.query_by_id_req(id)
+    user_dto = await user_query_handler.query_by_id_req(id)
     # return Result.ok(data=user_dto.to_json())
     return Result.ok(data={"detail": user_dto})
 
@@ -57,7 +57,7 @@ async def user_get(request: Request, id: str):
 @router.post("/api/admin/user/create")
 async def user_create(request: Request):
     """创建用户"""
-    request_helper.require_login_user_admin(request)
+    await request_helper.require_login_user_admin(request)
 
     request_json = await request.json()
     username = value_utility.to_str_or_empty(request_json.get("username"))
@@ -65,14 +65,14 @@ async def user_create(request: Request):
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
 
-    user_id = user_manage_service.create_user(username, password, nickname, mobile)
+    user_id = await user_manage_service.create_user(username, password, nickname, mobile)
     return Result.ok(data={"id": user_id})
 
 
 @router.post("/api/admin/user/modify")
 async def user_modify(request: Request):
     """修改用户"""
-    request_helper.require_login_user_admin(request)
+    await request_helper.require_login_user_admin(request)
 
     request_json = await request.json()
     id = value_utility.to_str_or_empty(request_json.get("id"))
@@ -80,17 +80,17 @@ async def user_modify(request: Request):
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
 
-    user_manage_service.modify_user(id, username, nickname, mobile)
+    await user_manage_service.modify_user(id, username, nickname, mobile)
     return Result.ok()
 
 
 @router.post("/api/admin/user/remove")
 async def user_remove(request: Request):
     """删除用户"""
-    request_helper.require_login_user_admin(request)
+    await request_helper.require_login_user_admin(request)
 
     request_json = await request.json()
     id = value_utility.to_str_or_empty(request_json.get("id"))
 
-    user_manage_service.remove_user(id)
+    await user_manage_service.remove_user(id)
     return Result.ok()

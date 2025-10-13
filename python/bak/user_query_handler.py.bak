@@ -1,3 +1,5 @@
+# 同步方式代码，在FastAPI异步环境下不推荐使用
+
 from abc import ABC, abstractmethod
 
 from src.application.user_dto import UserDto
@@ -9,22 +11,22 @@ class UserQueryHandler(ABC):
     """用户查询Handler接口"""
 
     @abstractmethod
-    async def query_by_id(self, id: str) -> UserDto | None:
+    def query_by_id(self, id: str) -> UserDto | None:
         pass
 
     @abstractmethod
-    async def query_by_id_req(self, id: str) -> UserDto:
+    def query_by_id_req(self, id: str) -> UserDto:
         pass
 
     @abstractmethod
-    async def query_count(self, criteria: UserQueryCriteria) -> int:
+    def query_count(self, criteria: UserQueryCriteria) -> int:
         pass
 
     @abstractmethod
-    async def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
+    def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
         pass
 
     @abstractmethod
-    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort)\
+    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort)\
             -> list[UserDto]:
         pass

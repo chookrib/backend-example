@@ -12,9 +12,9 @@ class UserAuthService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
-    def login(self, username, password) -> str:
+    async def login(self, username, password) -> str:
         """登录，返回AccessToken"""
-        user = self.user_repository.select_by_username(username)
+        user = await self.user_repository.select_by_username(username)
         if user is None or not user.is_password_match(password):
             raise ApplicationException("密码错误")
 

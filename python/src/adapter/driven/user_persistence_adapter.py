@@ -1,5 +1,6 @@
-import sqlite3
 from pathlib import Path
+
+import aiosqlite
 
 from src.adapter.driven.query_exception import QueryException
 from src.adapter.driven.repository_exception import RepositoryException
@@ -17,31 +18,26 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     """用户持久化Adapter"""
 
     def __init__(self):
-        self.conn = sqlite3.connect(str(Path(__file__).resolve().parents[4] / 'db.db'))
-        self.conn.row_factory = sqlite3.Row
-        self.cursor = self.conn.cursor()
-        self.cursor.execute(
-            "create table if not exists t_user (u_id text primary key, u_username text, u_password text, " +
-            "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)"
-        )
-        self.cursor.execute("delete from t_user where lower(u_username) = 'admin'")
-        self.cursor.execute(
-            "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
-            "values ('0', 'admin', '" + crypto_utility.encode_md5(
-                "password") + "', '管理员', '', 1, datetime('now', 'localtime'))"
-        )
-        self.conn.commit()
+        self.db_path = str(Path(__file__).resolve().parents[4] / 'db.db')
 
-    def __del__(self):
-        if hasattr(self, 'cursor') and self.cursor:
-            self.cursor.close()
-        if hasattr(self, 'conn') and self.conn:
-            self.conn.close()
+    async def init(self) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "create table if not exists t_user (u_id text primary key, u_username text, u_password text, " +
+                "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)"
+            )
+            await db.execute("delete from t_user where lower(u_username) = 'admin'")
+            await db.execute(
+                "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
+                "values ('0', 'admin', '" + crypto_utility.encode_md5("password") + "', " +
+                "'管理员', '', 1, datetime('now', 'localtime'))"
+            )
+            await db.commit()
 
     # ==================================================================================================================
     # UserRepository
 
-    def to_user(self, row: sqlite3.Row) -> User:
+    def to_user(self, row: aiosqlite.Row) -> User:
         """转换成 Entity"""
         row_dict = dict(row)
         return User.restore_user(
@@ -54,103 +50,107 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
         )
 
-    def insert(self, entity: User) -> None:
-        self.cursor.execute("""
-                            insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin,
-                                                u_created_at)
-                            values (?, ?, ?, ?, ?, ?, ?)
-                            """, (
-                                entity.id,
-                                entity.username,
-                                entity.password,
-                                entity.nickname,
-                                entity.mobile,
-                                int(entity.is_admin),
-                                value_utility.to_datetime_str(entity.created_at)
-                            ))
-        self.conn.commit()
+    async def insert(self, entity: User) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("""
+                             insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin,
+                                                 u_created_at)
+                             values (?, ?, ?, ?, ?, ?, ?)
+                             """, (
+                                 entity.id,
+                                 entity.username,
+                                 entity.password,
+                                 entity.nickname,
+                                 entity.mobile,
+                                 int(entity.is_admin),
+                                 value_utility.to_datetime_str(entity.created_at)
+                             ))
+            await db.commit()
 
-    def update(self, entity: User) -> None:
-        self.cursor.execute("""
-                            update t_user
-                            set u_username   = ?,
-                                u_password   = ?,
-                                u_nickname   = ?,
-                                u_mobile     = ?,
-                                u_is_admin   = ?,
-                                u_created_at = ?
-                            where u_id = ?
-                            """, (
-                                entity.username,
-                                entity.password,
-                                entity.nickname,
-                                entity.mobile,
-                                int(entity.is_admin),
-                                value_utility.to_datetime_str(entity.created_at),
-                                entity.id
-                            ))
-        self.conn.commit()
+    async def update(self, entity: User) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("""
+                                update t_user
+                                set u_username   = ?,
+                                    u_password   = ?,
+                                    u_nickname   = ?,
+                                    u_mobile     = ?,
+                                    u_is_admin   = ?,
+                                    u_created_at = ?
+                                where u_id = ?
+                                """, (
+                                    entity.username,
+                                    entity.password,
+                                    entity.nickname,
+                                    entity.mobile,
+                                    int(entity.is_admin),
+                                    value_utility.to_datetime_str(entity.created_at),
+                                    entity.id
+                                ))
+            await db.commit()
 
-    def delete_by_id(self, id: str) -> None:
-        self.cursor.execute("delete from t_user where u_id = ?", (id,))
-        # self.cursor.execute("delete from t_user where u_id = ?", [id])
-        self.conn.commit()
+    async def delete_by_id(self, id: str) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("delete from t_user where u_id = ?", (id,))
+            # await db.execute("delete from t_user where u_id = ?", [id])
+            await db.commit()
 
-    def select_by_id(self, id: str) -> User | None:
-        row = self.cursor.execute(
-            "select * from t_user where u_id = ?", (id,)).fetchone()
-        if row:
-            return self.to_user(row)
-        return None
+    async def select_by_id(self, id: str) -> User | None:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return self.to_user(row)
+                return None
 
-    def select_by_id_req(self, id: str) -> User:
-        user = self.select_by_id(id)
+    async def select_by_id_req(self, id: str) -> User:
+        user = await self.select_by_id(id)
         if not user:
             raise RepositoryException(f"用户 {id} 不存在")
         return user
 
-    def select_by_ids(self, ids: list[str]) -> list[User]:
+    async def select_by_ids(self, ids: list[str]) -> list[User]:
         if not ids or len(ids) == 0:
             return []
         placeholders = ",".join("?" for _ in ids)
-        rows = self.cursor.execute(
-            f"select * from t_user where u_id in ({placeholders})", ids
-        ).fetchall()
-        return [self.to_user(row) for row in rows]
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(f"select * from t_user where u_id in ({placeholders})", ids) as cursor:
+                rows = await cursor.fetchall()
+                return [self.to_user(row) for row in rows]
 
-    def select_by_username(self, username: str) -> User | None:
-        row = self.cursor.execute(
-            "select * from t_user where u_username = ?", (username,)
-        ).fetchone()
-        if row:
-            return self.to_user(row)
-        return None
+    async def select_by_username(self, username: str) -> User | None:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select * from t_user where u_username = ?", (username,)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return self.to_user(row)
+                return None
 
     # ==================================================================================================================
     # UserUniqueChecker
 
-    def is_username_unique(self, username: str) -> bool:
-        row = self.cursor.execute(
-            "select 1 from t_user where u_username = ?", (username,)
-        ).fetchone()
-        return row is None
+    async def is_username_unique(self, username: str) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select 1 from t_user where u_username = ?", (username,)) as cursor:
+                row = await cursor.fetchone()
+                return row is None
 
-    def is_nickname_unique(self, nickname: str) -> bool:
-        row = self.cursor.execute(
-            "select 1 from t_user where u_nickname = ?", (nickname,)
-        ).fetchone()
-        return row is None
+    async def is_nickname_unique(self, nickname: str) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select 1 from t_user where u_nickname = ?", (nickname,)) as cursor:
+                row = await cursor.fetchone()
+                return row is None
 
-    def is_mobile_unique(self, mobile: str) -> bool:
-        row = self.cursor.execute(
-            "select 1 from t_user where u_mobile = ?", (mobile,)
-        ).fetchone()
-        return row is None
+    async def is_mobile_unique(self, mobile: str) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select 1 from t_user where u_mobile = ?", (mobile,)) as cursor:
+                row = await cursor.fetchone()
+                return row is None
 
     # ==================================================================================================================
     # UserQueryHandler
 
-    def to_user_dto(self, row: sqlite3.Row) -> UserDto:
+    def to_user_dto(self, row: aiosqlite.Row) -> UserDto:
         """转换成DTO"""
         user = self.to_user(row)
         return UserDto(
@@ -196,39 +196,44 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         sqls.append("u_id desc")
         return " order by " + ", ".join(sqls)
 
-    def query_by_id(self, id: str) -> UserDto | None:
-        row = self.cursor.execute(
-            "select * from t_user where u_id = ?", (id,)).fetchone()
-        if row:
-            return self.to_user_dto(row)
-        return None
+    async def query_by_id(self, id: str) -> UserDto | None:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return self.to_user_dto(row)
+                return None
 
-    def query_by_id_req(self, id: str) -> UserDto:
-        user = self.query_by_id(id)
+    async def query_by_id_req(self, id: str) -> UserDto:
+        user = await self.query_by_id(id)
         if not user:
             raise QueryException(f"用户 {id} 不存在")
         return user
 
-    def query_count(self, criteria: UserQueryCriteria) -> int:
+    async def query_count(self, criteria: UserQueryCriteria) -> int:
         criteria_sql, params = self.build_query_criteria(criteria)
-        row = self.cursor.execute(f"select count(*) from t_user {criteria_sql}", params).fetchone()
-        return row[0] if row else 0
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(f"select count(*) from t_user {criteria_sql}", params) as cursor:
+                row = await cursor.fetchone()
+                return row[0] if row else 0
 
-    def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
+    async def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)
-        rows = self.cursor.execute(
-            f"select * from t_user {criteria_sql} {sort_sql}", params
-        ).fetchall()
-        return [self.to_user_dto(row) for row in rows]
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(f"select * from t_user {criteria_sql} {sort_sql}", params) as cursor:
+                rows = await cursor.fetchall()
+                return [self.to_user_dto(row) for row in rows]
 
-    def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[
-        UserDto]:
+    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort)\
+            -> list[UserDto]:
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)
         offset = (page_num - 1) * page_size
-        rows = self.cursor.execute(
-            f"select * from t_user {criteria_sql} {sort_sql} limit ? offset ?",
-            params + [page_size, offset]
-        ).fetchall()
-        return [self.to_user_dto(row) for row in rows]
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                    f"select * from t_user {criteria_sql} {sort_sql} limit ? offset ?",
+                    params + [page_size, offset]
+            ) as cursor:
+                rows = await cursor.fetchall()
+                return [self.to_user_dto(row) for row in rows]

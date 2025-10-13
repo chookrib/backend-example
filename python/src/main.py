@@ -52,11 +52,10 @@ async def lifespan(app: FastAPI):
         + "\n".join(f"{key}={value}" for key, value in settings.__dict__.items())
     )
 
-    # from app.ioc_container import ioc_container
-    # from app.domain.wechat_api_handler import WechatApiHandler
-    # wechat_api_handler = ioc_container.resolve(WechatApiHandler)    # type: ignore
-    # img_data_url = await wechat_api_handler.get_unlimited_qrcode("test")
-    # print(img_data_url)
+    from src.ioc_container import ioc_container
+    from src.domain.user_repository import UserRepository
+    user_repository = ioc_container.resolve(UserRepository)    # type: ignore
+    await user_repository.init()
 
     yield
     # yield 之后的代码会在 FastAPI 关闭前执行

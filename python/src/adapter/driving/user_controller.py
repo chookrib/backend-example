@@ -68,7 +68,7 @@ async def modify_password(request: Request):
     if confirm_password != new_password:
         raise ControllerException("两次输入的密码不一致")
 
-    user_profile_service.modify_password(user_id, old_password, new_password)
+    await user_profile_service.modify_password(user_id, old_password, new_password)
     return Result.ok()
 
 
@@ -79,7 +79,7 @@ async def modify_nickname(request: Request):
 
     request_json = await request.json()
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
-    user_profile_service.modify_nickname(user_id, nickname)
+    await user_profile_service.modify_nickname(user_id, nickname)
     return Result.ok()
 
 
@@ -90,7 +90,7 @@ async def send_mobile_code(request: Request):
 
     request_json = await request.json()
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
-    user_profile_service.send_mobile_code(user_id, mobile)
+    await user_profile_service.send_mobile_code(user_id, mobile)
     return Result.ok()
 
 
@@ -102,5 +102,5 @@ async def bind_mobile(request: Request):
     request_json = await request.json()
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
     code = value_utility.to_str_or_empty(request_json.get("code"))
-    user_profile_service.bind_mobile(user_id, mobile, code)
+    await user_profile_service.bind_mobile(user_id, mobile, code)
     return Result.ok()

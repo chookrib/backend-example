@@ -31,3 +31,9 @@ class SyncRedisLockService(SyncLockService):
         """
         print(f"Thread [{threading.current_thread().name}] trying to acquire redis lock for key: {key}")
         return self._redis_client.lock(key, timeout=timeout, blocking_timeout=30, thread_local=False)
+
+        # key = "my_lock_key"
+        # timeout = 10
+        # with lock_service.lock(key, timeout):
+        #     # 在锁内执行你的业务逻辑
+        #     print("获得锁，正在处理任务")

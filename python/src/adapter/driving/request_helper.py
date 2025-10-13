@@ -22,10 +22,10 @@ def require_login_user_id(request) -> str:
     return user_id
 
 
-def require_login_user_admin(request) -> UserDto:
+async def require_login_user_admin(request) -> UserDto:
     """获取登录管理员用户，失败抛异常"""
     user_id = get_login_user_id(request)
-    user_dto = user_query_handler.query_by_id(user_id)
+    user_dto = await user_query_handler.query_by_id(user_id)
     if user_dto is None or not user_dto.is_admin:
         raise NotLoginException()
     return user_dto
