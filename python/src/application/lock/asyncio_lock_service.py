@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, AsyncGenerator
+from typing import AsyncGenerator
 
 from src.application.application_exception import ApplicationException
 from src.application.lock.lock_service import LockService
@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 class AsyncioLockService(LockService):
     """
-    基于 asyncio.Lock 实现的锁 Service
-    单个 Python 进程内有效，适用于单机部署且无多进程的场景
+    使用 asyncio.Lock 实现的锁服务，单个 Python 进程内有效，适用于单机部署且无多进程的场景
     """
 
     def __init__(self):
@@ -22,7 +21,7 @@ class AsyncioLockService(LockService):
         self._internal_lock = asyncio.Lock()
 
     @asynccontextmanager
-    async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None]:
+    async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None, None]:
         """
         获取一个进程内锁
 

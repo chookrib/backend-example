@@ -9,10 +9,9 @@ class LockService(ABC):
     @abstractmethod
     @asynccontextmanager
     async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None, None]:
-    # def lock(self, key: str) -> AbstractAsyncContextManager:
-    # def lock(self, key: str) -> AsyncContextManager[None]:
+    # async def lock(self, key: str, timeout: float = 30.0) -> AsyncContextManager[None]:   # AbstractAsyncContextManager
         """
-        获取一个特定 key 的锁。返回一个异步上下文管理器
+        获取一个特定 key 的锁，返回一个异步上下文管理器
 
         使用方法: async with lock_service.lock("my-resource-key"):
 
