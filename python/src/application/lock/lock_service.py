@@ -1,17 +1,22 @@
 from abc import ABC, abstractmethod
-from typing import AsyncContextManager
-from contextlib import AbstractAsyncContextManager
+from typing import AsyncContextManager, AsyncGenerator
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
+
 
 class LockService(ABC):
     """锁 Service 接口"""
 
     @abstractmethod
-    def lock(self, lock_key: str) -> AbstractAsyncContextManager:
-    # def lock(self, lock_key: str) -> AsyncContextManager[None]:
+    @asynccontextmanager
+    async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None, None]:
+    # def lock(self, key: str) -> AbstractAsyncContextManager:
+    # def lock(self, key: str) -> AsyncContextManager[None]:
         """
-        根据给定的 lock_key 获取一个异步锁，返回异步上下文管理器，以便使用 'async with' 语句
+        获取一个特定 key 的锁。返回一个异步上下文管理器
 
-        :param lock_key: 锁标识
-        :return: 异步上下文管理器
+        使用方法: async with lock_service.lock("my-resource-key"):
+
+        :param key: 锁标识
+        :param timeout: 获取锁的超时时间（秒）
         """
-        pass
+        yield

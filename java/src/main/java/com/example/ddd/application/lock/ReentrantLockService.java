@@ -18,21 +18,21 @@ public class ReentrantLockService implements LockService {
     private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T> T executeWithLock(String lockKey, Supplier<T> action) {
-        ReentrantLock lock = lockMap.computeIfAbsent(lockKey, k -> new ReentrantLock());
+    public <T> T executeWithLock(String key, Supplier<T> action) {
+        ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
-        //logger.info("线程 [{}] 获得 ReentrantLock 锁: {}", Thread.currentThread().getName(), lockKey);
+        //logger.info("线程 [{}] 获取 ReentrantLock 锁成功: {}", Thread.currentThread().getName(), key);
         try {
             return action.get();
         } finally {
             lock.unlock();
-            //logger.info("线程 [{}] 释放 ReentrantLock 锁: {}", Thread.currentThread().getName(), lockKey);
+            //logger.info("线程 [{}] 释放 ReentrantLock 锁成功: {}", Thread.currentThread().getName(), key);
         }
     }
 
     @Override
-    public void executeWithLock(String lockKey, Runnable action) {
-        executeWithLock(lockKey, () -> {
+    public void executeWithLock(String key, Runnable action) {
+        executeWithLock(key, () -> {
             action.run();
             return null;
         });

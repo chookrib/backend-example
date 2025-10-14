@@ -114,7 +114,7 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         logger.error(f"捕捉到未处理的异常: {str(e)}", exc_info=True)
         return JSONResponse(
             content=Result.error(
-                code=result_codes.ERROR_NOT_LOGIN,
+                code=result_codes.ERROR_DEFAULT,
                 message=f"{str(e)}"
             ).to_dict()
         )
@@ -134,4 +134,5 @@ if __name__ == "__main__":
     # 启动服务器
     # import uvicorn
     # uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
     pass

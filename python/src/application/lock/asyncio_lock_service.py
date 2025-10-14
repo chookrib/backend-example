@@ -2,31 +2,44 @@ import asyncio
 import logging
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
+from typing import AsyncIterator, AsyncGenerator
 
+from src.application.application_exception import ApplicationException
 from src.application.lock.lock_service import LockService
 
 logger = logging.getLogger(__name__)
 
 class AsyncioLockService(LockService):
-    """基于 asyncio.Lock 的本地锁管理器"""
+    """
+    基于 asyncio.Lock 实现的锁 Service
+    单个 Python 进程内有效，适用于单机部署且无多进程的场景
+    """
 
     def __init__(self):
-        # 使用 defaultdict，首次访问 key 会自动创建一个 RLock
+        # 使用 defaultdict 来为每个新的 key 自动创建一个 asyncio.Lock
         self._locks = defaultdict(asyncio.Lock)
+        # 这个锁用于保护对 _locks 字典的并发访问，防止竞态条件
+        self._internal_lock = asyncio.Lock()
 
     @asynccontextmanager
-    async def lock(self, lock_key: str) -> AsyncIterator[None]: # type: ignore[override]
+    async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None]:
         """
-        获取一个本地异步锁，使用 @asynccontextmanager 装饰
-        """
-        lock_obj = self._locks[lock_key]
-        await lock_obj.acquire()
+        获取一个进程内锁
 
-        current_task = asyncio.current_task()
+        :param key: 锁标识
+        :param timeout: 获取锁的超时时间（秒）
+        """
+        async with self._internal_lock:
+            resource_lock = self._locks[key]
+
         try:
-            logger.info(f"协程 [{current_task.get_name() if current_task else ''}] 获得 asyncio 锁: {lock_key}")
+            await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
+            logger.info(f"获取 asyncio 锁成功: {key}")
             yield
+        except asyncio.TimeoutError:
+            # raise TimeoutError(f"获取 asyncio 锁超时: {key}")
+            raise ApplicationException(f"获取 asyncio 锁超时: {key}")
         finally:
-            lock_obj.release()
-            logger.info(f"协程 [{current_task.get_name() if current_task else ''}] 释放 asyncio 锁: {lock_key}")
+            resource_lock.release()
+            logger.info(f"释放 asyncio 锁成功: {key}")
+

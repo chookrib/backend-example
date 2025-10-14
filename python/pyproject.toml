@@ -5,12 +5,12 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aioredis>=2.0.1",
     "aiosqlite>=0.21.0",
     "fastapi>=0.117.1",
     "pydantic>=2.11.9",
     "pydantic-settings>=2.10.1",
     "python-jose>=3.5.0",
+    "redis>=6.4.0",
     "types-python-jose>=3.5.0.20250531",
     "uuid-utils>=0.11.0",
     "uvicorn>=0.36.0",

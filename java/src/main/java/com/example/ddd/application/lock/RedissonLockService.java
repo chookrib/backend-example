@@ -21,23 +21,23 @@ public class RedissonLockService implements LockService {
     }
 
     @Override
-    public <T> T executeWithLock(String lockKey, Supplier<T> action) {
-        RLock lock = redissonClient.getLock(lockKey);
+    public <T> T executeWithLock(String key, Supplier<T> action) {
+        RLock lock = redissonClient.getLock(key);
         lock.lock(); // Redisson 会自动续期
-        //logger.info("线程 [{}] 获得 Redisson 锁: {}", Thread.currentThread().getName(), lockKey);
+        //logger.info("线程 [{}] 获取 Redisson 锁成功: {}", Thread.currentThread().getName(), key);
         try {
             return action.get();
         } finally {
             if (lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
-                //logger.info("线程 [{}] 释放 Redisson 锁: {}", Thread.currentThread().getName(), lockKey);
+                //logger.info("线程 [{}] 释放 Redisson 锁成功: {}", Thread.currentThread().getName(), key);
             }
         }
     }
 
     @Override
-    public void executeWithLock(String lockKey, Runnable action) {
-        executeWithLock(lockKey, () -> {
+    public void executeWithLock(String key, Runnable action) {
+        executeWithLock(key, () -> {
             action.run();
             return null;
         });

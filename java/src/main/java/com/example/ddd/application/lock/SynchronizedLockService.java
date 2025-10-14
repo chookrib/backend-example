@@ -17,22 +17,22 @@ public class SynchronizedLockService implements LockService {
     private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T> T executeWithLock(String lockKey, Supplier<T> action) {
-        Object lock = lockMap.computeIfAbsent(lockKey, k -> new Object());
+    public <T> T executeWithLock(String key, Supplier<T> action) {
+        Object lock = lockMap.computeIfAbsent(key, k -> new Object());
         synchronized (lock) {
-            //logger.info("线程 [{}] 获得 Synchronized 锁: {}", Thread.currentThread().getName(), lockKey);
+            //logger.info("线程 [{}] 获取 Synchronized 锁成功: {}", Thread.currentThread().getName(), key);
             try {
                 return action.get();
             } finally {
-                //logger.info("线程 [{}] 释放 Synchronized 锁: {}", Thread.currentThread().getName(), lockKey);
+                //logger.info("线程 [{}] 释放 Synchronized 锁成功: {}", Thread.currentThread().getName(), key);
                 // 不移除锁对象以便复用
             }
         }
     }
 
     @Override
-    public void executeWithLock(String lockKey, Runnable action) {
-        executeWithLock(lockKey, () -> {
+    public void executeWithLock(String key, Runnable action) {
+        executeWithLock(key, () -> {
             action.run();
             return null;
         });
