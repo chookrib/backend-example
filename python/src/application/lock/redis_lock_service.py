@@ -1,47 +1,74 @@
 import asyncio
 import logging
-from typing import AsyncContextManager
+import time
+import uuid
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
-import aioredis
+import redis.asyncio as redis
 
 from src.application.application_exception import ApplicationException
 from src.application.lock.lock_service import LockService
 
 logger = logging.getLogger(__name__)
 
+# 用于安全释放锁的 Lua 脚本
+# 确保只有持有正确 value 的客户端才能删除锁，避免误删
+RELEASE_LOCK_SCRIPT = """
+if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+else
+    return 0
+end
+"""
+
+
 class RedisLockService(LockService):
-    """基于 aioredis 的分布式锁管理器"""
+    """使用 Redis 实现的分布式锁服务，适用于多进程或多服务器的分布式环境"""
 
-    def __init__(self, redis_client: aioredis.Redis):
-        self._redis_client = redis_client
-        print("Initialized RedisLockManager.")
+    def __init__(self, redis_client: redis.Redis):
+        self.redis = redis_client
+        # 注册 Lua 脚本以提高效率
+        self._release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
 
-    def lock(self, lock_key: str, timeout: int = 30) -> AsyncContextManager[None]:
-        """获取一个 Redis 分布式锁（异步）"""
+    @asynccontextmanager
+    async def lock(
+            self,
+            key: str,
+            timeout: float = 30.0
+    ) -> AsyncGenerator[None, None]:
+        """
+        获取一个分布式锁
 
-        class RedisLockContext:
-            def __init__(self, redis_client, key, timeout):
-                self.redis_client = redis_client
-                self.key = key
-                self.timeout = timeout
-                self.locked = False
+        :param key: 锁标识
+        :param timeout: 获取锁的超时时间（秒）
+        """
+        lease_time: int = 30    # 锁的租约时间（秒）。锁会自动在这个时间后释放，防止死锁
+        poll_interval: float = 0.1  # 尝试获取锁的轮询间隔（秒）
 
-            async def __aenter__(self):
-                self.locked = await self.redis_client.set(
-                    self.key, "locked", expire=self.timeout, exist=aioredis.SET_IF_NOT_EXIST
-                )
-                current_task = asyncio.current_task()
-                if not self.locked:
-                    raise ApplicationException(f"协程 [{current_task.get_name() if current_task else ''}] 无法获得 redis 锁: {self.key}")
+        lock_key = f"lock:{key}"
+        lock_value = str(uuid.uuid4())
 
-                logger.info(f"协程 [{current_task.get_name() if current_task else ''}] 获得 redis 锁: {self.key}")
-                return None
+        start_time = time.monotonic()
+        acquired = False
 
-            async def __aexit__(self, exc_type, exc, tb):
-                if self.locked:
-                    await self.redis_client.delete(self.key)
-                    current_task = asyncio.current_task()
-                    logger.info(f"协程 [{current_task.get_name() if current_task else ''}] 释放 redis 锁: {self.key}")
+        while (time.monotonic() - start_time) < timeout:
+            # 尝试以原子方式设置 key (SET key value NX PX milliseconds)
+            # NX: 只在 key 不存在时设置
+            # PX: 设置过期时间（毫秒）
+            if await self.redis.set(lock_key, lock_value, nx=True, px=lease_time * 1000):
+                acquired = True
+                break
+            await asyncio.sleep(poll_interval)
 
-        return RedisLockContext(self._redis_client, lock_key, timeout)
+        if not acquired:
+            # raise TimeoutError(f"获取 redis 锁超时: {key}")
+            raise ApplicationException(f"获取 redis 锁超时: {key}")
 
+        try:
+            logger.info(f"获取 redis 锁成功: {key}")
+            yield
+        finally:
+            # 使用 Lua 脚本原子地检查并释放锁
+            await self._release_script(keys=[lock_key], args=[lock_value])
+            logger.info(f"释放 redis 锁成功: {key}")
