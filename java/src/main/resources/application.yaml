@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+logging:
+  file:
+    name: log\log.log
+
 spring:
   application:
     name: ddd-example-java
