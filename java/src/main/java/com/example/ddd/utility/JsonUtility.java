@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Jackson Utility
+ * Json Utility
  */
 public class JsonUtility {
 
