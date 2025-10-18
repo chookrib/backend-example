@@ -12,13 +12,14 @@ from src.domain.user import User
 from src.domain.user_repository import UserRepository
 from src.domain.user_unique_checker import UserUniqueChecker
 from src.utility import value_utility, crypto_utility
+from src.config import settings
 
 
 class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
     """用户持久化Adapter"""
 
     def __init__(self):
-        self.db_path = str(Path(__file__).resolve().parents[4] / 'db.db')
+        self.db_path = str(Path(__file__).resolve().parents[4] / settings.SQLITE_DATABASE_FILE)
 
     async def init(self) -> None:
         async with aiosqlite.connect(self.db_path) as db:

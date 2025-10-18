@@ -2,6 +2,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+
+    SQLITE_DATABASE_FILE: str
     USER_JWT_EXPIRES_DAY: int = 0
     USER_JWT_SECRET: str = ""
 
