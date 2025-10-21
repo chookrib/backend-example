@@ -33,12 +33,12 @@ class AsyncioLockService(LockService):
 
         try:
             await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
-            logger.info(f"获取 asyncio 锁成功: {key}")
+            # logger.info(f"获取 asyncio 锁成功: {key}")
             yield
         except asyncio.TimeoutError:
             # raise TimeoutError(f"获取 asyncio 锁超时: {key}")
             raise ApplicationException(f"获取 asyncio 锁超时: {key}")
         finally:
             resource_lock.release()
-            logger.info(f"释放 asyncio 锁成功: {key}")
+            # logger.info(f"释放 asyncio 锁成功: {key}")
 

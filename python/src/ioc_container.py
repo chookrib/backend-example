@@ -47,12 +47,16 @@ class IocContainer:
 ioc_container = IocContainer()
 
 # 注册接口有顺序要求，接口的实现类构造函数参数中依赖的接口必须先注册
+# 注册非接口类没有顺序要求，会自动递归注册
+
+# ======================================================================================================================
 # 注册 Driven Adapter - Gateway
 from src.domain.sms_gateway import SmsGateway
 from src.adapter.driven.sms_gateway_adapter import SmsGatewayAdapter
 
 ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)  # type: ignore
 
+# ======================================================================================================================
 # 注册 Driven Adapter - Persistence
 from src.domain.user_repository import UserRepository
 from src.domain.user_unique_checker import UserUniqueChecker
@@ -63,19 +67,27 @@ ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter) 
 ioc_container.register(cls=UserUniqueChecker, provider_cls=UserPersistenceAdapter)  # type: ignore
 ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)  # type: ignore
 
-# 注册非接口类没有顺序要求
-# 注册 Application Service
+# ======================================================================================================================
+# 注册锁 Service
 from src.application.lock.lock_service import LockService
 from src.application.lock.asyncio_lock_service import AsyncioLockService
+# from src.application.lock.redis_lock_service import RedisLockService
+from src.application.lock.test_lock_service import TestLockService
+
+# 注入不同的锁实现
+ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
+# ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
+ioc_container.register(cls=TestLockService)
+
+# ======================================================================================================================
+# 注册 Application Service
 from src.application.user_auth_service import UserAuthService
 from src.application.user_profile_service import UserProfileService
 from src.application.user_manage_service import UserManageService
 
-ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)    # type: ignore
 ioc_container.register(cls=UserAuthService)
 ioc_container.register(cls=UserProfileService)
 ioc_container.register(cls=UserManageService)
 
 # for k, v in ioc_container._instances.items():
 #     print(f"{k}: {v}")
-

@@ -2,6 +2,17 @@ from datetime import datetime
 from decimal import Decimal
 
 
+def is_blank(value) -> bool:
+    """判断字符串是否为 None 或空字符串"""
+    if value is None:
+        return True
+    s = str(value).strip()  # 去空格
+    return not s
+
+
+# ======================================================================================================================
+
+
 def to_str_or_empty(value) -> str:
     """取字符串值，失败返回空字符串"""
     if value is None:

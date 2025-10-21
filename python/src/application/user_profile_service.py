@@ -8,6 +8,7 @@ from src.domain.sms_gateway import SmsGateway
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
 from src.domain.user_unique_checker import UserUniqueChecker
+from src.utility import value_utility
 
 
 class UserProfileService:
@@ -48,7 +49,7 @@ class UserProfileService:
 
     async def send_mobile_code(self, user_id: str, mobile: str) -> None:
         """发送手机验证码"""
-        if not mobile:
+        if value_utility.is_blank(mobile):
             raise ApplicationException("手机号不能为空")
         user = await self.user_repository.select_by_id_req(user_id)
         code = str(random.randint(100000, 999999))
@@ -60,7 +61,7 @@ class UserProfileService:
 
     async def bind_mobile(self, user_id: str, mobile: str, code: str) -> None:
         """绑定手机"""
-        if not code:
+        if value_utility.is_blank(code):
             raise ApplicationException("验证码不能为空")
         user = await self.user_repository.select_by_id_req(user_id)
         key = user.id + "_" + mobile

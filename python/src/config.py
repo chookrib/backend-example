@@ -2,10 +2,12 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    SQLITE_DATABASE_FILE: str = "db.db"
 
-    SQLITE_DATABASE_FILE: str
     USER_JWT_EXPIRES_DAY: int = 0
     USER_JWT_SECRET: str = ""
+
+    REDIS_URL: str | None = None
 
     class Config:
         env_file = ".env"

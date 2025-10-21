@@ -2,8 +2,7 @@ from pathlib import Path
 
 import aiosqlite
 
-from src.adapter.driven.query_exception import QueryException
-from src.adapter.driven.repository_exception import RepositoryException
+from src.adapter.driven.persistence_exception import PersistenceException
 from src.application.user_dto import UserDto
 from src.application.user_query_criteria import UserQueryCriteria
 from src.application.user_query_handler import UserQueryHandler
@@ -91,12 +90,16 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             await db.commit()
 
     async def delete_by_id(self, id: str) -> None:
+        if value_utility.is_blank(id):
+            return None
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("delete from t_user where u_id = ?", (id,))
             # await db.execute("delete from t_user where u_id = ?", [id])
             await db.commit()
 
     async def select_by_id(self, id: str) -> User | None:
+        if value_utility.is_blank(id):
+            return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
@@ -108,7 +111,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     async def select_by_id_req(self, id: str) -> User:
         user = await self.select_by_id(id)
         if not user:
-            raise RepositoryException(f"用户 {id} 不存在")
+            raise PersistenceException(f"用户 {id} 不存在")
         return user
 
     async def select_by_ids(self, ids: list[str]) -> list[User]:
@@ -122,6 +125,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                 return [self.to_user(row) for row in rows]
 
     async def select_by_username(self, username: str) -> User | None:
+        if value_utility.is_blank(username):
+            return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_username = ?", (username,)) as cursor:
@@ -134,26 +139,33 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     # UserUniqueChecker
 
     async def is_username_unique(self, username: str) -> bool:
+        if value_utility.is_blank(username):
+            raise PersistenceException("参数 username 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
-                print(row)
+                # print(row)
                 return row is None
 
     async def is_nickname_unique(self, nickname: str) -> bool:
+        if value_utility.is_blank(nickname):
+            raise PersistenceException("参数 nickname 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_nickname = ?", (nickname,)) as cursor:
                 row = await cursor.fetchone()
-                print(row)
+                # print(row)
                 return row is None
 
     async def is_mobile_unique(self, mobile: str) -> bool:
+        if value_utility.is_blank(mobile):
+            raise PersistenceException("参数 mobile 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select 1 from t_user where u_mobile = ?", (mobile,)) as cursor:
                 row = await cursor.fetchone()
+                # print(row)
                 return row is None
 
     # ==================================================================================================================
@@ -176,7 +188,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         """构造查询SQL"""
         sqls = []
         params = []
-        if criteria.keyword:
+        if not value_utility.is_blank(criteria.keyword):
             sqls.append(" u_username like ? and u_nickname like ? ")
             params.append(f"%{criteria.keyword}%")
             params.append(f"%{criteria.keyword}%")
@@ -206,6 +218,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
         return " order by " + ", ".join(sqls)
 
     async def query_by_id(self, id: str) -> UserDto | None:
+        if value_utility.is_blank(id):
+            return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute("select * from t_user where u_id = ?", (id,)) as cursor:
@@ -217,7 +231,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     async def query_by_id_req(self, id: str) -> UserDto:
         user = await self.query_by_id(id)
         if not user:
-            raise QueryException(f"用户 {id} 不存在")
+            raise PersistenceException(f"用户 {id} 不存在")
         return user
 
     async def query_count(self, criteria: UserQueryCriteria) -> int:

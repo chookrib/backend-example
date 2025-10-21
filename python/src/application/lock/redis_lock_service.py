@@ -9,6 +9,7 @@ import redis.asyncio as redis
 
 from src.application.application_exception import ApplicationException
 from src.application.lock.lock_service import LockService
+from src.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,9 @@ end
 class RedisLockService(LockService):
     """使用 Redis 实现的分布式锁服务，适用于多进程或多服务器的分布式环境"""
 
-    def __init__(self, redis_client: redis.Redis):
-        self.redis = redis_client
+    # def __init__(self, redis_client: redis.Redis):
+    def __init__(self):
+        self.redis = redis.from_url(settings.REDIS_URL)     # redis://:密码@localhost:6379/0
         # 注册 Lua 脚本以提高效率
         self._release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
 
@@ -66,9 +68,9 @@ class RedisLockService(LockService):
             raise ApplicationException(f"获取 redis 锁超时: {key}")
 
         try:
-            logger.info(f"获取 redis 锁成功: {key}")
+            # logger.info(f"获取 redis 锁成功: {key}")
             yield
         finally:
             # 使用 Lua 脚本原子地检查并释放锁
             await self._release_script(keys=[lock_key], args=[lock_value])
-            logger.info(f"释放 redis 锁成功: {key}")
+            # logger.info(f"释放 redis 锁成功: {key}")
