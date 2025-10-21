@@ -19,7 +19,7 @@ public class ReentrantLockService implements LockService {
 
     @Override
     public <T> T executeWithLock(String key, Supplier<T> action) {
-        ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
+        ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
         //logger.info("线程 [{}] 获取 ReentrantLock 锁成功: {}", Thread.currentThread().getName(), key);
         try {

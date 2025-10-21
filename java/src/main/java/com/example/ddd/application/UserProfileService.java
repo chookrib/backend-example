@@ -39,9 +39,9 @@ public class UserProfileService {
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        return lockService.executeWithLock(LockKeys.USER, () -> {
-            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, userUniqueChecker);
-            userRepository.insert(user);
+        return this.lockService.executeWithLock(LockKeys.USER, () -> {
+            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueChecker);
+            this.userRepository.insert(user);
             return user.getId();
         });
     }
@@ -50,19 +50,19 @@ public class UserProfileService {
      * 修改密码
      */
     public void modifyPassword(String userId, String oldPassword, String newPassword) {
-        User user = userRepository.selectByIdReq(userId);
+        User user = this.userRepository.selectByIdReq(userId);
         user.modifyPassword(oldPassword, newPassword);
-        userRepository.update(user);
+        this.userRepository.update(user);
     }
 
     /**
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        lockService.executeWithLock(LockKeys.USER, () -> {
-            User user = userRepository.selectByIdReq(userId);
-            user.modifyNickname(nickname, userUniqueChecker);
-            userRepository.update(user);
+        this.lockService.executeWithLock(LockKeys.USER, () -> {
+            User user = this.userRepository.selectByIdReq(userId);
+            user.modifyNickname(nickname, this.userUniqueChecker);
+            this.userRepository.update(user);
         });
     }
 
@@ -73,10 +73,10 @@ public class UserProfileService {
         if (ValueUtility.isBlank(mobile))
             throw new ApplicationException("手机号不能为空");
 
-        User user = userRepository.selectByIdReq(userId);
+        User user = this.userRepository.selectByIdReq(userId);
         String code = String.format("%06d", (int) (Math.random() * 1000000));
-        mobileCodeMap.put(user.getId() + "_" + mobile, code);
-        smsGateway.sendCode(mobile, code);
+        this.mobileCodeMap.put(user.getId() + "_" + mobile, code);
+        this.smsGateway.sendCode(mobile, code);
     }
 
     /**
@@ -86,13 +86,13 @@ public class UserProfileService {
         if (ValueUtility.isBlank(code))
             throw new ApplicationException("验证码不能为空");
 
-        User user = userRepository.selectByIdReq(userId);
+        User user = this.userRepository.selectByIdReq(userId);
         String key = user.getId() + "_" + mobile;
-        if (!mobileCodeMap.getOrDefault(key, "").equals(code))
+        if (!this.mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("手机验证码错误");
 
-        user.modifyMobile(mobile, userUniqueChecker);
-        userRepository.update(user);
-        mobileCodeMap.remove(key);
+        user.modifyMobile(mobile, this.userUniqueChecker);
+        this.userRepository.update(user);
+        this.mobileCodeMap.remove(key);
     }
 }

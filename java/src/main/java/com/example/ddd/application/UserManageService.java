@@ -30,20 +30,20 @@ public class UserManageService {
      * 设置用户管理员状态
      */
     public void setAdmin(String id, boolean isAdmin) {
-        User user = userRepository.selectByIdReq(id);
+        User user = this.userRepository.selectByIdReq(id);
         user.setAdmin(isAdmin);
-        userRepository.update(user);
+        this.userRepository.update(user);
     }
 
     /**
      * 创建用户
      */
     public String createUser(String username, String password, String nickname, String mobile) {
-        return lockService.executeWithLock(LockKeys.USER, () -> {
+        return this.lockService.executeWithLock(LockKeys.USER, () -> {
             User user = User.createUser(
-                    IdGenerator.generateId(), username, password, nickname, mobile, userUniqueChecker
+                    IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueChecker
             );
-            userRepository.insert(user);
+            this.userRepository.insert(user);
             return user.getId();
         });
     }
@@ -52,10 +52,10 @@ public class UserManageService {
      * 修改用户
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
-        lockService.executeWithLock(LockKeys.USER, () -> {
-            User user = userRepository.selectByIdReq(id);
-            user.modify(username, nickname, mobile, userUniqueChecker);
-            userRepository.update(user);
+        this.lockService.executeWithLock(LockKeys.USER, () -> {
+            User user = this.userRepository.selectByIdReq(id);
+            user.modify(username, nickname, mobile, this.userUniqueChecker);
+            this.userRepository.update(user);
         });
     }
 
@@ -63,6 +63,6 @@ public class UserManageService {
      * 删除用户
      */
     public void removeUser(String id) {
-        userRepository.deleteById(id);
+        this.userRepository.deleteById(id);
     }
 }

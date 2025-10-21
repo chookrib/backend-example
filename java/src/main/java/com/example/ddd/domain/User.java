@@ -19,29 +19,29 @@ public class User {
     private LocalDateTime createdAt;
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
 
     public String getMobile() {
-        return mobile;
+        return this.mobile;
     }
 
-    public boolean isAdmin() { return isAdmin; }
+    public boolean isAdmin() { return this.isAdmin; }
 
     public LocalDateTime getCreatedAt() {
-        return createdAt;
+        return this.createdAt;
     }
 
     private User() {

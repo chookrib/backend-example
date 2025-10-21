@@ -46,7 +46,7 @@ public class UserController {
             throw new ControllerException("两次输入的密码不一致");
         }
 
-        String userId = userProfileService.register(username, password, nickname);
+        String userId = this.userProfileService.register(username, password, nickname);
         return Result.okData(Map.of(
                 "id", userId
         ));
@@ -61,7 +61,7 @@ public class UserController {
         String username = json.path("username").asText().trim();
         String password = json.path("password").asText().trim();
 
-        String accessToken = userAuthService.login(username, password);
+        String accessToken = this.userAuthService.login(username, password);
         return Result.okData(Map.of(
                 "accessToken", accessToken
         ));
@@ -73,7 +73,7 @@ public class UserController {
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
     public Result profile(HttpServletRequest request) {
         String userId = RequestHelper.requireLoginUserId(request);
-        UserDto userDto = userQueryHandler.queryById(userId);
+        UserDto userDto = this.userQueryHandler.queryById(userId);
         return Result.okData(Map.of(
                 "profile", userDto
         ));
@@ -95,7 +95,7 @@ public class UserController {
             throw new ControllerException("两次输入的密码不一致");
         }
 
-        userProfileService.modifyPassword(userId, oldPassword, newPassword);
+        this.userProfileService.modifyPassword(userId, oldPassword, newPassword);
         return Result.ok();
     }
 
@@ -108,7 +108,7 @@ public class UserController {
 
         JsonNode json = JsonUtility.readTree(requestBody);
         String nickname = json.path("nickname").asText().trim();
-        userProfileService.modifyNickname(userId, nickname);
+        this.userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
     }
 
@@ -122,7 +122,7 @@ public class UserController {
         JsonNode json = JsonUtility.readTree(requestBody);
         String mobile = json.path("mobile").asText().trim();
 
-        userProfileService.sendMobileCode(userId, mobile);
+        this.userProfileService.sendMobileCode(userId, mobile);
         return Result.ok();
     }
 
@@ -136,7 +136,7 @@ public class UserController {
         JsonNode json = JsonUtility.readTree(requestBody);
         String mobile = json.path("mobile").asText().trim();
         String code = json.path("code").asText().trim();
-        userProfileService.bindMobile(userId, mobile, code);
+        this.userProfileService.bindMobile(userId, mobile, code);
         return Result.ok();
     }
 }

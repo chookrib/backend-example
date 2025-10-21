@@ -1,6 +1,5 @@
 package com.example.ddd.application;
 
-import com.auth0.jwt.interfaces.Claim;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
 import com.example.ddd.utility.CryptoUtility;
@@ -33,16 +32,16 @@ public class UserAuthService {
      * 登录，返回 AccessToken
      */
     public String login(String username, String password) {
-        User user = userRepository.selectByUsername(username);
+        User user = this.userRepository.selectByUsername(username);
         if (user == null || !user.isPasswordMatch(password)) {
             throw new ApplicationException("密码错误");
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", user.getId());
+        Map<String, String> payload = new HashMap<>();
+        payload.put("id", user.getId());
         return CryptoUtility.encodeJwt(
-                map,
-                new Date(System.currentTimeMillis() + jwtExpiresDay * 24 * 60 * 60 * 1000L),
-                jwtSecret);
+                payload,
+                new Date(System.currentTimeMillis() + this.jwtExpiresDay * 24 * 60 * 60 * 1000L),
+                this.jwtSecret);
     }
 
     /**
@@ -50,8 +49,8 @@ public class UserAuthService {
      */
     public String getLoginUserId(String accessToken) {
         try {
-            Map<String, Claim> token = CryptoUtility.decodeJwt(accessToken, jwtSecret);
-            return token.get("id").asString();
+            Map<String, String> payload = CryptoUtility.decodeJwt(accessToken, this.jwtSecret);
+            return payload.getOrDefault("id", "");
         } catch (Exception e) {
             return "";
         }

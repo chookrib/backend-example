@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,7 +17,9 @@ public class CryptoUtility {
     /**
      * JWT 编码
      */
-    public static String encodeJwt(Map<String, ?> payload, Date expiresAt, String secret) {
+    public static String encodeJwt(
+            // Map<String, ?> payload,
+            Map<String, String> payload, Date expiresAt, String secret) {
         return JWT.create()
                 .withPayload(payload)
                 .withExpiresAt(expiresAt)
@@ -26,11 +29,17 @@ public class CryptoUtility {
     /**
      * JWT 解码
      */
-    public static Map<String, Claim> decodeJwt(String jwt, String secret) {
+    public static Map<String, String> decodeJwt(String jwt, String secret) {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(jwt);
-        return decodedJWT.getClaims();
+        //return decodedJWT.getClaims();        // return Map<String, Claim>
+        Map<String, Claim> claims = decodedJWT.getClaims();
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<String, Claim> entry : claims.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().asString());
+        }
+        return result;
     }
 
     /**

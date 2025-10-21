@@ -6,7 +6,7 @@ package com.example.ddd.application;
 public enum UserQuerySort {
 
     CREATED_AT_ASC(1, "创建时间升序"),
-    CREATED_AT_DESC(-1, "创建时间倒序"),
+    CREATED_AT_DESC(-1, "创建时间降序"),
     USERNAME_ASC(2, "用户名升序"),
     USERNAME_DESC(-2, "用户名降序");
 

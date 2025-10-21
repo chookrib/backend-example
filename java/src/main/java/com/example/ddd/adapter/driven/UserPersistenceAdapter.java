@@ -9,6 +9,7 @@ import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
 import com.example.ddd.utility.CryptoUtility;
 import com.example.ddd.utility.ValueUtility;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -107,12 +108,17 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteById(String id)
+    {
+        if(ValueUtility.isBlank(id))
+            return;
         jdbcTemplate.update("delete from t_user where u_id = ?", id);
     }
 
     @Override
     public User selectById(String id) {
+        if(ValueUtility.isBlank(id))
+            return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_id = ?", id);
         if (sqlRowSet.next()) {
             return toUser(sqlRowSet);
@@ -124,7 +130,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     public User selectByIdReq(String id) {
         User entity = selectById(id);
         if (entity == null)
-            throw new RepositoryException(String.format("用户 %s 不存在", id));
+            throw new PersistenceException(String.format("用户 %s 不存在", id));
         return entity;
     }
 
@@ -147,6 +153,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
 
     @Override
     public User selectByUsername(String username) {
+        if(ValueUtility.isBlank(username))
+            return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_username) = lower(?)", username);
         if (sqlRowSet.next()) {
             return toUser(sqlRowSet);
@@ -159,18 +167,24 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
 
     @Override
     public boolean isUsernameUnique(String username) {
-        User user = selectByUsername(username);
-        return user == null;
+        if(ValueUtility.isBlank(username))
+            throw new PersistenceException("参数 username 不能为空");
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_username) = lower(?)", username);
+        return !sqlRowSet.next();
     }
 
     @Override
     public boolean isNicknameUnique(String nickname) {
+        if(ValueUtility.isBlank(nickname))
+            throw new PersistenceException("参数 nickname 不能为空");
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_nickname) = lower(?)", nickname);
         return !sqlRowSet.next();
     }
 
     @Override
     public boolean isMobileUnique(String mobile) {
+        if(ValueUtility.isBlank(mobile))
+            throw new PersistenceException("参数 mobile 不能为空");
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where lower(u_mobile) = lower(?)", mobile);
         return !sqlRowSet.next();
     }
@@ -235,6 +249,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
 
     @Override
     public UserDto queryById(String id) {
+        if(ValueUtility.isBlank(id))
+            return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from t_user where u_id = ?", id);
         if (sqlRowSet.next()) {
             return toUserDto(sqlRowSet);
@@ -246,7 +262,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
     public UserDto queryByIdReq(String id) {
         UserDto dto = queryById(id);
         if (dto == null)
-            throw new QueryException(String.format("用户 %s 不存在", id));
+            throw new PersistenceException(String.format("用户 %s 不存在", id));
         return dto;
     }
 

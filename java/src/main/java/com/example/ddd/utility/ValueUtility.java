@@ -10,8 +10,8 @@ public class ValueUtility {
     /**
      * 判断字符串是否为 null 或空字符串
      */
-    public static boolean isBlank(String str) {
-        return str == null || str.isBlank();    // isEmpty()
+    public static boolean isBlank(String value) {
+        return value == null || value.isBlank();    // isEmpty()
     }
 
     //==================================================================================================================

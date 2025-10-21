@@ -5,8 +5,12 @@ package com.example.ddd.application.lock;
  */
 public class LockKeys {
     /**
+     * 测试锁
+     */
+    public static String TEST = "TEST";
+
+    /**
      * 用户锁
      */
     public static String USER = "USER";
-
 }

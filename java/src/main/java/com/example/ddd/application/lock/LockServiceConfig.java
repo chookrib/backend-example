@@ -1,7 +1,6 @@
 package com.example.ddd.application.lock;
 
-import org.redisson.api.RedissonClient;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +23,18 @@ public class LockServiceConfig {
         return new ReentrantLockService();
     }
 
+    @Value("${app.redisson-address:}")
+    private String redissonAddress;
+
+    @Value("${app.redisson-password:}")
+    private String redissonPassword;
+
+    @Value("${app.redisson-database:0}")
+    private int redissonDatabase;
+
     @Bean
     @ConditionalOnProperty(name = "app.lock-service", havingValue = "redisson")
-    public LockService redissonLockService(RedissonClient redissonClient) {
-        return new RedissonLockService(redissonClient);
+    public LockService redissonLockService() {
+        return new RedissonLockService(this.redissonAddress, this.redissonPassword, this.redissonDatabase);
     }
 }

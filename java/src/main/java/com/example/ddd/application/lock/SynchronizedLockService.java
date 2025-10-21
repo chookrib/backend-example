@@ -18,7 +18,7 @@ public class SynchronizedLockService implements LockService {
 
     @Override
     public <T> T executeWithLock(String key, Supplier<T> action) {
-        Object lock = lockMap.computeIfAbsent(key, k -> new Object());
+        Object lock = this.lockMap.computeIfAbsent(key, k -> new Object());
         synchronized (lock) {
             //logger.info("线程 [{}] 获取 Synchronized 锁成功: {}", Thread.currentThread().getName(), key);
             try {

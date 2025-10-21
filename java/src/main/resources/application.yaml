@@ -15,12 +15,17 @@ spring:
     username:
     password:
 
-  # 启用 Redission 时需删除这里的配置以便使 Redission 自动配置
+  # 关闭 Redisson 自动配置，手工创建 RedissonClient
   autoconfigure:
     exclude:
       - org.redisson.spring.starter.RedissonAutoConfigurationV2
 
 app:
   user-jwt-expires-day: 30
-  user-jwt-secret: jwt-secret
+  user-jwt-secret: user-jwt-secret
+#  lock-service: redisson
+#  redisson-address: redis://localhost:6379
+#  redisson-password:
+#  redisson-database: 0
+
 

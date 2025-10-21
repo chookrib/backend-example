@@ -45,9 +45,9 @@ public class UserManageController {
             criteria.setKeyword(keyword);
         }
 
-        int totalCount = userQueryHandler.queryCount(criteria);
+        int totalCount = this.userQueryHandler.queryCount(criteria);
         PagingValidator paging = PagingValidator.validation(pageNum, pageSize, totalCount);
-        List<UserDto> list = userQueryHandler.queryByPage(paging.getPageNum(), paging.getPageSize(), criteria);
+        List<UserDto> list = this.userQueryHandler.queryByPage(paging.getPageNum(), paging.getPageSize(), criteria);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("paging", Map.of(
@@ -66,7 +66,7 @@ public class UserManageController {
     public Result userGet(HttpServletRequest request, @RequestParam String id) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        UserDto userDto = userQueryHandler.queryByIdReq(id);
+        UserDto userDto = this.userQueryHandler.queryByIdReq(id);
         return Result.okData(Map.of(
                 "detail", userDto
         ));
@@ -85,7 +85,7 @@ public class UserManageController {
         String nickname = json.path("nickname").asText().trim();
         String mobile = json.path("mobile").asText().trim();
 
-        String userId = userManageService.createUser(username, password, nickname, mobile);
+        String userId = this.userManageService.createUser(username, password, nickname, mobile);
         return Result.okData(Map.of(
                 "id", userId
         ));
@@ -104,7 +104,7 @@ public class UserManageController {
         String nickname = json.path("nickname").asText().trim();
         String mobile = json.path("mobile").asText().trim();
 
-        userManageService.modifyUser(id, username, nickname, mobile);
+        this.userManageService.modifyUser(id, username, nickname, mobile);
         return Result.ok();
     }
 
@@ -119,7 +119,7 @@ public class UserManageController {
         JsonNode json = JsonUtility.readTree(requestBody);
         String id = json.path("id").asText().trim();
 
-        userManageService.removeUser(id);
+        this.userManageService.removeUser(id);
         return Result.ok();
     }
 }
