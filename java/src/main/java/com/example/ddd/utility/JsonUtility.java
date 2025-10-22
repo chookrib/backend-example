@@ -14,22 +14,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class JsonUtility {
 
     /**
-     * 读取 JSON 字符串为 JsonNode
+     * 反序列化 JSON 字符串为 JsonNode
      */
-    public static JsonNode readTree(String value) {
+    public static JsonNode deserialize(String data) {
         try {
-            return new ObjectMapper().readTree(value);
+            return new ObjectMapper().readTree(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("解析JSON字符串异常", e);
         }
     }
 
     /**
-     * 将对象转换为 JSON 字符串
+     * 序列化对象为 JSON 字符串
      */
-    public static String writeValueAsString(Object value) {
+    public static String serialize(Object data) {
         try {
-            return new ObjectMapper().writeValueAsString(value);
+            return new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("生成JSON字符串异常", e);
         }
@@ -38,36 +38,36 @@ public class JsonUtility {
     ///**
     // * 将对象转换为Map
     // */
-    //public static Map<String, ?> convertValue(Object value) {
+    //public static Map<String, ?> toMap(Object data) {
     //    //try {
     //        return new ObjectMapper()
     //                //.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
-    //                .convertValue(value, Map.class);
+    //                .convertValue(data, Map.class);
     //    //} catch (Exception e) {
     //    //    throw new RuntimeException("对象转为Map异常", e);
     //    //}
     //}
 
     /**
-     * 读取 JSON 字符串为 JsonNode，允许未转义的控制字符
+     * 反序列化 JSON 字符串为 JsonNode，允许未转义的控制字符
      */
-    public static JsonNode readTreeAllowUnescapedControlChars(String content) {
+    public static JsonNode deserializeAllowUnescapedControlChars(String data) {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
                 .build();
         try {
-            return objectMapper.readTree(content);
+            return objectMapper.readTree(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * 读取 JSON 字符串为指定类型对象
+     * 反序列化 JSON 字符串为为指定类型对象
      */
-    public static <T> T readValue(String content, TypeReference<T> valueTypeRef) {
+    public static <T> T deserialize(String data, TypeReference<T> type) {
         try {
-            return new ObjectMapper().readValue(content, valueTypeRef);
+            return new ObjectMapper().readValue(data, type);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

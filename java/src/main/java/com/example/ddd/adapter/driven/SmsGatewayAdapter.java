@@ -15,6 +15,6 @@ public class SmsGatewayAdapter implements SmsGateway {
 
     @Override
     public void sendCode(String mobile, String code) {
-        logger.info("发送手机验证码到 {}, code: {}", mobile, code);
+        logger.info("发送手机验证码 {} 到 {}", code, mobile);
     }
 }

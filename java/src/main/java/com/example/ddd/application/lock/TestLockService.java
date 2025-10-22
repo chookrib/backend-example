@@ -1,10 +1,7 @@
 package com.example.ddd.application.lock;
 
-import com.example.ddd.Application;
 import com.example.ddd.application.ApplicationException;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.locks.Lock;
 
 /**
  * 测试锁 Service
@@ -44,7 +41,7 @@ public class TestLockService {
     /**
      * 加锁等待测试
      */
-    public void lockSleep(){
+    public void lockSleep() {
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {

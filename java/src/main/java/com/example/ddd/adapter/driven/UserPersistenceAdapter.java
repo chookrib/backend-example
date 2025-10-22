@@ -9,7 +9,6 @@ import com.example.ddd.domain.UserRepository;
 import com.example.ddd.domain.UserUniqueChecker;
 import com.example.ddd.utility.CryptoUtility;
 import com.example.ddd.utility.ValueUtility;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -36,7 +35,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
         // 创建表及默认管理员
         this.jdbcTemplate.execute("""
                 create table if not exists t_user (u_id text primary key, u_username text, u_password text,
-                u_nickname text, u_mobile text, u_is_admin integer u_created_at text)
+                u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)
                 """);
         this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
         this.jdbcTemplate.execute(

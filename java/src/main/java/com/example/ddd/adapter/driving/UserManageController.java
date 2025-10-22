@@ -34,7 +34,7 @@ public class UserManageController {
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         int pageNum = json.path("pageNum").asInt(1);
         int pageSize = json.path("pageSize").asInt(1);
 
@@ -79,7 +79,7 @@ public class UserManageController {
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String username = json.path("username").asText().trim();
         String password = json.path("password").asText().trim();
         String nickname = json.path("nickname").asText().trim();
@@ -98,7 +98,7 @@ public class UserManageController {
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String id = json.path("id").asText().trim();
         String username = json.path("username").asText().trim();
         String nickname = json.path("nickname").asText().trim();
@@ -116,7 +116,7 @@ public class UserManageController {
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
         RequestHelper.requireLoginUserAdmin(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String id = json.path("id").asText().trim();
 
         this.userManageService.removeUser(id);

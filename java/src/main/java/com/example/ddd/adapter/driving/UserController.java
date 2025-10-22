@@ -36,7 +36,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
     public Result register(@RequestBody String requestBody) {
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String username = json.path("username").asText().trim();
         String password = json.path("password").asText().trim();
         String confirmPassword = json.path("confirmPassword").asText().trim();
@@ -57,7 +57,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     public Result login(@RequestBody String requestBody) {
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String username = json.path("username").asText().trim();
         String password = json.path("password").asText().trim();
 
@@ -86,7 +86,7 @@ public class UserController {
     public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String oldPassword = json.path("oldPassword").asText().trim();
         String newPassword = json.path("newPassword").asText().trim();
         String confirmPassword = json.path("confirmPassword").asText().trim();
@@ -106,7 +106,7 @@ public class UserController {
     public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String nickname = json.path("nickname").asText().trim();
         this.userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
@@ -119,7 +119,7 @@ public class UserController {
     public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String mobile = json.path("mobile").asText().trim();
 
         this.userProfileService.sendMobileCode(userId, mobile);
@@ -133,7 +133,7 @@ public class UserController {
     public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.readTree(requestBody);
+        JsonNode json = JsonUtility.deserialize(requestBody);
         String mobile = json.path("mobile").asText().trim();
         String code = json.path("code").asText().trim();
         this.userProfileService.bindMobile(userId, mobile, code);

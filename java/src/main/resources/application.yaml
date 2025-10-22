@@ -10,7 +10,7 @@ spring:
     name: ddd-example-java
 
   datasource:
-    url: jdbc:sqlite:../db.db
+    url: jdbc:sqlite:db.db
     driver-class-name: org.sqlite.JDBC
     username:
     password:

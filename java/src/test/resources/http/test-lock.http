@@ -4,8 +4,8 @@
 
 
 ###
-http://{{host}}/.well-known/test/lock/reduce-safe
+GET http://{{host}}/.well-known/test/lock/reduce-safe
 
 ###
-http://{{host}}/.well-known/test/lock/sleep
+GET http://{{host}}/.well-known/test/lock/sleep
 
