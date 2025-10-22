@@ -14,7 +14,9 @@ router = APIRouter()
 def info():
     """应用信息，显示非涉密信息"""
     commit_info = subprocess.check_output(
-        ["git", "log", "-1", "--pretty=format:%h%d%n%ad"], encoding="utf-8"
+        ["git", "log", "-1", "--pretty=format:%h%d%n%ad"],
+        #["git", "rev-parse", "--short", "HEAD"],
+        encoding="utf-8"
     ).strip()
     return Response(content=commit_info, media_type="text/plain")
 
@@ -184,7 +186,7 @@ def test_data():
     }
 
 # print(
-#     json.dumps(
+#     json_utility.deserialize(
 #         test_data(),
 #         default=custom_jsonable_encoder,
 #         # default=str,

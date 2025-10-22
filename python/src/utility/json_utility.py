@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, date, time
 from decimal import Decimal
 from enum import Enum
@@ -6,6 +7,14 @@ from fastapi import encoders
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
+
+def deserialize(data):
+    """反序列化 JSON 字符串"""
+    return json.loads(data)
+
+def serialize(data):
+    """序列化为 JSON 字符串"""
+    return json.dumps(data)
 
 def to_camel_case(string: str) -> str:
     """键名转为 camel 风格"""

@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import aiosqlite
 
@@ -7,18 +7,19 @@ from src.application.user_dto import UserDto
 from src.application.user_query_criteria import UserQueryCriteria
 from src.application.user_query_handler import UserQueryHandler
 from src.application.user_query_sort import UserQuerySort
+from src.config import settings
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
 from src.domain.user_unique_checker import UserUniqueChecker
 from src.utility import value_utility, crypto_utility
-from src.config import settings
 
 
 class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
     """用户持久化Adapter"""
 
     def __init__(self):
-        self.db_path = str(Path(__file__).resolve().parents[4] / settings.SQLITE_DATABASE_FILE)
+        # self.db_path = str(Path(__file__).resolve().parents[4] / settings.SQLITE_DATABASE_FILE)
+        self.db_path = os.path.join(os.getcwd(), settings.SQLITE_DATABASE_FILE)
 
     async def init(self) -> None:
         async with aiosqlite.connect(self.db_path) as db:
@@ -70,23 +71,23 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
     async def update(self, entity: User) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
-                                update t_user
-                                set u_username   = ?,
-                                    u_password   = ?,
-                                    u_nickname   = ?,
-                                    u_mobile     = ?,
-                                    u_is_admin   = ?,
-                                    u_created_at = ?
-                                where u_id = ?
-                                """, (
-                                    entity.username,
-                                    entity.password,
-                                    entity.nickname,
-                                    entity.mobile,
-                                    int(entity.is_admin),
-                                    value_utility.to_datetime_str(entity.created_at),
-                                    entity.id
-                                ))
+                             update t_user
+                             set u_username   = ?,
+                                 u_password   = ?,
+                                 u_nickname   = ?,
+                                 u_mobile     = ?,
+                                 u_is_admin   = ?,
+                                 u_created_at = ?
+                             where u_id = ?
+                             """, (
+                                 entity.username,
+                                 entity.password,
+                                 entity.nickname,
+                                 entity.mobile,
+                                 int(entity.is_admin),
+                                 value_utility.to_datetime_str(entity.created_at),
+                                 entity.id
+                             ))
             await db.commit()
 
     async def delete_by_id(self, id: str) -> None:
@@ -251,7 +252,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                 rows = await cursor.fetchall()
                 return [self.to_user_dto(row) for row in rows]
 
-    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort)\
+    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) \
             -> list[UserDto]:
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)

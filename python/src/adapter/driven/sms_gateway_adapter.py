@@ -9,4 +9,4 @@ class SmsGatewayAdapter(SmsGateway):
     """短信接口Adapter"""
 
     async def send_code(self, mobile: str, code: str) -> None:
-        logger.info(f"发送手机验证码到 {mobile}, code:  {code}")
+        logger.info(f"发送手机验证码 {code} 到 {mobile}")
