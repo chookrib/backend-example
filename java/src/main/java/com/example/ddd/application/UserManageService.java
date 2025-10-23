@@ -20,7 +20,8 @@ public class UserManageService {
     public UserManageService(
             UserRepository userRepository,
             UserUniqueChecker userUniqueChecker,
-            LockService lockService) {
+            LockService lockService
+    ) {
         this.userRepository = userRepository;
         this.userUniqueChecker = userUniqueChecker;
         this.lockService = lockService;

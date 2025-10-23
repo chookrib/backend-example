@@ -10,6 +10,7 @@ import com.example.ddd.utility.ValueUtility;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 用户资料 Service
@@ -22,13 +23,14 @@ public class UserProfileService {
     private final SmsGateway smsGateway;
     private final LockService lockService;
 
-    private HashMap<String, String> mobileCodeMap = new HashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
+    private ConcurrentHashMap<String, String> mobileCodeMap = new ConcurrentHashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
 
     public UserProfileService(
             UserRepository userRepository,
             UserUniqueChecker userUniqueChecker,
             SmsGateway smsGateway,
-            LockService lockService) {
+            LockService lockService
+    ) {
         this.userRepository = userRepository;
         this.userUniqueChecker = userUniqueChecker;
         this.smsGateway = smsGateway;
@@ -89,7 +91,7 @@ public class UserProfileService {
         User user = this.userRepository.selectByIdReq(userId);
         String key = user.getId() + "_" + mobile;
         if (!this.mobileCodeMap.getOrDefault(key, "").equals(code))
-            throw new ApplicationException("手机验证码错误");
+            throw new ApplicationException("验证码错误");
 
         user.modifyMobile(mobile, this.userUniqueChecker);
         this.userRepository.update(user);

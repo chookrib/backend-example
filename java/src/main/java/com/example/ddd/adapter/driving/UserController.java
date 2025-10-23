@@ -25,7 +25,10 @@ public class UserController {
     private final UserQueryHandler userQueryHandler;
 
     public UserController(
-            UserAuthService userAuthService, UserProfileService userProfileService, UserQueryHandler userQueryHandler) {
+            UserAuthService userAuthService,
+            UserProfileService userProfileService,
+            UserQueryHandler userQueryHandler
+    ) {
         this.userAuthService = userAuthService;
         this.userProfileService = userProfileService;
         this.userQueryHandler = userQueryHandler;
