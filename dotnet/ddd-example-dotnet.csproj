@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>DddExample</RootNamespace>
+        <!-- 注入编译时间 -->
+        <!--<BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))</BuildTime>-->
+        <BuildTime>$([System.DateTime]::Now.ToString("yyyyMMddHHmmss"))</BuildTime>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- 注入编译时间 -->
+        <AssemblyMetadata Include="BuildTime" Value="$(BuildTime)" />
+        <PackageReference Include="log4net" Version="3.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    </ItemGroup>
+
+</Project>
