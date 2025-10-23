@@ -66,7 +66,7 @@ class UserProfileService:
         user = await self.user_repository.select_by_id_req(user_id)
         key = user.id + "_" + mobile
         if self.mobile_code.get(key, "") != code:
-            raise ApplicationException("手机验证码错误")
+            raise ApplicationException("验证码错误")
         await user.modify_mobile(mobile, self.user_unique_checker)
         await self.user_repository.update(user)
         self.mobile_code.pop(key, None)
