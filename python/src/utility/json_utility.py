@@ -3,10 +3,6 @@ from datetime import datetime, date, time
 from decimal import Decimal
 from enum import Enum
 
-from fastapi import encoders
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-
 
 def deserialize(data):
     """反序列化 JSON 字符串"""
