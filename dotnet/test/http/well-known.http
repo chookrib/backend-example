@@ -23,13 +23,3 @@ GET http://{{host}}/.well-known/test/lock/reduce-safe
 GET http://{{host}}/.well-known/test/lock/sleep
 # ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-unsafe
 # ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-safe
-
-### ≤‚ ‘«Î«Û
-POST http://{{host}}/.well-known/test/request/json
-Content-Type: application/json
-
-{
-    "name": "≤‚ ‘",
-    "age": 18
-}
-

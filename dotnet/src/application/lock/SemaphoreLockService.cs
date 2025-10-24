@@ -12,7 +12,7 @@ namespace DddExample.Application
         public T ExecuteWithLock<T>(string key, Func<T> func)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(30);
-            var semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+            SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
 
             bool isAcquired = false;
             try
@@ -39,7 +39,7 @@ namespace DddExample.Application
         public void ExecuteWithLock(string key, Action action)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(30);
-            var semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+            SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
 
             bool isAcquired = false;
             try

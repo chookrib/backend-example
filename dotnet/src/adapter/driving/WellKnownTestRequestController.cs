@@ -1,8 +1,7 @@
-﻿using System.Text.Json;
-using DddExample.Adapter.Driving;
+﻿using System.Text;
+using System.Text.Json;
+
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DddExample.Adapter.Driving
 {
@@ -11,10 +10,31 @@ namespace DddExample.Adapter.Driving
     /// </summary>
     public class WellKnownTestRequestController: ControllerBase
     {
-        [HttpPost("/.well-known/test/request/json")]
-        public Result TestRequestJson([FromBody] JsonElement body)
+        [HttpPost("/.well-known/test/request/string")]
+        async public Task<Result> TestRequestString()
         {
-            //string name = body.Value<string>("name") ?? "";
+            using StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8);
+            string body = await reader.ReadToEndAsync();
+            return Result.OkData(body);
+        }
+
+        [HttpPost("/.well-known/test/request/from-body-string")]
+        public Result TestRequestFromBodyString([FromBody] string body)
+        {
+            return Result.OkData(body);
+        }
+
+        [HttpPost("/.well-known/test/request/from-body-json")]
+        public Result TestRequestFromBodyJson([FromBody] JsonElement? body)
+        {
+            // [FromBody] JsonElement body 只处理 application/json、text/json 以及类似的 JSON 类型
+            string name = body.Value.GetProperty("name").GetString() ?? "";
+            return Result.OkData(body);
+        }
+
+        [HttpPost("/.well-known/test/request/from-body-dynamic")]
+        public Result TestRequestFromBodyDynamic([FromBody] dynamic? body)
+        {
             return Result.OkData(body);
         }
     }

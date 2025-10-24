@@ -13,16 +13,16 @@ namespace DddExample.Adapter.Driving
         [Produces("text/plain")]
         public string Info()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var metadataAttrs = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
-            var buildTimeAttr = metadataAttrs.FirstOrDefault(a => a.Key == "BuildTime");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            IEnumerable<AssemblyMetadataAttribute> metadataAttrs = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+            AssemblyMetadataAttribute? buildTimeAttr = metadataAttrs.FirstOrDefault(a => a.Key == "BuildTime");
 
             StringBuilder sb = new StringBuilder();
-            //foreach (var attr in metadataAttrs)
+            //foreach (AssemblyMetadataAttribute attr in metadataAttrs)
             //    sb.AppendLine($"AssemblyMetadataAttribute {attr.Key}: {attr.Value}");
             sb.AppendLine($"AssemblyMetadata BuildTime: {buildTimeAttr?.Value}");
 
-            var versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             sb.AppendLine($"AssemblyInformationalVersionAttribute: {versionAttr?.InformationalVersion}");
 
             return sb.ToString();

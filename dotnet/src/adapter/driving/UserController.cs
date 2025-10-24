@@ -25,25 +25,27 @@ namespace DddExample.Adapter.Driving
             this.userQueryHandler = userQueryHandler;
         }
 
-        //[HttpPost("/api/user/register")]
-        //public Result Register([FromBody] JObject body)
-        //{
-        //    // 假设 body 是 JSON 格式，解析字段
-        //    string username = body.Value<string>("username") ?? "";
-        //    string password = body.Value<string>("password") ?? "";
-        //    string nickname = body.Value<string>("nickname") ?? "";
+        [HttpPost("/api/user/register")]
+        public Result Register()
+        {
+            JObject requestJson = RequestHelper.GetJson(Request);
 
-        //    // 业务逻辑处理
-        //    try
-        //    {
-        //        string userId = userProfileService.Register(username, password, nickname);
-        //        return Result.Ok("注册成功", new { UserId = userId });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Result.Error(500, ex.Message);
-        //    }
-        //}
+            // 假设 body 是 JSON 格式，解析字段
+            string username = requestJson.Value<string>("username") ?? "";
+            string password = requestJson.Value<string>("password") ?? "";
+            string nickname = requestJson.Value<string>("nickname") ?? "";
+
+            // 业务逻辑处理
+            try
+            {
+                string userId = userProfileService.Register(username, password, nickname);
+                return Result.Ok("注册成功", new { UserId = userId });
+            }
+            catch (Exception ex)
+            {
+                return Result.Error(500, ex.Message);
+            }
+        }
 
 
         //[HttpPost("/api/user/register")]

@@ -18,20 +18,20 @@ namespace DddExample.Utility
         /// </summary>
         public static string EncodeJwt(Dictionary<string, string> payload, DateTime expiresAt, string secret)
         {
-            //var claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? "")).ToList();
-            var claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            //List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? "")).ToList();
+            List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = expiresAt,
                 SigningCredentials = credentials
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
@@ -40,9 +40,9 @@ namespace DddExample.Utility
         /// </summary>
         public static Dictionary<string, string> DecodeJwt(string jwt, string secret)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(secret);
-            var validationParameters = new TokenValidationParameters
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            byte[] key = Encoding.UTF8.GetBytes(secret);
+            TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
@@ -54,7 +54,7 @@ namespace DddExample.Utility
             };
 
             tokenHandler.ValidateToken(jwt, validationParameters, out SecurityToken validatedToken);
-            var jwtToken = validatedToken as JwtSecurityToken;
+            JwtSecurityToken jwtToken = validatedToken as JwtSecurityToken;
             if (jwtToken == null)
                 //throw new SecurityTokenException("无效的 JWT");
                 throw new Exception("无效的 JWT");
@@ -67,9 +67,9 @@ namespace DddExample.Utility
         /// </summary>
         public static string EncodeMd5(string input)
         {
-            using var md5 = MD5.Create();
-            var inputBytes = Encoding.UTF8.GetBytes(input);
-            var hashBytes = md5.ComputeHash(inputBytes);
+            using MD5 md5 = MD5.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
             return Convert.ToHexString(hashBytes);
         }
     }

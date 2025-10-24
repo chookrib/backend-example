@@ -40,9 +40,9 @@ namespace DddExample.Application
         {
             try
             {
-                var payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecret);
+                Dictionary<string, string> payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecret);
                 //return payload["id"];
-                if (payload.TryGetValue("id", out var id))
+                if (payload.TryGetValue("id", out string id))
                     return id;
                 return string.Empty;
             }

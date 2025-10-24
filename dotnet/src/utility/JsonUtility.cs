@@ -12,7 +12,7 @@ namespace DddExample.Utility
         /// </summary>
         public static dynamic Deserialize(string data)
         {
-            var result = JsonConvert.DeserializeObject(data);
+            object? result = JsonConvert.DeserializeObject(data);
             if (result == null)
                 throw new Exception("反序列化 JSON 字符串异常");
             return result;

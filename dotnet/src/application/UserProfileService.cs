@@ -91,7 +91,7 @@ namespace DddExample.Application
 
             User user = this.userRepository.SelectByIdReq(userId);
             string key = user.Id + "_" + mobile;
-            if (!this.mobileCodeDict.TryGetValue(key, out var sendCode) || sendCode != code)
+            if (!this.mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
                 throw new ApplicationException("验证码错误");
 
             user.ModifyMobile(mobile, this.userUniqueChecker);
