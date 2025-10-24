@@ -22,7 +22,7 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
 @router.post("/api/user/register")
 async def register(request: Request):
     """注册"""
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     username = value_utility.to_str_or_empty(request_json.get("username"))
     password = value_utility.to_str_or_empty(request_json.get("password"))
     confirm_password = value_utility.to_str_or_empty(request_json.get("confirmPassword"))
@@ -38,7 +38,7 @@ async def register(request: Request):
 @router.post("/api/user/login")
 async def login(request: Request):
     """登录"""
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     username = value_utility.to_str_or_empty(request_json.get("username"))
     password = value_utility.to_str_or_empty(request_json.get("password"))
 
@@ -60,7 +60,7 @@ async def modify_password(request: Request):
     """修改密码"""
     user_id = request_helper.require_login_user_id(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     old_password = value_utility.to_str_or_empty(request_json.get("oldPassword"))
     new_password = value_utility.to_str_or_empty(request_json.get("newPassword"))
     confirm_password = value_utility.to_str_or_empty(request_json.get("confirmPassword"))
@@ -77,7 +77,7 @@ async def modify_nickname(request: Request):
     """修改昵称"""
     user_id = request_helper.require_login_user_id(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
     await user_profile_service.modify_nickname(user_id, nickname)
     return Result.ok()
@@ -88,7 +88,7 @@ async def send_mobile_code(request: Request):
     """发送手机验证码"""
     user_id = request_helper.require_login_user_id(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
     await user_profile_service.send_mobile_code(user_id, mobile)
     return Result.ok()
@@ -99,7 +99,7 @@ async def bind_mobile(request: Request):
     """绑定手机"""
     user_id = request_helper.require_login_user_id(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
     code = value_utility.to_str_or_empty(request_json.get("code"))
     await user_profile_service.bind_mobile(user_id, mobile, code)

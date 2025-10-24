@@ -11,15 +11,12 @@ router = APIRouter()
 @router.post("/.well-known/test/request/string")
 async def test_request_string(request: Request):
     """测试请求"""
-    body = await request.body()
-    body_str = body.decode()
-    return Result.ok(data=body_str)
+    request_body = await request.body()
+    request_string = request_body.decode()
+    return Result.ok(data=request_string)
 
 @router.post("/.well-known/test/request/json")
 async def test_request_json(request: Request):
     """测试请求"""
-    try:
-        json = await request.json()
-    except:
-        json = None
-    return Result.ok(data=json)
+    request_json = await request.json()     # 无法解析JSON时报错: "Expecting value: line 1 column 1 (char 0)"
+    return Result.ok(data=request_json)

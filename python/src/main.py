@@ -1,10 +1,12 @@
 import logging
 import sys
+from json import JSONDecodeError
 
 from fastapi import FastAPI, Request
 from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -94,14 +96,23 @@ async def not_login_exception_handler(request: Request, e: NotLoginException):
     )
 
 
-# # FastAPI请求参数验证错误处理
+# FastAPI请求验证错误处理
 # @app.exception_handler(RequestValidationError)
-# async def validation_exception_handler(request: Request, e: RequestValidationError):
+# async def request_validation_error_handler(request: Request, e: RequestValidationError):
 #     return JSONResponse(
-#         content=api.api_result.error(
-#             code=result_codes.ERROR_NOT_LOGIN,
+#         content=Result.error(
+#             code=result_codes.ERROR_DEFAULT,
 #             message=f"RequestValidationError: {str(e)}",
-#         )
+#         ).to_dict()
+#     )
+
+# @app.exception_handler(JSONDecodeError)
+# async def json_decode_error_handler(request: Request, e: JSONDecodeError):
+#     return JSONResponse(
+#         content=Result.error(
+#             code=result_codes.ERROR_DEFAULT,
+#             message=f"JSONDecodeError: {str(e)}",
+#         ).to_dict()
 #     )
 
 # 全局异常处理

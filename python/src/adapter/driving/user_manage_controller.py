@@ -22,7 +22,7 @@ async def user_list(request: Request):
     """用户列表"""
     await request_helper.require_login_user_admin(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     page_num = value_utility.to_int_or_default(request_json.get("pageNum"), 1)
     page_size = value_utility.to_int_or_default(request_json.get("pageSize"), 1)
     criteria_json = request_json.get("criteria", {})
@@ -59,7 +59,7 @@ async def user_create(request: Request):
     """创建用户"""
     await request_helper.require_login_user_admin(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     username = value_utility.to_str_or_empty(request_json.get("username"))
     password = value_utility.to_str_or_empty(request_json.get("password"))
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
@@ -74,7 +74,7 @@ async def user_modify(request: Request):
     """修改用户"""
     await request_helper.require_login_user_admin(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     id = value_utility.to_str_or_empty(request_json.get("id"))
     username = value_utility.to_str_or_empty(request_json.get("username"))
     nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
@@ -89,7 +89,7 @@ async def user_remove(request: Request):
     """删除用户"""
     await request_helper.require_login_user_admin(request)
 
-    request_json = await request.json()
+    request_json = await request_helper.get_json(request)
     id = value_utility.to_str_or_empty(request_json.get("id"))
 
     await user_manage_service.remove_user(id)
