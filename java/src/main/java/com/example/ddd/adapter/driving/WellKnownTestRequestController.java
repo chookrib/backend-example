@@ -47,4 +47,20 @@ public class WellKnownTestRequestController {
     public Result testRequestJsonNode(@RequestBody(required = false) JsonNode requestBody) {
         return Result.okData(requestBody);
     }
+
+    /**
+     * 测试请求
+     */
+    @RequestMapping(value = "/.well-known/test/request/object-required", method = RequestMethod.POST)
+    public Result testRequestJsonNodeRequired(@RequestBody Object requestBody) {
+        return Result.okData(requestBody);
+    }
+
+    /**
+     * 测试请求
+     */
+    @RequestMapping(value = "/.well-known/test/request/object", method = RequestMethod.POST)
+    public Result testRequestJsonNode(@RequestBody(required = false) Object requestBody) {
+        return Result.okData(requestBody);
+    }
 }

@@ -20,7 +20,7 @@ public class JsonUtility {
         try {
             return new ObjectMapper().readTree(data);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("解析JSON字符串异常", e);
+            throw new RuntimeException("反序列化JSON异常", e);
         }
     }
 
@@ -31,7 +31,7 @@ public class JsonUtility {
         try {
             return new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("生成JSON字符串异常", e);
+            throw new RuntimeException("序列化JSON异常", e);
         }
     }
 

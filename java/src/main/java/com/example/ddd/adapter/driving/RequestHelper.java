@@ -3,14 +3,28 @@ package com.example.ddd.adapter.driving;
 import com.example.ddd.application.UserAuthService;
 import com.example.ddd.application.UserDto;
 import com.example.ddd.application.UserQueryHandler;
+import com.example.ddd.utility.JsonUtility;
 import com.example.ddd.utility.SpringContextUtility;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * 请求帮助类
+ * 请求 Helper
  */
 public class RequestHelper {
+
+    /**
+     * 获取请求体JSON内容
+     */
+    public static JsonNode toJson(String requestBody) {
+        try {
+            return JsonUtility.deserialize(requestBody);
+        }
+        catch (Exception e) {
+            throw new ControllerException("请求体不是合法的JSON格式");
+        }
+    }
 
     /**
      * 获取登录用户Id，未登录返回空字符串

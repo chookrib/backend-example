@@ -1,0 +1,92 @@
+### 测试请求
+POST http://{{host}}/.well-known/test/request/string-required
+
+###
+POST http://{{host}}/.well-known/test/request/string
+
+###
+POST http://{{host}}/.well-known/test/request/string
+Content-Type: text/plain; charset=utf-8
+
+test 测试
+
+###
+POST http://{{host}}/.well-known/test/request/string
+Content-Type: application/json; charset=utf-8
+
+{
+  "null": null,
+  "string": "测试",
+  "bool": true,
+  "int": 12345,
+  "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
+  "decimal": 123456789012345678901234567890.123456789012345678901234567890,
+  "array": [1, 2, 3],
+  "object": {
+    "key": "值"
+  }
+}
+
+###
+POST http://{{host}}/.well-known/test/request/jsonnode-required
+
+###
+POST http://{{host}}/.well-known/test/request/jsonnode
+
+###
+POST http://{{host}}/.well-known/test/request/jsonnode
+Content-Type: text/plain; charset=utf-8
+
+test 测试
+
+###
+POST http://{{host}}/.well-known/test/request/jsonnode
+Content-Type: application/json; charset=utf-8
+
+test 测试
+
+###
+POST http://{{host}}/.well-known/test/request/jsonnode
+Content-Type: application/json; charset=utf-8
+
+{
+  "null": null,
+  "string": "测试",
+  "bool": true,
+  "int": 12345,
+  "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
+  "decimal": 123456789012345678901234567890.123456789012345678901234567890,
+  "array": [1, 2, 3],
+  "object": {
+    "key": "值"
+  }
+}
+
+###
+POST http://{{host}}/.well-known/test/request/object-required
+
+###
+POST http://{{host}}/.well-known/test/request/object
+
+###
+POST http://{{host}}/.well-known/test/request/object
+Content-Type: text/plain; charset=utf-8
+
+test 测试
+
+###
+POST http://{{host}}/.well-known/test/request/object
+Content-Type: application/json; charset=utf-8
+
+{
+  "null": null,
+  "string": "测试",
+  "bool": true,
+  "int": 12345,
+  "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
+  "decimal": 123456789012345678901234567890.123456789012345678901234567890,
+  "array": [1, 2, 3],
+  "object": {
+    "key": "值"
+  }
+}

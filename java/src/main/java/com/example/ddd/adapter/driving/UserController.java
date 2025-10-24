@@ -4,7 +4,6 @@ import com.example.ddd.application.UserAuthService;
 import com.example.ddd.application.UserDto;
 import com.example.ddd.application.UserProfileService;
 import com.example.ddd.application.UserQueryHandler;
-import com.example.ddd.utility.JsonUtility;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,13 +36,13 @@ public class UserController {
     /**
      * 注册
      */
-    @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
+    @RequestMapping(value = " ", method = RequestMethod.POST)
     public Result register(@RequestBody String requestBody) {
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String username = json.path("username").asText().trim();
-        String password = json.path("password").asText().trim();
-        String confirmPassword = json.path("confirmPassword").asText().trim();
-        String nickname = json.path("nickname").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String username = requestJson.path("username").asText().trim();
+        String password = requestJson.path("password").asText().trim();
+        String confirmPassword = requestJson.path("confirmPassword").asText().trim();
+        String nickname = requestJson.path("nickname").asText().trim();
 
         if (!confirmPassword.equals(password)) {
             throw new ControllerException("两次输入的密码不一致");
@@ -60,9 +59,9 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     public Result login(@RequestBody String requestBody) {
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String username = json.path("username").asText().trim();
-        String password = json.path("password").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String username = requestJson.path("username").asText().trim();
+        String password = requestJson.path("password").asText().trim();
 
         String accessToken = this.userAuthService.login(username, password);
         return Result.okData(Map.of(
@@ -89,10 +88,10 @@ public class UserController {
     public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String oldPassword = json.path("oldPassword").asText().trim();
-        String newPassword = json.path("newPassword").asText().trim();
-        String confirmPassword = json.path("confirmPassword").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String oldPassword = requestJson.path("oldPassword").asText().trim();
+        String newPassword = requestJson.path("newPassword").asText().trim();
+        String confirmPassword = requestJson.path("confirmPassword").asText().trim();
 
         if (!confirmPassword.equals(newPassword)) {
             throw new ControllerException("两次输入的密码不一致");
@@ -109,8 +108,8 @@ public class UserController {
     public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String nickname = json.path("nickname").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String nickname = requestJson.path("nickname").asText().trim();
         this.userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
     }
@@ -122,8 +121,8 @@ public class UserController {
     public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String mobile = json.path("mobile").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String mobile = requestJson.path("mobile").asText().trim();
 
         this.userProfileService.sendMobileCode(userId, mobile);
         return Result.ok();
@@ -136,9 +135,9 @@ public class UserController {
     public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestHelper.requireLoginUserId(request);
 
-        JsonNode json = JsonUtility.deserialize(requestBody);
-        String mobile = json.path("mobile").asText().trim();
-        String code = json.path("code").asText().trim();
+        JsonNode requestJson = RequestHelper.toJson(requestBody);
+        String mobile = requestJson.path("mobile").asText().trim();
+        String code = requestJson.path("code").asText().trim();
         this.userProfileService.bindMobile(userId, mobile, code);
         return Result.ok();
     }
