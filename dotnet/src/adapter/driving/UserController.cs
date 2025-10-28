@@ -28,14 +28,14 @@ namespace DddExample.Adapter.Driving
         [HttpPost("/api/user/register")]
         public Result Register()
         {
-            JObject requestJson = RequestHelper.GetJson(Request);
+            JObject requestJson = RequestValueHelper.GetRequestJson(Request);
 
-            // 假设 body 是 JSON 格式，解析字段
-            string username = requestJson.Value<string>("username") ?? "";
-            string password = requestJson.Value<string>("password") ?? "";
-            string nickname = requestJson.Value<string>("nickname") ?? "";
 
-            // 业务逻辑处理
+            string username = (requestJson.Value<string>("username") ?? "").Trim();
+            string password = (requestJson.Value<string>("password") ?? "").Trim();
+            string confirmPassword = (requestJson.Value<string>("confirmPassword") ?? "").Trim();
+            string nickname = (requestJson.Value<string>("nickname") ?? "").Trim();
+
             try
             {
                 string userId = userProfileService.Register(username, password, nickname);

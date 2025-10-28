@@ -14,7 +14,6 @@
         <!-- 注入编译时间 -->
         <AssemblyMetadata Include="BuildTime" Value="$(BuildTime)" />
         <PackageReference Include="log4net" Version="3.2.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     </ItemGroup>
 

@@ -1,7 +1,5 @@
 using DddExample.Application;
 
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace DddExample
 {
     public class Program
