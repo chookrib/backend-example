@@ -1,0 +1,2 @@
+### 测试异常
+GET http://{{host}}/.well-known/test/exception

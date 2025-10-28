@@ -4,7 +4,7 @@ from src.adapter.driving import result_codes
 
 
 class Result:
-    """Controller返回结果"""
+    """Controller 返回结果"""
 
     def __init__(self, code: int, message: str = "", data: Any = None):
         self.code = code

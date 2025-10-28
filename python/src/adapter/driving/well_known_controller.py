@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.get("/.well-known/info")
 def info():
-    """应用信息，显示非涉密信息"""
+    """应用信息"""
     commit_info = subprocess.check_output(
         ["git", "log", "-1", "--pretty=format:%h%d%n%ad"],
         # ["git", "rev-parse", "--short", "HEAD"],

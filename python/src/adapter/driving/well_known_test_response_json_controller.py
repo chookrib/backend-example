@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter
 
 from src.adapter.driving.result import Result
 
@@ -8,15 +8,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/.well-known/test/json/dict")
-def test_json_dict():
-    """测试JSON数据输出"""
+@router.get("/.well-known/test/response/json/dict")
+def test_response_json_dict():
+    """测试响应，dict 响应为 json"""
     return Result.ok(data=test_data())
 
 
-@router.get("/.well-known/test/json/class")
-def test_json_class():
-    """测试JSON数据输出"""
+@router.get("/.well-known/test/response/json/class")
+def test_response_json_class():
+    """测试响应，class 响应为 json"""
     return Result.ok(data=TestDataClass())
 
 
@@ -29,7 +29,7 @@ from pydantic import BaseModel
 
 
 class TestDataEnum(int, Enum):
-    """用于测试JSON转换的枚举"""
+    """测试枚举"""
     ENUM_1 = 1
     ENUM_2 = 2
     ENUM_3 = 3
@@ -37,7 +37,7 @@ class TestDataEnum(int, Enum):
 
 # class TestDataClass():
 class TestDataClass(BaseModel):
-    """用于测试JSON转换的数据类"""
+    """测试数据class"""
     c_none: None = None
     c_str_empty: str = ""
     c_str_test: str = "test"
@@ -65,7 +65,7 @@ class TestDataClass(BaseModel):
 
 
 def test_data():
-    """用于测试JSON转换的数据"""
+    """生成测试数据dict"""
 
     def _test_data():
         return {

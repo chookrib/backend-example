@@ -1,4 +1,4 @@
-"""Result返回码定义"""
+"""Controller 返回结果 code 定义"""
 
 # 成功
 SUCCESS = 0

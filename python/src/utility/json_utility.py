@@ -22,7 +22,7 @@ def to_camel_case(string: str) -> str:
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
 
 
-# 可通过 /.well-known/test/json/dict 查看输出测试结果
+# 可通过 /.well-known/test/response/json/dict 查看输出结果
 def custom_jsonable_encoder(obj, **kwargs):
     """自定义 JSON 序列化转换器"""
     # print(type(obj))
@@ -35,13 +35,16 @@ def custom_jsonable_encoder(obj, **kwargs):
 
     if isinstance(obj, bool):
         return obj
+
     if isinstance(obj, int):
         if abs(obj) > 2 ** 53 - 1:  # long 转字符串
             return str(obj)
         else:
             return obj
+
     if isinstance(obj, Decimal):
         return str(obj)
+
     # datetime 继承于 date，故需先处理 datetime
     if isinstance(obj, datetime):
         return obj.strftime("%Y-%m-%d %H:%M:%S")  # 不处理默认为 yyyy-MM-dd hh:mm:ss.SSSSSS

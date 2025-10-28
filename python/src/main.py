@@ -120,6 +120,25 @@ async def not_login_exception_handler(request: Request, e: NotLoginException):
 async def catch_all_exceptions_middleware(request: Request, call_next):
     try:
         response = await call_next(request)
+        # if response.status_code == 404:
+        #     return JSONResponse(
+        #         content=Result.error(
+        #             code=result_codes.ERROR_DEFAULT,
+        #             message=f"HTTP 404: {request.url.path}"
+        #         ).to_dict()
+        #     )
+        # elif response.status_code == 500:
+        #     # print(response)
+        #     # 读取响应内容
+        #     body = b""
+        #     async for chunk in response.body_iterator:
+        #         body += chunk
+        #     return JSONResponse(
+        #         content=Result.error(
+        #             code=result_codes.ERROR_DEFAULT,
+        #             message=f"HTTP 500: {body.decode(errors='ignore')}"
+        #         ).to_dict()
+        #     )
         return response
     except Exception as e:
         logger.error(f"捕捉到未处理的异常: {str(e)}", exc_info=True)
@@ -136,16 +155,18 @@ encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 # 注册路由
 from src.adapter.driving import well_known_controller
 from src.adapter.driving import well_known_test_exception_controller
-from src.adapter.driving import well_known_test_json_controller
 from src.adapter.driving import well_known_test_lock_controller
 from src.adapter.driving import well_known_test_request_controller
+from src.adapter.driving import well_known_test_response_code_controller
+from src.adapter.driving import well_known_test_response_json_controller
 from src.adapter.driving import user_controller
 from src.adapter.driving import user_manage_controller
 app.include_router(well_known_controller.router)
 app.include_router(well_known_test_exception_controller.router)
-app.include_router(well_known_test_json_controller.router)
 app.include_router(well_known_test_lock_controller.router)
 app.include_router(well_known_test_request_controller.router)
+app.include_router(well_known_test_response_code_controller.router)
+app.include_router(well_known_test_response_json_controller.router)
 app.include_router(user_controller.router)
 app.include_router(user_manage_controller.router)
 

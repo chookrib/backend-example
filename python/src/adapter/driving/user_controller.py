@@ -2,14 +2,13 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from src.adapter.driving import request_helper
+from src.adapter.driving import request_auth_helper, request_value_helper
 from src.adapter.driving.controller_exception import ControllerException
 from src.adapter.driving.result import Result
 from src.application.user_auth_service import UserAuthService
 from src.application.user_profile_service import UserProfileService
 from src.application.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
-from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -22,11 +21,11 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
 @router.post("/api/user/register")
 async def register(request: Request):
     """注册"""
-    request_json = await request_helper.get_json(request)
-    username = value_utility.to_str_or_empty(request_json.get("username"))
-    password = value_utility.to_str_or_empty(request_json.get("password"))
-    confirm_password = value_utility.to_str_or_empty(request_json.get("confirmPassword"))
-    nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
+    request_json = await request_value_helper.get_request_json(request)
+    username = request_value_helper.get_request_json_string_trim_req(request_json, "username")
+    password = request_value_helper.get_request_json_string_trim_req(request_json, "password")
+    confirm_password = request_value_helper.get_request_json_string_trim_req(request_json, "confirmPassword")
+    nickname = request_value_helper.get_request_json_string_trim_req(request_json, "nickname")
 
     if password != confirm_password:
         raise ControllerException("两次输入的密码不一致")
@@ -38,9 +37,9 @@ async def register(request: Request):
 @router.post("/api/user/login")
 async def login(request: Request):
     """登录"""
-    request_json = await request_helper.get_json(request)
-    username = value_utility.to_str_or_empty(request_json.get("username"))
-    password = value_utility.to_str_or_empty(request_json.get("password"))
+    request_json = await request_value_helper.get_request_json(request)
+    username = request_value_helper.get_request_json_string_trim_req(request_json, "username")
+    password = request_value_helper.get_request_json_string_trim_req(request_json, "password")
 
     access_token = await user_auth_service.login(username, password)
     return Result.ok(data={"accessToken": access_token})
@@ -49,7 +48,7 @@ async def login(request: Request):
 @router.get("/api/user/profile")
 async def profile(request: Request):
     """取用户资料"""
-    user_id = request_helper.require_login_user_id(request)
+    user_id = request_auth_helper.require_login_user_id(request)
     user_dto = await user_query_handler.query_by_id_req(user_id)
     # return Result.ok(data=user_dto.to_json())
     return Result.ok(data={"profile": user_dto})
@@ -58,12 +57,12 @@ async def profile(request: Request):
 @router.post("/api/user/modify-password")
 async def modify_password(request: Request):
     """修改密码"""
-    user_id = request_helper.require_login_user_id(request)
+    user_id = request_auth_helper.require_login_user_id(request)
 
-    request_json = await request_helper.get_json(request)
-    old_password = value_utility.to_str_or_empty(request_json.get("oldPassword"))
-    new_password = value_utility.to_str_or_empty(request_json.get("newPassword"))
-    confirm_password = value_utility.to_str_or_empty(request_json.get("confirmPassword"))
+    request_json = await request_value_helper.get_request_json(request)
+    old_password = request_value_helper.get_request_json_string_trim_req(request_json, "oldPassword")
+    new_password = request_value_helper.get_request_json_string_trim_req(request_json, "newPassword")
+    confirm_password = request_value_helper.get_request_json_string_trim_req(request_json, "confirmPassword")
 
     if confirm_password != new_password:
         raise ControllerException("两次输入的密码不一致")
@@ -75,10 +74,10 @@ async def modify_password(request: Request):
 @router.post("/api/user/modify-nickname")
 async def modify_nickname(request: Request):
     """修改昵称"""
-    user_id = request_helper.require_login_user_id(request)
+    user_id = request_auth_helper.require_login_user_id(request)
 
-    request_json = await request_helper.get_json(request)
-    nickname = value_utility.to_str_or_empty(request_json.get("nickname"))
+    request_json = await request_value_helper.get_request_json(request)
+    nickname = request_value_helper.get_request_json_string_trim_req(request_json, "nickname")
     await user_profile_service.modify_nickname(user_id, nickname)
     return Result.ok()
 
@@ -86,10 +85,10 @@ async def modify_nickname(request: Request):
 @router.post("/api/user/send-mobile-code")
 async def send_mobile_code(request: Request):
     """发送手机验证码"""
-    user_id = request_helper.require_login_user_id(request)
+    user_id = request_auth_helper.require_login_user_id(request)
 
-    request_json = await request_helper.get_json(request)
-    mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
+    request_json = await request_value_helper.get_request_json(request)
+    mobile = request_value_helper.get_request_json_string_trim_req(request_json, "mobile")
     await user_profile_service.send_mobile_code(user_id, mobile)
     return Result.ok()
 
@@ -97,10 +96,10 @@ async def send_mobile_code(request: Request):
 @router.post("/api/user/bind-mobile")
 async def bind_mobile(request: Request):
     """绑定手机"""
-    user_id = request_helper.require_login_user_id(request)
+    user_id = request_auth_helper.require_login_user_id(request)
 
-    request_json = await request_helper.get_json(request)
-    mobile = value_utility.to_str_or_empty(request_json.get("mobile"))
-    code = value_utility.to_str_or_empty(request_json.get("code"))
+    request_json = await request_value_helper.get_request_json(request)
+    mobile = request_value_helper.get_request_json_string_trim_req(request_json, "mobile")
+    code = request_value_helper.get_request_json_string_trim_req(request_json, "code")
     await user_profile_service.bind_mobile(user_id, mobile, code)
     return Result.ok()

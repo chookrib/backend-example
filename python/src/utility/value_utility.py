@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 from decimal import Decimal
 
 
@@ -13,66 +13,24 @@ def is_blank(value) -> bool:
 # ======================================================================================================================
 
 
-def to_str_or_empty(value) -> str:
-    """取字符串值，失败返回空字符串"""
-    if value is None:
-        return ""
-    return str(value).strip()  # 去空格
-
-
-def to_str_or_default(value, default: str) -> str:
-    """取字符串值，失败返回默认值"""
-    if value is None:
-        return default
-    return str(value).strip()  # 去空格
-
-
-def to_str_req(value, name: str = "") -> str:
-    """取字符串值，失败抛出异常"""
-    if value is None:
-        raise Exception(f"取字符串值 {name} 失败" if name else f"取字符串值失败")
-
-    s = str(value).strip()  # 去空格
-    if not s:
-        raise Exception(f"取字符串值 {name} 失败" if name else f"取字符串值失败")
-
-    return s
-
-
-# ======================================================================================================================
-
-def to_int_or_none(value) -> int | None:
-    """取整数值，失败返回None"""
-    if value is None:
-        return None
-    if isinstance(value, int):
-        return value
-    try:
-        return int(value)
-    except Exception:
-        return None
-
-
-def to_int_or_default(value, default: int) -> int:
-    """取整数值，失败返回默认值"""
-    i = to_int_or_none(value)
-    if i is None:
-        return default
-    return i
-
-
-def to_int_req(value, name: str = "") -> int:
-    """取整数值，失败抛出异常"""
-    i = to_int_or_none(value)
-    if i is None:
-        raise Exception(f"取整数值 {name} 失败" if name else f"取整数值失败")
-    return i
+# def to_string_or_empty(value) -> str:
+#     """转 string，失败返回空字符串"""
+#     if value is None:
+#         return ""
+#     return str(value).strip()  # 去空格
+#
+#
+# def to_string_or_default(value, default: str) -> str:
+#     """转 string，失败返回默认值"""
+#     if value is None:
+#         return default
+#     return str(value).strip()  # 去空格
 
 
 # ======================================================================================================================
 
 def to_bool_or_none(value) -> bool | None:
-    """取布尔值，失败返回None"""
+    """转 bool，失败返回 None"""
     if value is None:
         return None
     if isinstance(value, bool):
@@ -86,60 +44,39 @@ def to_bool_or_none(value) -> bool | None:
 
 
 def to_bool_or_default(value, default: bool) -> bool:
-    """取布尔值，失败返回默认值"""
+    """转 bool，失败返回默认值"""
     b = to_bool_or_none(value)
     if b is None:
         return default
-    return b
-
-
-def to_bool_req(value, name: str = "") -> bool:
-    """取布尔值，失败抛出异常"""
-    b = to_bool_or_none(value)
-    if b is None:
-        raise Exception(f"取布尔值 {name} 失败" if name else f"取布尔值失败")
     return b
 
 
 # ======================================================================================================================
 
-def to_datetime_str(value: datetime) -> str:
-    """日期时间转字符串"""
-    return value.strftime("%Y-%m-%d %H:%M:%S")
-
-
-def to_datetime_or_none(value) -> datetime | None:
-    """取日期时间，失败返回None"""
+def to_int_or_none(value) -> int | None:
+    """转 int，失败返回 None"""
     if value is None:
         return None
-    if isinstance(value, datetime):
+    if isinstance(value, int):
         return value
     try:
-        return datetime.fromisoformat(value)
+        return int(value)
     except Exception:
         return None
 
 
-def to_datetime_or_default(value, default: datetime) -> datetime:
-    """取日期时间，失败返回默认值"""
-    dt = to_datetime_or_none(value)
-    if dt is None:
+def to_int_or_default(value, default: int) -> int:
+    """转 int，失败返回默认值"""
+    i = to_int_or_none(value)
+    if i is None:
         return default
-    return dt
-
-
-def to_datetime_req(value, name: str = "") -> datetime:
-    """取日期时间，失败抛出异常"""
-    dt = to_datetime_or_none(value)
-    if dt is None:
-        raise Exception(f"取日期时间值 {name} 失败" if name else f"取日期时间值失败")
-    return dt
+    return i
 
 
 # ======================================================================================================================
 
 def to_decimal_or_none(value) -> Decimal | None:
-    """取Decimal值，失败返回None"""
+    """转 decimal，失败返回 None"""
     if value is None:
         return None
     if isinstance(value, Decimal):
@@ -151,16 +88,92 @@ def to_decimal_or_none(value) -> Decimal | None:
 
 
 def to_decimal_or_default(value, default: Decimal) -> Decimal:
-    """取Decimal值，失败返回默认值"""
+    """转 decimal，失败返回默认值"""
     d = to_decimal_or_none(value)
     if d is None:
         return default
     return d
 
 
-def to_decimal_req(value, name: str = "") -> Decimal:
-    """取Decimal值，失败抛出异常"""
-    d = to_decimal_or_none(value)
+# ======================================================================================================================
+
+def format_datetime(value: datetime) -> str:
+    """格式化 datetime"""
+    return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def to_datetime_or_none(value) -> datetime | None:
+    """转 datetime ，失败返回 None"""
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value
+    try:
+        # return datetime.fromisoformat(value)
+        return datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return None
+
+
+def to_datetime_or_default(value, default: datetime) -> datetime:
+    """转 datetime，失败返回默认值"""
+    dt = to_datetime_or_none(value)
+    if dt is None:
+        return default
+    return dt
+
+
+# ======================================================================================================================
+
+
+def format_date(value: date) -> str:
+    """格式化 date"""
+    return value.strftime("%Y-%m-%d")
+
+
+def to_date_or_none(value) -> date | None:
+    """转 date ，失败返回 None"""
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    try:
+        return datetime.strptime(str(value), "%Y-%m-%d").date()
+    except Exception:
+        return None
+
+
+def to_date_or_default(value, default: date) -> date:
+    """转 date，失败返回默认值"""
+    d = to_date_or_none(value)
     if d is None:
-        raise Exception(f"取Decimal值 {name} 失败" if name else f"取Decimal值失败")
+        return default
     return d
+
+
+# ======================================================================================================================
+
+
+def format_time(value: time) -> str:
+    """格式化 time"""
+    return value.strftime("%H:%M:%S")
+
+
+def to_time_or_none(value) -> time | None:
+    """转 time ，失败返回 None"""
+    if value is None:
+        return None
+    if isinstance(value, time):
+        return value
+    try:
+        return datetime.strptime(str(value), "%H:%M:%S").time()
+    except Exception:
+        return None
+
+
+def to_time_or_default(value, default: time) -> time:
+    """转 time，失败返回默认值"""
+    t = to_time_or_none(value)
+    if t is None:
+        return default
+    return t

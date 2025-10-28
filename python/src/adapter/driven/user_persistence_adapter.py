@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import aiosqlite
 
@@ -48,7 +49,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
             nickname=row_dict.get("u_nickname", ""),
             mobile=row_dict.get("u_mobile", ""),
             is_admin=bool(row_dict.get("u_is_admin", False)),
-            created_at=value_utility.to_datetime_req(row_dict.get("u_created_at", ""))
+            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min)
         )
 
     async def insert(self, entity: User) -> None:
@@ -64,7 +65,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                                  entity.nickname,
                                  entity.mobile,
                                  int(entity.is_admin),
-                                 value_utility.to_datetime_str(entity.created_at)
+                                 value_utility.format_datetime(entity.created_at)
                              ))
             await db.commit()
 
@@ -85,7 +86,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                                  entity.nickname,
                                  entity.mobile,
                                  int(entity.is_admin),
-                                 value_utility.to_datetime_str(entity.created_at),
+                                 value_utility.format_datetime(entity.created_at),
                                  entity.id
                              ))
             await db.commit()

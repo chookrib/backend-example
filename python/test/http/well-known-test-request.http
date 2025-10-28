@@ -1,19 +1,19 @@
-### 测试请求
+### 测试请求，获取请求体字符串，无请求体
 POST http://{{host}}/.well-known/test/request/string
 
-###
+### 测试请求，获取请求体字符串，请求头 text，请求体 text
 POST http://{{host}}/.well-known/test/request/string
 Content-Type: text/plain
 
 test 测试
 
-###
+### 测试请求，获取请求体字符串，请求头 json，请求体 text
 POST http://{{host}}/.well-known/test/request/string
 Content-Type: application/json
 
 test 测试
 
-###
+### 测试请求，获取请求体字符串，请求头 json，请求体 json
 POST http://{{host}}/.well-known/test/request/string
 Content-Type: application/json
 
@@ -30,22 +30,22 @@ Content-Type: application/json
   }
 }
 
-###
+### 测试请求，获取请求体 json，无请求体
 POST http://{{host}}/.well-known/test/request/json
 
-###
+### 测试请求，获取请求体 json，请求头 text，请求体 text
 POST http://{{host}}/.well-known/test/request/json
 Content-Type: text/plain
 
 test 测试
 
-###
+### 测试请求，获取请求体 json，请求头 json，请求体 text
 POST http://{{host}}/.well-known/test/request/json
 Content-Type: application/json
 
 test 测试
 
-###
+### 测试请求，获取请求体 json，请求头 json，请求体 json
 POST http://{{host}}/.well-known/test/request/json
 Content-Type: application/json
 
@@ -61,3 +61,12 @@ Content-Type: application/json
     "key": "值"
   }
 }
+
+### 测试请求，获取请求体 json 中的字段
+POST http://{{host}}/.well-known/test/request/get
+Content-Type: application/json
+
+{
+  "test": " test "
+}
+
