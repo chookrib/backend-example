@@ -1,6 +1,6 @@
-### 404
+### 测试响应，404
 GET http://{{host}}/.well-known/test/response/code/404
 
-### 500
+### 测试响应，4500
 GET http://{{host}}/.well-known/test/response/code/500
 

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 测试响应 Well Known Controller
+ * 测试响应状态码 Well Known Controller
  */
 @RestController
 public class WellKnownTestResponseCodeController {
@@ -15,21 +15,27 @@ public class WellKnownTestResponseCodeController {
     private static final Logger logger = LoggerFactory.getLogger(WellKnownTestResponseCodeController.class);
 
     ///**
-    // * 500
+    // * 测试响应 500
     // */
     //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    //@RequestMapping(value = "/.well-known/test/response/code/500", method = RequestMethod.GET,
-    //        produces = "text/plain;charset=UTF-8")
+    //@RequestMapping(
+    //        value = "/.well-known/test/response/code/500",
+    //        method = RequestMethod.GET,
+    //        produces = "text/plain;charset=UTF-8"
+    //)
     //public String testResponseCode500()
     //{
     //    return "测试500错误";
     //}
 
     /**
-     * 500
+     * 测试响应 500
      */
-    @RequestMapping(value = "/.well-known/test/response/code/500", method = RequestMethod.GET,
-            produces = "text/plain;charset=UTF-8")
+    @RequestMapping(
+            value = "/.well-known/test/response/code/500",
+            method = RequestMethod.GET,
+            produces = "text/plain;charset=UTF-8"
+    )
     public String testResponseCode500(HttpServletResponse response)
     {
         response.setStatus(500);

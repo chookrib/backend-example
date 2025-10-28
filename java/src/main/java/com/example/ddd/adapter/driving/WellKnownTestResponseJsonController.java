@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 测试 JSON 数据输出 Well Known Controller
+ * 测试响应输出 JSON 数据 Well Known Controller
  */
 @RestController
 public class WellKnownTestResponseJsonController {
@@ -25,7 +25,7 @@ public class WellKnownTestResponseJsonController {
 
 
     /**
-     * 测试 JSON 数据输出，类
+     * 测试响应，class 响应为 json
      */
     @RequestMapping(value = "/.well-known/test/response/json/class", method = RequestMethod.GET)
     public Result testResponseJsonClass() {
@@ -34,7 +34,7 @@ public class WellKnownTestResponseJsonController {
     }
 
     /**
-     * 测试 JSON 数据输出，嵌套类
+     * 测试响应，嵌套 class 响应为 json
      */
     @RequestMapping(value = "/.well-known/test/response/json/class-nested", method = RequestMethod.GET)
     public Result testResponseJsonClassNested() {
@@ -43,10 +43,9 @@ public class WellKnownTestResponseJsonController {
     }
 
     // =================================================================================================================
-    // 以下为用于JSON转换测试的数据定义
 
     /**
-     * 用于测试 JSON 转换的数据类
+     * 测试数据 class
      */
     public class TestDataClass {
 
@@ -204,7 +203,7 @@ public class WellKnownTestResponseJsonController {
     }
 
     /**
-     * 用于测试 JSON 转换的数据类
+     * 测试数据嵌套 class
      */
     public class TestDataNestedClass {
 
@@ -226,7 +225,7 @@ public class WellKnownTestResponseJsonController {
 
 
     /**
-     * 用于测试 JSON 转换的枚举
+     * 测试枚举
      */
     public enum TestDataEnum {
 
