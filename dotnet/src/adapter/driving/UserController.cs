@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using DddExample.Application;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+
 
 namespace DddExample.Adapter.Driving
 {
@@ -25,27 +25,27 @@ namespace DddExample.Adapter.Driving
             this.userQueryHandler = userQueryHandler;
         }
 
-        [HttpPost("/api/user/register")]
-        public Result Register()
-        {
-            JObject requestJson = RequestValueHelper.GetRequestJson(Request);
+        //[HttpPost("/api/user/register")]
+        //public Result Register()
+        //{
+        //    JObject requestJson = RequestValueHelper.GetRequestJson(Request);
 
 
-            string username = (requestJson.Value<string>("username") ?? "").Trim();
-            string password = (requestJson.Value<string>("password") ?? "").Trim();
-            string confirmPassword = (requestJson.Value<string>("confirmPassword") ?? "").Trim();
-            string nickname = (requestJson.Value<string>("nickname") ?? "").Trim();
+        //    string username = (requestJson.Value<string>("username") ?? "").Trim();
+        //    string password = (requestJson.Value<string>("password") ?? "").Trim();
+        //    string confirmPassword = (requestJson.Value<string>("confirmPassword") ?? "").Trim();
+        //    string nickname = (requestJson.Value<string>("nickname") ?? "").Trim();
 
-            try
-            {
-                string userId = userProfileService.Register(username, password, nickname);
-                return Result.Ok("注册成功", new { UserId = userId });
-            }
-            catch (Exception ex)
-            {
-                return Result.Error(500, ex.Message);
-            }
-        }
+        //    try
+        //    {
+        //        string userId = userProfileService.Register(username, password, nickname);
+        //        return Result.Ok("注册成功", new { UserId = userId });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Result.Error(500, ex.Message);
+        //    }
+        //}
 
 
         //[HttpPost("/api/user/register")]

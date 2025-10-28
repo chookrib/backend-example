@@ -1,0 +1,6 @@
+### ≤‚ ‘œÏ”¶£¨404
+GET http://{{host}}/.well-known/test/response/code/404
+
+### ≤‚ ‘œÏ”¶£¨4500
+GET http://{{host}}/.well-known/test/response/code/500
+

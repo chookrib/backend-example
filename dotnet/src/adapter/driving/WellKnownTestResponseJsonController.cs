@@ -5,35 +5,35 @@ using Microsoft.AspNetCore.Mvc;
 namespace DddExample.Adapter.Driving
 {
     /// <summary>
-    /// 测试 JSON 数据输出 Well Known Controller
+    /// 测试响应输出 JSON 数据 Well Known Controller
     /// </summary>
-    public class WellKnownTestJsonController : ControllerBase
+    public class WellKnownTestResponseJsonController : ControllerBase
     {
         /// <summary>
-        /// 测试 JSON 数据输出，类
+        /// 测试响应，class 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/class")]
-        public Result TestJsonClass()
+        [HttpGet("/.well-known/test/response/json/class")]
+        public Result TestResponseJsonClass()
         {
             TestDataClass c = new TestDataClass();
             return Result.OkData(c);
         }
 
         /// <summary>
-        /// 测试 JSON 数据输出，嵌套类
+        /// 测试响应，嵌套 class 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/class-nested")]
-        public Result TestJsonClassNested()
+        [HttpGet("/.well-known/test/response/json/class-nested")]
+        public Result TestResposneJsonClassNested()
         {
             TestDataNestedClass c = new TestDataNestedClass();
             return Result.OkData(c);
         }
 
         /// <summary>
-        /// 测试 JSON 数据输出，类ToDynamic
+        /// 测试响应，class to dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/class/dynamic")]
-        public Result TestJsonClassDynamic()
+        [HttpGet("/.well-known/test/response/json/class/dynamic")]
+        public Result TestResponseJsonClassDynamic()
         {
             TestDataClass c = new TestDataClass();
             dynamic d = DynamicUtility.ToDynamic(c);
@@ -41,10 +41,10 @@ namespace DddExample.Adapter.Driving
         }
 
         /// <summary>
-        /// 测试 JSON 数据输出，嵌套类ToDynamic
+        /// 测试响应，嵌套 class to dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/class-nested/dynamic")]
-        public Result TestJsonClassNestedDynamic()
+        [HttpGet("/.well-known/test/response/json/class-nested/dynamic")]
+        public Result TestResponseJsonClassNestedDynamic()
         {
             TestDataNestedClass c = new TestDataNestedClass();
             dynamic d = DynamicUtility.ToDynamic(c);
@@ -52,10 +52,10 @@ namespace DddExample.Adapter.Driving
         }
 
         /// <summary>
-        /// 测试 JSON 数据输出，dynamic
+        /// 测试响应，dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/dynamic")]
-        public Result TestJsonDynamic()
+        [HttpGet("/.well-known/test/response/json/dynamic")]
+        public Result TestResponseJsonDynamic()
         {
             dynamic d = new ExpandoObject();
             d.cls = new TestDataClass();
@@ -67,10 +67,10 @@ namespace DddExample.Adapter.Driving
         }
 
         /// <summary>
-        /// 构造dynamic集合转json输出
+        /// 测试响应，dynamic list 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/json/dynamic-list")]
-        public Result TestJsonDynamicList()
+        [HttpGet("/.well-known/test/response/json/dynamic-list")]
+        public Result TestResponseJsonDynamicList()
         {
             List<dynamic> dl = new List<dynamic>();
             for (int i = 1; i <= 12; i++)
@@ -88,7 +88,7 @@ namespace DddExample.Adapter.Driving
     }
 
     /// <summary>
-    /// 用于测试 JSON 转换的数据类
+    /// 测试数据 class
     /// </summary>
     public class TestDataClass
     {
@@ -163,7 +163,7 @@ namespace DddExample.Adapter.Driving
     }
 
     /// <summary>
-    /// 用于测试 JSON 转换的数据类
+    /// 测试数据嵌套 class
     /// </summary>
     public class TestDataNestedClass
     {
@@ -184,7 +184,7 @@ namespace DddExample.Adapter.Driving
     }
 
     /// <summary>
-    /// 用于测试 JSON 转换的枚举
+    /// 测试枚举
     /// </summary>
     public enum TestDataEnum
     {

@@ -42,7 +42,7 @@ namespace DddExample.Application
             {
                 Dictionary<string, string> payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecret);
                 //return payload["id"];
-                if (payload.TryGetValue("id", out string id))
+                if (payload.TryGetValue("id", out string? id) && id != null)
                     return id;
                 return string.Empty;
             }

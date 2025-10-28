@@ -27,9 +27,12 @@ namespace DddExample.Adapter.Driving
         [HttpPost("/.well-known/test/request/from-body-json")]
         public Result TestRequestFromBodyJson([FromBody] JsonElement? body)
         {
-            // [FromBody] JsonElement body 只处理 application/json、text/json 以及类似的 JSON 类型
-            string name = body.Value.GetProperty("name").GetString() ?? "";
-            return Result.OkData(body);
+            //[FromBody] JsonElement body 只处理 application/json、text/json 以及类似的 JSON 类型
+            //string name = body.Value.GetProperty("name").GetString() ?? "";
+            if (body == null)
+                return Result.Ok();
+            else
+                return Result.OkData(body);
         }
 
         [HttpPost("/.well-known/test/request/from-body-dynamic")]

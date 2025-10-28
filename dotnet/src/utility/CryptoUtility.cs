@@ -54,7 +54,7 @@ namespace DddExample.Utility
             };
 
             tokenHandler.ValidateToken(jwt, validationParameters, out SecurityToken validatedToken);
-            JwtSecurityToken jwtToken = validatedToken as JwtSecurityToken;
+            JwtSecurityToken? jwtToken = validatedToken as JwtSecurityToken;
             if (jwtToken == null)
                 //throw new SecurityTokenException("无效的 JWT");
                 throw new Exception("无效的 JWT");

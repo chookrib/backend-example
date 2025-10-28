@@ -1,25 +1,2 @@
 ### 应用信息
 GET http://{{host}}/.well-known/info
-
-### 测试异常
-GET http://{{host}}/.well-known/test/exception
-
-### 测试 JSON 数据输出
-GET http://{{host}}/.well-known/test/json/class
-###
-GET http://{{host}}/.well-known/test/json/class-nested
-###
-GET http://{{host}}/.well-known/test/json/class/dynamic
-###
-GET http://{{host}}/.well-known/test/json/class-nested/dynamic
-###
-GET http://{{host}}/.well-known/test/json/dynamic
-###
-GET http://{{host}}/.well-known/test/json/dynamic-list
-
-### 测试锁
-GET http://{{host}}/.well-known/test/lock/reduce-safe
-###
-GET http://{{host}}/.well-known/test/lock/sleep
-# ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-unsafe
-# ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-safe

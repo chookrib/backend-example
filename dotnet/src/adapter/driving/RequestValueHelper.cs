@@ -103,8 +103,8 @@ namespace DddExample.Adapter.Driving
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
                 return defaultValue;
-            if (value.TryGetValue<string>(out string? result))
-                return result?.Trim() ?? defaultValue;
+            if (value.TryGetValue<string>(out string? result) && result != null)
+                return result.Trim();
             return defaultValue;
         }
 
@@ -122,12 +122,9 @@ namespace DddExample.Adapter.Driving
         public static string GetRequestJsonStringTrimReq(JsonNode json, params string[] keys)
         {
             JsonValue value = GetRequestJsonValueReq(json, keys);
-            string? s = null;
-            if (value.TryGetValue<string>(out string? result))
-                s = result;
-            if (s == null)
-                throw new ControllerException($"请求体 {string.Join('.', keys)} 值不是合法的 string");
-            return s;
+            if (value.TryGetValue<string>(out string? result) && result != null)
+                return result;
+            throw new ControllerException($"请求体 {string.Join('.', keys)} 值不是合法的 string");
         }
 
         //==============================================================================================================
