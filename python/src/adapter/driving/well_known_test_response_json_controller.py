@@ -37,7 +37,7 @@ class TestDataEnum(int, Enum):
 
 # class TestDataClass():
 class TestDataClass(BaseModel):
-    """测试数据class"""
+    """测试数据 class"""
     c_none: None = None
     c_str_empty: str = ""
     c_str_test: str = "test"
@@ -65,7 +65,7 @@ class TestDataClass(BaseModel):
 
 
 def test_data():
-    """生成测试数据dict"""
+    """生成测试数据 dict"""
 
     def _test_data():
         return {
