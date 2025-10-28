@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 sqlRowSet.getString("u_nickname"),
                 sqlRowSet.getString("u_mobile"),
                 sqlRowSet.getBoolean("u_is_admin"),
-                ValueUtility.toDateTimeReq(sqlRowSet.getString("u_created_at"))
+                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN)
         );
     }
 
@@ -77,7 +78,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getNickname(),
                 entity.getMobile(),
                 entity.isAdmin(),
-                ValueUtility.toDateTimeStr(entity.getCreatedAt())
+                ValueUtility.formatDateTime(entity.getCreatedAt())
         );
     }
 
@@ -101,7 +102,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueChecker
                 entity.getNickname(),
                 entity.getMobile(),
                 entity.isAdmin(),
-                ValueUtility.toDateTimeStr(entity.getCreatedAt()),
+                ValueUtility.formatDateTime(entity.getCreatedAt()),
                 entity.getId()
         );
     }

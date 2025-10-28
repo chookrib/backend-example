@@ -63,4 +63,5 @@ public class WellKnownTestRequestController {
     public Result testRequestJsonNode(@RequestBody(required = false) Object requestBody) {
         return Result.okData(requestBody);
     }
+
 }

@@ -1,0 +1,13 @@
+### 测试 JSON 数据输出
+GET http://{{host}}/.well-known/test/response/json/class
+###
+GET http://{{host}}/.well-known/test/response/json/class-nested
+###
+GET http://{{host}}/.well-known/test/response/json/class/dynamic
+###
+GET http://{{host}}/.well-known/test/response/json/class-nested/dynamic
+###
+GET http://{{host}}/.well-known/test/response/json/dynamic
+###
+GET http://{{host}}/.well-known/test/response/json/dynamic-list
+
