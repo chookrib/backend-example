@@ -54,7 +54,7 @@ namespace DddExample.Adapter.Driven
                 """, new
             {
                 id = entity.Id,
-                usrname = entity.Username,
+                username = entity.Username,
                 password = entity.Password,
                 nickname = entity.Nickname,
                 mobile = entity.Mobile,
@@ -143,7 +143,7 @@ namespace DddExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = conn.QuerySingleOrDefault("select * from t_user where u_usrname = @username",
+            dynamic? result = conn.QuerySingleOrDefault("select * from t_user where u_username = @username",
                 new { username });
             if (result == null)
                 return null;

@@ -54,6 +54,19 @@ namespace DddExample
                 //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;             // 忽略循环引用
             });
 
+            // 你可以在 ASP.NET Core 的 Program.cs 或 Startup.cs 中允许同步 IO，示例代码如下：
+            // 注意：允许同步 IO 可能会带来性能问题，不推荐在生产环境使用。
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.AllowSynchronousIO = true;
+            });
+
+            // 或者对于 IIS：
+            builder.Services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             //==========================================================================================================
 
             WebApplication app = builder.Build();
