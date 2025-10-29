@@ -1,11 +1,12 @@
-﻿using log4net;
+﻿using DddExample.Domain;
+using log4net;
 
 namespace DddExample.Adapter.Driven
 {
     /// <summary>
     /// 短信 Gateway 接口 Adapter
     /// </summary>
-    public class SmsGatewayAdapter
+    public class SmsGatewayAdapter : SmsGateway
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(SmsGatewayAdapter));
 

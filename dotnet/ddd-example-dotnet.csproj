@@ -13,7 +13,9 @@
     <ItemGroup>
         <!-- 注入编译时间 -->
         <AssemblyMetadata Include="BuildTime" Value="$(BuildTime)" />
+        <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="log4net" Version="3.2.0" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.10" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     </ItemGroup>
 

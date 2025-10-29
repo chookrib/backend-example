@@ -24,7 +24,7 @@ namespace DddExample.Application
         /// </summary>
         public string Login(string username, string password)
         {
-            User user = this.userRepository.SelectByUsername(username);
+            User? user = this.userRepository.SelectByUsername(username);
             if (user == null || !user.IsPasswordMatch(password))
                 throw new ApplicationException("密码错误");
             return CryptoUtility.EncodeJwt(new Dictionary<string, string>()

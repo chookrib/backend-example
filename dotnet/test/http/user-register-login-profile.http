@@ -1,0 +1,43 @@
+### 准备
+< {%
+    client.global.clearAll();
+
+    const rnd = $random.name.username;
+    client.global.set('username', rnd);
+    // console.log('client.global', client.global);
+    // request.variables.set('username', rnd);
+    // console.log(.variables);
+%}
+GET http://{{host}}/.well-known/info
+
+### 注册
+POST http://{{host}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "password",
+  "confirmPassword": "password",
+  "nickname": "{{username}}"
+}
+
+> {%
+%}
+
+### 登录
+POST http://{{host}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "password"
+}
+
+> {%
+    client.global.set('accessToken', response.body.data.accessToken);
+%}
+
+### 取用户信息
+GET http://{{host}}/api/user/profile
+Access-Token: {{accessToken}}
+

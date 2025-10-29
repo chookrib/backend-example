@@ -2,6 +2,7 @@
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DddExample.Adapter.Driving
 {
@@ -39,6 +40,14 @@ namespace DddExample.Adapter.Driving
         public Result TestRequestFromBodyDynamic([FromBody] dynamic? body)
         {
             return Result.OkData(body);
+        }
+
+        //==============================================================================================================
+
+        [HttpGet("/.well-known/test/request/from-query")]
+        public Result TestRequestFromQuery([FromQuery][BindRequired] string id)
+        {
+            return Result.OkData(id);
         }
     }
 }

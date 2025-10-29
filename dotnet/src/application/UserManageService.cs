@@ -8,16 +8,16 @@ namespace DddExample.Application
     public class UserManageService
     {
         private readonly UserRepository userRepository;
-        private readonly UserUniqueChecker userUniqueChecker;
+        private readonly UserUniqueSpecification userUniqueSpecification;
         private readonly LockService lockService;
 
         public UserManageService(
             UserRepository userRepository,
-            UserUniqueChecker userUniqueChecker,
+            UserUniqueSpecification userUniqueSpecification,
             LockService lockService)
         {
             this.userRepository = userRepository;
-            this.userUniqueChecker = userUniqueChecker;
+            this.userUniqueSpecification = userUniqueSpecification;
             this.lockService = lockService;
         }
 
@@ -39,7 +39,7 @@ namespace DddExample.Application
             return this.lockService.ExecuteWithLock(LockKeys.USER, () =>
             {
                 User user = User.CreateUser(IdGenerator.GenerateId(), username, password, nickname, mobile,
-                    this.userUniqueChecker);
+                    this.userUniqueSpecification);
                 this.userRepository.Insert(user);
                 return user.Id;
             });
@@ -53,7 +53,7 @@ namespace DddExample.Application
             this.lockService.ExecuteWithLock(LockKeys.USER, () =>
             {
                 User user = this.userRepository.SelectByIdReq(id);
-                user.Modify(username, nickname, mobile, this.userUniqueChecker);
+                user.Modify(username, nickname, mobile, this.userUniqueSpecification);
                 this.userRepository.Update(user);
             });
         }

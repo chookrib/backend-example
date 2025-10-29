@@ -1,0 +1,4 @@
+### 未登录时取用户信息
+GET http://{{host}}/api/user/profile
+
+

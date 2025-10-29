@@ -45,8 +45,7 @@ namespace DddExample.Adapter.Driving
         /// <summary>
         /// 是否成功
         /// </summary>
-        //[JsonProperty("success")]
-        public bool IsSuccess
+        public bool Success
         {
             get { return Code == ResultCodes.SUCCESS; }
         }
@@ -122,7 +121,7 @@ namespace DddExample.Adapter.Driving
             d.code = Code;
             d.meessage = Message;
             d.data = Data;
-            d.success = IsSuccess;
+            d.success = Success;
             return d;
         }
 

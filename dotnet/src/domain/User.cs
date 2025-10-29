@@ -43,7 +43,7 @@ namespace DddExample.Domain
         /// 注册用户
         /// </summary>
         public static User RegisterUser(string id, string username, string password, string nickname,
-            UserUniqueChecker userUniqueChecker)
+            UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
                 throw new DomainException("用户名不能为空");
@@ -54,12 +54,12 @@ namespace DddExample.Domain
             if (ValueUtility.IsBlank(nickname))
                 throw new DomainException("昵称不能为空");
 
-            if (userUniqueChecker != null)
+            if (userUniqueSpecification != null)
             {
-                if (!userUniqueChecker.IsUsernameUnique(username))
+                if (!userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (!userUniqueChecker.IsNicknameUnique(nickname))
+                if (!userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -108,14 +108,14 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改昵称
         /// </summary>
-        public void ModifyNickname(string nickname, UserUniqueChecker userUniqueChecker)
+        public void ModifyNickname(string nickname, UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(nickname))
                 throw new DomainException("昵称不能为空");
 
-            if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueChecker != null)
+            if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueSpecification != null)
             {
-                if (!userUniqueChecker.IsNicknameUnique(nickname))
+                if (!userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -125,14 +125,14 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改手机
         /// </summary>
-        public void ModifyMobile(string mobile, UserUniqueChecker userUniqueChecker)
+        public void ModifyMobile(string mobile, UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(mobile))
                 throw new DomainException("手机不能为空");
 
-            if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueChecker != null)
+            if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueSpecification != null)
             {
-                if (!userUniqueChecker.IsMobileUnique(mobile))
+                if (!userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -143,7 +143,7 @@ namespace DddExample.Domain
         /// 创建用户
         /// </summary>
         public static User CreateUser(string id, string username, string password, string nickname, string mobile,
-            UserUniqueChecker userUniqueChecker)
+            UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
                 throw new DomainException("用户名不能为空");
@@ -154,15 +154,15 @@ namespace DddExample.Domain
             if (ValueUtility.IsBlank(nickname))
                 throw new DomainException("昵称不能为空");
 
-            if (userUniqueChecker != null)
+            if (userUniqueSpecification != null)
             {
-                if (!userUniqueChecker.IsUsernameUnique(username))
+                if (!userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (!userUniqueChecker.IsNicknameUnique(nickname))
+                if (!userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsBlank(mobile) && !userUniqueChecker.IsMobileUnique(mobile))
+                if (!ValueUtility.IsBlank(mobile) && !userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -181,7 +181,8 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改用户
         /// </summary>
-        public void Modify(string username, string nickname, string mobile, UserUniqueChecker userUniqueChecker)
+        public void Modify(string username, string nickname, string mobile,
+            UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
                 throw new DomainException("用户名不能为空");
@@ -189,17 +190,17 @@ namespace DddExample.Domain
             if (ValueUtility.IsBlank(nickname))
                 throw new DomainException("昵称不能为空");
 
-            if (userUniqueChecker != null)
+            if (userUniqueSpecification != null)
             {
-                if (username.ToLower() != this.Username.ToLower() && !userUniqueChecker.IsUsernameUnique(username))
+                if (username.ToLower() != this.Username.ToLower() && !userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (nickname.ToLower() != this.Nickname.ToLower() && !userUniqueChecker.IsNicknameUnique(nickname))
+                if (nickname.ToLower() != this.Nickname.ToLower() && !userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
                 if (!ValueUtility.IsBlank(mobile) &&
                     mobile.ToLower() != this.Mobile.ToLower() &&
-                    !userUniqueChecker.IsMobileUnique(mobile))
+                    !userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 

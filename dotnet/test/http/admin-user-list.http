@@ -1,0 +1,26 @@
+### 登录
+< {%
+    client.global.clearAll();
+%}
+POST http://{{host}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+    client.global.set('accessToken', response.body.data.accessToken);
+%}
+
+### 用户列表
+POST http://{{host}}/api/admin/user/list
+Content-Type: application/json
+Access-Token: {{accessToken}}
+
+{
+  "pageNum": 1,
+  "pageSize": 10
+}
+

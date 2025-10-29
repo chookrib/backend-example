@@ -101,3 +101,15 @@ Content-Type: application/json
     "key": "ֵ"
   }
 }
+
+
+
+###
+GET http://{{host}}/.well-known/test/request/from-query
+
+###
+GET http://{{host}}/.well-known/test/request/from-query?id=
+
+###
+GET http://{{host}}/.well-known/test/request/from-query?id=1
+

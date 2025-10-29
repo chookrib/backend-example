@@ -16,28 +16,28 @@
         void Update(User entity);
 
         /// <summary>
-        /// 根据Id删除
+        /// 根据 id 删除
         /// </summary>
         void DeleteById(String id);
 
         /// <summary>
-        /// 根据 Id 查询，找不到返回 null
+        /// 根据 id 查询，找不到返回 null
         /// </summary>
-        User SelectById(String id);
+        User? SelectById(String id);
 
         /// <summary>
-        /// 根据 Id 查询，找不到抛出异常
+        /// 根据 id 查询，找不到抛出异常
         /// </summary>
         User SelectByIdReq(String id);
 
         /// <summary>
-        /// 根据 Id 集合查询
+        /// 根据 id 集合查询
         /// </summary>
-        List<User> SelectByIds(List<String> ids);
+        IList<User> SelectByIds(List<String> ids);
 
         /// <summary>
         /// 根据用户名查询，找不到返回 null
         /// </summary>
-        User SelectByUsername(String username);
+        User? SelectByUsername(String username);
     }
 }

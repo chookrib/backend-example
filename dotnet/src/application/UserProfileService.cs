@@ -11,7 +11,7 @@ namespace DddExample.Application
     public class UserProfileService
     {
         private readonly UserRepository userRepository;
-        private readonly UserUniqueChecker userUniqueChecker;
+        private readonly UserUniqueSpecification userUniqueSpecification;
         private readonly SmsGateway smsGateway;
         private readonly LockService lockService;
 
@@ -19,13 +19,13 @@ namespace DddExample.Application
 
         public UserProfileService(
             UserRepository userRepository,
-            UserUniqueChecker userUniqueChecker,
+            UserUniqueSpecification userUniqueSpecification,
             SmsGateway smsGateway,
             LockService lockService
             )
         {
             this.userRepository = userRepository;
-            this.userUniqueChecker = userUniqueChecker;
+            this.userUniqueSpecification = userUniqueSpecification;
             this.smsGateway = smsGateway;
             this.lockService = lockService;
         }
@@ -38,7 +38,7 @@ namespace DddExample.Application
             return this.lockService.ExecuteWithLock(LockKeys.USER, () =>
             {
                 User user = User.RegisterUser(IdGenerator.GenerateId(), username, password, nickname,
-                    this.userUniqueChecker);
+                    this.userUniqueSpecification);
                 this.userRepository.Insert(user);
                 return user.Id;
             });
@@ -62,7 +62,7 @@ namespace DddExample.Application
             this.lockService.ExecuteWithLock(LockKeys.USER, () =>
             {
                 User user = this.userRepository.SelectByIdReq(userId);
-                user.ModifyNickname(nickname, this.userUniqueChecker);
+                user.ModifyNickname(nickname, this.userUniqueSpecification);
                 this.userRepository.Update(user);
             });
         }
@@ -94,7 +94,7 @@ namespace DddExample.Application
             if (!this.mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
                 throw new ApplicationException("验证码错误");
 
-            user.ModifyMobile(mobile, this.userUniqueChecker);
+            user.ModifyMobile(mobile, this.userUniqueSpecification);
             this.userRepository.Update(user);
             this.mobileCodeDict.TryRemove(key, out _);
         }
