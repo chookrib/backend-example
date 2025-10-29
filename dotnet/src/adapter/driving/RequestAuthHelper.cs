@@ -8,32 +8,10 @@ namespace DddExample.Adapter.Driving
     /// </summary>
     public class RequestAuthHelper
     {
-        private readonly UserAuthService userAuthService;
-        private readonly UserQueryHandler userQueryHandler;
-
-        private static RequestAuthHelper? INSTANCE;
-
-        public RequestAuthHelper(UserAuthService userAuthService, UserQueryHandler userQueryHandler)
-        {
-            this.userAuthService = userAuthService;
-            this.userQueryHandler = userQueryHandler;
-            INSTANCE = this;
-        }
-
-        /// <summary>
-        /// 获取静态实例
-        /// </summary>
-       private static RequestAuthHelper GetInstance()
-        {
-            if (INSTANCE == null)
-                throw new ControllerException("RequestAuthHelper 静态实例未初始化");
-            return INSTANCE;
-        }
-
         /// <summary>
         /// 获取登录用户Id，未登录返回空字符串
         /// </summary>
-        public static string getLoginUserId(HttpRequest request)
+        public static string GetLoginUserId(HttpRequest request)
         {
             string? accessToken = null;
             if (request.Headers.TryGetValue("Access-Token", out var values))
@@ -42,7 +20,7 @@ namespace DddExample.Adapter.Driving
             if (accessToken == null)
                 return string.Empty;
 
-            return GetInstance().userAuthService.GetLoginUserId(accessToken);
+            return Accessor.ServiceProvider.GetService<UserAuthService>()?.GetLoginUserId(accessToken) ?? string.Empty;
         }
 
         /// <summary>
@@ -50,7 +28,7 @@ namespace DddExample.Adapter.Driving
         /// </summary>
         public static string RequireLoginUserId(HttpRequest request)
         {
-            string userId = getLoginUserId(request);
+            string userId = GetLoginUserId(request);
             if (ValueUtility.IsBlank(userId))
                 throw new NotLoginException();
             return userId;
@@ -62,7 +40,7 @@ namespace DddExample.Adapter.Driving
         public static UserDto RequireLoginUserAdmin(HttpRequest request)
         {
             string userId = RequireLoginUserId(request);
-            UserDto? userDto = GetInstance().userQueryHandler.QueryById(userId);
+            UserDto? userDto = Accessor.ServiceProvider.GetService<UserQueryHandler>()?.QueryById(userId);
             if (userDto == null || !userDto.IsAdmin)
                 throw new NotLoginException();
             return userDto;

@@ -16,6 +16,7 @@ namespace DddExample.Application
         {
             this.jwtExpiresDay = configuration.GetValue<int>("app:user-jwt-expires-day");
             this.jwtSecret = configuration.GetValue<string>("app:user-jwt-secret", "");
+            Console.WriteLine(this.jwtSecret);
             this.userRepository = userRepository;
         }
 

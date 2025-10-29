@@ -18,6 +18,13 @@ namespace DddExample.Utility
         /// </summary>
         public static string EncodeJwt(Dictionary<string, string> payload, DateTime expiresAt, string secret)
         {
+            if (string.IsNullOrEmpty(secret))
+                throw new ArgumentException("jwt 编码 secret 不能为空", nameof(secret));
+
+            byte[] keyBytes = Encoding.UTF8.GetBytes(secret);
+            if (keyBytes.Length * 8 < 128)
+                throw new ArgumentException($"jwt 编码 secret 长度 {keyBytes.Length * 8} 不足 128 位 (16 字节)", nameof(secret));
+
             //List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? "")).ToList();
             List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
@@ -40,8 +47,16 @@ namespace DddExample.Utility
         /// </summary>
         public static Dictionary<string, string> DecodeJwt(string jwt, string secret)
         {
+            if (string.IsNullOrEmpty(secret))
+                throw new ArgumentException("jwt 解码 secret 不能为空", nameof(secret));
+            
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.UTF8.GetBytes(secret);
+            
+            if (key.Length * 8 < 128)
+                throw new ArgumentException($"jwt 解码 secret 长度 {key.Length * 8} 不足 128 位 (16 字节)",
+                    nameof(secret));
+
             TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,

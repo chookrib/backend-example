@@ -1,18 +1,18 @@
-### ²âÊÔÏìÓ¦£¬class ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼Œclass å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/class
 
-### ²âÊÔÏìÓ¦£¬Ç¶Ì× class ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼ŒåµŒå¥— class å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/class-nested
 
-### ²âÊÔÏìÓ¦£¬class to dynamic ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼Œclass to dynamic å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/class/dynamic
 
-### ²âÊÔÏìÓ¦£¬Ç¶Ì× class to dynamic ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼ŒåµŒå¥— class to dynamic å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/class-nested/dynamic
 
-### ²âÊÔÏìÓ¦£¬dynamic ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼Œdynamic å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/dynamic
 
-### ²âÊÔÏìÓ¦£¬dynamic list ÏìÓ¦Îª json
+### æµ‹è¯•å“åº”ï¼Œdynamic list å“åº”ä¸º json
 GET http://{{host}}/.well-known/test/response/json/dynamic-list
 

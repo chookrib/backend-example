@@ -1,11 +1,11 @@
-### ²âÊÔÇëÇó
+### æµ‹è¯•è¯·æ±‚
 POST http://{{host}}/.well-known/test/request/string
 
 ###
 POST http://{{host}}/.well-known/test/request/string
 Content-Type: text/plain
 
-test ²âÊÔ
+test æµ‹è¯•
 
 ###
 POST http://{{host}}/.well-known/test/request/string
@@ -13,14 +13,14 @@ Content-Type: application/json
 
 {
   "null": null,
-  "string": "²âÊÔ",
+  "string": "æµ‹è¯•",
   "bool": true,
   "int": 12345,
   "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
   "decimal": 123456789012345678901234567890.123456789012345678901234567890,
   "array": [1, 2, 3],
   "object": {
-    "key": "Öµ"
+    "key": "å€¼"
   }
 }
 
@@ -31,7 +31,7 @@ POST http://{{host}}/.well-known/test/request/from-body-string
 POST http://{{host}}/.well-known/test/request/from-body-string
 Content-Type: text/plain
 
-test ²âÊÔ
+test æµ‹è¯•
 
 ###
 POST http://{{host}}/.well-known/test/request/from-body-string
@@ -39,14 +39,14 @@ Content-Type: application/json
 
 {
   "null": null,
-  "string": "²âÊÔ",
+  "string": "æµ‹è¯•",
   "bool": true,
   "int": 12345,
   "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
   "decimal": 123456789012345678901234567890.123456789012345678901234567890,
   "array": [1, 2, 3],
   "object": {
-    "key": "Öµ"
+    "key": "å€¼"
   }
 }
 
@@ -57,7 +57,7 @@ POST http://{{host}}/.well-known/test/request/from-body-json
 POST http://{{host}}/.well-known/test/request/from-body-json
 Content-Type: text/plain
 
-test ²âÊÔ
+test æµ‹è¯•
 
 ###
 POST http://{{host}}/.well-known/test/request/from-body-json
@@ -65,14 +65,14 @@ Content-Type: application/json
 
 {
   "null": null,
-  "string": "²âÊÔ",
+  "string": "æµ‹è¯•",
   "bool": true,
   "int": 12345,
   "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
   "decimal": 123456789012345678901234567890.123456789012345678901234567890,
   "array": [1, 2, 3],
   "object": {
-    "key": "Öµ"
+    "key": "å€¼"
   }
 }
 
@@ -91,14 +91,14 @@ Content-Type: application/json
 
 {
   "null": null,
-  "string": "²âÊÔ",
+  "string": "æµ‹è¯•",
   "bool": true,
   "int": 12345,
   "long": 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890,
   "decimal": 123456789012345678901234567890.123456789012345678901234567890,
   "array": [1, 2, 3],
   "object": {
-    "key": "Öµ"
+    "key": "å€¼"
   }
 }
 

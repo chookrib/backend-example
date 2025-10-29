@@ -34,13 +34,13 @@ namespace DddExample.Adapter.Driven
         private User ToUser(dynamic result)
         {
             return User.RestoreUser(
-                result.t_id,
-                result.t_username,
-                result.t_password,
-                result.t_nickname,
-                result.t_mobile,
-                ValueUtility.ToBoolOrDefault(result.t_is_admin, false),
-                ValueUtility.ToDateTimeOrDefault(result.t_created_at, DateTime.MinValue)
+                result.u_id,
+                result.u_username,
+                result.u_password,
+                result.u_nickname,
+                result.u_mobile,
+                ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
+                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue)
                 );
         }
 
@@ -195,13 +195,13 @@ namespace DddExample.Adapter.Driven
         private UserDto ToUserDto(dynamic result)
         {
             return new UserDto(
-                result.t_id,
-                result.t_username,
-                //result.t_password,
-                result.t_nickname,
-                result.t_mobile,
-                ValueUtility.ToBoolOrDefault(result.t_is_admin, false),
-                ValueUtility.ToDateTimeOrDefault(result.t_created_at, DateTime.MinValue)
+                result.u_id,
+                result.u_username,
+                //result.u_password,
+                result.u_nickname,
+                result.u_mobile,
+                ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
+                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue)
                 );
         }
 

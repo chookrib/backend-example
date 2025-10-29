@@ -1,7 +1,7 @@
-### ²âÊÔËø£¬¼ÓËø¿Û¼õ
+### æµ‹è¯•é”ï¼ŒåŠ é”æ‰£å‡
 GET http://{{host}}/.well-known/test/lock/reduce-safe
 
-### ²âÊÔËø£¬µÈ´ı
+### æµ‹è¯•é”ï¼Œç­‰å¾…
 GET http://{{host}}/.well-known/test/lock/sleep
 # ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-unsafe
 # ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-safe

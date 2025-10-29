@@ -1,6 +1,6 @@
-### ²âÊÔÏìÓ¦£¬404
+### æµ‹è¯•å“åº”ï¼Œ404
 GET http://{{host}}/.well-known/test/response/code/404
 
-### ²âÊÔÏìÓ¦£¬4500
+### æµ‹è¯•å“åº”ï¼Œ500
 GET http://{{host}}/.well-known/test/response/code/500
 
