@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DddExample.Adapter.Driven;
@@ -5,7 +6,6 @@ using DddExample.Adapter.Driving;
 using DddExample.Application;
 using DddExample.Domain;
 using DddExample.Utility;
-
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace DddExample
@@ -30,7 +30,7 @@ namespace DddExample
             builder.Services.AddSingleton<UserAuthService>();
             builder.Services.AddSingleton<UserProfileService>();
             builder.Services.AddSingleton<UserManageService>();
-            
+
             // 注册 Controller
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
@@ -54,25 +54,19 @@ namespace DddExample
 
             // 你可以在 ASP.NET Core 的 Program.cs 或 Startup.cs 中允许同步 IO，示例代码如下：
             // 注意：允许同步 IO 可能会带来性能问题，不推荐在生产环境使用。
-            builder.WebHost.ConfigureKestrel(serverOptions =>
-            {
-                serverOptions.AllowSynchronousIO = true;
-            });
+            builder.WebHost.ConfigureKestrel(serverOptions => { serverOptions.AllowSynchronousIO = true; });
 
             // 或者对于 IIS：
-            builder.Services.Configure<IISServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
+            builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
 
             Accessor.Configuration = builder.Configuration;
-            
+
             //==========================================================================================================
 
             WebApplication app = builder.Build();
 
             Accessor.ServiceProvider = app.Services;
-            
+
             // Configure the HTTP request pipeline.
 
             //app.UseAuthorization();
@@ -101,6 +95,7 @@ namespace DddExample
         }
 
         #region json ת转换器
+
         private class LongToStringConverter : JsonConverter<long>
         {
             public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -125,7 +120,7 @@ namespace DddExample
                 => decimal.Parse(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                => writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
         }
 
         private class DecimalNullableToStringConverter : JsonConverter<decimal?>
@@ -208,6 +203,7 @@ namespace DddExample
             public override void Write(Utf8JsonWriter writer, TimeOnly? value, JsonSerializerOptions options)
                 => writer.WriteStringValue(value?.ToString(this.format) ?? string.Empty);
         }
+
         #endregion
     }
 }
