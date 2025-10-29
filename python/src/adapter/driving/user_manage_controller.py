@@ -8,6 +8,7 @@ from src.application.user_manage_service import UserManageService
 from src.application.user_query_criteria import UserQueryCriteria
 from src.application.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
+from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -45,9 +46,11 @@ async def user_list(request: Request):
 
 
 @router.get("/api/admin/user/get")
-async def user_get(request: Request, id: str):
+async def user_get(request: Request):
     """用户详情"""
     await request_auth_helper.require_login_user_admin(request)
+
+    id = request_value_helper.get_request_param_string_trim_req(request, "id")
 
     user_dto = await user_query_handler.query_by_id_req(id)
     # return Result.ok(data=user_dto.to_json())

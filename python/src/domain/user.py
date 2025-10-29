@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from src.domain.domain_exception import DomainException
-from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_unique_specification import UserUniqueSpecification
 from src.utility import crypto_utility, value_utility
 
 
@@ -45,7 +45,7 @@ class User(BaseModel):
             username: str,
             password: str,
             nickname: str,
-            user_unique_checker: UserUniqueChecker | None) -> "User":
+            user_unique_specification: UserUniqueSpecification | None) -> "User":
         """注册用户"""
         if value_utility.is_blank(username):
             raise DomainException("用户名不能为空")
@@ -56,11 +56,11 @@ class User(BaseModel):
         if value_utility.is_blank(nickname):
             raise DomainException("昵称不能为空")
 
-        if user_unique_checker is not None:
-            if not await user_unique_checker.is_username_unique(username):
+        if user_unique_specification is not None:
+            if not await user_unique_specification.is_username_unique(username):
                 raise DomainException("用户名已存在")
 
-            if not await user_unique_checker.is_nickname_unique(nickname):
+            if not await user_unique_specification.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
         return User(
@@ -91,24 +91,24 @@ class User(BaseModel):
 
         self.password = crypto_utility.encode_md5(new_password)
 
-    async def modify_nickname(self, nickname: str, user_unique_checker: UserUniqueChecker | None) -> None:
+    async def modify_nickname(self, nickname: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改昵称"""
         if value_utility.is_blank(nickname):
             raise DomainException("昵称不能为空")
 
-        if nickname.lower() != self.nickname.lower() and user_unique_checker is not None:
-            if not await user_unique_checker.is_nickname_unique(nickname):
+        if nickname.lower() != self.nickname.lower() and user_unique_specification is not None:
+            if not await user_unique_specification.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
         self.nickname = nickname
 
-    async def modify_mobile(self, mobile: str, user_unique_checker: UserUniqueChecker | None) -> None:
+    async def modify_mobile(self, mobile: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改手机"""
         if value_utility.is_blank(mobile):
             raise DomainException("昵称不能为空")
 
-        if mobile.lower() != self.mobile.lower() and user_unique_checker is not None:
-            if not await user_unique_checker.is_mobile_unique(mobile):
+        if mobile.lower() != self.mobile.lower() and user_unique_specification is not None:
+            if not await user_unique_specification.is_mobile_unique(mobile):
                 raise DomainException("手机已存在")
 
         self.mobile = mobile
@@ -120,7 +120,7 @@ class User(BaseModel):
             password: str,
             nickname: str,
             mobile: str,
-            user_unique_checker: UserUniqueChecker | None
+            user_unique_specification: UserUniqueSpecification | None
     ) -> "User":
         """创建用户"""
         if value_utility.is_blank(username):
@@ -132,14 +132,14 @@ class User(BaseModel):
         if value_utility.is_blank(nickname):
             raise DomainException("昵称不能为空")
 
-        if user_unique_checker is not None:
-            if not await user_unique_checker.is_username_unique(username):
+        if user_unique_specification is not None:
+            if not await user_unique_specification.is_username_unique(username):
                 raise DomainException("用户名已存在")
 
-            if not await user_unique_checker.is_nickname_unique(nickname):
+            if not await user_unique_specification.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
-            if not value_utility.is_blank(mobile) and not await user_unique_checker.is_mobile_unique(mobile):
+            if not value_utility.is_blank(mobile) and not await user_unique_specification.is_mobile_unique(mobile):
                 raise DomainException("手机已存在")
 
         return User(
@@ -153,9 +153,9 @@ class User(BaseModel):
         )
 
     async def modify(self, username: str,
-               nickname: str,
-               mobile: str,
-               user_unique_checker: UserUniqueChecker | None):
+                     nickname: str,
+                     mobile: str,
+                     user_unique_specification: UserUniqueSpecification | None):
         """修改用户"""
         if value_utility.is_blank(username):
             raise DomainException("用户名不能为空")
@@ -163,14 +163,17 @@ class User(BaseModel):
         if value_utility.is_blank(nickname):
             raise DomainException("昵称不能为空")
 
-        if user_unique_checker is not None:
-            if username.lower() != self.username.lower() and not await user_unique_checker.is_username_unique(username):
+        if user_unique_specification is not None:
+            if (username.lower() != self.username.lower() and
+                    not await user_unique_specification.is_username_unique(username)):
                 raise DomainException("用户名已存在")
 
-            if nickname.lower() != self.nickname.lower() and not await user_unique_checker.is_nickname_unique(nickname):
+            if (nickname.lower() != self.nickname.lower() and
+                    not await user_unique_specification.is_nickname_unique(nickname)):
                 raise DomainException("昵称已存在")
 
-            if not value_utility.is_blank(mobile) and mobile.lower() != self.mobile.lower() and not await user_unique_checker.is_mobile_unique(mobile):
+            if (not value_utility.is_blank(mobile) and mobile.lower() != self.mobile.lower() and
+                    not await user_unique_specification.is_mobile_unique(mobile)):
                 raise DomainException("手机已存在")
 
         self.username = username

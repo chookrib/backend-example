@@ -7,17 +7,17 @@ from src.application.lock.lock_service import LockService
 from src.domain.sms_gateway import SmsGateway
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
-from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_unique_specification import UserUniqueSpecification
 from src.utility import value_utility
 
 
 class UserProfileService:
     """用户资料Service"""
 
-    def __init__(self, user_repository: UserRepository, user_unique_checker: UserUniqueChecker,
+    def __init__(self, user_repository: UserRepository, user_unique_specification: UserUniqueSpecification,
                  sms_gateway: SmsGateway, lock_service: LockService) -> None:
         self.user_repository = user_repository
-        self.user_unique_checker = user_unique_checker
+        self.user_unique_specification = user_unique_specification
         self.sms_gateway = sms_gateway
         self.lock_service = lock_service
         self.mobile_code: dict[str, str] = {}
@@ -30,7 +30,7 @@ class UserProfileService:
                 username=username,
                 password=password,
                 nickname=nickname,
-                user_unique_checker=self.user_unique_checker)
+                user_unique_specification=self.user_unique_specification)
             await self.user_repository.insert(user)
             return user.id
 
@@ -44,7 +44,7 @@ class UserProfileService:
         """修改昵称"""
         async with self.lock_service.lock(lock_keys.USER):
             user = await self.user_repository.select_by_id_req(user_id)
-            await user.modify_nickname(nickname, self.user_unique_checker)
+            await user.modify_nickname(nickname, self.user_unique_specification)
             await self.user_repository.update(user)
 
     async def send_mobile_code(self, user_id: str, mobile: str) -> None:
@@ -67,6 +67,6 @@ class UserProfileService:
         key = user.id + "_" + mobile
         if self.mobile_code.get(key, "") != code:
             raise ApplicationException("验证码错误")
-        await user.modify_mobile(mobile, self.user_unique_checker)
+        await user.modify_mobile(mobile, self.user_unique_specification)
         await self.user_repository.update(user)
         self.mobile_code.pop(key, None)

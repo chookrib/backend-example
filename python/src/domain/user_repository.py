@@ -23,25 +23,25 @@ class UserRepository(ABC):
 
     @abstractmethod
     async def delete_by_id(self, id: str) -> None:
-        """根据Id删除"""
+        """根据 id 删除"""
         pass
 
     @abstractmethod
     async def select_by_id(self, id: str) -> User | None:
-        """根据Id查询，找不到返回null"""
+        """根据 id 查询，找不到返回 None"""
         pass
 
     @abstractmethod
     async def select_by_id_req(self, id: str) -> User:
-        """根据Id查询，找不到抛出异常"""
+        """根据 id 查询，找不到抛出异常"""
         pass
 
     @abstractmethod
     async def select_by_ids(self, id: list[str]) -> list[User]:
-        """根据Id集合查询"""
+        """根据 id 集合查询"""
         pass
 
     @abstractmethod
     async def select_by_username(self, username: str) -> User | None:
-        """根据用户名查询，找不到返回null"""
+        """根据用户名查询，找不到返回 None"""
         pass

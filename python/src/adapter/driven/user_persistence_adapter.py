@@ -11,11 +11,11 @@ from src.application.user_query_sort import UserQuerySort
 from src.config import settings
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
-from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_unique_specification import UserUniqueSpecification
 from src.utility import value_utility, crypto_utility
 
 
-class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler):
+class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryHandler):
     """用户持久化Adapter"""
 
     def __init__(self):
@@ -138,7 +138,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueChecker, UserQueryHandler
                 return None
 
     # ==================================================================================================================
-    # UserUniqueChecker
+    # UserUniqueSpecification
 
     async def is_username_unique(self, username: str) -> bool:
         if value_utility.is_blank(username):

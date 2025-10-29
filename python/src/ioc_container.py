@@ -59,12 +59,12 @@ ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)  # type: 
 # ======================================================================================================================
 # 注册 Driven Adapter - Persistence
 from src.domain.user_repository import UserRepository
-from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_unique_specification import UserUniqueSpecification
 from src.application.user_query_handler import UserQueryHandler
 from src.adapter.driven.user_persistence_adapter import UserPersistenceAdapter
 
 ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)  # type: ignore
-ioc_container.register(cls=UserUniqueChecker, provider_cls=UserPersistenceAdapter)  # type: ignore
+ioc_container.register(cls=UserUniqueSpecification, provider_cls=UserPersistenceAdapter)  # type: ignore
 ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)  # type: ignore
 
 # ======================================================================================================================

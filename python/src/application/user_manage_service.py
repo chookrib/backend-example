@@ -3,16 +3,16 @@ from src.application.lock import lock_keys
 from src.application.lock.lock_service import LockService
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
-from src.domain.user_unique_checker import UserUniqueChecker
+from src.domain.user_unique_specification import UserUniqueSpecification
 
 
 class UserManageService:
     """用户管理Service"""
 
-    def __init__(self, user_repository: UserRepository, user_unique_checker: UserUniqueChecker,
+    def __init__(self, user_repository: UserRepository, user_unique_specification: UserUniqueSpecification,
                  lock_service: LockService) -> None:
         self.user_repository = user_repository
-        self.user_unique_checker = user_unique_checker
+        self.user_unique_specification = user_unique_specification
         self.lock_service = lock_service
 
     async def set_admin(self, id: str, is_admin: bool) -> None:
@@ -30,7 +30,7 @@ class UserManageService:
                 password=password,
                 nickname=nickname,
                 mobile=mobile,
-                user_unique_checker=self.user_unique_checker)
+                user_unique_specification=self.user_unique_specification)
             await self.user_repository.insert(user)
             return user.id
 
@@ -42,7 +42,7 @@ class UserManageService:
                 username=username,
                 nickname=nickname,
                 mobile=mobile,
-                user_unique_checker=self.user_unique_checker)
+                user_unique_specification=self.user_unique_specification)
             await self.user_repository.update(user)
 
     async def remove_user(self, id: str) -> None:
