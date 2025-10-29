@@ -5,11 +5,10 @@ import com.example.ddd.application.lock.LockService;
 import com.example.ddd.domain.SmsGateway;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
-import com.example.ddd.domain.UserUniqueChecker;
+import com.example.ddd.domain.UserUniqueSpecification;
 import com.example.ddd.utility.ValueUtility;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserProfileService {
 
     private final UserRepository userRepository;
-    private final UserUniqueChecker userUniqueChecker;
+    private final UserUniqueSpecification userUniqueSpecification;
     private final SmsGateway smsGateway;
     private final LockService lockService;
 
@@ -27,12 +26,12 @@ public class UserProfileService {
 
     public UserProfileService(
             UserRepository userRepository,
-            UserUniqueChecker userUniqueChecker,
+            UserUniqueSpecification userUniqueSpecification,
             SmsGateway smsGateway,
             LockService lockService
     ) {
         this.userRepository = userRepository;
-        this.userUniqueChecker = userUniqueChecker;
+        this.userUniqueSpecification = userUniqueSpecification;
         this.smsGateway = smsGateway;
         this.lockService = lockService;
     }
@@ -42,7 +41,7 @@ public class UserProfileService {
      */
     public String register(String username, String password, String nickname) {
         return this.lockService.executeWithLock(LockKeys.USER, () -> {
-            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueChecker);
+            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
             this.userRepository.insert(user);
             return user.getId();
         });
@@ -63,7 +62,7 @@ public class UserProfileService {
     public void modifyNickname(String userId, String nickname) {
         this.lockService.executeWithLock(LockKeys.USER, () -> {
             User user = this.userRepository.selectByIdReq(userId);
-            user.modifyNickname(nickname, this.userUniqueChecker);
+            user.modifyNickname(nickname, this.userUniqueSpecification);
             this.userRepository.update(user);
         });
     }
@@ -93,7 +92,7 @@ public class UserProfileService {
         if (!this.mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("验证码错误");
 
-        user.modifyMobile(mobile, this.userUniqueChecker);
+        user.modifyMobile(mobile, this.userUniqueSpecification);
         this.userRepository.update(user);
         this.mobileCodeMap.remove(key);
     }

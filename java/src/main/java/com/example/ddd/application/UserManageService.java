@@ -4,7 +4,7 @@ import com.example.ddd.application.lock.LockKeys;
 import com.example.ddd.application.lock.LockService;
 import com.example.ddd.domain.User;
 import com.example.ddd.domain.UserRepository;
-import com.example.ddd.domain.UserUniqueChecker;
+import com.example.ddd.domain.UserUniqueSpecification;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Component;
 public class UserManageService {
 
     private final UserRepository userRepository;
-    private final UserUniqueChecker userUniqueChecker;
+    private final UserUniqueSpecification userUniqueSpecification;
     private final LockService lockService;
 
     public UserManageService(
             UserRepository userRepository,
-            UserUniqueChecker userUniqueChecker,
+            UserUniqueSpecification userUniqueSpecification,
             LockService lockService
     ) {
         this.userRepository = userRepository;
-        this.userUniqueChecker = userUniqueChecker;
+        this.userUniqueSpecification = userUniqueSpecification;
         this.lockService = lockService;
     }
 
@@ -42,7 +42,7 @@ public class UserManageService {
     public String createUser(String username, String password, String nickname, String mobile) {
         return this.lockService.executeWithLock(LockKeys.USER, () -> {
             User user = User.createUser(
-                    IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueChecker
+                    IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
             );
             this.userRepository.insert(user);
             return user.getId();
@@ -55,7 +55,7 @@ public class UserManageService {
     public void modifyUser(String id, String username, String nickname, String mobile) {
         this.lockService.executeWithLock(LockKeys.USER, () -> {
             User user = this.userRepository.selectByIdReq(id);
-            user.modify(username, nickname, mobile, this.userUniqueChecker);
+            user.modify(username, nickname, mobile, this.userUniqueSpecification);
             this.userRepository.update(user);
         });
     }

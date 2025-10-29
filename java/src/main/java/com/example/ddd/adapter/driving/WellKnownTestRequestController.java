@@ -3,10 +3,7 @@ package com.example.ddd.adapter.driving;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 测试请求 Well Known Controller
@@ -63,5 +60,17 @@ public class WellKnownTestRequestController {
     public Result testRequestJsonNode(@RequestBody(required = false) Object requestBody) {
         return Result.okData(requestBody);
     }
+
+    //==================================================================================================================
+
+    /**
+     * 测试请求
+     */
+    @RequestMapping(value = "/.well-known/test/request/param", method = RequestMethod.GET)
+    public Result testRequestJsonNode(@RequestParam String id) {
+        return Result.okData(id);
+    }
+
+
 
 }

@@ -8,12 +8,12 @@ import java.util.List;
 public interface UserQueryHandler {
 
     /**
-     * 根据id查询，找不到返回null
+     * 根据 id 查询，找不到返回 null
      */
     UserDto queryById(String id);
 
     /**
-     * 根据id查询，找不到抛出异常
+     * 根据 id 查询，找不到抛出异常
      */
     UserDto queryByIdReq(String id);
 

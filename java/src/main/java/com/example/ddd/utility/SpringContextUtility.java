@@ -17,6 +17,9 @@ public class SpringContextUtility implements ApplicationContextAware {
         SpringContextUtility.context = applicationContext;
     }
 
+    /**
+     * 获取 Spring 容器中的 Bean，反模式，请谨慎使用
+     */
     public static <T> T getBean(Class<T> clazz) {
         return context.getBean(clazz);
     }

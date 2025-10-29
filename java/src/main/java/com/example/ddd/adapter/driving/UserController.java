@@ -37,15 +37,14 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
     public Result register(@RequestBody String requestBody) {
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
         String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
         String confirmPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "confirmPassword");
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
 
-        if (!confirmPassword.equals(password)) {
+        if (!confirmPassword.equals(password))
             throw new ControllerException("两次输入的密码不一致");
-        }
 
         String userId = this.userProfileService.register(username, password, nickname);
         return Result.okData(Map.of(
@@ -58,7 +57,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     public Result login(@RequestBody String requestBody) {
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
         String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
 
@@ -88,14 +87,13 @@ public class UserController {
     public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestAuthHelper.requireLoginUserId(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String oldPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "oldPassword");
         String newPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "newPassword");
         String confirmPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "confirmPassword");
 
-        if (!confirmPassword.equals(newPassword)) {
+        if (!confirmPassword.equals(newPassword))
             throw new ControllerException("两次输入的密码不一致");
-        }
 
         this.userProfileService.modifyPassword(userId, oldPassword, newPassword);
         return Result.ok();
@@ -108,7 +106,7 @@ public class UserController {
     public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestAuthHelper.requireLoginUserId(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
         this.userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
@@ -121,7 +119,7 @@ public class UserController {
     public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestAuthHelper.requireLoginUserId(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
 
         this.userProfileService.sendMobileCode(userId, mobile);
@@ -135,7 +133,7 @@ public class UserController {
     public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
         String userId = RequestAuthHelper.requireLoginUserId(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
         String code = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "code");
         this.userProfileService.bindMobile(userId, mobile, code);

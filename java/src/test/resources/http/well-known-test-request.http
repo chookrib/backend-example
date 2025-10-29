@@ -90,3 +90,13 @@ Content-Type: application/json; charset=utf-8
     "key": "值"
   }
 }
+
+###
+GET http://{{host}}/.well-known/test/request/param
+
+###
+GET http://{{host}}/.well-known/test/request/param?id=
+
+###
+GET http://{{host}}/.well-known/test/request/param?id=1
+

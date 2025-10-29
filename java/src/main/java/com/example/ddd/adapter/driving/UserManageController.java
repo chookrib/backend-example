@@ -32,7 +32,7 @@ public class UserManageController {
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         int pageNum = RequestValueHelper.getRequestJsonInt(requestJson, 1, "pageNum");
         int pageSize = RequestValueHelper.getRequestJsonInt(requestJson, 1, "pageSize");
 
@@ -45,7 +45,7 @@ public class UserManageController {
         //}
 
         int totalCount = this.userQueryHandler.queryCount(criteria);
-        RequestValueHelper.PagingInfo paging = RequestValueHelper.fixPaging(pageNum, pageSize, totalCount);
+        RequestValueHelper.Paging paging = RequestValueHelper.fixPaging(pageNum, pageSize, totalCount);
         List<UserDto> list = this.userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
@@ -62,9 +62,10 @@ public class UserManageController {
      * 用户详情
      */
     @RequestMapping(value = "/api/admin/user/get", method = RequestMethod.GET)
-    public Result userGet(HttpServletRequest request, @RequestParam String id) {
+    public Result userGet(HttpServletRequest request) {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
+        String id = RequestValueHelper.getRequestParamStringTrimReq(request, "id");
         UserDto userDto = this.userQueryHandler.queryByIdReq(id);
         return Result.okData(Map.of(
                 "detail", userDto
@@ -78,7 +79,7 @@ public class UserManageController {
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
         String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
@@ -97,7 +98,7 @@ public class UserManageController {
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
@@ -115,7 +116,7 @@ public class UserManageController {
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
-        var requestJson = RequestValueHelper.toJson(requestBody);
+        var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
 
         this.userManageService.removeUser(id);
