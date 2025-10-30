@@ -8,6 +8,6 @@
         /// <summary>
         /// 发送验证码
         /// </summary>
-        void SendCode(string mobile, string code);
+        Task SendCode(string mobile, string code);
     }
 }

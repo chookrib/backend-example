@@ -1,9 +1,11 @@
 ﻿using System.Dynamic;
 
 using Dapper;
+
 using DddExample.Application;
 using DddExample.Domain;
 using DddExample.Utility;
+
 using Microsoft.Data.Sqlite;
 
 namespace DddExample.Adapter.Driven
@@ -21,13 +23,23 @@ namespace DddExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             conn.Execute("""
-                create table if not exists t_user (u_id text primary key, u_username text, u_password text,
-                u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)
+                create table if not exists t_user
+                (
+                    u_id text primary key,
+                    u_username text,
+                    u_password text,
+                    u_nickname text,
+                    u_mobile text,
+                    u_is_admin integer,
+                    u_created_at text
+                )
                 """);
             conn.Execute("delete from t_user where lower(u_username) = 'admin'");
             conn.Execute($"""
-                insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
-                values ('0', 'admin', '{CryptoUtility.EncodeMd5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                insert into t_user
+                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                values
+                ('0', 'admin', '{CryptoUtility.EncodeMd5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
                 """);
         }
 
@@ -44,13 +56,15 @@ namespace DddExample.Adapter.Driven
                 );
         }
 
-        public void Insert(User entity)
+        public async Task Insert(User entity)
         {
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            conn.Execute("""
-                insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
-                values (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt)
+            await conn.ExecuteAsync("""
+                insert into t_user
+                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                values
+                (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt)
                 """, new
             {
                 id = entity.Id,
@@ -63,11 +77,11 @@ namespace DddExample.Adapter.Driven
             });
         }
 
-        public void Update(User entity)
+        public async Task Update(User entity)
         {
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            conn.Execute("""
+            await conn.ExecuteAsync("""
                 update t_user
                 set
                     u_username = @username,
@@ -91,36 +105,36 @@ namespace DddExample.Adapter.Driven
         }
 
 
-        public void DeleteById(string id)
+        public async Task DeleteById(string id)
         {
             if (ValueUtility.IsBlank(id))
                 return;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            conn.Execute("delete from t_user where u_id = @id", new { id });
+            await conn.ExecuteAsync("delete from t_user where u_id = @id", new { id });
         }
 
-        public User? SelectById(string id)
+        public async Task<User?> SelectById(string id)
         {
             if (ValueUtility.IsBlank(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = conn.QuerySingleOrDefault("select * from t_user where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_id = @id", new { id });
             if (result == null)
                 return null;
             return ToUser(result);
         }
 
-        public User SelectByIdReq(string id)
+        public async Task<User> SelectByIdReq(string id)
         {
-            User? entity = SelectById(id);
+            User? entity = await SelectById(id);
             if (entity == null)
                 throw new PersistenceException($"用户 {id} 不存在");
             return entity;
         }
 
-        public IList<User> SelectByIds(List<string> ids)
+        public async Task<IList<User>> SelectByIds(List<string> ids)
         {
             IList<User> list = new List<User>();
             if (ids == null || ids.Count == 0)
@@ -128,7 +142,7 @@ namespace DddExample.Adapter.Driven
 
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = conn.Query("select * from t_user where u_id in @ids", new { ids });
+            IEnumerable<dynamic> result = await conn.QueryAsync("select * from t_user where u_id in @ids", new { ids });
             foreach (dynamic item in result)
             {
                 User entity = ToUser(item);
@@ -137,13 +151,13 @@ namespace DddExample.Adapter.Driven
             return list;
         }
 
-        public User? SelectByUsername(string username)
+        public async Task<User?> SelectByUsername(string username)
         {
             if (ValueUtility.IsBlank(username))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = conn.QuerySingleOrDefault("select * from t_user where u_username = @username",
+            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_username = @username",
                 new { username });
             if (result == null)
                 return null;
@@ -153,37 +167,37 @@ namespace DddExample.Adapter.Driven
         //==============================================================================================================
         // UserUniqueSpecification
 
-        public bool IsUsernameUnique(string username)
+        public async Task<bool> IsUsernameUnique(string username)
         {
             if (ValueUtility.IsBlank(username))
                 throw new PersistenceException("参数 username 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return conn.ExecuteScalar<int>(
+            return await conn.ExecuteScalarAsync<int>(
                 "select count(1) from t_user where lower(u_username) = lower(@username)",
                 new { username }
                 ) == 0;
         }
 
-        public bool IsNicknameUnique(string nickname)
+        public async Task<bool> IsNicknameUnique(string nickname)
         {
             if (ValueUtility.IsBlank(nickname))
                 throw new PersistenceException("参数 nickname 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return conn.ExecuteScalar<int>(
+            return await conn.ExecuteScalarAsync<int>(
                 "select count(1) from t_user where lower(u_nickname) = lower(@nickname)",
                 new { nickname }
                 ) == 0;
         }
 
-        public bool IsMobileUnique(string mobile)
+        public async Task<bool> IsMobileUnique(string mobile)
         {
             if (ValueUtility.IsBlank(mobile))
                 throw new PersistenceException("参数 mobile 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return conn.ExecuteScalar<int>(
+            return await conn.ExecuteScalarAsync<int>(
                 "select count(1) from t_user where lower(u_mobile) = lower(@mobile)",
                 new { mobile }
                 ) == 0;
@@ -253,43 +267,43 @@ namespace DddExample.Adapter.Driven
             return " order by " + string.Join(", ", sqls);
         }
 
-        public UserDto? QueryById(string id)
+        public async Task<UserDto?> QueryById(string id)
         {
             if (ValueUtility.IsBlank(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = conn.QuerySingleOrDefault("select * from t_user where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_id = @id", new { id });
             if (result == null)
                 return null;
             return ToUserDto(result);
         }
 
-        public UserDto QueryByIdReq(string id)
+        public async Task<UserDto> QueryByIdReq(string id)
         {
-            UserDto? dto = QueryById(id);
+            UserDto? dto = await QueryById(id);
             if (dto == null)
                 throw new PersistenceException($"用户 {id} 不存在");
             return dto;
         }
 
-        public int QueryCount(UserQueryCriteria? criteria)
+        public async Task<int> QueryCount(UserQueryCriteria? criteria)
         {
             dynamic @params;
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return conn.ExecuteScalar<int>("select count(*) from t_user" + crieriaSql, (object)@params);
+            return await conn.ExecuteScalarAsync<int>("select count(*) from t_user" + crieriaSql, (object)@params);
         }
 
-        public IList<UserDto> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts)
+        public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts)
         {
             dynamic @params;
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             string sortSql = BuildQuerySort(sorts);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = conn.Query("select * from t_user" + crieriaSql + sortSql, (object)@params);
+            IEnumerable<dynamic> result = await conn.QueryAsync("select * from t_user" + crieriaSql + sortSql, (object)@params);
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic item in result)
             {
@@ -299,7 +313,7 @@ namespace DddExample.Adapter.Driven
             return list;
         }
 
-        public IList<UserDto> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
+        public async Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
             params UserQuerySort[] sorts)
         {
             dynamic @params;
@@ -310,7 +324,7 @@ namespace DddExample.Adapter.Driven
 
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = conn.Query(
+            IEnumerable<dynamic> result = await conn.QueryAsync(
                 "select * from t_user" + crieriaSql + sortSql + "limit @limitCount offset @limitOffset",
                 (object)@params
                 );

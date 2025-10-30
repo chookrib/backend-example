@@ -15,17 +15,16 @@ namespace DddExample.Application
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
         {
             this.jwtExpiresDay = configuration.GetValue<int>("app:user-jwt-expires-day");
-            this.jwtSecret = configuration.GetValue<string>("app:user-jwt-secret", "");
-            Console.WriteLine(this.jwtSecret);
+            this.jwtSecret = configuration.GetValue<string>("app:user-jwt-secret", string.Empty);
             this.userRepository = userRepository;
         }
 
         /// <summary>
         /// 登录，返回 AccessToken
         /// </summary>
-        public string Login(string username, string password)
+        public async Task<string> Login(string username, string password)
         {
-            User? user = this.userRepository.SelectByUsername(username);
+            User? user = await this.userRepository.SelectByUsername(username);
             if (user == null || !user.IsPasswordMatch(password))
                 throw new ApplicationException("密码错误");
             return CryptoUtility.EncodeJwt(new Dictionary<string, string>()

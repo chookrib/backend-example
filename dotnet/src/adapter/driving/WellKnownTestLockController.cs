@@ -19,32 +19,75 @@ namespace DddExample.Adapter.Driving
         }
 
         /// <summary>
-        /// 扣减测试，不加锁
+        /// 设置 count
         /// </summary>
-        [HttpGet("/.well-known/test/lock/reduce-unsafe")]
-        public Result TestLockReduceUnsafe()
+        [HttpGet("/.well-known/test/lock/set-count")]
+        public Result TestLockSetCount()
         {
-            this.testLockService.ReduceUnsafe();
+            int value = RequestValueHelper.GetRequestParamInt(Request, 1, "value");
+            this.testLockService.SetCount(value);
+            return Result.OkData(new { count = value });
+        }
+
+        /// <summary>
+        /// 减少 count，不加锁
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/decrease-count")]
+        public Result TestLockDecreaseCount()
+        {
+            this.testLockService.DecreaseCount();
             return Result.Ok();
         }
 
         /// <summary>
-        /// 扣减测试，加锁
+        /// 减少 count，加锁
         /// </summary>
-        [HttpGet("/.well-known/test/lock/reduce-safe")]
-        public Result TestLockReduceSafe()
+        [HttpGet("/.well-known/test/lock/decrease-count-with-lock")]
+        public Result TestLockDecreaseCountWithLock()
         {
-            this.testLockService.ReduceSafe();
+            this.testLockService.DecreaseCountWithLock();
             return Result.Ok();
         }
 
         /// <summary>
-        /// 加锁等待测试
+        /// 减少 count，加锁，异步
         /// </summary>
-        [HttpGet("/.well-known/test/lock/sleep")]
-        public Result TestLockSleep()
+        [HttpGet("/.well-known/test/lock/decrease-count-with-lock-async")]
+        public async Task<Result> TestLockDecreaseCountWithLockAsync()
         {
-            this.testLockService.LockSleep();
+            await this.testLockService.DecreaseCountWithLockAsync();
+            return Result.Ok();
+        }
+
+        //==============================================================================================================
+
+        /// <summary>
+        /// Tread.Sleep
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/thread-sleep")]
+        public Result TestLockThreadSleep()
+        {
+            this.testLockService.ThreadSleep();
+            return Result.Ok();
+        }
+
+        /// <summary>
+        /// Task.Delay，异步
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/task-delay-async")]
+        public async Task<Result> TestLockTaskDelayAsync()
+        {
+            await this.testLockService.TaskDelayAsync();
+            return Result.Ok();
+        }
+
+        /// <summary>
+        /// Task.Delay，加锁，异步
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/task-delay-with-lock-async")]
+        public async Task<Result> TestLockTaskDelayWithLockAsync()
+        {
+            await this.testLockService.TaskDelayWithLockAsync();
             return Result.Ok();
         }
     }

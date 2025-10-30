@@ -10,8 +10,9 @@ namespace DddExample.Adapter.Driven
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(SmsGatewayAdapter));
 
-        public void SendCode(string mobile, string code)
+        public async Task SendCode(string mobile, string code)
         {
+            await Task.Delay(1000);
             logger.Info($"发送手机验证码 {code} 到 {mobile}");
         }
     }

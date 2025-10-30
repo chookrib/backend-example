@@ -7,12 +7,23 @@
     {
         /// <summary>
         /// 使用锁执行一个带返回值的操作
+        /// 参数 func 可以传入 async 且能正常运行，但不要这样使用，异步方法请使用 ExecuteWithLockAsync 方法
         /// </summary>
-        T ExecuteWithLock<T>(string key, Func<T> func);
+        T GetWithLock<T>(string key, Func<T> func);
 
         /// <summary>
         /// 使用锁执行一个不带返回值的操作
         /// </summary>
-        void ExecuteWithLock(string key, Action action);
+        void RunWithLock(string key, Action action);
+
+        /// <summary>
+        /// 使用锁执行一个带返回值的操作，异步
+        /// </summary>
+        Task<T> GetWithLockAsync<T>(string key, Func<Task<T>> func);
+
+        /// <summary>
+        /// 使用锁执行一个不带返回值的操作，异步
+        /// </summary>
+        Task RunWithLockAsync(string key, Func<Task> func);
     }
 }

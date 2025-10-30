@@ -9,15 +9,15 @@ namespace DddExample.Adapter.Driving
     /// </summary>
     public class RequestValueHelper
     {
-        /// <summary>
-        /// 获取请求体
-        /// </summary>
-        public static string GetRequestBody(HttpRequest request)
-        {
-            using StreamReader reader = new StreamReader(request.Body, Encoding.UTF8);
-            string body = reader.ReadToEnd();
-            return body;
-        }
+        ///// <summary>
+        ///// 获取请求体
+        ///// </summary>
+        //public static string GetRequestBody(HttpRequest request)
+        //{
+        //    using StreamReader reader = new StreamReader(request.Body, Encoding.UTF8);
+        //    string body = reader.ReadToEnd();
+        //    return body;
+        //}
 
         /// <summary>
         /// 获取请求体，异步
@@ -29,20 +29,20 @@ namespace DddExample.Adapter.Driving
             return body;
         }
 
-        /// <summary>
-        /// 获取请求体 json 数据
-        /// </summary>
-        public static JsonNode GetRequestJson(HttpRequest request)
-        {
-            try
-            {
-                return JsonUtility.Deserialize(GetRequestBody(request));
-            }
-            catch
-            {
-                throw new ControllerException("请求体不是合法的JSON格式");
-            }
-        }
+        ///// <summary>
+        ///// 获取请求体 json 数据
+        ///// </summary>
+        //public static JsonNode GetRequestJson(HttpRequest request)
+        //{
+        //    try
+        //    {
+        //        return JsonUtility.Deserialize(GetRequestBody(request));
+        //    }
+        //    catch
+        //    {
+        //        throw new ControllerException("请求体不是合法的JSON格式");
+        //    }
+        //}
 
         /// <summary>
         /// 获取请求体 json 数据，异步

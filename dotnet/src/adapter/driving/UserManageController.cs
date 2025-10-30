@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Nodes;
-using DddExample.Application;
+﻿using DddExample.Application;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace DddExample.Adapter.Driving
@@ -22,11 +22,11 @@ namespace DddExample.Adapter.Driving
         /// 用户列表
         /// </summary>
         [HttpPost("/api/admin/user/list")]
-        public Result UserList()
+        public async Task<Result> UserList()
         {
-            RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
-            var requestJson = RequestValueHelper.GetRequestJson(Request);
+            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             int pageNum = RequestValueHelper.GetRequestJsonInt(requestJson, 1, "pageNum");
             int pageSize = RequestValueHelper.GetRequestJsonInt(requestJson, 1, "pageSize");
 
@@ -39,9 +39,9 @@ namespace DddExample.Adapter.Driving
             criteria.Keyword = keyword;
             //}
 
-            int totalCount = this.userQueryHandler.QueryCount(criteria);
+            int totalCount = await this.userQueryHandler.QueryCount(criteria);
             var paging = RequestValueHelper.FixPaging(pageNum, pageSize, totalCount);
-            IList<UserDto> list = this.userQueryHandler.QueryByPage(paging.pageNum, paging.pageSize, criteria);
+            IList<UserDto> list = await this.userQueryHandler.QueryByPage(paging.pageNum, paging.pageSize, criteria);
             return Result.OkData(new
             {
                 list = list,
@@ -58,12 +58,12 @@ namespace DddExample.Adapter.Driving
         /// 用户详情
         /// </summary>
         [HttpGet("/api/admin/user/get")]
-        public Result UserGet()
+        public async Task<Result> UserGet()
         {
-            RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
             string id = RequestValueHelper.GetRequestParamStringTrimReq(Request, "id");
-            UserDto userDto = this.userQueryHandler.QueryByIdReq(id);
+            UserDto userDto = await this.userQueryHandler.QueryByIdReq(id);
             return Result.OkData(new
             {
                 detail = userDto
@@ -74,17 +74,17 @@ namespace DddExample.Adapter.Driving
         /// 创建用户
         /// </summary>
         [HttpPost("/api/admin/user/create")]
-        public Result UserCreate()
+        public async Task<Result> UserCreate()
         {
-            RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
-            var requestJson = RequestValueHelper.GetRequestJson(Request);
+            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
             string password = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "password");
             string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
             string mobile = RequestValueHelper.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
-            string userId = this.userManageService.CreateUser(username, password, nickname, mobile);
+            string userId = await this.userManageService.CreateUser(username, password, nickname, mobile);
             return Result.OkData(new
             {
                 id = userId
@@ -95,17 +95,17 @@ namespace DddExample.Adapter.Driving
         /// 修改用户
         /// </summary>
         [HttpPost("/api/admin/user/modify")]
-        public Result UserModify()
+        public async Task<Result> UserModify()
         {
-            RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
-            var requestJson = RequestValueHelper.GetRequestJson(Request);
+            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
             string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
             string mobile = RequestValueHelper.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
-            this.userManageService.ModifyUser(id, username, nickname, mobile);
+            await this.userManageService.ModifyUser(id, username, nickname, mobile);
             return Result.Ok();
         }
 
@@ -114,14 +114,14 @@ namespace DddExample.Adapter.Driving
         /// 删除用户
         /// </summary>
         [HttpPost("/api/admin/user/remove")]
-        public Result UserRemove()
+        public async Task<Result> UserRemove()
         {
-            RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
-            var requestJson = RequestValueHelper.GetRequestJson(Request);
+            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
 
-            this.userManageService.RemoveUser(id);
+            await this.userManageService.RemoveUser(id);
             return Result.Ok();
         }
     }

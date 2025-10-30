@@ -8,16 +8,16 @@
         /// <summary>
         /// 用户名是否唯一
         /// </summary>
-        bool IsUsernameUnique(string username);
+        Task<bool> IsUsernameUnique(string username);
 
         /// <summary>
         /// 昵称是否唯一
         /// </summary>
-        bool IsNicknameUnique(string nickname);
+        Task<bool> IsNicknameUnique(string nickname);
 
         /// <summary>
         /// 手机号是否唯一
         /// </summary>
-        bool IsMobileUnique(string mobile);
+        Task<bool> IsMobileUnique(string mobile);
     }
 }

@@ -20,7 +20,7 @@ namespace DddExample.Adapter.Driving
             if (accessToken == null)
                 return string.Empty;
 
-            return Accessor.ServiceProvider.GetService<UserAuthService>()?.GetLoginUserId(accessToken) ?? string.Empty;
+            return Accessor.GetService<UserAuthService>().GetLoginUserId(accessToken);
         }
 
         /// <summary>
@@ -37,10 +37,10 @@ namespace DddExample.Adapter.Driving
         /// <summary>
         /// 获取登录用户（管理员），失败抛异常
         /// </summary>
-        public static UserDto RequireLoginUserAdmin(HttpRequest request)
+        public static async Task<UserDto> RequireLoginUserAdmin(HttpRequest request)
         {
             string userId = RequireLoginUserId(request);
-            UserDto? userDto = Accessor.ServiceProvider.GetService<UserQueryHandler>()?.QueryById(userId);
+            UserDto? userDto = await Accessor.GetService<UserQueryHandler>().QueryById(userId);
             if (userDto == null || !userDto.IsAdmin)
                 throw new NotLoginException();
             return userDto;

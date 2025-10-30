@@ -1,20 +1,54 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using DddExample.Adapter.Driven;
 using DddExample.Adapter.Driving;
 using DddExample.Application;
 using DddExample.Domain;
 using DddExample.Utility;
+
+using log4net;
+using log4net.Config;
+
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace DddExample
 {
     public class Program
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(Program));
+
+        /// <summary>
+        /// 打印所有配置
+        /// </summary>
+        private static void PrintConfiguration(IConfiguration config, string parentKey = "")
+        {
+            foreach (var child in config.GetChildren())
+            {
+                string key = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}:{child.Key}";
+                if (child.GetChildren().Any())
+                    PrintConfiguration(child, key);
+                else
+                    Console.WriteLine($"{key} = {child.Value}");
+            }
+        }
+
         public static void Main(string[] args)
         {
+            // 配置log4net
+            XmlConfigurator.Configure(new FileInfo("log4net.config"));
+            LogManager.GetLogger(typeof(Program)).Info("log4net 配置成功");
+
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            PrintConfiguration(builder.Configuration);
+
+            // 将 配置 存储到 Accessor 中，方便在非 DI 环境中使用
+            Accessor.Configuration = builder.Configuration;
+            Accessor.IsDevelopment = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
+            // Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
+            // =========================================================================================================
 
             // 注册服务
             builder.Services.AddSingleton<SmsGateway, SmsGatewayAdapter>();
@@ -52,25 +86,24 @@ namespace DddExample
                 //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;             // 忽略循环引用
             });
 
-            // 你可以在 ASP.NET Core 的 Program.cs 或 Startup.cs 中允许同步 IO，示例代码如下：
-            // 注意：允许同步 IO 可能会带来性能问题，不推荐在生产环境使用。
-            builder.WebHost.ConfigureKestrel(serverOptions => { serverOptions.AllowSynchronousIO = true; });
-
-            // 或者对于 IIS：
-            builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
-
-            Accessor.Configuration = builder.Configuration;
+            // 允许同步 IO 可能会带来性能问题，不推荐在生产环境使用
+            // Kestrel 允许同步 IO 
+            // builder.WebHost.ConfigureKestrel(serverOptions => { serverOptions.AllowSynchronousIO = true; });
+            // IIS 允许同步 IO
+            // builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
 
             //==========================================================================================================
 
             WebApplication app = builder.Build();
 
+            // 将 容器 存储到 Accessor 中，方便在非 DI 环境中使用
             Accessor.ServiceProvider = app.Services;
 
             // Configure the HTTP request pipeline.
 
             //app.UseAuthorization();
 
+            // 全局异常处理
             app.UseExceptionHandler(configure =>
             {
                 configure.Run(async context =>
@@ -94,8 +127,7 @@ namespace DddExample
             app.Run();
         }
 
-        #region json ת转换器
-
+        #region json 转换器
         private class LongToStringConverter : JsonConverter<long>
         {
             public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -135,6 +167,7 @@ namespace DddExample
         private class DateTimeConverter : JsonConverter<DateTime>
         {
             private readonly string format;
+
             public DateTimeConverter(string format = "yyyy-MM-dd HH:mm:ss") => this.format = format;
 
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -147,6 +180,7 @@ namespace DddExample
         private class DateTimeNullableConverter : JsonConverter<DateTime?>
         {
             private readonly string format;
+
             public DateTimeNullableConverter(string format = "yyyy-MM-dd HH:mm:ss") => this.format = format;
 
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -159,6 +193,7 @@ namespace DddExample
         private class DateOnlyConverter : JsonConverter<DateOnly>
         {
             private readonly string format;
+
             public DateOnlyConverter(string format = "yyyy-MM-dd") => this.format = format;
 
             public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -171,6 +206,7 @@ namespace DddExample
         private class DateOnlyNullableConverter : JsonConverter<DateOnly?>
         {
             private readonly string format;
+
             public DateOnlyNullableConverter(string format = "yyyy-MM-dd") => this.format = format;
 
             public override DateOnly? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -183,6 +219,7 @@ namespace DddExample
         private class TimeOnlyConverter : JsonConverter<TimeOnly>
         {
             private readonly string format;
+
             public TimeOnlyConverter(string format = "HH:mm:ss") => this.format = format;
 
             public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -195,6 +232,7 @@ namespace DddExample
         private class TimeOnlyNullableConverter : JsonConverter<TimeOnly?>
         {
             private readonly string format;
+
             public TimeOnlyNullableConverter(string format = "HH:mm:ss") => this.format = format;
 
             public override TimeOnly? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

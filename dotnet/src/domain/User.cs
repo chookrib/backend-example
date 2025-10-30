@@ -42,7 +42,7 @@ namespace DddExample.Domain
         /// <summary>
         /// 注册用户
         /// </summary>
-        public static User RegisterUser(string id, string username, string password, string nickname,
+        public static async Task<User> RegisterUser(string id, string username, string password, string nickname,
             UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
@@ -56,10 +56,10 @@ namespace DddExample.Domain
 
             if (userUniqueSpecification != null)
             {
-                if (!userUniqueSpecification.IsUsernameUnique(username))
+                if (! await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (!userUniqueSpecification.IsNicknameUnique(nickname))
+                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -108,14 +108,14 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改昵称
         /// </summary>
-        public void ModifyNickname(string nickname, UserUniqueSpecification? userUniqueSpecification)
+        public async Task ModifyNickname(string nickname, UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(nickname))
                 throw new DomainException("昵称不能为空");
 
             if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueSpecification != null)
             {
-                if (!userUniqueSpecification.IsNicknameUnique(nickname))
+                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -125,14 +125,14 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改手机
         /// </summary>
-        public void ModifyMobile(string mobile, UserUniqueSpecification? userUniqueSpecification)
+        public async Task ModifyMobile(string mobile, UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(mobile))
                 throw new DomainException("手机不能为空");
 
             if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueSpecification != null)
             {
-                if (!userUniqueSpecification.IsMobileUnique(mobile))
+                if (! await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -142,7 +142,7 @@ namespace DddExample.Domain
         /// <summary>
         /// 创建用户
         /// </summary>
-        public static User CreateUser(string id, string username, string password, string nickname, string mobile,
+        public static async Task<User> CreateUser(string id, string username, string password, string nickname, string mobile,
             UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
@@ -156,13 +156,13 @@ namespace DddExample.Domain
 
             if (userUniqueSpecification != null)
             {
-                if (!userUniqueSpecification.IsUsernameUnique(username))
+                if (! await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (!userUniqueSpecification.IsNicknameUnique(nickname))
+                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsBlank(mobile) && !userUniqueSpecification.IsMobileUnique(mobile))
+                if (!ValueUtility.IsBlank(mobile) && ! await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -181,7 +181,7 @@ namespace DddExample.Domain
         /// <summary>
         /// 修改用户
         /// </summary>
-        public void Modify(string username, string nickname, string mobile,
+        public async Task Modify(string username, string nickname, string mobile,
             UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
@@ -192,15 +192,17 @@ namespace DddExample.Domain
 
             if (userUniqueSpecification != null)
             {
-                if (username.ToLower() != this.Username.ToLower() && !userUniqueSpecification.IsUsernameUnique(username))
+                if (username.ToLower() != this.Username.ToLower() &&
+                    ! await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (nickname.ToLower() != this.Nickname.ToLower() && !userUniqueSpecification.IsNicknameUnique(nickname))
+                if (nickname.ToLower() != this.Nickname.ToLower() &&
+                    ! await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
                 if (!ValueUtility.IsBlank(mobile) &&
                     mobile.ToLower() != this.Mobile.ToLower() &&
-                    !userUniqueSpecification.IsMobileUnique(mobile))
+                    ! await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 

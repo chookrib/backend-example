@@ -24,23 +24,23 @@ namespace DddExample.Application
         /// <summary>
         /// 设置用户管理员状态
         /// </summary>
-        public void SetAdmin(string id, bool isAdmin)
+        public async Task SetAdmin(string id, bool isAdmin)
         {
-            User user = this.userRepository.SelectByIdReq(id);
+            User user = await this.userRepository.SelectByIdReq(id);
             user.SetAdmin(isAdmin);
-            this.userRepository.Update(user);
+            await this.userRepository.Update(user);
         }
 
         /// <summary>
         /// 创建用户
         /// </summary>
-        public string CreateUser(string username, string password, string nickname, string mobile)
+        public async Task<string> CreateUser(string username, string password, string nickname, string mobile)
         {
-            return this.lockService.ExecuteWithLock(LockKeys.USER, () =>
+            return await this.lockService.GetWithLockAsync(LockKeys.USER, async () =>
             {
-                User user = User.CreateUser(IdGenerator.GenerateId(), username, password, nickname, mobile,
+                User user = await User.CreateUser(IdGenerator.GenerateId(), username, password, nickname, mobile,
                     this.userUniqueSpecification);
-                this.userRepository.Insert(user);
+                await this.userRepository.Insert(user);
                 return user.Id;
             });
         }
@@ -48,22 +48,22 @@ namespace DddExample.Application
         /// <summary>
         /// 修改用户
         /// </summary>
-        public void ModifyUser(string id, string username, string nickname, string mobile)
+        public async Task ModifyUser(string id, string username, string nickname, string mobile)
         {
-            this.lockService.ExecuteWithLock(LockKeys.USER, () =>
+            await this.lockService.RunWithLockAsync(LockKeys.USER, async () =>
             {
-                User user = this.userRepository.SelectByIdReq(id);
-                user.Modify(username, nickname, mobile, this.userUniqueSpecification);
-                this.userRepository.Update(user);
+                User user = await this.userRepository.SelectByIdReq(id);
+                await user.Modify(username, nickname, mobile, this.userUniqueSpecification);
+                await this.userRepository.Update(user);
             });
         }
 
         /// <summary>
         /// 删除用户
         /// </summary>
-        public void RemoveUser(string id)
+        public async Task RemoveUser(string id)
         {
-            this.userRepository.DeleteById(id);
+            await this.userRepository.DeleteById(id);
         }
     }
 }

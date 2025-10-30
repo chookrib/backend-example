@@ -1,7 +1,29 @@
-### 测试锁，加锁扣减
-GET http://{{host}}/.well-known/test/lock/reduce-safe
+### 测试锁，设置 count
+GET http://{{host}}/.well-known/test/lock/set-count?value=1
 
-### 测试锁，等待
-GET http://{{host}}/.well-known/test/lock/sleep
-# ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-unsafe
-# ab.exe -n 20 -c 20 http://127.0.0.1:5006/.well-known/test/lock/reduce-safe
+### 测试锁，减少 count，不加锁
+GET http://{{host}}/.well-known/test/lock/decrease-count
+# 多执行几次，会看到总数减到 -1 的情况
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count
+
+### 测试锁，减少 count，加锁
+GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count-with-lock
+
+### 测试锁，减少 count，加锁，异步
+GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock-async
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count-with-lock-async
+
+#=======================================================================================================================
+
+### 测试锁，Thread.Sleep
+GET http://{{host}}/.well-known/test/lock/thread-sleep
+
+### 测试锁，Task.Delay，异步
+GET http://{{host}}/.well-known/test/lock/task-delay-async
+
+### 测试锁，Task.Delay，加锁，异步
+GET http://{{host}}/.well-known/test/lock/task-delay-with-lock-async
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/task-delay-with-lock-async
+
+
