@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>ddd-example-java</artifactId>
+    <artifactId>backend-example-java</artifactId>
     <version>RELEASE</version>
-    <name>ddd-example-java</name>
+    <name>backend-example-java</name>
     <description></description>
     <url/>
     <licenses>

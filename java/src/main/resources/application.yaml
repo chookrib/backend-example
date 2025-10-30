@@ -7,7 +7,7 @@ logging:
 
 spring:
   application:
-    name: ddd-example-java
+    name: backend-example-java
 
   profiles:
     active: dev
