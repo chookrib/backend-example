@@ -1,7 +1,7 @@
 ﻿using System.Dynamic;
 using System.Reflection;
 
-namespace DddExample.Utility
+namespace BackendExample.Utility
 {
     /// <summary>
     /// dynamic Utility

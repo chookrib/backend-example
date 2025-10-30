@@ -1,4 +1,4 @@
-﻿namespace DddExample.Utility
+﻿namespace BackendExample.Utility
 {
     /// <summary>
     /// 值 Utility

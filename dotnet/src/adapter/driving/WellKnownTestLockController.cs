@@ -1,8 +1,8 @@
-﻿using DddExample.Application;
+﻿using BackendExample.Application;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DddExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// 测试锁 Well Known Controller

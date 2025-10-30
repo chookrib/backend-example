@@ -1,7 +1,9 @@
-# ddd-example
+# backend-example
 
-DDD架构示例项目，含CQRS，仅后端
+后端项目示例，包含 dotnet、java、python 三种语言实现
 
-图示可参考 ddd-arch.drawio
+采用 DDD、CQRS 方法
+
+图示可参考 arch.drawio
 
 

@@ -1,7 +1,7 @@
-﻿using DddExample.Domain;
-using DddExample.Utility;
+﻿using BackendExample.Domain;
+using BackendExample.Utility;
 
-namespace DddExample.Application
+namespace BackendExample.Application
 {
     /// <summary>
     /// 用户认证 Service

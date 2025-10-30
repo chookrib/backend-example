@@ -6,7 +6,7 @@ using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
-namespace DddExample.Utility
+namespace BackendExample.Utility
 {
     /// <summary>
     /// 加密 Utility

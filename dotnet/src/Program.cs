@@ -2,18 +2,18 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using DddExample.Adapter.Driven;
-using DddExample.Adapter.Driving;
-using DddExample.Application;
-using DddExample.Domain;
-using DddExample.Utility;
+using BackendExample.Adapter.Driven;
+using BackendExample.Adapter.Driving;
+using BackendExample.Application;
+using BackendExample.Domain;
+using BackendExample.Utility;
 
 using log4net;
 using log4net.Config;
 
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace DddExample
+namespace BackendExample
 {
     public class Program
     {

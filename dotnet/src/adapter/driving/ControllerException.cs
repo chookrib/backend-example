@@ -1,4 +1,4 @@
-﻿namespace DddExample.Adapter.Driving
+﻿namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// Controller Exception

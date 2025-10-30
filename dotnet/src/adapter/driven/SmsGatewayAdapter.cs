@@ -1,7 +1,7 @@
-﻿using DddExample.Domain;
+﻿using BackendExample.Domain;
 using log4net;
 
-namespace DddExample.Adapter.Driven
+namespace BackendExample.Adapter.Driven
 {
     /// <summary>
     /// 短信 Gateway 接口 Adapter

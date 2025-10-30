@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text.Json;
-using DddExample.Application;
+using BackendExample.Application;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace DddExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// 用户 Controller

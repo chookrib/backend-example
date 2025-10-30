@@ -1,4 +1,4 @@
-﻿namespace DddExample.Adapter.Driven
+﻿namespace BackendExample.Adapter.Driven
 {
     /// <summary>
     /// Persistence Exception

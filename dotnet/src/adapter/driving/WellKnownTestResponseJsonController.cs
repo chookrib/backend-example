@@ -1,8 +1,8 @@
 ﻿using System.Dynamic;
-using DddExample.Utility;
+using BackendExample.Utility;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DddExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// 测试响应输出 JSON 数据 Well Known Controller

@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace DddExample.Utility
+namespace BackendExample.Utility
 {
     /// <summary>
     /// Json Utility

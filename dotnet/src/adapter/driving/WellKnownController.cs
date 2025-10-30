@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DddExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// Well Known Controller

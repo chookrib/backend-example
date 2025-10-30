@@ -1,4 +1,4 @@
-namespace DddExample;
+namespace BackendExample;
 
 /// <summary>
 /// 访问器

@@ -2,13 +2,13 @@
 
 using Dapper;
 
-using DddExample.Application;
-using DddExample.Domain;
-using DddExample.Utility;
+using BackendExample.Application;
+using BackendExample.Domain;
+using BackendExample.Utility;
 
 using Microsoft.Data.Sqlite;
 
-namespace DddExample.Adapter.Driven
+namespace BackendExample.Adapter.Driven
 {
     /// <summary>
     /// 用户持久化 Adapter

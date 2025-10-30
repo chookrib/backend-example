@@ -1,6 +1,6 @@
-﻿using DddExample.Domain;
+﻿using BackendExample.Domain;
 
-namespace DddExample.Application
+namespace BackendExample.Application
 {
     /// <summary>
     /// 用户管理 Service

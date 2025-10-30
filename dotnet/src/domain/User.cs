@@ -1,6 +1,6 @@
-﻿using DddExample.Utility;
+﻿using BackendExample.Utility;
 
-namespace DddExample.Domain
+namespace BackendExample.Domain
 {
     /// <summary>
     /// 用户 Entity

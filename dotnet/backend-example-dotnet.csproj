@@ -4,7 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>DddExample</RootNamespace>
+        <RootNamespace>BackendExample</RootNamespace>
         <!-- 注入编译时间 -->
         <!--<BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))</BuildTime>-->
         <BuildTime>$([System.DateTime]::Now.ToString("yyyyMMddHHmmss"))</BuildTime>

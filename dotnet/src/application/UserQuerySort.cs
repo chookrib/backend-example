@@ -1,4 +1,4 @@
-﻿namespace DddExample.Application
+﻿namespace BackendExample.Application
 {
     /// <summary>
     /// 用户 Query Sort

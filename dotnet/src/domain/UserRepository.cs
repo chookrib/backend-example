@@ -1,4 +1,4 @@
-﻿namespace DddExample.Domain
+﻿namespace BackendExample.Domain
 {
     /// <summary>
     /// 用户 Repository 接口

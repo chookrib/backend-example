@@ -1,6 +1,6 @@
 ﻿using log4net;
 
-namespace DddExample.Application
+namespace BackendExample.Application
 {
     /// <summary>
     /// 测试锁 Service

@@ -1,4 +1,4 @@
-﻿namespace DddExample.Domain
+﻿namespace BackendExample.Domain
 {
     /// <summary>
     /// Domain Exception

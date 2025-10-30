@@ -1,7 +1,7 @@
-﻿using DddExample.Application;
-using DddExample.Utility;
+﻿using BackendExample.Application;
+using BackendExample.Utility;
 
-namespace DddExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving
 {
     /// <summary>
     /// 请求 Auth Helper

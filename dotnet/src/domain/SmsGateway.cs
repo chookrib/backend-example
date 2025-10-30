@@ -1,4 +1,4 @@
-﻿namespace DddExample.Domain
+﻿namespace BackendExample.Domain
 {
     /// <summary>
     /// 短信 Gateway 接口
