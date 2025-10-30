@@ -1,11 +1,14 @@
 package com.example.ddd.adapter.driving;
 
 import com.example.ddd.application.lock.TestLockService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * 测试锁 Well Known Controller
@@ -22,29 +25,41 @@ public class WellKnownTestLockController {
     }
 
     /**
-     * 扣减测试，不加锁
+     * 设置 count
      */
-    @RequestMapping(value = "/.well-known/test/lock/reduce-unsafe", method = RequestMethod.GET)
-    public Result testLockReduceUnsafe() {
-        this.testLockService.reduceUnsafe();
+    @RequestMapping(value = "/.well-known/test/lock/set-count", method = RequestMethod.GET)
+    public Result testLockSetCount(HttpServletRequest request) {
+        int value = RequestValueHelper.getRequestParamInt(request, 1, "value");
+        this.testLockService.setCount(value);
+        return Result.okData(Map.of("count", value));
+    }
+
+    /**
+     * 减少 count，不加锁
+     */
+    @RequestMapping(value = "/.well-known/test/lock/decrease-count", method = RequestMethod.GET)
+    public Result testLockDecreaseCount() {
+        this.testLockService.decreaseCount();
         return Result.ok();
     }
 
     /**
-     * 扣减测试，加锁
+     * 减少 count，加锁
      */
-    @RequestMapping(value = "/.well-known/test/lock/reduce-safe", method = RequestMethod.GET)
-    public Result testLockReduceSafe() {
-        this.testLockService.reduceSafe();
+    @RequestMapping(value = "/.well-known/test/lock/decrease-count-with-lock", method = RequestMethod.GET)
+    public Result testLockDecreaseCountWithLock() {
+        this.testLockService.decreaseCountWithLock();
         return Result.ok();
     }
 
+    //==================================================================================================================
+
     /**
-     * 加锁等待测试
+     * Thread.Sleep
      */
-    @RequestMapping(value = "/.well-known/test/lock/sleep", method = RequestMethod.GET)
-    public Result testLockSleep() {
-        this.testLockService.lockSleep();
+    @RequestMapping(value = "/.well-known/test/lock/thread-sleep", method = RequestMethod.GET)
+    public Result testLockThreadSleep() {
+        this.testLockService.threadSleep();
         return Result.ok();
     }
 }

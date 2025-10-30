@@ -6,7 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 
+import javax.accessibility.AccessibleSelection;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -24,6 +27,10 @@ public class Application {
                 getFileName(),
                 props.getProperty("Build-Time", ""),
                 props.getProperty("Git-Commit-Id-Abbrev", ""));
+
+        Environment environment = applicationContext.getEnvironment();
+        // String value = environment.getProperty("spring.profiles.active", "default");
+        Accessor.isDevelopment = environment.acceptsProfiles(Profiles.of("dev"));
     }
 
     /**

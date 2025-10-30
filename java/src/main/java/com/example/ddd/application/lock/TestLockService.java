@@ -1,6 +1,8 @@
 package com.example.ddd.application.lock;
 
 import com.example.ddd.application.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TestLockService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestLockService.class);
 
     private final LockService lockService;
 
@@ -18,30 +22,43 @@ public class TestLockService {
     private int count = 10;
 
     /**
-     * 扣减测试，不加锁
+     * 设置 count
      */
-    public void reduceUnsafe() {
-        if (count > 0) {
-            count--;
-            System.out.println("扣减后 count = " + count);
+    public void setCount(int value) {
+        this.count = value;
+        logger.info("设置 count = {}", value);
+    }
+
+    /**
+     * 减少 count，不加锁
+     */
+    public boolean decreaseCount() {
+        int c = this.count;
+        if (c > 0) {
+            this.count--;
+            logger.info("减少 count 成功: {} - 1 = {}", c, this.count);
+            return true;
         } else {
-            System.out.println("无法扣减 count = " + count);
+            logger.info("减少 count 失败: {}", c);
+            return false;
         }
     }
 
     /**
-     * 扣减测试，加锁
+     * 减少 count，加锁
      */
-    public void reduceSafe() {
-        this.lockService.executeWithLock(LockKeys.TEST, () -> {
-            this.reduceUnsafe();
+    public void decreaseCountWithLock() {
+        this.lockService.runWithLock(LockKeys.TEST, () -> {
+            this.decreaseCount();
         });
     }
 
+    //==============================================================================================================
+
     /**
-     * 加锁等待测试
+     * Thread.Sleep
      */
-    public void lockSleep() {
+    public void threadSleep() {
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {

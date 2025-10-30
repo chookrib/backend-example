@@ -9,6 +9,9 @@ spring:
   application:
     name: ddd-example-java
 
+  profiles:
+    active: dev
+
   datasource:
     url: jdbc:sqlite:db.db
     driver-class-name: org.sqlite.JDBC

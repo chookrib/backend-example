@@ -1,5 +1,6 @@
 package com.example.ddd.application.lock;
 
+import com.example.ddd.Accessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,22 +18,24 @@ public class SynchronizedLockService implements LockService {
     private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T> T executeWithLock(String key, Supplier<T> action) {
+    public <T> T getWithLock(String key, Supplier<T> action) {
         Object lock = this.lockMap.computeIfAbsent(key, k -> new Object());
         synchronized (lock) {
-            //logger.info("线程 [{}] 获取 Synchronized 锁成功: {}", Thread.currentThread().getName(), key);
+            if(Accessor.isDevelopment)
+                logger.info("线程 {} 获取 Synchronized 锁 {} 成功", Thread.currentThread().getName(), key);
             try {
                 return action.get();
             } finally {
-                //logger.info("线程 [{}] 释放 Synchronized 锁成功: {}", Thread.currentThread().getName(), key);
+                if(Accessor.isDevelopment)
+                    logger.info("线程 {} 释放 Synchronized 锁 {} 成功", Thread.currentThread().getName(), key);
                 // 不移除锁对象以便复用
             }
         }
     }
 
     @Override
-    public void executeWithLock(String key, Runnable action) {
-        executeWithLock(key, () -> {
+    public void runWithLock(String key, Runnable action) {
+        getWithLock(key, () -> {
             action.run();
             return null;
         });

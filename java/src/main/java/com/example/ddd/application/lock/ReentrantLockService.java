@@ -1,5 +1,6 @@
 package com.example.ddd.application.lock;
 
+import com.example.ddd.Accessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,21 +19,23 @@ public class ReentrantLockService implements LockService {
     private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T> T executeWithLock(String key, Supplier<T> action) {
+    public <T> T getWithLock(String key, Supplier<T> action) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
-        //logger.info("线程 [{}] 获取 ReentrantLock 锁成功: {}", Thread.currentThread().getName(), key);
+        if(Accessor.isDevelopment)
+            logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
         try {
             return action.get();
         } finally {
             lock.unlock();
-            //logger.info("线程 [{}] 释放 ReentrantLock 锁成功: {}", Thread.currentThread().getName(), key);
+            if(Accessor.isDevelopment)
+                logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
         }
     }
 
     @Override
-    public void executeWithLock(String key, Runnable action) {
-        executeWithLock(key, () -> {
+    public void runWithLock(String key, Runnable action) {
+        getWithLock(key, () -> {
             action.run();
             return null;
         });

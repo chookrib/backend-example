@@ -35,13 +35,23 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
         // 创建表及默认管理员
         this.jdbcTemplate.execute("""
-                create table if not exists t_user (u_id text primary key, u_username text, u_password text,
-                u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)
+                create table if not exists t_user
+                (
+                    u_id text primary key,
+                    u_username text,
+                    u_password text,
+                    u_nickname text,
+                    u_mobile text,
+                    u_is_admin integer,
+                    u_created_at text
+                )
                 """);
         this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
         this.jdbcTemplate.execute(String.format("""
-                insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) 
-                values ('0', 'admin', '%s', '管理员', '', 1, datetime('now', 'localtime'))
+                insert into t_user
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                values
+                    ('0', 'admin', '%s', '管理员', '', 1, datetime('now', 'localtime'))
                 """, CryptoUtility.encodeMd5("password"))
         );
     }
