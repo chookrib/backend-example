@@ -21,7 +21,10 @@ logging.basicConfig(
     level=logging.INFO,  # 默认日志级别 WARNING
     format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[logging.StreamHandler(stream=sys.stdout)]
+    handlers=[
+        logging.StreamHandler(stream=sys.stdout),
+        # logging.FileHandler("log\log.log", encoding="utf-8", mode="a")
+    ]
 )
 logger = logging.getLogger(__name__)
 

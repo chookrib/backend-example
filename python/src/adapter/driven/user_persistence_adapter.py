@@ -24,16 +24,25 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
 
     async def init(self) -> None:
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                "create table if not exists t_user (u_id text primary key, u_username text, u_password text, " +
-                "u_nickname text, u_mobile text, u_is_admin integer, u_created_at text)"
-            )
+            await db.execute("""
+                create table if not exists t_user
+                (
+                    u_id text primary key,
+                    u_username text,
+                    u_password text,
+                    u_nickname text,
+                    u_mobile text,
+                    u_is_admin integer,
+                    u_created_at text
+                )
+                """)
             await db.execute("delete from t_user where lower(u_username) = 'admin'")
-            await db.execute(
-                "insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at) " +
-                "values ('0', 'admin', '" + crypto_utility.encode_md5("password") + "', " +
-                "'管理员', '', 1, datetime('now', 'localtime'))"
-            )
+            await db.execute(f"""
+                insert into t_user
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                values
+                    ('0', 'admin', '{crypto_utility.encode_md5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                """)
             await db.commit()
 
     # ==================================================================================================================
@@ -55,9 +64,10 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def insert(self, entity: User) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
-                             insert into t_user (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin,
-                                                 u_created_at)
-                             values (?, ?, ?, ?, ?, ?, ?)
+                             insert into t_user
+                                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                             values
+                                 (?, ?, ?, ?, ?, ?, ?)
                              """, (
                                  entity.id,
                                  entity.username,
