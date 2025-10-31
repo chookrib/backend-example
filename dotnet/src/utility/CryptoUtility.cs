@@ -16,24 +16,17 @@ namespace BackendExample.Utility
         /// <summary>
         /// JWT 编码
         /// </summary>
-        public static string EncodeJwt(Dictionary<string, string> payload, DateTime expiresAt, string secret)
+        public static string EncodeJwt(Dictionary<string, string> payload, DateTime expires, string key)
         {
-            if (string.IsNullOrEmpty(secret))
-                throw new ArgumentException("jwt 编码 secret 不能为空", nameof(secret));
-
-            byte[] keyBytes = Encoding.UTF8.GetBytes(secret);
-            if (keyBytes.Length * 8 < 128)
-                throw new ArgumentException($"jwt 编码 secret 长度 {keyBytes.Length * 8} 不足 128 位 (16 字节)", nameof(secret));
-
             //List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? "")).ToList();
             List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = expiresAt,
+                Expires = expires,
                 SigningCredentials = credentials
             };
 
@@ -45,30 +38,22 @@ namespace BackendExample.Utility
         /// <summary>
         /// JWT 解码
         /// </summary>
-        public static Dictionary<string, string> DecodeJwt(string jwt, string secret)
+        public static Dictionary<string, string> DecodeJwt(string token, string key)
         {
-            if (string.IsNullOrEmpty(secret))
-                throw new ArgumentException("jwt 解码 secret 不能为空", nameof(secret));
-            
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.UTF8.GetBytes(secret);
-            
-            if (key.Length * 8 < 128)
-                throw new ArgumentException($"jwt 解码 secret 长度 {key.Length * 8} 不足 128 位 (16 字节)",
-                    nameof(secret));
-
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
                 //ClockSkew = TimeSpan.FromMinutes(5) // 可选，默认5分钟
                 ClockSkew = TimeSpan.Zero
             };
 
-            tokenHandler.ValidateToken(jwt, validationParameters, out SecurityToken validatedToken);
+            tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
             JwtSecurityToken? jwtToken = validatedToken as JwtSecurityToken;
             if (jwtToken == null)
                 //throw new SecurityTokenException("无效的 JWT");

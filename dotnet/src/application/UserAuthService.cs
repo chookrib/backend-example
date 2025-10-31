@@ -10,12 +10,23 @@ namespace BackendExample.Application
     {
         private readonly UserRepository userRepository;
         private readonly int jwtExpiresDay;
-        private readonly string jwtSecret;
+        private readonly string jwtSecretKey;
 
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
         {
-            this.jwtExpiresDay = configuration.GetValue<int>("app:user-jwt-expires-day");
-            this.jwtSecret = configuration.GetValue<string>("app:user-jwt-secret", string.Empty);
+            int? jwtExpiresDayValue = ValueUtility.ToIntOrNull(
+                configuration.GetValue<string>("App:JwtExpiresDay", string.Empty)
+                );
+            if (!jwtExpiresDayValue.HasValue || jwtExpiresDayValue < 0)
+                throw new ApplicationException("App:JwtExpiresDay 配置错误");
+            this.jwtExpiresDay = jwtExpiresDayValue.Value;
+            this.jwtSecretKey = configuration.GetValue<string>("App:JwtSecretKey", string.Empty);
+            if(ValueUtility.IsBlank(this.jwtSecretKey))
+                throw new ApplicationException("App:JwtSecretKey 配置错误");
+            // secret key 必须要大于 128 位 (16 字节)
+            if(this.jwtSecretKey.Length < 16)
+                throw new ApplicationException("App:JwtSecretKey 配置错误，不足 16 位");
+
             this.userRepository = userRepository;
         }
 
@@ -30,7 +41,7 @@ namespace BackendExample.Application
             return CryptoUtility.EncodeJwt(new Dictionary<string, string>()
             {
                 { "id", user.Id }
-            }, DateTime.Now.AddDays(this.jwtExpiresDay), this.jwtSecret);
+            }, DateTime.Now.AddDays(this.jwtExpiresDay), this.jwtSecretKey);
         }
 
         /// <summary>
@@ -40,7 +51,7 @@ namespace BackendExample.Application
         {
             try
             {
-                Dictionary<string, string> payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecret);
+                Dictionary<string, string> payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecretKey);
                 //return payload["id"];
                 if (payload.TryGetValue("id", out string? id) && id != null)
                     return id;

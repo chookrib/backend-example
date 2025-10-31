@@ -6,6 +6,16 @@ namespace BackendExample;
 public class Accessor
 {
     /// <summary>
+    /// 应用名称
+    /// </summary>
+    public static string AppName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 应用是否为开发环境
+    /// </summary>
+    public static bool AppIsDev { get; set; }
+
+    /// <summary>
     /// 配置
     /// </summary>
     public static IConfiguration? Configuration { get; set; }
@@ -19,7 +29,6 @@ public class Accessor
     /// </summary>
     public static IServiceProvider? ServiceProvider { get; set; }
 
-    public static bool IsDevelopment { get; set; }
     /// <summary>
     /// 从容器中获取实例
     /// </summary>

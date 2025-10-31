@@ -30,7 +30,7 @@ namespace BackendExample
                 if (child.GetChildren().Any())
                     PrintConfiguration(child, key);
                 else
-                    Console.WriteLine($"{key} = {child.Value}");
+                    Console.WriteLine($"    {key} = {child.Value}");
             }
         }
 
@@ -41,12 +41,16 @@ namespace BackendExample
             LogManager.GetLogger(typeof(Program)).Info("log4net 配置成功");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-            PrintConfiguration(builder.Configuration);
 
-            // 将 配置 存储到 Accessor 中，方便在非 DI 环境中使用
             Accessor.Configuration = builder.Configuration;
-            Accessor.IsDevelopment = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
-            // Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            //Accessor.AppIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
+            //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            Accessor.AppIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
+            if (Accessor.AppIsDev)
+            {
+                Console.WriteLine($"Configuration:");
+                PrintConfiguration(builder.Configuration);
+            }
 
             // =========================================================================================================
 
@@ -96,7 +100,6 @@ namespace BackendExample
 
             WebApplication app = builder.Build();
 
-            // 将 容器 存储到 Accessor 中，方便在非 DI 环境中使用
             Accessor.ServiceProvider = app.Services;
 
             // Configure the HTTP request pipeline.
@@ -110,7 +113,7 @@ namespace BackendExample
                 {
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     context.Response.ContentType = "application/json";
-                    var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+                    Exception? error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
                     if (error is NotLoginException)
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_NOT_LOGIN, "未登录")
@@ -125,6 +128,12 @@ namespace BackendExample
             app.MapControllers();
 
             app.Run();
+
+            Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
+            if(ValueUtility.IsBlank(Accessor.AppName))
+                logger.Warn("App:Name 配置缺失");
+            else
+                logger.Info($"{Accessor.AppName} 应用启动成功");
         }
 
         #region json 转换器

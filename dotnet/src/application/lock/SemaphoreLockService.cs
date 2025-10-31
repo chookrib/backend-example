@@ -13,18 +13,17 @@ namespace BackendExample.Application
 
         private readonly ConcurrentDictionary<string, SemaphoreSlim> locks = new();
 
-        public T GetWithLock<T>(string key, Func<T> func)
+        public T GetWithLock<T>(string key, Func<T> func, int timeout = 30)
         {
-            TimeSpan timeout = TimeSpan.FromSeconds(30);
             SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
 
             bool isAcquired = false;
             try
             {
-                isAcquired = semaphore.Wait(timeout);
+                isAcquired = semaphore.Wait(TimeSpan.FromSeconds(timeout));
                 if (isAcquired)
                 {
-                    if(Accessor.IsDevelopment)
+                    if(Accessor.AppIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
                     return func();
                 }
@@ -40,33 +39,32 @@ namespace BackendExample.Application
                 if (isAcquired)
                 {
                     semaphore.Release();
-                    if (Accessor.IsDevelopment)
+                    if (Accessor.AppIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
                 }
             }
         }
 
-        public void RunWithLock(string key, Action action)
+        public void RunWithLock(string key, Action action, int timeout = 30)
         {
             GetWithLock<object?>(key, () =>
             {
                 action();
                 return null;
-            });
+            }, timeout);
         }
 
-        public async Task<T> GetWithLockAsync<T>(string key, Func<Task<T>> func)
+        public async Task<T> GetWithLockAsync<T>(string key, Func<Task<T>> func, int timeout = 30)
         {
-            TimeSpan timeout = TimeSpan.FromSeconds(30);
             SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
 
             bool isAcquired = false;
             try
             {
-                isAcquired = await semaphore.WaitAsync(timeout);
+                isAcquired = await semaphore.WaitAsync(TimeSpan.FromSeconds(timeout));
                 if (isAcquired)
                 {
-                    if (Accessor.IsDevelopment)
+                    if (Accessor.AppIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
                     return await func();
                 }
@@ -81,20 +79,20 @@ namespace BackendExample.Application
             {
                 if (isAcquired)
                 {
-                    if (Accessor.IsDevelopment)
+                    if (Accessor.AppIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
                     semaphore.Release();
                 }
             }
         }
 
-        public async Task RunWithLockAsync(string key, Func<Task> func)
+        public async Task RunWithLockAsync(string key, Func<Task> func, int timeout = 30)
         {
             await GetWithLockAsync<object?>(key, async () =>
             {
                 await func();
                 return null;
-            });
+            }, timeout);
         }
     }
 }

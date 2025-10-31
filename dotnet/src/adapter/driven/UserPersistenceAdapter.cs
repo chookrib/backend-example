@@ -20,6 +20,9 @@ namespace BackendExample.Adapter.Driven
         public UserPersistenceAdapter(IConfiguration configuration)
         {
             this.connectionString = configuration.GetConnectionString("SQLite") ?? string.Empty;
+            if (ValueUtility.IsBlank(this.connectionString))
+                throw new PersistenceException("ConnectionString:SQLite 配置错误");
+
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             conn.Execute("""
@@ -174,7 +177,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(1) from t_user where lower(u_username) = lower(@username)",
+                "select count(*) from t_user where lower(u_username) = lower(@username)",
                 new { username }
                 ) == 0;
         }
@@ -186,7 +189,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(1) from t_user where lower(u_nickname) = lower(@nickname)",
+                "select count(*) from t_user where lower(u_nickname) = lower(@nickname)",
                 new { nickname }
                 ) == 0;
         }
@@ -198,7 +201,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(1) from t_user where lower(u_mobile) = lower(@mobile)",
+                "select count(*) from t_user where lower(u_mobile) = lower(@mobile)",
                 new { mobile }
                 ) == 0;
         }
