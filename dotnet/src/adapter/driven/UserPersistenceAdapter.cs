@@ -37,9 +37,9 @@ namespace BackendExample.Adapter.Driven
             conn.Execute("delete from t_user where lower(u_username) = 'admin'");
             conn.Execute($"""
                 insert into t_user
-                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
                 values
-                ('0', 'admin', '{CryptoUtility.EncodeMd5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                    ('0', 'admin', '{CryptoUtility.EncodeMd5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
                 """);
         }
 
