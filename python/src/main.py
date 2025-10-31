@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from json import JSONDecodeError
 
@@ -11,10 +12,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from src.accessor import accessor
 from src.adapter.driving import result_codes
 from src.adapter.driving.result import Result
 from src.config import settings
-from src.utility import json_utility
+from src.utility import json_utility, value_utility
 
 # 设置日志格式
 logging.basicConfig(
@@ -51,18 +53,37 @@ async def lifespan(app: FastAPI):
     """自定义FastAPI生命周期管理器"""
 
     # yield 之前的代码会在 FastAPI 启动前执行
-    # 打印 pydantic_settings
-    logger.info(
-        "pydantic_settings:\n"
-        + "\n".join(f"{key}={value}" for key, value in settings.__dict__.items())
-    )
 
+    if accessor.app_is_dev:
+        # 打印 pydantic_settings
+        print(
+            #"\033[31m" +
+            "pydantic_settings:\n"
+            + "\n".join(f"    {key} = {value}" for key, value in settings.__dict__.items())
+            #+ "\033[0m"
+        )
+
+        # 打印 os.environ
+        print(
+            # "\033[31m" +
+            "os.environ:\n"
+            + "\n".join(f"    {key} = {value}" for key, value in os.environ.items())
+            # + "\033[0m"
+        )
+
+    # 服务初始化
     from src.ioc_container import ioc_container
     from src.domain.user_repository import UserRepository
     user_repository = ioc_container.resolve(UserRepository)    # type: ignore
     await user_repository.init()
 
+    if value_utility.is_blank(settings.APP_NAME):
+        logger.warning(f"APP_NAME 配置缺失")
+    else:
+        logger.info(f"{settings.APP_NAME} 应用启动成功")
+
     yield
+
     # yield 之后的代码会在 FastAPI 关闭前执行
 
 
@@ -143,12 +164,12 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         #         ).to_dict()
         #     )
         return response
-    except Exception as e:
-        logger.error(f"捕捉到未处理的异常: {str(e)}", exc_info=True)
+    except Exception as ex:
+        logger.error(f"捕捉到未处理的异常: {str(ex)}", exc_info=True)
         return JSONResponse(
             content=Result.error(
                 code=result_codes.ERROR_DEFAULT,
-                message=f"{str(e)}"
+                message=f"{str(ex)}"
             ).to_dict()
         )
 
@@ -176,6 +197,6 @@ app.include_router(user_manage_controller.router)
 if __name__ == "__main__":
     # 启动服务器
     # import uvicorn
-    # uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    # uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
 
     pass

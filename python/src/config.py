@@ -2,17 +2,22 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    SQLITE_DATABASE_FILE: str = "db.db"
+    """应用配置"""
 
-    USER_JWT_EXPIRES_DAY: int = 0
-    USER_JWT_SECRET: str = ""
+    APP_NAME: str = ""
+    APP_ENV: str = ""
 
-    REDIS_URL: str | None = None
+    APP_LOCK_SERVICE: str = "asyncio"
+    APP_REDIS_URL: str = ""
+
+    APP_SQLITE_PATH: str = ""
+
+    APP_JWT_EXPIRES_DAY: str = ""
+    APP_JWT_SECRET_KEY: str = ""
 
     class Config:
         env_file = ".env"
         # env_file = os.getenv("ENV_FILE", ".env")
         # env_file_encoding = "utf-8"
-
 
 settings = Settings()

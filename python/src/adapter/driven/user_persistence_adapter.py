@@ -19,8 +19,10 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     """用户持久化Adapter"""
 
     def __init__(self):
-        # self.db_path = str(Path(__file__).resolve().parents[4] / settings.SQLITE_DATABASE_FILE)
-        self.db_path = os.path.join(os.getcwd(), settings.SQLITE_DATABASE_FILE)
+        if value_utility.is_blank(settings.APP_SQLITE_PATH):
+            raise PersistenceException("APP_SQLITE_PATH 配置错误")
+        # self.db_path = str(Path(__file__).resolve().parents[4] / settings.APP_SQLITE_PATH)
+        self.db_path = os.path.join(os.getcwd(), settings.APP_SQLITE_PATH)
 
     async def init(self) -> None:
         async with aiosqlite.connect(self.db_path) as db:

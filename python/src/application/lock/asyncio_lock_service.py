@@ -4,10 +4,13 @@ from collections import defaultdict
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from src.accessor import accessor
 from src.application.application_exception import ApplicationException
 from src.application.lock.lock_service import LockService
+from src.config import settings
 
 logger = logging.getLogger(__name__)
+
 
 class AsyncioLockService(LockService):
     """
@@ -33,12 +36,13 @@ class AsyncioLockService(LockService):
 
         try:
             await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
-            # logger.info(f"获取 asyncio 锁成功: {key}")
+            if accessor.app_is_dev:
+                logger.info(f"获取 asyncio 锁 {key} 成功")
             yield
         except asyncio.TimeoutError:
-            # raise TimeoutError(f"获取 asyncio 锁超时: {key}")
-            raise ApplicationException(f"获取 asyncio 锁超时: {key}")
+            # raise TimeoutError(f"获取 asyncio 锁 {key} 超时")
+            raise ApplicationException(f"获取 asyncio 锁 {key} 超时")
         finally:
             resource_lock.release()
-            # logger.info(f"释放 asyncio 锁成功: {key}")
-
+            if accessor.app_is_dev:
+                logger.info(f"释放 asyncio 锁 {key} 成功")

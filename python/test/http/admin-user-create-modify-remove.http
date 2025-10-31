@@ -41,7 +41,7 @@ Access-Token: {{accessToken}}
 GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 
-### 更新
+### 更新手机
 POST http://{{host}}/api/admin/user/modify
 Content-Type: application/json
 Access-Token: {{accessToken}}
@@ -55,7 +55,7 @@ Access-Token: {{accessToken}}
   "mobile": "138{{$random.integer(10000000, 99999999)}}"
 }
 
-### 更新后获取
+### 更新手机后获取
 GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 

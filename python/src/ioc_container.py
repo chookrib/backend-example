@@ -1,6 +1,11 @@
 import inspect
-
+import logging
 from typing import TypeVar
+
+from src.accessor import accessor
+from src.config import settings
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
@@ -22,7 +27,8 @@ class IocContainer:
             return instance
         sig = inspect.signature(target_cls.__init__)
         kwargs = {}
-        print(f"正在注册 {target_cls.__name__}，参数: {sig.parameters}")
+        if accessor.app_is_dev:
+            logger.info(f"正在注册 {target_cls.__name__}，参数: {sig.parameters}")
         for name, param in sig.parameters.items():
             # *args 和 **kwargs 不需要处理
             if name == 'self' or param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
@@ -70,13 +76,19 @@ ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter
 # ======================================================================================================================
 # 注册锁 Service
 from src.application.lock.lock_service import LockService
-from src.application.lock.asyncio_lock_service import AsyncioLockService
-# from src.application.lock.redis_lock_service import RedisLockService
-from src.application.lock.test_lock_service import TestLockService
 
-# 注入不同的锁实现
-ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
-# ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
+if settings.APP_LOCK_SERVICE not in ["asyncio", "redis"]:
+    raise Exception(f"APP_LOCK_SERVICE 配置错误")
+
+if settings.APP_LOCK_SERVICE == "asyncio":
+    from src.application.lock.asyncio_lock_service import AsyncioLockService
+    ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
+
+if settings.APP_LOCK_SERVICE == "redis":
+    from src.application.lock.redis_lock_service import RedisLockService
+    ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
+
+from src.application.lock.test_lock_service import TestLockService
 ioc_container.register(cls=TestLockService)
 
 # ======================================================================================================================
