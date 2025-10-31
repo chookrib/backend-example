@@ -61,8 +61,8 @@ public class TestLockService {
     public void threadSleep() {
         try {
             Thread.sleep(10 * 1000);
-        } catch (InterruptedException e) {
-            throw new ApplicationException(e.getMessage());
+        } catch (InterruptedException ex) {
+            throw new ApplicationException(ex);
         }
     }
 }

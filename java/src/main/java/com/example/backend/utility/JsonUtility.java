@@ -19,8 +19,8 @@ public class JsonUtility {
     public static JsonNode deserialize(String data) {
         try {
             return new ObjectMapper().readTree(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("反序列化JSON异常", e);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("反序列化JSON异常", ex);
         }
     }
 
@@ -30,8 +30,8 @@ public class JsonUtility {
     public static String serialize(Object data) {
         try {
             return new ObjectMapper().writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("序列化JSON异常", e);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("序列化JSON异常", ex);
         }
     }
 
@@ -43,8 +43,8 @@ public class JsonUtility {
     //        return new ObjectMapper()
     //                //.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
     //                .convertValue(data, Map.class);
-    //    //} catch (Exception e) {
-    //    //    throw new RuntimeException("对象转为Map异常", e);
+    //    //} catch (Exception ex) {
+    //    //    throw new RuntimeException("对象转 Map 异常", ex);
     //    //}
     //}
 
@@ -57,8 +57,8 @@ public class JsonUtility {
                 .build();
         try {
             return objectMapper.readTree(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("反序列化JSON异常", ex);
         }
     }
 
@@ -68,8 +68,8 @@ public class JsonUtility {
     public static <T> T deserialize(String data, TypeReference<T> type) {
         try {
             return new ObjectMapper().readValue(data, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("反序列化JSON异常", ex);
         }
     }
 

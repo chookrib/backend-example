@@ -21,12 +21,12 @@ public class SynchronizedLockService implements LockService {
     public <T> T getWithLock(String key, Supplier<T> action) {
         Object lock = this.lockMap.computeIfAbsent(key, k -> new Object());
         synchronized (lock) {
-            if(Accessor.isDevelopment)
+            if(Accessor.appIsDev)
                 logger.info("线程 {} 获取 Synchronized 锁 {} 成功", Thread.currentThread().getName(), key);
             try {
                 return action.get();
             } finally {
-                if(Accessor.isDevelopment)
+                if(Accessor.appIsDev)
                     logger.info("线程 {} 释放 Synchronized 锁 {} 成功", Thread.currentThread().getName(), key);
                 // 不移除锁对象以便复用
             }

@@ -54,8 +54,8 @@ public class CryptoUtility {
                 sb.append(String.format("%02x", b));
             }
             return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        } catch (java.security.NoSuchAlgorithmException ex) {
+            throw new RuntimeException("MD5 编码异常", ex);
         }
     }
 }

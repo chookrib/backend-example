@@ -1,11 +1,13 @@
 package com.example.backend;
 
+import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 
@@ -22,14 +24,33 @@ public class Application {
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
         Properties props = getManifestProperties();
-        logger.info("Started File-Name: {} Build-Time: {} Git-Commit-Id-Abbrev: {}",
+        logger.info("File-Name: {} Build-Time: {} Git-Commit-Id-Abbrev: {}",
                 getFileName(),
                 props.getProperty("Build-Time", ""),
                 props.getProperty("Git-Commit-Id-Abbrev", ""));
 
-        Environment environment = applicationContext.getEnvironment();
-        // String value = environment.getProperty("spring.profiles.active", "default");
-        Accessor.isDevelopment = environment.acceptsProfiles(Profiles.of("dev"));
+        ConfigurableEnvironment environment = applicationContext.getEnvironment();
+
+        Accessor.appContext = applicationContext;
+
+        Accessor.appIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
+        if(Accessor.appIsDev) {
+            // 打印 environment
+            System.out.println("environment:");
+            environment.getPropertySources().forEach(propertySource -> {
+                if (propertySource.getSource() instanceof java.util.Map) {
+                    ((java.util.Map<?, ?>) propertySource.getSource()).forEach((k, v) -> {
+                        System.out.println("    " + k + " = " + v);
+                    });
+                }
+            });
+        }
+
+        Accessor.appName = environment.getProperty("app.name", "");
+        if(ValueUtility.isBlank(Accessor.appName))
+            logger.warn("app.name 配置缺失");
+        else
+            logger.info("{} 应用启动成功", Accessor.appName);
     }
 
     /**
@@ -63,8 +84,8 @@ public class Application {
     //
     //        logger.warn("获取 Build-Time 失败: META-INF/MANIFEST.MF 文件未包含 Build-Time");
     //        return "";
-    //    } catch (Exception e) {
-    //        logger.warn("获取 Build-Time 失败: {}", e.getMessage());
+    //    } catch (Exception ex) {
+    //        logger.warn("获取 Build-Time 失败: {}", ex.getMessage());
     //        return "";
     //    }
     //}
@@ -91,8 +112,8 @@ public class Application {
             //        return props.getProperty(key);
             //    }
             //}
-        } catch (Exception e) {
-            logger.warn("读取 META-INF/MANIFEST.MF 失败: {}", e.getMessage());
+        } catch (Exception ex) {
+            logger.warn("读取 META-INF/MANIFEST.MF 失败: {}", ex.getMessage());
         }
 
         return props;

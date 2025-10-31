@@ -6,29 +6,29 @@ server:
 #    name: log\log.log
 
 spring:
-  application:
-    name: backend-example-java
-
-  profiles:
-    active: dev
-
+  sql:
+    init:
+      continue-on-error: true
   datasource:
-    url: jdbc:sqlite:db.db
-    driver-class-name: org.sqlite.JDBC
-    username:
-    password:
-
+    sqlite:
+      jdbc-url: jdbc:sqlite:db.db
+      driver-class-name: org.sqlite.JDBC
+      username:
+      password:
   # 关闭 Redisson 自动配置，手工创建 RedissonClient
   autoconfigure:
     exclude:
       - org.redisson.spring.starter.RedissonAutoConfigurationV2
 
 app:
-  user-jwt-expires-day: 30
-  user-jwt-secret: user-jwt-secret
-#  lock-service: redisson
-#  redisson-address: redis://localhost:6379
-#  redisson-password:
-#  redisson-database: 0
+  name: backend-example-java
+  env: dev
 
+  #  lock-service: redisson   # synchronized[default] | reentrant | redisson
+  #  redisson-address: redis://localhost:6379
+  #  redisson-password:
+  #  redisson-database: 0
+
+  jwt-expires-day: 30
+  jwt-secret-key: jwt-secret-key
 

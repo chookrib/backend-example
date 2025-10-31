@@ -54,7 +54,7 @@ public class ValueUtility {
             return null;
         try {
             return Integer.valueOf(value);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             return null;
         }
     }
@@ -79,7 +79,7 @@ public class ValueUtility {
             return null;
         try {
             return Long.valueOf(value);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             return null;
         }
     }
@@ -104,7 +104,7 @@ public class ValueUtility {
             return null;
         try {
             return new BigDecimal(value);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             return null;
         }
     }
@@ -137,7 +137,7 @@ public class ValueUtility {
     public static LocalDateTime toDateTimeOrNull(String value) {
         //try {
         //    return DateUtils.parseDate(value, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd");
-        //} catch (Exception e) {
+        //} catch (Exception ex) {
         //    return null;
         //}
 
@@ -145,7 +145,7 @@ public class ValueUtility {
             return null;
         try {
             return LocalDateTime.parse(value, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             return null;
         }
     }
@@ -179,7 +179,7 @@ public class ValueUtility {
             return null;
         try {
             return LocalDate.parse(value, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             return null;
         }
     }
@@ -213,7 +213,7 @@ public class ValueUtility {
             return null;
         try {
             return LocalTime.parse(value, java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             return null;
         }
     }

@@ -7,8 +7,9 @@ import com.example.backend.application.UserQuerySort;
 import com.example.backend.domain.User;
 import com.example.backend.domain.UserRepository;
 import com.example.backend.domain.UserUniqueSpecification;
-import com.example.backend.utility.ValueUtility;
 import com.example.backend.utility.CryptoUtility;
+import com.example.backend.utility.ValueUtility;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -29,7 +30,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public UserPersistenceAdapter(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public UserPersistenceAdapter(
+            @Qualifier("sqliteJdbcTemplate") JdbcTemplate jdbcTemplate,
+            @Qualifier("sqliteNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 
@@ -199,7 +203,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         if (ValueUtility.isBlank(mobile))
             throw new PersistenceException("参数 mobile 不能为空");
         return jdbcTemplate.queryForObject(
-                "select * from t_user where lower(u_mobile) = lower(?)", int.class, mobile
+                "select count(*) from t_user where lower(u_mobile) = lower(?)", int.class, mobile
         ) == 0;
     }
 

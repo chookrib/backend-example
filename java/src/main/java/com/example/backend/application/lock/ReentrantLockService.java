@@ -22,13 +22,13 @@ public class ReentrantLockService implements LockService {
     public <T> T getWithLock(String key, Supplier<T> action) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
-        if(Accessor.isDevelopment)
+        if(Accessor.appIsDev)
             logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
         try {
             return action.get();
         } finally {
             lock.unlock();
-            if(Accessor.isDevelopment)
+            if(Accessor.appIsDev)
                 logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
         }
     }

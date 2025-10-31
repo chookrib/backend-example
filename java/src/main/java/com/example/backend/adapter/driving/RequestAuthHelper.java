@@ -1,5 +1,6 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.Accessor;
 import com.example.backend.application.UserAuthService;
 import com.example.backend.application.UserDto;
 import com.example.backend.application.UserQueryHandler;
@@ -16,21 +17,9 @@ public class RequestAuthHelper {
     private final UserAuthService userAuthService;
     private final UserQueryHandler userQueryHandler;
 
-    private static RequestAuthHelper INSTANCE;
-
     public RequestAuthHelper(UserAuthService userAuthService, UserQueryHandler userQueryHandler) {
         this.userAuthService = userAuthService;
         this.userQueryHandler = userQueryHandler;
-        INSTANCE = this;
-    }
-
-    /**
-     * 获取静态实例
-     */
-    private static RequestAuthHelper getInstance() {
-        if (INSTANCE == null)
-            throw new ControllerException("RequestAuthHelper 静态实例未初始化");
-        return INSTANCE;
     }
 
     /**
@@ -38,8 +27,8 @@ public class RequestAuthHelper {
      */
     public static String getLoginUserId(HttpServletRequest request) {
         String accessToken = request.getHeader("Access-Token");
-        //return SpringContextUtility.getBean(UserAuthService.class).getLoginUserId(accessToken);
-        return getInstance().userAuthService.getLoginUserId(accessToken);
+        //return ApplicationContextUtility.getBean(UserAuthService.class).getLoginUserId(accessToken);
+        return Accessor.getBean(UserAuthService.class).getLoginUserId(accessToken);
     }
 
     /**
@@ -57,8 +46,8 @@ public class RequestAuthHelper {
      */
     public static UserDto requireLoginUserAdmin(HttpServletRequest request) {
         String userId = requireLoginUserId(request);
-        //UserDto userDto = SpringContextUtility.getBean(UserQueryHandler.class).queryById(userId);
-        UserDto userDto = getInstance().userQueryHandler.queryById(userId);
+        //UserDto userDto = ApplicationContextUtility.getBean(UserQueryHandler.class).queryById(userId);
+        UserDto userDto = Accessor.getBean(UserQueryHandler.class).queryById(userId);
         if (userDto == null || !userDto.isAdmin())
             throw new NotLoginException();
         return userDto;

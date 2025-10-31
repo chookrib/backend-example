@@ -1,6 +1,7 @@
 package com.example.backend.application.lock;
 
 import com.example.backend.Accessor;
+import com.example.backend.application.ApplicationException;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -21,27 +22,32 @@ public class RedissonLockService implements LockService {
     //public RedissonLockService(RedissonClient redissonClient) {
     public RedissonLockService(String address, String password, int database) {
         //this.redissonClient = redissonClient;
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress(address)    // redis://127.0.0.1:6379
-                .setPassword(password)
-                .setDatabase(database);
-        this.redissonClient = org.redisson.Redisson.create(config);
+        try {
+            Config config = new Config();
+            config.useSingleServer()
+                    .setAddress(address)
+                    .setPassword(password)
+                    .setDatabase(database);
+            this.redissonClient = org.redisson.Redisson.create(config);
+        } catch (Exception ex) {
+            throw new ApplicationException("RedissonLockService 初始化失败", ex);
+        }
     }
 
     @Override
     public <T> T getWithLock(String key, Supplier<T> action) {
-        RLock lock = this.redissonClient.getLock(key);
+        String lockKey = Accessor.appName + ":lock:" + key;
+        RLock lock = this.redissonClient.getLock(lockKey);
         lock.lock(); // Redisson 会自动续期
-        if(Accessor.isDevelopment)
-            logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), key);
+        if (Accessor.appIsDev)
+            logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
         try {
             return action.get();
         } finally {
             if (lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
-                if(Accessor.isDevelopment)
-                    logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), key);
+                if (Accessor.appIsDev)
+                    logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
             }
         }
     }

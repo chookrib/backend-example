@@ -21,8 +21,8 @@ public class RequestValueHelper {
     public static JsonNode getRequestJson(String requestBody) {
         try {
             return JsonUtility.deserialize(requestBody);
-        } catch (Exception e) {
-            throw new ControllerException("请求体不是合法的JSON格式");
+        } catch (Exception ex) {
+            throw new ControllerException("请求体不是合法的JSON格式", ex);
         }
     }
 
