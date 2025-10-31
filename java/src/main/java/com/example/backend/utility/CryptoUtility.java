@@ -29,10 +29,10 @@ public class CryptoUtility {
     /**
      * JWT 解码
      */
-    public static Map<String, String> decodeJwt(String jwt, String secret) {
+    public static Map<String, String> decodeJwt(String token, String secret) {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secret))
                 .build()
-                .verify(jwt);
+                .verify(token);
         //return decodedJWT.getClaims();        // return Map<String, Claim>
         Map<String, Claim> claims = decodedJWT.getClaims();
         Map<String, String> result = new HashMap<>();
