@@ -10,14 +10,15 @@ class UserAuthService:
     """用户认证Service"""
 
     def __init__(self, user_repository: UserRepository):
-        self.user_repository = user_repository
         jwt_expires_day = value_utility.to_int_or_none(settings.APP_JWT_EXPIRES_DAY)
         if jwt_expires_day is None or jwt_expires_day <= 0:
             raise ApplicationException(f"APP_JWT_EXPIRES_DAY 配置错误")
         self.jwt_expires_day = jwt_expires_day
-        if value_utility.is_blank(settings.APP_JWT_SECRET_KEY):
-            raise ApplicationException(f"APP_JWT_SECRET_KEY 配置错误")
         self.jwt_secret_key = settings.APP_JWT_SECRET_KEY
+        if value_utility.is_blank(self.jwt_secret_key):
+            raise ApplicationException(f"APP_JWT_SECRET_KEY 配置错误")
+
+        self.user_repository = user_repository
 
     async def login(self, username, password) -> str:
         """登录，返回AccessToken"""

@@ -157,7 +157,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 username 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute("select 1 from t_user where u_username = ?", (username,)) as cursor:
+            async with db.execute("select * from t_user where u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -167,7 +167,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 nickname 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute("select 1 from t_user where u_nickname = ?", (nickname,)) as cursor:
+            async with db.execute("select * from t_user where u_nickname = ?", (nickname,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -177,7 +177,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 mobile 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute("select 1 from t_user where u_mobile = ?", (mobile,)) as cursor:
+            async with db.execute("select * from t_user where u_mobile = ?", (mobile,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
