@@ -120,11 +120,11 @@ from src.application.lock.lock_exception import LockException
 
 @app.exception_handler(LockException)
 async def lock_exception_handler(request: Request, ex: LockException):
-    logger.error(f"捕捉到LockException异常: {str(ex)}", exc_info=True)
+    logger.error(f"捕捉到 LockException 异常: {str(ex)}", exc_info=True)
     return JSONResponse(
         content=Result.error(
             code=result_codes.ERROR_DEFAULT,
-            message=f"系统繁忙，请稍后重试"
+            message=f"系统繁忙，请稍后再试"
         ).to_dict()
     )
 

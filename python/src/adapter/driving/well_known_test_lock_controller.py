@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request
 
 from src.adapter.driving import request_value_helper
 from src.adapter.driving.result import Result
+from src.application.lock.lock_exception import LockException
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -21,6 +22,7 @@ def test_lock_set_count(request: Request):
     test_lock_service.set_count(value)
     return Result.ok(data={"count": value})
 
+
 @router.get("/.well-known/test/lock/decrease-count")
 def test_lock_decrease_count():
     """
@@ -29,6 +31,7 @@ def test_lock_decrease_count():
     """
     test_lock_service.decrease_count()
     return Result.ok()
+
 
 @router.get("/.well-known/test/lock/async-decrease-count")
 async def test_lock_async_decrease_count():
@@ -61,3 +64,12 @@ async def test_lock_asyncio_sleep():
     """asyncio.sleep"""
     await test_lock_service.asyncio_sleep()
     return Result.ok()
+
+
+# ======================================================================================================================
+
+
+@router.get("/.well-known/test/lock/exception")
+async def test_lock_exception():
+    """测试 LockException 异常"""
+    raise LockException("测试 LockException 异常")

@@ -21,3 +21,8 @@ GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
 
 ### 测试锁，asyncio.sleep
 GET http://{{host}}/.well-known/test/lock/asyncio-sleep
+
+#=======================================================================================================================
+
+### 测试 LockException 异常
+GET http://{{host}}/.well-known/test/lock/exception
