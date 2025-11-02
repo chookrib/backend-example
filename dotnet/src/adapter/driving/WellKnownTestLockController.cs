@@ -90,5 +90,16 @@ namespace BackendExample.Adapter.Driving
             await this.testLockService.TaskDelayWithLockAsync();
             return Result.Ok();
         }
+
+        //==============================================================================================================
+
+        /// <summary>
+        /// 测试 LockException 异常
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/exception")]
+        public async Task<Result> TestLockException()
+        {
+            throw new LockException("测试 LockException 异常");
+        }
     }
 }

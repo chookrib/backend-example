@@ -26,4 +26,8 @@ GET http://{{host}}/.well-known/test/lock/task-delay-async
 GET http://{{host}}/.well-known/test/lock/task-delay-with-lock-async
 # ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/task-delay-with-lock-async
 
+#=======================================================================================================================
+
+### 测试 LockException 异常
+GET http://{{host}}/.well-known/test/lock/exception
 

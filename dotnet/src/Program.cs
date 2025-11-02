@@ -118,6 +118,10 @@ namespace BackendExample
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_NOT_LOGIN, "未登录")
                         );
+                    else if(error is LockException)
+                        await context.Response.WriteAsJsonAsync(
+                            Result.Error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试")
+                        );
                     else
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? "未知异常")
