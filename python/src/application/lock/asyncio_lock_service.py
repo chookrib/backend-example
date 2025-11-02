@@ -6,6 +6,7 @@ from typing import AsyncGenerator
 
 from src.accessor import accessor
 from src.application.application_exception import ApplicationException
+from src.application.lock.lock_exception import LockException
 from src.application.lock.lock_service import LockService
 from src.config import settings
 
@@ -24,7 +25,7 @@ class AsyncioLockService(LockService):
         self._internal_lock = asyncio.Lock()
 
     @asynccontextmanager
-    async def lock(self, key: str, timeout: float = 30.0) -> AsyncGenerator[None, None]:
+    async def lock(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
         """
         获取一个进程内锁
 
@@ -41,7 +42,7 @@ class AsyncioLockService(LockService):
             yield
         except asyncio.TimeoutError:
             # raise TimeoutError(f"获取 asyncio 锁 {key} 超时")
-            raise ApplicationException(f"获取 asyncio 锁 {key} 超时")
+            raise LockException(f"获取 asyncio 锁 {key} 超时")
         finally:
             resource_lock.release()
             if accessor.app_is_dev:

@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     APP_ENV: str = ""
 
     APP_LOCK_SERVICE: str = "asyncio"
-    APP_REDIS_URL: str = ""
+    APP_LOCK_REDIS_URL: str = ""
 
     APP_SQLITE_PATH: str = ""
 

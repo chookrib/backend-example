@@ -1,16 +1,11 @@
 import logging
 import os
 import sys
-from json import JSONDecodeError
 
 from fastapi import FastAPI, Request
 from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
-from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 
 from src.accessor import accessor
 from src.adapter.driving import result_codes
@@ -57,10 +52,10 @@ async def lifespan(app: FastAPI):
     if accessor.app_is_dev:
         # 打印 pydantic_settings
         print(
-            #"\033[31m" +
+            # "\033[31m" +
             "pydantic_settings:\n"
             + "\n".join(f"    {key} = {value}" for key, value in settings.__dict__.items())
-            #+ "\033[0m"
+            # + "\033[0m"
         )
 
         # 打印 os.environ
@@ -74,7 +69,7 @@ async def lifespan(app: FastAPI):
     # 服务初始化
     from src.ioc_container import ioc_container
     from src.domain.user_repository import UserRepository
-    user_repository = ioc_container.resolve(UserRepository)    # type: ignore
+    user_repository = ioc_container.resolve(UserRepository)  # type: ignore
     await user_repository.init()
 
     if value_utility.is_blank(settings.APP_NAME):
@@ -111,31 +106,45 @@ from src.adapter.driving.not_login_exception import NotLoginException
 
 
 @app.exception_handler(NotLoginException)
-async def not_login_exception_handler(request: Request, e: NotLoginException):
+async def not_login_exception_handler(request: Request, ex: NotLoginException):
     return JSONResponse(
         content=Result.error(
             code=result_codes.ERROR_NOT_LOGIN,
-            message=f"未登录异常: {str(e)}",
+            message=f"未登录异常: {str(ex)}",
+        ).to_dict()
+    )
+
+
+from src.application.lock.lock_exception import LockException
+
+
+@app.exception_handler(LockException)
+async def lock_exception_handler(request: Request, ex: LockException):
+    logger.error(f"捕捉到LockException异常: {str(ex)}", exc_info=True)
+    return JSONResponse(
+        content=Result.error(
+            code=result_codes.ERROR_DEFAULT,
+            message=f"系统繁忙，请稍后重试"
         ).to_dict()
     )
 
 
 # FastAPI请求验证错误处理
 # @app.exception_handler(RequestValidationError)
-# async def request_validation_error_handler(request: Request, e: RequestValidationError):
+# async def request_validation_error_handler(request: Request, ex: RequestValidationError):
 #     return JSONResponse(
 #         content=Result.error(
 #             code=result_codes.ERROR_DEFAULT,
-#             message=f"RequestValidationError: {str(e)}",
+#             message=f"RequestValidationError: {str(ex)}",
 #         ).to_dict()
 #     )
 
 # @app.exception_handler(JSONDecodeError)
-# async def json_decode_error_handler(request: Request, e: JSONDecodeError):
+# async def json_decode_error_handler(request: Request, ex: JSONDecodeError):
 #     return JSONResponse(
 #         content=Result.error(
 #             code=result_codes.ERROR_DEFAULT,
-#             message=f"JSONDecodeError: {str(e)}",
+#             message=f"JSONDecodeError: {str(ex)}",
 #         ).to_dict()
 #     )
 
@@ -173,6 +182,7 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
             ).to_dict()
         )
 
+
 # 替换 FastAPI 默认 jsonable_encoder
 encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 
@@ -185,6 +195,7 @@ from src.adapter.driving import well_known_test_response_code_controller
 from src.adapter.driving import well_known_test_response_json_controller
 from src.adapter.driving import user_controller
 from src.adapter.driving import user_manage_controller
+
 app.include_router(well_known_controller.router)
 app.include_router(well_known_test_exception_controller.router)
 app.include_router(well_known_test_lock_controller.router)
