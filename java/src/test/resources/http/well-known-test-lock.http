@@ -13,3 +13,8 @@ GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
 
 ### 测试锁，Thread.Sleep
 GET http://{{host}}/.well-known/test/lock/thread-sleep
+
+#=======================================================================================================================
+
+### 测试 LockException 异常
+GET http://{{host}}/.well-known/test/lock/exception

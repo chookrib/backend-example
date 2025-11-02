@@ -24,10 +24,10 @@ app:
   name: backend-example-java
   env: dev
 
-  #  lock-service: redisson   # synchronized[default] | reentrant | redisson
-  #  redisson-address: redis://localhost:6379
-  #  redisson-password:
-  #  redisson-database: 0
+  #  lock-service: redisson   # reentrant[default] | redisson
+  #  lock-redisson-address: redis://localhost:6379
+  #  lock-redisson-password:
+  #  lock-redisson-database: 0
 
   jwt-expires-day: 30
   jwt-secret-key: jwt-secret-key

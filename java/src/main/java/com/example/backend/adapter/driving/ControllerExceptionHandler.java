@@ -1,5 +1,6 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.application.lock.LockException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,18 @@ public class ControllerExceptionHandler {
      */
     @ExceptionHandler(value = NotLoginException.class)
     @ResponseBody
-    public Result notLoginExceptionHandler(HttpServletResponse response, NotLoginException e) {
-        return Result.error(ResultCodes.ERROR_NOT_LOGIN, e.getMessage());
+    public Result notLoginExceptionHandler(HttpServletResponse response, NotLoginException ex) {
+        return Result.error(ResultCodes.ERROR_NOT_LOGIN, ex.getMessage());
+    }
+
+    /**
+     * LockException 异常处理器
+     */
+    @ExceptionHandler(value = LockException.class)
+    @ResponseBody
+    public Result lockExceptionHandler(HttpServletResponse response, LockException ex) {
+        logger.error("捕捉到 LockException 异常: ", ex);
+        return Result.error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试");
     }
 
     /**

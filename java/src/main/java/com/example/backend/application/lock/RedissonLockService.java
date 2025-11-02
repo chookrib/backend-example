@@ -8,6 +8,7 @@ import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -38,17 +39,39 @@ public class RedissonLockService implements LockService {
     public <T> T getWithLock(String key, Supplier<T> action) {
         String lockKey = Accessor.appName + ":lock:" + key;
         RLock lock = this.redissonClient.getLock(lockKey);
-        lock.lock(); // Redisson 会自动续期
-        if (Accessor.appIsDev)
-            logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+
+        //lock.lock(); // Redisson 会自动续期
+        //if (Accessor.appIsDev)
+        //    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+        //try {
+        //    return action.get();
+        //} finally {
+        //    if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+        //        lock.unlock();
+        //        if (Accessor.appIsDev)
+        //            logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+        //    }
+        //}
+
         try {
-            return action.get();
-        } finally {
-            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
-                lock.unlock();
+            //带等待时间的 tryLock
+            if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (Accessor.appIsDev)
-                    logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+                    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+                try {
+                    return action.get();
+                } finally {
+                    if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                        lock.unlock();
+                        if (Accessor.appIsDev)
+                            logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+                    }
+                }
+            } else {
+                throw new LockException(String.format("获取 Redisson 锁 %s 失败", lockKey));
             }
+        } catch (InterruptedException ex) {
+            throw new LockException(String.format("获取 Redisson 锁 %s 失败: %s", lockKey, ex.getMessage()), ex);
         }
     }
 

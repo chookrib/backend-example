@@ -11,30 +11,32 @@ public class LockServiceConfig {
     @Bean
     @ConditionalOnProperty(
             name = "app.lock-service",
-            havingValue = "synchronized",
-            matchIfMissing = true)
-    public LockService synchronizedLockService() {
-        return new SynchronizedLockService();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "app.lock-service", havingValue = "reentrant")
+            havingValue = "reentrant",
+            matchIfMissing = true
+    )
     public LockService reentrantLockService() {
         return new ReentrantLockService();
     }
 
-    @Value("${app.redisson-address:}")
+    @Value("${app.lock-redisson-address:}")
     private String redissonAddress;
 
-    @Value("${app.redisson-password:}")
+    @Value("${app.lock-redisson-password:}")
     private String redissonPassword;
 
-    @Value("${app.redisson-database:0}")
+    @Value("${app.lock-redisson-database:0}")
     private int redissonDatabase;
 
     @Bean
-    @ConditionalOnProperty(name = "app.lock-service", havingValue = "redisson")
+    @ConditionalOnProperty(
+            name = "app.lock-service",
+            havingValue = "redisson"
+    )
     public LockService redissonLockService() {
-        return new RedissonLockService(this.redissonAddress, this.redissonPassword, this.redissonDatabase);
+        return new RedissonLockService(
+                this.redissonAddress,
+                this.redissonPassword,
+                this.redissonDatabase
+        );
     }
 }

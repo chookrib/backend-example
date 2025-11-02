@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
@@ -21,15 +22,34 @@ public class ReentrantLockService implements LockService {
     @Override
     public <T> T getWithLock(String key, Supplier<T> action) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
-        lock.lock();
-        if(Accessor.appIsDev)
-            logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+
+        //lock.lock();
+        //if (Accessor.appIsDev)
+        //    logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+        //try {
+        //    return action.get();
+        //} finally {
+        //    lock.unlock();
+        //    if (Accessor.appIsDev)
+        //        logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+        //}
+
         try {
-            return action.get();
-        } finally {
-            lock.unlock();
-            if(Accessor.appIsDev)
-                logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+            if (!lock.tryLock(10, TimeUnit.SECONDS)) {
+                if (Accessor.appIsDev)
+                    logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+                try {
+                    return action.get();
+                } finally {
+                    lock.unlock();
+                    if (Accessor.appIsDev)
+                        logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
+                }
+            } else {
+                throw new LockException(String.format("获取 Redisson 锁 %s 失败", key));
+            }
+        } catch (InterruptedException ex) {
+            throw new LockException(String.format("获取 Redisson 锁 %s 失败: %s", key, ex.getMessage()), ex);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.application.lock.LockException;
 import com.example.backend.application.lock.TestLockService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -61,6 +62,16 @@ public class WellKnownTestLockController {
     public Result testLockThreadSleep() {
         this.testLockService.threadSleep();
         return Result.ok();
+    }
+
+    //==================================================================================================================
+
+    /**
+     * 测试 LockException 异常
+     */
+    @RequestMapping(value = "/.well-known/test/lock/exception", method = RequestMethod.GET)
+    public Result testLockException() {
+        throw new LockException("测试 LockException 异常");
     }
 }
 
