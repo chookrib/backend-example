@@ -30,39 +30,69 @@ namespace BackendExample.Adapter.Driving
         }
 
         /// <summary>
-        /// 减少 count，不加锁
+        /// 同步减少 count，不加锁，会超减，需多执行几次
         /// </summary>
-        [HttpGet("/.well-known/test/lock/decrease-count")]
-        public Result TestLockDecreaseCount()
+        [HttpGet("/.well-known/test/lock/sync-decrease-count")]
+        public Result TestLockSyncDecreaseCount()
         {
-            this.testLockService.DecreaseCount();
+            this.testLockService.SyncDecreaseCount();
             return Result.Ok();
         }
 
         /// <summary>
-        /// 减少 count，加锁
+        /// 异步减少 count，不加锁，会超减，需多执行几次
         /// </summary>
-        [HttpGet("/.well-known/test/lock/decrease-count-with-lock")]
-        public Result TestLockDecreaseCountWithLock()
+        [HttpGet("/.well-known/test/lock/async-decrease-count")]
+        public async Task<Result> TestLockAsyncDecreaseCount()
         {
-            this.testLockService.DecreaseCountWithLock();
+            await this.testLockService.AsyncDecreaseCount();
             return Result.Ok();
         }
 
         /// <summary>
-        /// 减少 count，加锁，异步
+        /// 同步减少 count，加同步锁，不会超减
         /// </summary>
-        [HttpGet("/.well-known/test/lock/decrease-count-with-lock-async")]
-        public async Task<Result> TestLockDecreaseCountWithLockAsync()
+        [HttpGet("/.well-known/test/lock/sync-decrease-count-with-sync-lock")]
+        public Result TestLockSyncDecreaseCountWithSyncLock()
         {
-            await this.testLockService.DecreaseCountWithLockAsync();
+            this.testLockService.SyncDecreaseCountWithSyncLock();
+            return Result.Ok();
+        }
+
+        /// <summary>
+        /// 同步减少 count，加异步锁，不会超减
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/sync-decrease-count-with-async-lock")]
+        public async Task<Result> TestLockSyncDecreaseCountWithAsyncLock()
+        {
+            await this.testLockService.SyncDecreaseCountWithAsyncLock();
+            return Result.Ok();
+        }
+
+        /// <summary>
+        /// 异步减少 count，加同步锁，不会超减
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/async-decrease-count-with-sync-lock")]
+        public async Task<Result> TestLockAsyncDecreaseCountWithSyncLock()
+        {
+            await this.testLockService.AsyncDecreaseCountWithSyncLock();
+            return Result.Ok();
+        }
+
+        /// <summary>
+        /// 异步减少 count，加异步锁，不会超减
+        /// </summary>
+        [HttpGet("/.well-known/test/lock/async-decrease-count-with-async-lock")]
+        public async Task<Result> TestLockAsyncDecreaseCountWithAsyncLock()
+        {
+            await this.testLockService.AsyncDecreaseCountWithAsyncLock();
             return Result.Ok();
         }
 
         //==============================================================================================================
 
         /// <summary>
-        /// Tread.Sleep
+        /// 同步 Tread.Sleep
         /// </summary>
         [HttpGet("/.well-known/test/lock/thread-sleep")]
         public Result TestLockThreadSleep()
@@ -72,22 +102,22 @@ namespace BackendExample.Adapter.Driving
         }
 
         /// <summary>
-        /// Task.Delay，异步
+        /// 异步 Task.Delay
         /// </summary>
-        [HttpGet("/.well-known/test/lock/task-delay-async")]
-        public async Task<Result> TestLockTaskDelayAsync()
+        [HttpGet("/.well-known/test/lock/async-task-delay")]
+        public async Task<Result> TestLockAsyncTaskDelay()
         {
-            await this.testLockService.TaskDelayAsync();
+            await this.testLockService.AsyncTaskDelay();
             return Result.Ok();
         }
 
         /// <summary>
-        /// Task.Delay，加锁，异步
+        /// 异步 Task.Delay，加异步锁
         /// </summary>
         [HttpGet("/.well-known/test/lock/task-delay-with-lock-async")]
         public async Task<Result> TestLockTaskDelayWithLockAsync()
         {
-            await this.testLockService.TaskDelayWithLockAsync();
+            await this.testLockService.AsyncTaskDelayWithAsyncLock();
             return Result.Ok();
         }
 
@@ -97,7 +127,7 @@ namespace BackendExample.Adapter.Driving
         /// 测试 LockException 异常
         /// </summary>
         [HttpGet("/.well-known/test/lock/exception")]
-        public async Task<Result> TestLockException()
+        public Result TestLockException()
         {
             throw new LockException("测试 LockException 异常");
         }

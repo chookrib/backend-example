@@ -42,88 +42,65 @@ namespace BackendExample.Application
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
             return new AsyncSemaphoreLockHandler(key, semaphore);
         }
+    }
 
-        //public T GetWithLock<T>(string key, Func<T> func, int timeout = 30)
-        //{
-        //    SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+    /// <summary>
+    /// Semaphore 同步锁处理器
+    /// </summary>
+    public sealed class SemaphoreLockHandler : IDisposable
+    {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(SemaphoreLockHandler));
 
-        //    bool isAcquired = false;
-        //    try
-        //    {
-        //        isAcquired = semaphore.Wait(TimeSpan.FromSeconds(timeout));
-        //        if (isAcquired)
-        //        {
-        //            if(Accessor.AppIsDev)
-        //                logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
-        //            return func();
-        //        }
-        //        else
-        //        {
-        //            throw new ApplicationException(
-        //                $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
-        //                );
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        if (isAcquired)
-        //        {
-        //            semaphore.Release();
-        //            if (Accessor.AppIsDev)
-        //                logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
-        //        }
-        //    }
-        //}
+        private readonly string key;
+        private readonly SemaphoreSlim semaphore;
+        bool isRelease = false;
 
-        //public void RunWithLock(string key, Action action, int timeout = 30)
-        //{
-        //    GetWithLock<object?>(key, () =>
-        //    {
-        //        action();
-        //        return null;
-        //    }, timeout);
-        //}
+        public SemaphoreLockHandler(string key, SemaphoreSlim semaphore)
+        {
+            this.key = key;
+            this.semaphore = semaphore;
+        }
 
-        //public async Task<T> GetWithLockAsync<T>(string key, Func<Task<T>> func, int timeout = 30)
-        //{
-        //    SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+        public void Dispose()
+        {
+            if (!this.isRelease)
+            {
+                this.semaphore.Release();
+                this.isRelease = true;
+                if (Accessor.AppIsDev)
+                    logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
+            }
+        }
+    }
 
-        //    bool isAcquired = false;
-        //    try
-        //    {
-        //        isAcquired = await semaphore.WaitAsync(TimeSpan.FromSeconds(timeout));
-        //        if (isAcquired)
-        //        {
-        //            if (Accessor.AppIsDev)
-        //                logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
-        //            return await func();
-        //        }
-        //        else
-        //        {
-        //            throw new ApplicationException(
-        //                $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 失败"
-        //                );
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        if (isAcquired)
-        //        {
-        //            if (Accessor.AppIsDev)
-        //                logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
-        //            semaphore.Release();
-        //        }
-        //    }
-        //}
+    /// <summary>
+    /// Semaphore 异步锁处理器
+    /// </summary>
+    public sealed class AsyncSemaphoreLockHandler : IAsyncDisposable
+    {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(AsyncSemaphoreLockHandler));
 
-        //public async Task RunWithLockAsync(string key, Func<Task> func, int timeout = 30)
-        //{
-        //    await GetWithLockAsync<object?>(key, async () =>
-        //    {
-        //        await func();
-        //        return null;
-        //    }, timeout);
-        //}
+        private readonly string key;
+        private readonly SemaphoreSlim semaphore;
+        bool isRelease = false;
+
+        public AsyncSemaphoreLockHandler(string key, SemaphoreSlim semaphore)
+        {
+            this.key = key;
+            this.semaphore = semaphore;
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            if (!this.isRelease)
+            {
+                this.semaphore.Release();
+                this.isRelease = true;
+                if (Accessor.AppIsDev)
+                    logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
+            }
+            return default;
+        }
     }
 }
 

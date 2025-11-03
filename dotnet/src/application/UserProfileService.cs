@@ -35,13 +35,13 @@ namespace BackendExample.Application
         /// </summary>
         public async Task<string> Register(string username, string password, string nickname)
         {
-            return await this.lockService.GetWithLockAsync(LockKeys.USER, async () =>
+            await using (await this.lockService.LockAsync(LockKeys.USER))
             {
                 User user = await User.RegisterUser(IdGenerator.GenerateId(), username, password, nickname,
                     this.userUniqueSpecification);
                 await this.userRepository.Insert(user);
                 return user.Id;
-            });
+            }
         }
 
         /// <summary>
@@ -59,12 +59,12 @@ namespace BackendExample.Application
         /// </summary>
         public async Task ModifyNickname(string userId, string nickname)
         {
-            await this.lockService.RunWithLockAsync(LockKeys.USER, async () =>
+            await using (await this.lockService.LockAsync(LockKeys.USER))
             {
                 User user = await this.userRepository.SelectByIdReq(userId);
                 await user.ModifyNickname(nickname, this.userUniqueSpecification);
                 await this.userRepository.Update(user);
-            });
+            }
         }
 
         /// <summary>

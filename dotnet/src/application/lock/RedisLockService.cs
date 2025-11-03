@@ -1,122 +1,114 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BackendExample.Application
 {
     public class RedisLockService : LockService
     {
-        private readonly IDatabase _redisDatabase;
+        private readonly IDatabase _redisDb;
+        private readonly string _lockPrefix = "lock:";
+        private readonly TimeSpan _defaultExpiry = TimeSpan.FromSeconds(10);
 
-        public RedisLockService(IConnectionMultiplexer redisConnection)
+        public RedisLockService(IConnectionMultiplexer redis)
         {
-            _redisDatabase = redisConnection.GetDatabase();
+            _redisDb = redis.GetDatabase();
         }
 
-        public override T GetWithLock<T>(string key, Func<T> func, int timeout = 30)
+        public IDisposable Lock(string key, int timeout = 10)
         {
-            if (TryAcquireLock(key, timeout))
-            {
-                try
-                {
-                    return func();
-                }
-                finally
-                {
-                    ReleaseLock(key);
-                }
-            }
-            throw new TimeoutException("Failed to acquire lock within the specified timeout.");
-        }
-
-        public override async Task<T> GetWithLockAsync<T>(string key, Func<Task<T>> func, int timeout = 30)
-        {
-            if (await TryAcquireLockAsync(key, timeout))
-            {
-                try
-                {
-                    return await func();
-                }
-                finally
-                {
-                    await ReleaseLockAsync(key);
-                }
-            }
-            throw new TimeoutException("Failed to acquire lock within the specified timeout.");
-        }
-
-        public override void RunWithLock(string key, Action action, int timeout = 30)
-        {
-            if (TryAcquireLock(key, timeout))
-            {
-                try
-                {
-                    action();
-                }
-                finally
-                {
-                    ReleaseLock(key);
-                }
-            }
-            else
-            {
-                throw new TimeoutException("Failed to acquire lock within the specified timeout.");
-            }
-        }
-
-        public override async Task RunWithLockAsync(string key, Func<Task> func, int timeout = 30)
-        {
-            if (await TryAcquireLockAsync(key, timeout))
-            {
-                try
-                {
-                    await func();
-                }
-                finally
-                {
-                    await ReleaseLockAsync(key);
-                }
-            }
-            else
-            {
-                throw new TimeoutException("Failed to acquire lock within the specified timeout.");
-            }
-        }
-
-        private bool TryAcquireLock(string key, int timeout)
-        {
-            var lockKey = GetLockKey(key);
-            var lockValue = Guid.NewGuid().ToString();
+            var token = Guid.NewGuid().ToString();
             var expiry = TimeSpan.FromSeconds(timeout);
+            var lockKey = _lockPrefix + key;
 
-            return _redisDatabase.StringSet(lockKey, lockValue, expiry, When.NotExists);
+            while (true)
+            {
+                if (_redisDb.StringSet(lockKey, token, expiry, When.NotExists))
+                {
+                    return new RedisLockHandle(_redisDb, lockKey, token);
+                }
+                Thread.Sleep(200);
+            }
+
+            throw new LockException(
+                        $"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 失败"
+                        );
         }
 
-        private async Task<bool> TryAcquireLockAsync(string key, int timeout)
+        public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 10)
         {
-            var lockKey = GetLockKey(key);
-            var lockValue = Guid.NewGuid().ToString();
+            var token = Guid.NewGuid().ToString();
             var expiry = TimeSpan.FromSeconds(timeout);
+            var lockKey = _lockPrefix + key;
 
-            return await _redisDatabase.StringSetAsync(lockKey, lockValue, expiry, When.NotExists);
+            while (true)
+            {
+                if (await _redisDb.StringSetAsync(lockKey, token, expiry, When.NotExists))
+                {
+                    return new AsyncRedisLockHandle(_redisDb, lockKey, token);
+                }
+                await Task.Delay(200);
+            }
+
+            throw new LockException(
+                        $"线程 {Environment.CurrentManagedThreadId} 获取 Redis 异步锁 {key} 失败"
+                        );
         }
 
-        private void ReleaseLock(string key)
+        private class RedisLockHandle : IDisposable
         {
-            var lockKey = GetLockKey(key);
-            _redisDatabase.KeyDelete(lockKey);
+            private readonly IDatabase _db;
+            private readonly string _key;
+            private readonly string _token;
+            private bool _disposed;
+
+            public RedisLockHandle(IDatabase db, string key, string token)
+            {
+                _db = db;
+                _key = key;
+                _token = token;
+            }
+
+            public void Dispose()
+            {
+                if (!_disposed)
+                {
+                    _db.ScriptEvaluate(@"
+if redis.call('get', KEYS[1]) == ARGV[1] then
+    return redis.call('del', KEYS[1])
+else
+    return 0
+end", new RedisKey[] { _key }, new RedisValue[] { _token });
+                    _disposed = true;
+                }
+            }
         }
 
-        private async Task ReleaseLockAsync(string key)
+        private class AsyncRedisLockHandle : IAsyncDisposable
         {
-            var lockKey = GetLockKey(key);
-            await _redisDatabase.KeyDeleteAsync(lockKey);
-        }
+            private readonly IDatabase _db;
+            private readonly string _key;
+            private readonly string _token;
+            private bool _disposed;
 
-        private string GetLockKey(string key)
-        {
-            return $"lock:{key}";
+            public AsyncRedisLockHandle(IDatabase db, string key, string token)
+            {
+                _db = db;
+                _key = key;
+                _token = token;
+            }
+
+            public async ValueTask DisposeAsync()
+            {
+                if (!_disposed)
+                {
+                    await _db.ScriptEvaluateAsync(@"
+if redis.call('get', KEYS[1]) == ARGV[1] then
+    return redis.call('del', KEYS[1])
+else
+    return 0
+end", new RedisKey[] { _key }, new RedisValue[] { _token });
+                    _disposed = true;
+                }
+            }
         }
     }
 }

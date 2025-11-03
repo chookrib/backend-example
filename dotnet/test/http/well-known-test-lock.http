@@ -1,30 +1,41 @@
-### 测试锁，设置 count
+### 设置 count
 GET http://{{host}}/.well-known/test/lock/set-count?value=1
 
-### 测试锁，减少 count，不加锁
-GET http://{{host}}/.well-known/test/lock/decrease-count
-# 多执行几次，会看到总数减到 -1 的情况
-# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count
+### 同步减少 count，不加锁，会超减，需多执行几次
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/sync-decrease-count
 
-### 测试锁，减少 count，加锁
-GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
-# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count-with-lock
+### 异步减少 count，不加锁，会超减，需多执行几次
+GET http://{{host}}/.well-known/test/lock/async-decrease-count
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/async-decrease-count
 
-### 测试锁，减少 count，加锁，异步
-GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock-async
-# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/decrease-count-with-lock-async
+### 同步减少 count，加同步锁，不会超减
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count-with-sync-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/sync-decrease-count-with-sync-lock
+
+### 同步减少 count，加异步锁，不会超减
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/sync-decrease-count-with-async-lock
+
+### 异步减少 count，加同步锁，不会超减
+GET http://{{host}}/.well-known/test/lock/async-decrease-count-with-sync-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/async-decrease-count-with-sync-lock
+
+### 异步减少 count，加异步锁，不会超减
+GET http://{{host}}/.well-known/test/lock/async-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/async-decrease-count-with-async-lock
 
 #=======================================================================================================================
 
-### 测试锁，Thread.Sleep
+### 同步 Thread.Sleep
 GET http://{{host}}/.well-known/test/lock/thread-sleep
 
-### 测试锁，Task.Delay，异步
-GET http://{{host}}/.well-known/test/lock/task-delay-async
+### 异步 Task.Delay
+GET http://{{host}}/.well-known/test/lock/async-task-delay
 
-### 测试锁，Task.Delay，加锁，异步
-GET http://{{host}}/.well-known/test/lock/task-delay-with-lock-async
-# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/task-delay-with-lock-async
+### 异步 Task.Delay，加异步锁
+GET http://{{host}}/.well-known/test/lock/async-task-delay-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:5006/.well-known/test/lock/async-task-delay-with-async-lock
 
 #=======================================================================================================================
 

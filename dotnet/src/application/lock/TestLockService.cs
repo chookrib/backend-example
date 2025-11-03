@@ -92,21 +92,21 @@ namespace BackendExample.Application
             }
         }
 
-        ///// <summary>
-        ///// 异步减少 count，加同步锁
-        ///// </summary>
-        //public void AsyncDecreaseCountWithSyncLock()
-        //{
-        //    using (this.lockService.Lock(LockKeys.TEST))
-        //    {
-        //        await this.AsyncDecreaseCount();
-        //    }
-        //}
+        /// <summary>
+        /// 异步减少 count，加同步锁
+        /// </summary>
+        public async Task AsyncDecreaseCountWithSyncLock()
+        {
+            using (this.lockService.Lock(LockKeys.TEST))
+            {
+                await this.AsyncDecreaseCount();
+            }
+        }
 
         /// <summary>
         /// 异步减少 count，加异步锁
         /// </summary>
-        public async void AsyncDecreaseCountWithAsyncLock()
+        public async Task AsyncDecreaseCountWithAsyncLock()
         {
             await using (await this.lockService.LockAsync(LockKeys.TEST))
             {
@@ -119,7 +119,7 @@ namespace BackendExample.Application
         //==============================================================================================================
 
         /// <summary>
-        /// Thread.Sleep
+        /// 同步 Thread.Sleep
         /// </summary>
         public void ThreadSleep()
         {
@@ -127,17 +127,17 @@ namespace BackendExample.Application
         }
 
         /// <summary>
-        /// Task.Delay
+        /// 异步 Task.Delay
         /// </summary>
-        public async Task TaskDelayAsync()
+        public async Task AsyncTaskDelay()
         {
             await Task.Delay(10 * 1000);
         }
 
         /// <summary>
-        /// Task.Delay，加锁，异步
+        /// 异步 Task.Delay，加异步锁
         /// </summary>
-        public async Task TaskDelayWithLockAsync()
+        public async Task AsyncTaskDelayWithAsyncLock()
         {
             await using (await this.lockService.LockAsync(LockKeys.TEST))
             {
