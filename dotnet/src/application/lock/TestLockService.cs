@@ -28,12 +28,12 @@ namespace BackendExample.Application
         }
 
         /// <summary>
-        /// 减少 count，不加锁
+        /// 同步减少 count，不加锁
         /// </summary>
-        public bool DecreaseCount()
+        public bool SyncDecreaseCount()
         {
             int c = count;
-            if(c > 0)
+            if (c > 0)
             {
                 this.count--;
                 logger.Info($"减少 count 成功: {c} - 1 = {this.count}");
@@ -47,27 +47,73 @@ namespace BackendExample.Application
         }
 
         /// <summary>
-        /// 减少 count，加锁
+        /// 异步减少 count，不加锁
         /// </summary>
-        public void DecreaseCountWithLock()
+        public async Task<bool> AsyncDecreaseCount()
         {
-           this.lockService.RunWithLock(LockKeys.TEST, () =>
-           {
-               DecreaseCount();
-           });
+            int c = count;
+
+            //await Task.Delay(new Random().Next(1000, 5000));
+            //await Task.Delay(0);
+
+            if (c > 0)
+            {
+                this.count--;
+                logger.Info($"减少 count 成功: {c} - 1 = {this.count}");
+                return true;
+            }
+            else
+            {
+                logger.Info($"减少 count 失败: {c}");
+                return false;
+            }
+
         }
 
         /// <summary>
-        /// 减少 count，加锁，异步
+        /// 同步减少 count，加同步锁
         /// </summary>
-        public async Task DecreaseCountWithLockAsync()
+        public void SyncDecreaseCountWithSyncLock()
         {
-            await this.lockService.GetWithLockAsync(LockKeys.TEST, async () =>
+            using (this.lockService.Lock(LockKeys.TEST))
+            {
+                this.SyncDecreaseCount();
+            }
+        }
+
+        /// <summary>
+        /// 同步减少 count，加异步锁
+        /// </summary>
+        public async Task SyncDecreaseCountWithAsyncLock()
+        {
+            await using (await this.lockService.LockAsync(LockKeys.TEST))
+            {
+                this.SyncDecreaseCount();
+            }
+        }
+
+        ///// <summary>
+        ///// 异步减少 count，加同步锁
+        ///// </summary>
+        //public void AsyncDecreaseCountWithSyncLock()
+        //{
+        //    using (this.lockService.Lock(LockKeys.TEST))
+        //    {
+        //        await this.AsyncDecreaseCount();
+        //    }
+        //}
+
+        /// <summary>
+        /// 异步减少 count，加异步锁
+        /// </summary>
+        public async void AsyncDecreaseCountWithAsyncLock()
+        {
+            await using (await this.lockService.LockAsync(LockKeys.TEST))
             {
                 //await Task.Delay(new Random().Next(1000, 5000));
                 await Task.Delay(0);
-                return DecreaseCount();
-            });
+                await this.AsyncDecreaseCount();
+            }
         }
 
         //==============================================================================================================
@@ -93,10 +139,10 @@ namespace BackendExample.Application
         /// </summary>
         public async Task TaskDelayWithLockAsync()
         {
-            await this.lockService.RunWithLockAsync(LockKeys.TEST, async () =>
+            await using (await this.lockService.LockAsync(LockKeys.TEST))
             {
-                await Task.Delay(10* 1000);
-            });
+                await Task.Delay(10 * 1000);
+            }
         }
 
     }

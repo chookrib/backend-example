@@ -11,6 +11,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="src\application\lock\RedisLockService.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- 注入编译时间 -->
         <AssemblyMetadata Include="BuildTime" Value="$(BuildTime)" />
         <PackageReference Include="Dapper" Version="2.1.66" />
