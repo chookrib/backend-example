@@ -23,39 +23,44 @@ def test_lock_set_count(request: Request):
     return Result.ok(data={"count": value})
 
 
-@router.get("/.well-known/test/lock/decrease-count")
-def test_lock_decrease_count():
+@router.get("/.well-known/test/lock/sync-decrease-count-in-sync")
+def test_lock_sync_decrease_count_in_sync():
     """
-    减少 count，同步（在同步路由方法中调用），不加锁，会超减
+    同步减少 count，不加锁，在同步路由方法中调用，会超减
     并发场景下请求会同时响应
     """
-    test_lock_service.decrease_count()
+    test_lock_service.sync_decrease_count()
+    return Result.ok()
+
+
+@router.get("/.well-known/test/lock/sync-decrease-count-in-async")
+async def test_lock_sync_decrease_count_in_async():
+    """
+    同步减少 count，不加锁，在异步路由方法中调用，不会超减（请求会排队执行，不会并发响应）
+    异步路由方法中调用同步方法时，FastAPI 会自动在线程池中运行同步方法，从而避免阻塞事件循环。如果拿到的线程如果是同一个的化，不会超减
+    """
+    test_lock_service.sync_decrease_count()
     return Result.ok()
 
 
 @router.get("/.well-known/test/lock/async-decrease-count")
 async def test_lock_async_decrease_count():
-    """
-    减少 count，同步（在异步路由方法中调用），不加锁，不会超减
-    异步路由方法中调用同步方法时，FastAPI 会自动在线程池中运行同步方法，从而避免阻塞事件循环。如果拿到的线程如果是同一个的化，不会超减
-    """
-    test_lock_service.decrease_count()
+    """异步减少 count，不加锁，会超减"""
+    await test_lock_service.async_decrease_count()
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/decrease-count-async")
-async def test_lock_decrease_count_async():
-    """减少 count，异步，不加锁，会超减"""
-    await test_lock_service.decrease_count_async()
+@router.get("/.well-known/test/lock/sync-decrease-count-with-async-lock")
+async def test_lock_sync_decrease_count_with_async_lock():
+    """同步减少 count，加异步锁，，不会超减（请求会排队执行，不会并发响应）"""
+    await test_lock_service.sync_decrease_count_with_async_lock()
     return Result.ok()
 
-
-@router.get("/.well-known/test/lock/decrease-count-with-lock")
-async def test_lock_decrease_count_with_lock():
-    """减少 count，异步，加锁，不会超减"""
-    await test_lock_service.decrease_count_with_lock()
+@router.get("/.well-known/test/lock/async-decrease-count-with-async-lock")
+async def test_lock_async_decrease_count_with_async_lock():
+    """异步减少 count，加异步锁，不会超减"""
+    await test_lock_service.async_decrease_count_with_async_lock()
     return Result.ok()
-
 
 # ======================================================================================================================
 

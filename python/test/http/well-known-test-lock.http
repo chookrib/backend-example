@@ -1,21 +1,25 @@
-### 测试锁，设置 count
+### 设置 count
 GET http://{{host}}/.well-known/test/lock/set-count?value=1
 
-### 测试锁，减少 count，同步（在同步路由方法中调用），不加锁
-GET http://{{host}}/.well-known/test/lock/decrease-count
-# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/decrease-count
+### 同步减少 count，不加锁，在同步路由方法中调用），会超减
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count-in-sync
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/sync-decrease-count-in-sync
 
-### 测试锁，减少 count，同步（在异步路由方法中调用），不加锁
+### 同步 count，不加锁，在异步路由方法中调用，不会超减（请求会排队执行，不会并发响应）
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count-in-async
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/sync-decrease-count-in-async
+
+### 异步减少 count，不加锁，会超减
 GET http://{{host}}/.well-known/test/lock/async-decrease-count
 # ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/async-decrease-count
 
-### 测试锁，减少 count，异步，不加锁
-GET http://{{host}}/.well-known/test/lock/decrease-count-async
-# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/decrease-count-async
+### 同步减少 count，加异步锁，不会超减（请求会排队执行，不会并发响应）
+GET http://{{host}}/.well-known/test/lock/sync-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/sync-decrease-count-with-async-lock
 
-### 测试锁，减少 count，异步，加锁
-GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
-# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/decrease-count-with-lock
+### 异步减少 count，加异步锁，不会超减
+GET http://{{host}}/.well-known/test/lock/async-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/.well-known/test/lock/async-decrease-count-with-async-lock
 
 #=======================================================================================================================
 
