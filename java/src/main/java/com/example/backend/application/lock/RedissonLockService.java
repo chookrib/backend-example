@@ -40,6 +40,7 @@ public class RedissonLockService implements LockService {
         String lockKey = Accessor.appName + ":lock:" + key;
         RLock lock = this.redissonClient.getLock(lockKey);
 
+        // 不等待获取锁
         //lock.lock(); // Redisson 会自动续期
         //if (Accessor.appIsDev)
         //    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
@@ -53,8 +54,8 @@ public class RedissonLockService implements LockService {
         //    }
         //}
 
+        // 等待一定时间获取锁
         try {
-            //带等待时间的 tryLock
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (Accessor.appIsDev)
                     logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);

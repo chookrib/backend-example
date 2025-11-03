@@ -23,6 +23,7 @@ public class ReentrantLockService implements LockService {
     public <T> T getWithLock(String key, Supplier<T> action) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
 
+        // 不等待获取锁
         //lock.lock();
         //if (Accessor.appIsDev)
         //    logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
@@ -34,6 +35,7 @@ public class ReentrantLockService implements LockService {
         //        logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
         //}
 
+        // 等待一定时间获取锁
         try {
             if (!lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (Accessor.appIsDev)
@@ -60,28 +62,4 @@ public class ReentrantLockService implements LockService {
             return null;
         });
     }
-
-    // ReentrantReadWriteLock
-    //public static final ReentrantReadWriteLock REENTRANT_READ_WRITE_LOCK = new ReentrantReadWriteLock();
-    //public final Lock REENTRANT_READ_LOCK = REENTRANT_READ_WRITE_LOCK.readLock();
-    //public final Lock REENTRANT_WRITE_LOCK = REENTRANT_READ_WRITE_LOCK.writeLock();
-    //private int count;
-    //
-    //public int readLock() {
-    //    REENTRANT_READ_LOCK.lock(); // 多个读线程可以同时进入
-    //    try {
-    //        return count;
-    //    } finally {
-    //        READ_LOCK.unlock();
-    //    }
-    //}
-    //
-    //public void writeLock() {
-    //    REENTRANT_WRITE_LOCK.lock(); // 写操作互斥
-    //    try {
-    //        count++;
-    //    } finally {
-    //        WRITE_LOCK.unlock();
-    //    }
-    //}
 }
