@@ -8,7 +8,7 @@ class LockService(ABC):
 
     @abstractmethod
     @asynccontextmanager
-    async def lock(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
+    async def lock_async(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
     # async def lock(self, key: str, timeout: float = 10.0) -> AsyncContextManager[None]:   # AbstractAsyncContextManager
         """
         获取一个特定 key 的锁，返回一个异步上下文管理器

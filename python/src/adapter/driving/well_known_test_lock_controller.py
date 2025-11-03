@@ -52,9 +52,10 @@ async def test_lock_async_decrease_count():
 
 @router.get("/.well-known/test/lock/sync-decrease-count-with-async-lock")
 async def test_lock_sync_decrease_count_with_async_lock():
-    """同步减少 count，加异步锁，，不会超减（请求会排队执行，不会并发响应）"""
+    """同步减少 count，加异步锁，不会超减（请求会排队执行，不会并发响应）"""
     await test_lock_service.sync_decrease_count_with_async_lock()
     return Result.ok()
+
 
 @router.get("/.well-known/test/lock/async-decrease-count-with-async-lock")
 async def test_lock_async_decrease_count_with_async_lock():
@@ -62,11 +63,12 @@ async def test_lock_async_decrease_count_with_async_lock():
     await test_lock_service.async_decrease_count_with_async_lock()
     return Result.ok()
 
+
 # ======================================================================================================================
 
 @router.get("/.well-known/test/lock/asyncio-sleep")
 async def test_lock_asyncio_sleep():
-    """asyncio.sleep"""
+    """异步 asyncio.sleep"""
     await test_lock_service.asyncio_sleep()
     return Result.ok()
 

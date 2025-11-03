@@ -24,7 +24,7 @@ class UserProfileService:
 
     async def register(self, username: str, password: str, nickname: str) -> str:
         """注册，仅演示使用，未防止恶意注册"""
-        async with self.lock_service.lock(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_keys.USER):
             user = await User.register_user(
                 id=id_generator.generate_id(),
                 username=username,
@@ -42,7 +42,7 @@ class UserProfileService:
 
     async def modify_nickname(self, user_id: str, nickname: str) -> None:
         """修改昵称"""
-        async with self.lock_service.lock(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_keys.USER):
             user = await self.user_repository.select_by_id_req(user_id)
             await user.modify_nickname(nickname, self.user_unique_specification)
             await self.user_repository.update(user)

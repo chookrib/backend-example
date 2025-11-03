@@ -43,19 +43,19 @@ class TestLockService:
 
     async def sync_decrease_count_with_async_lock(self):
         """同步减少 count，加异步锁"""
-        async with self.lock_service.lock(lock_keys.TEST):
+        async with self.lock_service.lock_async(lock_keys.TEST):
             self.sync_decrease_count()
 
     async def async_decrease_count_with_async_lock(self):
         """异步减少 count，加异步锁"""
-        async with self.lock_service.lock(lock_keys.TEST):
+        async with self.lock_service.lock_async(lock_keys.TEST):
            await  self.async_decrease_count()
 
     # ==================================================================================================================
 
     async def asyncio_sleep(self):
-        """asyncio.sleep"""
-        async with self.lock_service.lock(lock_keys.TEST):
+        """异步 asyncio.sleep"""
+        async with self.lock_service.lock_async(lock_keys.TEST):
             await asyncio.sleep(10)
 
 
