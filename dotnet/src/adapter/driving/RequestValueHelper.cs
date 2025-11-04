@@ -72,7 +72,7 @@ namespace BackendExample.Adapter.Driving
             JsonNode? node = json;
             foreach (string key in keys)
             {
-                node = json[key];
+                node = node[key];
                 if (node == null)
                     return null;
             }
@@ -102,7 +102,7 @@ namespace BackendExample.Adapter.Driving
             JsonNode? node = json;
             foreach (string key in keys)
             {
-                node = json[key];
+                node = node[key];
                 if (node == null)
                     return null;
             }
