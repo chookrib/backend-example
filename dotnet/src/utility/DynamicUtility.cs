@@ -70,7 +70,7 @@ namespace BackendExample.Utility
                     if (attrs.Count() > 0)
                         text = attrs.First().Value;
                     if (expando.ContainsKey(propertyInfo.Name + "Text"))
-                        throw new ValidationException(string.Format("{0}类实例调用ToDynamic扩展方法处理枚举属性{1}时发生异常：" +
+                        throw new Exception(string.Format("{0}类实例调用ToDynamic扩展方法处理枚举属性{1}时发生异常：" +
                                                                     "为实例添加枚举对应文本属性{2}时冲突，类中已有名称为{2}的属性",
                             obj.GetType().Name, propertyInfo.Name, propertyInfo.Name + "Text"));
                     expando.Add(propertyInfo.Name + "Text", text);
@@ -99,7 +99,7 @@ namespace BackendExample.Utility
                     }
 
                     if (expando.ContainsKey(propertyInfo.Name + "Text"))
-                        throw new ValidationException(string.Format("{0}类实例调用ToDynamic扩展方法处理可空枚举属性{1}时发生异常：" +
+                        throw new Exception(string.Format("{0}类实例调用ToDynamic扩展方法处理可空枚举属性{1}时发生异常：" +
                                                                     "为实例添加枚举对应文本属性{2}时冲突，类中已有名称为{2}的属性",
                             obj.GetType().Name, propertyInfo.Name, propertyInfo.Name + "Text"));
                     expando.Add(propertyInfo.Name + "Text", text);
@@ -112,7 +112,7 @@ namespace BackendExample.Utility
                     }
                     catch (Exception ex)
                     {
-                        throw new ValidationException(propertyInfo.Name + "：" + ex.Message, ex);
+                        throw new Exception(propertyInfo.Name + "：" + ex.Message, ex);
                     }
                 }
                 */

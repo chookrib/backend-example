@@ -39,9 +39,9 @@ namespace BackendExample.Adapter.Driving
         //    {
         //        return JsonUtility.Deserialize(GetRequestBody(request));
         //    }
-        //    catch
+        //    catch (Exception ex)
         //    {
-        //        throw new ControllerException("请求体不是合法的JSON格式");
+        //        throw new ControllerException("请求体不是合法的JSON格式", ex);
         //    }
         //}
 
@@ -54,9 +54,9 @@ namespace BackendExample.Adapter.Driving
             {
                 return JsonUtility.Deserialize(await GetRequestBodyAsync(request));
             }
-            catch
+            catch(Exception ex)
             {
-                throw new ControllerException("请求体不是合法的JSON格式");
+                throw new ControllerException("请求体不是合法的JSON格式", ex);
             }
         }
 

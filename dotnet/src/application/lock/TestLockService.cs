@@ -54,7 +54,7 @@ namespace BackendExample.Application
             int c = count;
 
             //await Task.Delay(new Random().Next(1000, 5000));
-            //await Task.Delay(0);
+            await Task.Delay(0);
 
             if (c > 0)
             {

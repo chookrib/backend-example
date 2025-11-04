@@ -144,13 +144,13 @@ namespace BackendExample.Adapter.Driving
             }
             catch (Exception ex)
             {
-                throw new Exception("解析 Result 时发生异常: " + ex.Message);
+                throw new ControllerException("解析 Result 时发生异常: " + ex.Message, ex);
             }
 
             if (success)
                 return data;
             else
-                throw new Exception(string.Format("解析 Result时发生错误: code={0} message={1}",
+                throw new ControllerException(string.Format("解析 Result时发生错误: code={0} message={1}",
                     code, message));
         }
     }
