@@ -23,7 +23,7 @@ def get_request_json_value(json, *keys: str):
         return None
     value = json
     for key in keys:
-        value = json.get(key)
+        value = value.get(key)
         if value is None:
             return None
     return value
