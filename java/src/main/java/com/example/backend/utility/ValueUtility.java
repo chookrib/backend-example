@@ -27,9 +27,9 @@ public class ValueUtility {
     public static Boolean toBoolOrNull(String value) {
         if (isBlank(value))
             return null;
-        if (Arrays.asList("true", "1", "t", "y", "yes", "on").contains(value.toLowerCase()))
+        if (Arrays.asList("true", "1", "t", "y", "yes", "on").contains(value.trim().toLowerCase()))
             return true;
-        else if (Arrays.asList("false", "0", "f", "n", "no", "off").contains(value.toLowerCase()))
+        else if (Arrays.asList("false", "0", "f", "n", "no", "off").contains(value.trim().toLowerCase()))
             return false;
         return null;
     }
@@ -39,9 +39,9 @@ public class ValueUtility {
      */
     public static boolean toBoolOrDefault(String value, boolean defaultValue) {
         Boolean b = toBoolOrNull(value);
-        if (b == null)
-            return defaultValue;
-        return b;
+        if (b != null)
+            return b;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -53,7 +53,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return Integer.valueOf(value);
+            return Integer.valueOf(value.trim());
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -64,9 +64,9 @@ public class ValueUtility {
      */
     public static int toIntOrDefault(String value, int defaultValue) {
         Integer i = toIntOrNull(value);
-        if (i == null)
-            return defaultValue;
-        return i;
+        if (i != null)
+            return i;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -78,7 +78,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return Long.valueOf(value);
+            return Long.valueOf(value.trim());
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -89,9 +89,9 @@ public class ValueUtility {
      */
     public static long toLongOrDefault(String value, long defaultValue) {
         Long l = toLongOrNull(value);
-        if (l == null)
-            return defaultValue;
-        return l;
+        if (l != null)
+            return l;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -103,7 +103,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return new BigDecimal(value);
+            return new BigDecimal(value.trim());
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -114,9 +114,9 @@ public class ValueUtility {
      */
     public static BigDecimal toDecimalOrDefault(String value, BigDecimal defaultValue) {
         BigDecimal d = toDecimalOrNull(value);
-        if (d == null)
-            return defaultValue;
-        return d;
+        if (d != null)
+            return d;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -126,9 +126,9 @@ public class ValueUtility {
      * 格式化 datetime
      */
     public static String formatDateTime(LocalDateTime value) {
-        if (value == null)
-            return "";
-        return value.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (value != null)
+            return value.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return "";
     }
 
     /**
@@ -136,7 +136,7 @@ public class ValueUtility {
      */
     public static LocalDateTime toDateTimeOrNull(String value) {
         //try {
-        //    return DateUtils.parseDate(value, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd");
+        //    return DateUtils.parseDate(value.trim(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd");
         //} catch (Exception ex) {
         //    return null;
         //}
@@ -144,7 +144,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return LocalDateTime.parse(value, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return LocalDateTime.parse(value.trim(), java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         } catch (DateTimeParseException ex) {
             return null;
         }
@@ -155,9 +155,9 @@ public class ValueUtility {
      */
     public static LocalDateTime toDateTimeOrDefault(String value, LocalDateTime defaultValue) {
         LocalDateTime dt = toDateTimeOrNull(value);
-        if (dt == null)
-            return defaultValue;
-        return dt;
+        if (dt != null)
+            return dt;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -166,9 +166,9 @@ public class ValueUtility {
      * 格式化 date
      */
     public static String formatDate(LocalDate value) {
-        if (value == null)
-            return "";
-        return value.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if (value != null)
+            return value.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return "";
     }
 
     /**
@@ -178,7 +178,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return LocalDate.parse(value, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return LocalDate.parse(value.trim(), java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         } catch (DateTimeParseException ex) {
             return null;
         }
@@ -189,9 +189,9 @@ public class ValueUtility {
      */
     public static LocalDate toDateOrDefault(String value, LocalDate defaultValue) {
         LocalDate d = toDateOrNull(value);
-        if (d == null)
-            return defaultValue;
-        return d;
+        if (d != null)
+            return d;
+        return defaultValue;
     }
 
     //==================================================================================================================
@@ -200,9 +200,9 @@ public class ValueUtility {
      * 格式化 time
      */
     public static String formatTime(LocalTime value) {
-        if (value == null)
-            return "";
-        return value.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        if (value != null)
+           return value.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return "";
     }
 
     /**
@@ -212,7 +212,7 @@ public class ValueUtility {
         if (isBlank(value))
             return null;
         try {
-            return LocalTime.parse(value, java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+            return LocalTime.parse(value.trim(), java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
         } catch (DateTimeParseException ex) {
             return null;
         }
@@ -223,8 +223,8 @@ public class ValueUtility {
      */
     public static LocalTime toTimeOrDefault(String value, LocalTime defaultValue) {
         LocalTime t = toTimeOrNull(value);
-        if (t == null)
-            return defaultValue;
-        return t;
+        if (t != null)
+            return t;
+        return defaultValue;
     }
 }

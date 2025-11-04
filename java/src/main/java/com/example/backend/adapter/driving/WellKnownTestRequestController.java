@@ -49,7 +49,7 @@ public class WellKnownTestRequestController {
      * 测试请求
      */
     @RequestMapping(value = "/.well-known/test/request/object-required", method = RequestMethod.POST)
-    public Result testRequestJsonNodeRequired(@RequestBody Object requestBody) {
+    public Result testRequestObjectRequired(@RequestBody Object requestBody) {
         return Result.okData(requestBody);
     }
 
@@ -57,7 +57,7 @@ public class WellKnownTestRequestController {
      * 测试请求
      */
     @RequestMapping(value = "/.well-known/test/request/object", method = RequestMethod.POST)
-    public Result testRequestJsonNode(@RequestBody(required = false) Object requestBody) {
+    public Result testRequestObject(@RequestBody(required = false) Object requestBody) {
         return Result.okData(requestBody);
     }
 
@@ -67,10 +67,16 @@ public class WellKnownTestRequestController {
      * 测试请求
      */
     @RequestMapping(value = "/.well-known/test/request/param", method = RequestMethod.GET)
-    public Result testRequestJsonNode(@RequestParam String id) {
+    public Result testRequestParam(@RequestParam(value = "id", defaultValue = "0") String id) {
         return Result.okData(id);
     }
 
-
+    /**
+     * 测试请求
+     */
+    @RequestMapping(value = "/.well-known/test/request/path/{path}", method = RequestMethod.GET)
+    public Result testRequestPath(@PathVariable String path) {
+        return Result.okData(path);
+    }
 
 }

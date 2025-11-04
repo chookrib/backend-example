@@ -30,7 +30,7 @@ public class WellKnownTestLockController {
      */
     @RequestMapping(value = "/.well-known/test/lock/set-count", method = RequestMethod.GET)
     public Result testLockSetCount(HttpServletRequest request) {
-        int value = RequestValueHelper.getRequestParamInt(request, 1, "value");
+        int value = RequestValueHelper.getRequestParamIntOrDefault(request, 1, "value");
         this.testLockService.setCount(value);
         return Result.okData(Map.of("count", value));
     }

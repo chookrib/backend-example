@@ -33,8 +33,8 @@ public class UserManageController {
         RequestAuthHelper.requireLoginUserAdmin(request);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        int pageNum = RequestValueHelper.getRequestJsonInt(requestJson, 1, "pageNum");
-        int pageSize = RequestValueHelper.getRequestJsonInt(requestJson, 1, "pageSize");
+        int pageNum = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
+        int pageSize = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageSize");
 
         //JsonNode criteriaJson = requestJson.path("criteria");
         UserQueryCriteria criteria = new UserQueryCriteria();
