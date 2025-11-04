@@ -13,18 +13,18 @@ def is_blank(value) -> bool:
 # ======================================================================================================================
 
 
-# def to_string_or_empty(value) -> str:
-#     """转 string，失败返回空字符串"""
-#     if value is None:
-#         return ""
-#     return str(value).strip()  # 去空格
-#
-#
+def to_string_or_empty(value) -> str:
+    """转 string，失败返回空字符串"""
+    if value is None:
+        return ""
+    return str(value)  # 不去空格
+
+
 # def to_string_or_default(value, default: str) -> str:
 #     """转 string，失败返回默认值"""
 #     if value is None:
 #         return default
-#     return str(value).strip()  # 去空格
+#     return str(value)  # 不去空格
 
 
 # ======================================================================================================================
