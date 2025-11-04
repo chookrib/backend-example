@@ -57,6 +57,12 @@ def get_request_json_string_trim_req(json, *keys: str) -> str:
     value = get_request_json_value_req(json, *keys)
     return str(value).strip()
 
+def get_request_json_string_trim_list(json, *keys: str) -> list[str]:
+    """获取请求 json 数据中 string 数组值"""
+    value = get_request_json_value(json, *keys)
+    if value is not None and isinstance(value, list):
+        return [str(v).strip() for v in value]
+    return []
 
 # ======================================================================================================================
 
