@@ -11,8 +11,8 @@ async def get_request_json(request: Request):
     """获取请求体 json 数据"""
     try:
         return await request.json()
-    except:
-        raise ControllerException("请求体不是合法的JSON格式")
+    except Exception as ex:
+        raise ControllerException("请求体不是合法的JSON格式") from ex
 
 
 # ======================================================================================================================

@@ -35,5 +35,5 @@ class UserAuthService:
         try:
             payload = crypto_utility.decode_jwt(access_token, self.jwt_secret_key)
             return payload.get("id", "")
-        except Exception:
+        except Exception as ex:
             return ""

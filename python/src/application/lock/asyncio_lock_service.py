@@ -40,9 +40,9 @@ class AsyncioLockService(LockService):
             if accessor.app_is_dev:
                 logger.info(f"获取 asyncio 锁 {key} 成功")
             yield
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError as ex:
             # raise TimeoutError(f"获取 asyncio 锁 {key} 超时")
-            raise LockException(f"获取 asyncio 锁 {key} 超时")
+            raise LockException(f"获取 asyncio 锁 {key} 超时") from ex
         finally:
             resource_lock.release()
             if accessor.app_is_dev:

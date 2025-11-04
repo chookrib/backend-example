@@ -61,7 +61,7 @@ def to_int_or_none(value) -> int | None:
         return value
     try:
         return int(value)
-    except Exception:
+    except Exception as ex:
         return None
 
 
@@ -83,7 +83,7 @@ def to_decimal_or_none(value) -> Decimal | None:
         return value
     try:
         return Decimal(str(value))  # 需要 str()，否则 Decimal128 无法解析
-    except Exception:
+    except Exception as ex:
         return None
 
 
@@ -111,7 +111,7 @@ def to_datetime_or_none(value) -> datetime | None:
     try:
         # return datetime.fromisoformat(value)
         return datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
-    except Exception:
+    except Exception as ex:
         return None
 
 
@@ -139,7 +139,7 @@ def to_date_or_none(value) -> date | None:
         return value
     try:
         return datetime.strptime(str(value), "%Y-%m-%d").date()
-    except Exception:
+    except Exception as ex:
         return None
 
 
@@ -167,7 +167,7 @@ def to_time_or_none(value) -> time | None:
         return value
     try:
         return datetime.strptime(str(value), "%H:%M:%S").time()
-    except Exception:
+    except Exception as ex:
         return None
 
 
