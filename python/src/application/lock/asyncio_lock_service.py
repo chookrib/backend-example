@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AsyncioLockService(LockService):
     """
-    使用 asyncio.Lock 实现的锁服务，单个 Python 进程内有效，适用于单机部署且无多进程的场景
+    基于 asyncio.Lock 实现的锁 Service，单个 Python 进程内有效，适用于单机部署且无多进程的场景
     """
 
     def __init__(self):

@@ -28,7 +28,7 @@ end
 
 
 class RedisLockService(LockService):
-    """使用 Redis 实现的分布式锁服务，适用于多进程或多服务器的分布式环境"""
+    """基于 Redis 实现的锁 Service，适用于多进程或多服务器的分布式环境"""
 
     # def __init__(self, redis_client: redis.Redis):
     def __init__(self):

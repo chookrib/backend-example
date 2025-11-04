@@ -56,6 +56,25 @@ ioc_container = IocContainer()
 # 注册非接口类没有顺序要求，会自动递归注册
 
 # ======================================================================================================================
+# 注册锁 Service
+from src.application.lock.lock_service import LockService
+
+if settings.APP_LOCK_SERVICE == "asyncio":
+    from src.application.lock.asyncio_lock_service import AsyncioLockService
+
+    ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
+elif settings.APP_LOCK_SERVICE == "redis":
+    from src.application.lock.redis_lock_service import RedisLockService
+
+    ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
+else:
+    raise Exception(f"APP_LOCK_SERVICE 配置错误")
+
+from src.application.lock.test_lock_service import TestLockService
+
+ioc_container.register(cls=TestLockService)
+
+# ======================================================================================================================
 # 注册 Driven Adapter - Gateway
 from src.domain.sms_gateway import SmsGateway
 from src.adapter.driven.sms_gateway_adapter import SmsGatewayAdapter
@@ -72,24 +91,6 @@ from src.adapter.driven.user_persistence_adapter import UserPersistenceAdapter
 ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)  # type: ignore
 ioc_container.register(cls=UserUniqueSpecification, provider_cls=UserPersistenceAdapter)  # type: ignore
 ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)  # type: ignore
-
-# ======================================================================================================================
-# 注册锁 Service
-from src.application.lock.lock_service import LockService
-
-if settings.APP_LOCK_SERVICE not in ["asyncio", "redis"]:
-    raise Exception(f"APP_LOCK_SERVICE 配置错误")
-
-if settings.APP_LOCK_SERVICE == "asyncio":
-    from src.application.lock.asyncio_lock_service import AsyncioLockService
-    ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
-
-if settings.APP_LOCK_SERVICE == "redis":
-    from src.application.lock.redis_lock_service import RedisLockService
-    ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
-
-from src.application.lock.test_lock_service import TestLockService
-ioc_container.register(cls=TestLockService)
 
 # ======================================================================================================================
 # 注册 Application Service
