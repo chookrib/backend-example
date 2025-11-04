@@ -25,7 +25,7 @@ namespace BackendExample.Application
             }
             if (Accessor.AppIsDev)
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
-            return new SemaphoreLockHandler(key, semaphore);
+            return new SemaphoreLockHandler(semaphore, key);
         }
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 30)
@@ -40,66 +40,62 @@ namespace BackendExample.Application
             }
             if (Accessor.AppIsDev)
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
-            return new AsyncSemaphoreLockHandler(key, semaphore);
-        }
-    }
-
-    /// <summary>
-    /// Semaphore 同步锁处理器
-    /// </summary>
-    public sealed class SemaphoreLockHandler : IDisposable
-    {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(SemaphoreLockHandler));
-
-        private readonly string key;
-        private readonly SemaphoreSlim semaphore;
-        bool isRelease = false;
-
-        public SemaphoreLockHandler(string key, SemaphoreSlim semaphore)
-        {
-            this.key = key;
-            this.semaphore = semaphore;
+            return new AsyncSemaphoreLockHandler(semaphore, key);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Semaphore 同步锁处理器
+        /// </summary>
+        public sealed class SemaphoreLockHandler : IDisposable
         {
-            if (!this.isRelease)
+            private readonly SemaphoreSlim semaphore;
+            private readonly string key;
+            bool isDisposed = false;
+
+            public SemaphoreLockHandler(SemaphoreSlim semaphore, string key)
             {
-                this.semaphore.Release();
-                this.isRelease = true;
-                if (Accessor.AppIsDev)
-                    logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
+                this.semaphore = semaphore;
+                this.key = key;
+            }
+
+            public void Dispose()
+            {
+                if (!this.isDisposed)
+                {
+                    this.semaphore.Release();
+                    this.isDisposed = true;
+                    if (Accessor.AppIsDev)
+                        logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Semaphore 异步锁处理器
-    /// </summary>
-    public sealed class AsyncSemaphoreLockHandler : IAsyncDisposable
-    {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(AsyncSemaphoreLockHandler));
-
-        private readonly string key;
-        private readonly SemaphoreSlim semaphore;
-        bool isRelease = false;
-
-        public AsyncSemaphoreLockHandler(string key, SemaphoreSlim semaphore)
+        /// <summary>
+        /// Semaphore 异步锁处理器
+        /// </summary>
+        public sealed class AsyncSemaphoreLockHandler : IAsyncDisposable
         {
-            this.key = key;
-            this.semaphore = semaphore;
-        }
+            private readonly SemaphoreSlim semaphore;
+            private readonly string key;
+            bool isDisposed = false;
 
-        public ValueTask DisposeAsync()
-        {
-            if (!this.isRelease)
+            public AsyncSemaphoreLockHandler(SemaphoreSlim semaphore, string key)
             {
-                this.semaphore.Release();
-                this.isRelease = true;
-                if (Accessor.AppIsDev)
-                    logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
+                this.semaphore = semaphore;
+                this.key = key;
             }
-            return default;
+
+            public ValueTask DisposeAsync()
+            {
+                if (!this.isDisposed)
+                {
+                    this.semaphore.Release();
+                    this.isDisposed = true;
+                    if (Accessor.AppIsDev)
+                        logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
+                }
+                return default;
+            }
         }
     }
 }

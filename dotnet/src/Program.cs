@@ -54,17 +54,24 @@ namespace BackendExample
 
             // =========================================================================================================
 
-            // 注册服务
-            builder.Services.AddSingleton<SmsGateway, SmsGatewayAdapter>();
+            // 注册锁 Service
+            string lockService = builder.Configuration.GetValue<string>("App:LockService", "semaphore").ToLower();
+            if (lockService == "semaphore")
+                builder.Services.AddSingleton<LockService, SemaphoreLockService>();
+            else if (lockService == "redis")
+                builder.Services.AddSingleton<LockService, RedisLockService>();
+            else
+                throw new Exception("App:LockService 配置错误");
+            builder.Services.AddSingleton<TestLockService>();
 
+            // 注册 Driven Adapter - Gateway
+            builder.Services.AddSingleton<SmsGateway, SmsGatewayAdapter>();
+            // 注册 Driven Adapter - Persistence
             builder.Services.AddSingleton<UserPersistenceAdapter>();
             builder.Services.AddSingleton<UserRepository>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             builder.Services.AddSingleton<UserUniqueSpecification>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             builder.Services.AddSingleton<UserQueryHandler>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
-
-            builder.Services.AddSingleton<LockService, SemaphoreLockService>();
-            builder.Services.AddSingleton<TestLockService>();
-
+            // 注册 Application Service
             builder.Services.AddSingleton<UserAuthService>();
             builder.Services.AddSingleton<UserProfileService>();
             builder.Services.AddSingleton<UserManageService>();
@@ -118,7 +125,7 @@ namespace BackendExample
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_NOT_LOGIN, "未登录")
                         );
-                    else if(error is LockException)
+                    else if (error is LockException)
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试")
                         );
@@ -134,7 +141,7 @@ namespace BackendExample
             app.Run();
 
             Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
-            if(ValueUtility.IsBlank(Accessor.AppName))
+            if (ValueUtility.IsBlank(Accessor.AppName))
                 logger.Warn("App:Name 配置缺失");
             else
                 logger.Info($"{Accessor.AppName} 应用启动成功");
