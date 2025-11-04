@@ -114,7 +114,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 获取请求 json 数据中 string 值，失败返回默认值
         /// </summary>
-        public static string GetRequestJsonStringTrim(JsonNode json, string defaultValue, params string[] keys)
+        public static string GetRequestJsonStringTrimOrDefault(JsonNode json, string defaultValue, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
@@ -129,7 +129,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static string GetRequestJsonStringTrimOrEmpty(JsonNode json, params string[] keys)
         {
-            return GetRequestJsonStringTrim(json, string.Empty, keys);
+            return GetRequestJsonStringTrimOrDefault(json, string.Empty, keys);
         }
 
         /// <summary>
@@ -138,9 +138,12 @@ namespace BackendExample.Adapter.Driving
         public static string GetRequestJsonStringTrimReq(JsonNode json, params string[] keys)
         {
             JsonValue value = GetRequestJsonValueReq(json, keys);
-            if (value.TryGetValue<string>(out string? result) && result != null)
-                return result;
-            throw new ControllerException($"请求体 {string.Join('.', keys)} 值不是合法的 string");
+            string? s = null;
+            if (value.TryGetValue<string>(out string? result))
+                s = result;
+            if(s == null || ValueUtility.IsBlank(s))
+                throw new ControllerException($"请求体 {string.Join('.', keys)} 值不能为空");
+            return s.Trim();
         }
 
         /// <summary>
@@ -164,18 +167,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 bool 值，失败返回默认值
+        /// 获取请求 json 数据中 bool 值，失败返回 null
         /// </summary>
-        public static bool GetRequestJsonBool(JsonNode json, bool defaultValue, params string[] keys)
+        public static bool? GetRequestJsonBoolOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             if (value.TryGetValue<bool>(out bool boolResult))
                 return boolResult;
             bool? b = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 b = ValueUtility.ToBoolOrNull(stringResult);
+            return b;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 bool 值，失败返回默认值
+        /// </summary>
+        public static bool GetRequestJsonBoolOrDefault(JsonNode json, bool defaultValue, params string[] keys)
+        {
+            bool? b = GetRequestJsonBoolOrNull(json, keys);
             if (b.HasValue)
                 return b.Value;
             return defaultValue;
@@ -200,18 +212,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 int 值，失败返回默认值
+        /// 获取请求 json 数据中 int 值，失败返回 null
         /// </summary>
-        public static int GetRequestJsonInt(JsonNode json, int defaultValue, params string[] keys)
+        public static int? GetRequestJsonIntOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             if (value.TryGetValue<int>(out int intResult))
                 return intResult;
             int? i = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 i = ValueUtility.ToIntOrNull(stringResult);
+            return i;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 int 值，失败返回默认值
+        /// </summary>
+        public static int GetRequestJsonIntOrDefault(JsonNode json, int defaultValue, params string[] keys)
+        {
+            int? i = GetRequestJsonIntOrNull(json, keys);
             if (i.HasValue)
                 return i.Value;
             return defaultValue;
@@ -236,18 +257,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 long 值，失败返回默认值
+        /// 获取请求 json 数据中 long 值，失败返回 null
         /// </summary>
-        public static long GetRequestJsonLong(JsonNode json, long defaultValue, params string[] keys)
+        public static long? GetRequestJsonLongOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             if (value.TryGetValue<long>(out long longResult))
                 return longResult;
             long? l = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 l = ValueUtility.ToLongOrNull(stringResult);
+            return l;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 long 值，失败返回默认值
+        /// </summary>
+        public static long GetRequestJsonLongOrDefault(JsonNode json, long defaultValue, params string[] keys)
+        {
+            long? l = GetRequestJsonLongOrNull(json, keys);
             if (l.HasValue)
                 return l.Value;
             return defaultValue;
@@ -272,18 +302,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 decimal 值，失败返回默认值
+        /// 获取请求 json 数据中 decimal 值，失败返回 null
         /// </summary>
-        public static decimal GetRequestJsonDecimal(JsonNode json, decimal defaultValue, params string[] keys)
+        public static decimal? GetRequestJsonDecimalOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             if (value.TryGetValue<decimal>(out decimal decimalResult))
                 return decimalResult;
             decimal? d = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 d = ValueUtility.ToDecimalOrNull(stringResult);
+            return d;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 decimal 值，失败返回默认值
+        /// </summary>
+        public static decimal GetRequestJsonDecimalOrDefault(JsonNode json, decimal defaultValue, params string[] keys)
+        {
+            decimal? d = GetRequestJsonDecimalOrNull(json, keys);
             if (d.HasValue)
                 return d.Value;
             return defaultValue;
@@ -309,18 +348,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 datetime 值，失败返回默认值
+        /// 获取请求 json 数据中 datetime 值，失败返回 null
         /// </summary>
-        public static DateTime GetRequestJsonDateTime(JsonNode json, DateTime defaultValue, params string[] keys)
+        public static DateTime? GetRequestJsonDateTimeOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             //if (value.TryGetValue<DateTime>(out DateTime dateTimeResult))
             //    return dateTimeResult;
             DateTime? dt = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 dt = ValueUtility.ToDateTimeOrNull(stringResult);
+            return dt;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 datetime 值，失败返回默认值
+        /// </summary>
+        public static DateTime GetRequestJsonDateTimeOrDefault(JsonNode json, DateTime defaultValue, params string[] keys)
+        {
+            DateTime? dt = GetRequestJsonDateTimeOrNull(json, keys);
             if (dt.HasValue)
                 return dt.Value;
             return defaultValue;
@@ -345,18 +393,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 date 值，失败返回默认值
+        /// 获取请求 json 数据中 date 值，失败返回 null
         /// </summary>
-        public static DateOnly GetRequestJsonDate(JsonNode json, DateOnly defaultValue, params string[] keys)
+        public static DateOnly? GetRequestJsonDateOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             //if (value.TryGetValue<DateOnly>(out DateOnly dateResult))
             //    return dateResult;
             DateOnly? d = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 d = ValueUtility.ToDateOrNull(stringResult);
+            return d;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 date 值，失败返回默认值
+        /// </summary>
+        public static DateOnly GetRequestJsonDateOrDefault(JsonNode json, DateOnly defaultValue, params string[] keys)
+        {
+            DateOnly? d = GetRequestJsonDateOrNull(json, keys);
             if (d.HasValue)
                 return d.Value;
             return defaultValue;
@@ -381,18 +438,27 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求 json 数据中 time 值，失败返回默认值
+        /// 获取请求 json 数据中 time 值，失败返回 null
         /// </summary>
-        public static TimeOnly GetRequestJsonTime(JsonNode json, TimeOnly defaultValue, params string[] keys)
+        public static TimeOnly? GetRequestJsonTimeOrNull(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
-                return defaultValue;
+                return null;
             //if (value.TryGetValue<TimeOnly>(out TimeOnly timeResult))
             //    return timeResult;
             TimeOnly? t = null;
             if (value.TryGetValue<string>(out string? stringResult))
                 t = ValueUtility.ToTimeOrNull(stringResult);
+            return t;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 time 值，失败返回默认值
+        /// </summary>
+        public static TimeOnly GetRequestJsonTimeOrDefault(JsonNode json, TimeOnly defaultValue, params string[] keys)
+        {
+            TimeOnly? t = GetRequestJsonTimeOrNull(json, keys);
             if (t.HasValue)
                 return t.Value;
             return defaultValue;
@@ -420,12 +486,12 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 获取请求参数中 string 值，失败返回默认值
         /// </summary>
-        public static string GetRequestParamStringTrim(HttpRequest request, string defaultValue, string key)
+        public static string GetRequestParamStringTrimOrDefault(HttpRequest request, string defaultValue, string key)
         {
             string? value = request.Query[key];
             if (value == null)
                 return defaultValue;
-            return value;
+            return value.Trim();
         }
 
         /// <summary>
@@ -433,7 +499,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static string GetRequestParamStringTrimOrEmpty(HttpRequest request, string key)
         {
-            return GetRequestParamStringTrim(request, string.Empty, key);
+            return GetRequestParamStringTrimOrDefault(request, string.Empty, key);
         }
 
         /// <summary>
@@ -441,24 +507,32 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static string GetRequestParamStringTrimReq(HttpRequest request, string key)
         {
+            if (!request.Query.ContainsKey(key))
+                throw new ControllerException($"请求参数缺少 {key}");
             string? value = request.Query[key];
-            if (value == null)
-                throw new ControllerException($"请求参数 {key} 值缺失");
-            return value;
+            if (value == null || ValueUtility.IsBlank(value))
+                throw new ControllerException($"请求参数 {key} 值不能为空");
+            return value.Trim();
         }
 
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 bool 值，失败返回默认值
+        /// 获取请求参数中 bool 值，失败返回 null
         /// </summary>
-        public static bool GetRequestParamBool(HttpRequest request, bool defaultValue, string key)
+        public static bool? GetRequestParamBoolOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            bool? b = ValueUtility.ToBoolOrNull(value);
-            if (b.HasValue)
-                return b.Value;
-            return defaultValue;
+            return ValueUtility.ToBoolOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 bool 值，失败返回默认值
+        /// </summary>
+        public static bool GetRequestParamBoolOrDefault(HttpRequest request, bool defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToBoolOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -466,7 +540,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static bool GetRequestParamBoolReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             bool? b = ValueUtility.ToBoolOrNull(value);
             if (b.HasValue)
                 return b.Value;
@@ -476,15 +550,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 int 值，失败返回默认值
+        /// 获取请求参数中 int 值，失败返回 null
         /// </summary>
-        public static int GetRequestParamInt(HttpRequest request, int defaultValue, string key)
+        public static int? GetRequestParamIntOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            int? i = ValueUtility.ToIntOrNull(value);
-            if (i.HasValue)
-                return i.Value;
-            return defaultValue;
+            return ValueUtility.ToIntOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 int 值，失败返回默认值
+        /// </summary>
+        public static int GetRequestParamIntOrDefault(HttpRequest request, int defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToIntOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -492,7 +572,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static int GetRequestParamIntReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             int? i = ValueUtility.ToIntOrNull(value);
             if (i.HasValue)
                 return i.Value;
@@ -502,15 +582,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 long 值，失败返回默认值
+        /// 获取请求参数中 long 值，失败返回 null
         /// </summary>
-        public static long GetRequestParamLong(HttpRequest request, long defaultValue, string key)
+        public static long? GetRequestParamLongOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            long? l = ValueUtility.ToLongOrNull(value);
-            if (l.HasValue)
-                return l.Value;
-            return defaultValue;
+            return ValueUtility.ToLongOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 long 值，失败返回默认值
+        /// </summary>
+        public static long GetRequestParamLongOrDefault(HttpRequest request, long defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToLongOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -518,7 +604,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static long GetRequestParamLongReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             long? l = ValueUtility.ToLongOrNull(value);
             if (l.HasValue)
                 return l.Value;
@@ -528,15 +614,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 decimal 值，失败返回默认值
+        /// 获取请求参数中 decimal 值，失败返回 null
         /// </summary>
-        public static decimal GetRequestParamDecimal(HttpRequest request, decimal defaultValue, string key)
+        public static decimal? GetRequestParamDecimalOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            decimal? d = ValueUtility.ToDecimalOrNull(value);
-            if (d.HasValue)
-                return d.Value;
-            return defaultValue;
+            return ValueUtility.ToDecimalOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 decimal 值，失败返回默认值
+        /// </summary>
+        public static decimal GetRequestParamDecimalOrDefault(HttpRequest request, decimal defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToDecimalOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -544,7 +636,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static decimal GetRequestParamDecimalReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             decimal? d = ValueUtility.ToDecimalOrNull(value);
             if (d.HasValue)
                 return d.Value;
@@ -555,15 +647,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 datetime 值，失败返回默认值
+        /// 获取请求参数中 datetime 值，失败返回 null
         /// </summary>
-        public static DateTime GetRequestParamDateTime(HttpRequest request, DateTime defaultValue, string key)
+        public static DateTime? GetRequestParamDateTimeOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            DateTime? dt = ValueUtility.ToDateTimeOrNull(value);
-            if (dt.HasValue)
-                return dt.Value;
-            return defaultValue;
+            return ValueUtility.ToDateTimeOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 datetime 值，失败返回默认值
+        /// </summary>
+        public static DateTime GetRequestParamDateTimeOrDefault(HttpRequest request, DateTime defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToDateTimeOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -571,7 +669,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static DateTime GetRequestParamDateTimeReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             DateTime? dt = ValueUtility.ToDateTimeOrNull(value);
             if (dt.HasValue)
                 return dt.Value;
@@ -581,15 +679,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 date 值，失败返回默认值
+        /// 获取请求参数中 date 值，失败返回 null
         /// </summary>
-        public static DateOnly GetRequestParamDate(HttpRequest request, DateOnly defaultValue, string key)
+        public static DateOnly? GetRequestParamDateOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            DateOnly? d = ValueUtility.ToDateOrNull(value);
-            if (d.HasValue)
-                return d.Value;
-            return defaultValue;
+            return ValueUtility.ToDateOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 date 值，失败返回默认值
+        /// </summary>
+        public static DateOnly GetRequestParamDateOrDefault(HttpRequest request, DateOnly defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToDateOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -597,7 +701,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static DateOnly GetRequestParamDateReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             DateOnly? d = ValueUtility.ToDateOrNull(value);
             if (d.HasValue)
                 return d.Value;
@@ -607,15 +711,21 @@ namespace BackendExample.Adapter.Driving
         //==============================================================================================================
 
         /// <summary>
-        /// 获取请求参数中 time 值，失败返回默认值
+        /// 获取请求参数中 time 值，失败返回 null
         /// </summary>
-        public static TimeOnly GetRequestParamTime(HttpRequest request, TimeOnly defaultValue, string key)
+        public static TimeOnly? GetRequestParamTimeOrNull(HttpRequest request, string key)
         {
             string value = GetRequestParamStringTrimOrEmpty(request, key);
-            TimeOnly? t = ValueUtility.ToTimeOrNull(value);
-            if (t.HasValue)
-                return t.Value;
-            return defaultValue;
+            return ValueUtility.ToTimeOrNull(value);
+        }
+
+        /// <summary>
+        /// 获取请求参数中 time 值，失败返回默认值
+        /// </summary>
+        public static TimeOnly GetRequestParamTimeOrDefault(HttpRequest request, TimeOnly defaultValue, string key)
+        {
+            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            return ValueUtility.ToTimeOrDefault(value, defaultValue);
         }
 
         /// <summary>
@@ -623,7 +733,7 @@ namespace BackendExample.Adapter.Driving
         /// </summary>
         public static TimeOnly GetRequestParamTimeReq(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrEmpty(request, key);
+            string value = GetRequestParamStringTrimReq(request, key);
             TimeOnly? t = ValueUtility.ToTimeOrNull(value);
             if (t.HasValue)
                 return t.Value;

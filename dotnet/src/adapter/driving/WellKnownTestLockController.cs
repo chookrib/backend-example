@@ -24,7 +24,7 @@ namespace BackendExample.Adapter.Driving
         [HttpGet("/.well-known/test/lock/set-count")]
         public Result TestLockSetCount()
         {
-            int value = RequestValueHelper.GetRequestParamInt(Request, 1, "value");
+            int value = RequestValueHelper.GetRequestParamIntOrDefault(Request, 1, "value");
             this.testLockService.SetCount(value);
             return Result.OkData(new { count = value });
         }

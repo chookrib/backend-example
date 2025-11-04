@@ -27,8 +27,8 @@ namespace BackendExample.Adapter.Driving
             await RequestAuthHelper.RequireLoginUserAdmin(Request);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            int pageNum = RequestValueHelper.GetRequestJsonInt(requestJson, 1, "pageNum");
-            int pageSize = RequestValueHelper.GetRequestJsonInt(requestJson, 1, "pageSize");
+            int pageNum = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
+            int pageSize = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageSize");
 
             //JsonNode? criteriaJson = requestJson["criteria"];
             UserQueryCriteria criteria = new UserQueryCriteria();

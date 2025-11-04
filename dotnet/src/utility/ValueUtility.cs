@@ -22,9 +22,9 @@
         {
             if (IsBlank(value))
                 return null;
-            if (new List<string>() { "true", "1", "t", "y", "yes", "on" }.Contains(value!.ToLower()))
+            if (new List<string>() { "true", "1", "t", "y", "yes", "on" }.Contains(value!.Trim().ToLower()))
                 return true;
-            else if (new List<string>() { "false", "0", "f", "n", "no", "off" }.Contains(value.ToLower()))
+            else if (new List<string>() { "false", "0", "f", "n", "no", "off" }.Contains(value!.Trim().ToLower()))
                 return false;
             return null;
         }
@@ -35,9 +35,9 @@
         public static bool ToBoolOrDefault(string? value, bool defaultValue)
         {
             bool? b = ToBoolOrNull(value);
-            if (!b.HasValue)
-                return defaultValue;
-            return b.Value;
+            if (b.HasValue)
+                return b.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -49,7 +49,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (int.TryParse(value, out int result))
+            if (int.TryParse(value!.Trim(), out int result))
                 return result;
             return null;
         }
@@ -60,9 +60,9 @@
         public static int ToIntOrDefault(string? value, int defaultValue)
         {
             int? i = ToIntOrNull(value);
-            if (!i.HasValue)
-                return defaultValue;
-            return i.Value;
+            if (i.HasValue)
+                return i.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -74,7 +74,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (long.TryParse(value, out long result))
+            if (long.TryParse(value!.Trim(), out long result))
                 return result;
             return null;
         }
@@ -85,9 +85,9 @@
         public static long ToLongOrDefault(string? value, long defaultValue)
         {
             long? l = ToLongOrNull(value);
-            if (!l.HasValue)
-                return defaultValue;
-            return l.Value;
+            if (l.HasValue)
+                return l.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -99,7 +99,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (decimal.TryParse(value, out decimal result))
+            if (decimal.TryParse(value!.Trim(), out decimal result))
                 return result;
             return null;
         }
@@ -110,9 +110,9 @@
         public static decimal ToDecimalOrDefault(string? value, decimal defaultValue)
         {
             decimal? d = ToDecimalOrNull(value);
-            if (!d.HasValue)
-                return defaultValue;
-            return d.Value;
+            if (d.HasValue)
+                return d.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -132,7 +132,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (DateTime.TryParse(value, out DateTime result))
+            if (DateTime.TryParse(value!.Trim(), out DateTime result))
                 return result;
             return null;
         }
@@ -143,9 +143,9 @@
         public static DateTime ToDateTimeOrDefault(string? value, DateTime defaultValue)
         {
             DateTime? dt = ToDateTimeOrNull(value);
-            if (!dt.HasValue)
-                return defaultValue;
-            return dt.Value;
+            if (dt.HasValue)
+                return dt.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -165,7 +165,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (DateOnly.TryParse(value, out DateOnly result))
+            if (DateOnly.TryParse(value!.Trim(), out DateOnly result))
                 return result;
             return null;
         }
@@ -176,9 +176,9 @@
         public static DateOnly ToDateOrDefault(string? value, DateOnly defaultValue)
         {
             DateOnly? d = ToDateOrNull(value);
-            if (!d.HasValue)
-                return defaultValue;
-            return d.Value;
+            if (d.HasValue)
+                return d.Value;
+            return defaultValue;
         }
 
         //==============================================================================================================
@@ -198,7 +198,7 @@
         {
             if (IsBlank(value))
                 return null;
-            if (TimeOnly.TryParse(value, out TimeOnly result))
+            if (TimeOnly.TryParse(value!.Trim(), out TimeOnly result))
                 return result;
             return null;
         }
@@ -209,9 +209,9 @@
         public static TimeOnly ToTimeOrDefault(string? value, TimeOnly defaultValue)
         {
             TimeOnly? t = ToTimeOrNull(value);
-            if (!t.HasValue)
-                return defaultValue;
-            return t.Value;
+            if (t.HasValue)
+                return t.Value;
+            return defaultValue;
         }
     }
 }
