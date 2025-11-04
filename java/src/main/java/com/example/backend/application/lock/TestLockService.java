@@ -50,8 +50,8 @@ public class TestLockService {
     public void decreaseCountWithLock() {
         try (AutoCloseable lock = this.lockService.lock(LockKeys.TEST)) {
             this.decreaseCount();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 

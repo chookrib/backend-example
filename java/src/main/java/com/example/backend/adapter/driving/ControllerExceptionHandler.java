@@ -44,17 +44,17 @@ public class ControllerExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result defaultExceptionHandler(HttpServletResponse response, Exception e) {
-        logger.error("捕捉到未处理的异常", e);
+    public Result defaultExceptionHandler(HttpServletResponse response, Exception ex) {
+        logger.error("捕捉到未处理的异常", ex);
 
         // NoResourceFoundException 设置状态码 404
-        if (e instanceof NoResourceFoundException)
+        if (ex instanceof NoResourceFoundException)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         //else
         //    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        String message = e.getMessage();        // 仅异常信息
-        // String message = e.toString();       // 异常类名: 异常信息
+        String message = ex.getMessage();        // 仅异常信息
+        // String message = ex.toString();       // 异常类名: 异常信息
         //if (message == null) {
         //    StringWriter errors = new StringWriter();
         //    e.printStackTrace(new PrintWriter(errors));

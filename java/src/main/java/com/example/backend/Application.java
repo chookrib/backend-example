@@ -33,6 +33,7 @@ public class Application {
 
         Accessor.appContext = applicationContext;
 
+        // 打印配置
         Accessor.appIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
         if(Accessor.appIsDev) {
             // 打印 environment
@@ -91,7 +92,7 @@ public class Application {
     //}
 
     /**
-     * 从MANIFEST.MF取应用打包时间
+     * 从MANIFEST.MF取信息
      */
     public static Properties getManifestProperties() {
         Properties props = new Properties();

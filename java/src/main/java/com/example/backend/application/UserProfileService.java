@@ -44,8 +44,8 @@ public class UserProfileService {
             User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
             this.userRepository.insert(user);
             return user.getId();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -66,8 +66,8 @@ public class UserProfileService {
             User user = this.userRepository.selectByIdReq(userId);
             user.modifyNickname(nickname, this.userUniqueSpecification);
             this.userRepository.update(user);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 

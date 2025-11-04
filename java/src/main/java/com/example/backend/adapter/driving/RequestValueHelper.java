@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 请求 Value Helper
@@ -79,6 +81,20 @@ public class RequestValueHelper {
     public static String getRequestJsonStringTrimReq(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValueReq(json, keys);
         return node.asText().trim();
+    }
+
+    /**
+     * 获取请求 json 数据中 string 数组值
+     */
+    public static List<String> getRequestJsonStringTrimList(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValue(json, keys);
+        List<String> ss = new ArrayList<>();
+        if(node.isMissingNode() || !node.isArray())
+            return ss;
+        for (JsonNode n : node) {
+            ss.add(node.asText().trim());
+        }
+        return ss;
     }
 
     //==================================================================================================================

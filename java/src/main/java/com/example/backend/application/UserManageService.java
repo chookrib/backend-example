@@ -46,8 +46,8 @@ public class UserManageService {
             );
             this.userRepository.insert(user);
             return user.getId();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -59,8 +59,8 @@ public class UserManageService {
             User user = this.userRepository.selectByIdReq(id);
             user.modify(username, nickname, mobile, this.userUniqueSpecification);
             this.userRepository.update(user);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
