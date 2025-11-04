@@ -48,9 +48,11 @@ public class TestLockService {
      * 减少 count，加锁
      */
     public void decreaseCountWithLock() {
-        this.lockService.runWithLock(LockKeys.TEST, () -> {
+        try (AutoCloseable lock = this.lockService.lock(LockKeys.TEST)) {
             this.decreaseCount();
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //==============================================================================================================

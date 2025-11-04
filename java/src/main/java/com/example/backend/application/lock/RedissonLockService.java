@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 /**
- * 基于 Redisson 实现的分布式锁 Service
+ * 基于 Redisson 实现的锁 Service
  */
 public class RedissonLockService implements LockService {
 
@@ -36,51 +35,42 @@ public class RedissonLockService implements LockService {
     }
 
     @Override
-    public <T> T getWithLock(String key, Supplier<T> action) {
+    public AutoCloseable lock(String key) {
         String lockKey = Accessor.appName + ":lock:" + key;
         RLock lock = this.redissonClient.getLock(lockKey);
-
-        // 不等待获取锁
-        //lock.lock(); // Redisson 会自动续期
-        //if (Accessor.appIsDev)
-        //    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
-        //try {
-        //    return action.get();
-        //} finally {
-        //    if (lock.isLocked() && lock.isHeldByCurrentThread()) {
-        //        lock.unlock();
-        //        if (Accessor.appIsDev)
-        //            logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
-        //    }
-        //}
-
-        // 等待一定时间获取锁
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (Accessor.appIsDev)
-                    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
-                try {
-                    return action.get();
-                } finally {
-                    if (lock.isLocked() && lock.isHeldByCurrentThread()) {
-                        lock.unlock();
-                        if (Accessor.appIsDev)
-                            logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
-                    }
-                }
+                    logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), key);
+                return new RedissonLockHandler(lock, key);
             } else {
-                throw new LockException(String.format("获取 Redisson 锁 %s 失败", lockKey));
+                throw new LockException(String.format("获取 Redisson 锁 %s 失败", key));
             }
         } catch (InterruptedException ex) {
-            throw new LockException(String.format("获取 Redisson 锁 %s 失败: %s", lockKey, ex.getMessage()), ex);
+            throw new LockException(String.format("获取 Redisson 锁 %s 失败: %s", key, ex.getMessage()), ex);
         }
     }
 
-    @Override
-    public void runWithLock(String key, Runnable action) {
-        getWithLock(key, () -> {
-            action.run();
-            return null;
-        });
+    /**
+     * RedissonLock 锁处理器
+     */
+    private static class RedissonLockHandler implements AutoCloseable {
+
+        private final RLock lock;
+        private final String lockKey;
+
+        public RedissonLockHandler(RLock lock, String lockKey) {
+            this.lock = lock  ;
+            this.lockKey = lockKey;
+        }
+
+        @Override
+        public void close() {
+            if (this.lock.isLocked() && this.lock.isHeldByCurrentThread()) {
+                this.lock.unlock();
+                if (Accessor.appIsDev)
+                    logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
+            }
+        }
     }
 }

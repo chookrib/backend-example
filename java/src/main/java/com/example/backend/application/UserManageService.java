@@ -40,24 +40,28 @@ public class UserManageService {
      * 创建用户
      */
     public String createUser(String username, String password, String nickname, String mobile) {
-        return this.lockService.getWithLock(LockKeys.USER, () -> {
+        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
             User user = User.createUser(
                     IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
             );
             this.userRepository.insert(user);
             return user.getId();
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * 修改用户
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
-        this.lockService.runWithLock(LockKeys.USER, () -> {
+        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
             User user = this.userRepository.selectByIdReq(id);
             user.modify(username, nickname, mobile, this.userUniqueSpecification);
             this.userRepository.update(user);
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

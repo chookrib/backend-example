@@ -18,6 +18,8 @@ public class LockServiceConfig {
         return new ReentrantLockService();
     }
 
+    //==================================================================================================================
+
     @Value("${app.lock-redisson-address:}")
     private String redissonAddress;
 

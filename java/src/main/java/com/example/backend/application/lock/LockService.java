@@ -1,19 +1,12 @@
 package com.example.backend.application.lock;
 
-import java.util.function.Supplier;
-
 /**
  * 锁 Service 接口
  */
 public interface LockService {
 
     /**
-     * 使用锁执行一个带返回值的操作
+     * 获取一个锁，返回 AutoCloseable 对象，使用 try-with-resources 语法自动释放锁
      */
-    <T> T getWithLock(String key, Supplier<T> action);
-
-    /**
-     * 使用锁执行一个不带返回值的操作
-     */
-    void runWithLock(String key, Runnable action);
+    AutoCloseable lock(String key);
 }

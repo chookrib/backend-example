@@ -40,11 +40,13 @@ public class UserProfileService {
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        return this.lockService.getWithLock(LockKeys.USER, () -> {
+        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
             User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
             this.userRepository.insert(user);
             return user.getId();
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -60,11 +62,13 @@ public class UserProfileService {
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        this.lockService.runWithLock(LockKeys.USER, () -> {
+        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
             User user = this.userRepository.selectByIdReq(userId);
             user.modifyNickname(nickname, this.userUniqueSpecification);
             this.userRepository.update(user);
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

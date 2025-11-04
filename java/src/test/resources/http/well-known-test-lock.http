@@ -1,17 +1,17 @@
-### 测试锁，设置 count
+### 设置 count
 GET http://{{host}}/.well-known/test/lock/set-count?value=1
 
-### 测试锁，减少 count，不加锁
+### 减少 count，不加锁
 GET http://{{host}}/.well-known/test/lock/decrease-count
 # ab.exe -n 10 -c 10 http://127.0.0.1:8080/.well-known/test/lock/decrease-count
 
-### 测试锁，减少 count，加锁
+### 减少 count，加锁
 GET http://{{host}}/.well-known/test/lock/decrease-count-with-lock
 # ab.exe -n 10 -c 10 http://127.0.0.1:8080/.well-known/test/lock/decrease-count-with-lock
 
 #=======================================================================================================================
 
-### 测试锁，Thread.Sleep
+### Thread.Sleep
 GET http://{{host}}/.well-known/test/lock/thread-sleep
 
 #=======================================================================================================================

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 /**
  * 基于 ReentrantLock 实现的锁 Service
@@ -20,46 +19,41 @@ public class ReentrantLockService implements LockService {
     private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T> T getWithLock(String key, Supplier<T> action) {
+    public AutoCloseable lock(String key) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
-
-        // 不等待获取锁
-        //lock.lock();
-        //if (Accessor.appIsDev)
-        //    logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
-        //try {
-        //    return action.get();
-        //} finally {
-        //    lock.unlock();
-        //    if (Accessor.appIsDev)
-        //        logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
-        //}
-
-        // 等待一定时间获取锁
         try {
-            if (!lock.tryLock(10, TimeUnit.SECONDS)) {
+            if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (Accessor.appIsDev)
                     logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
-                try {
-                    return action.get();
-                } finally {
-                    lock.unlock();
-                    if (Accessor.appIsDev)
-                        logger.info("线程 {} 释放 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
-                }
+                return new ReentrantLockHandler(lock, key);
             } else {
-                throw new LockException(String.format("获取 Redisson 锁 %s 失败", key));
+                throw new LockException(String.format("获取 Reentrant 锁 %s 失败", key));
             }
         } catch (InterruptedException ex) {
-            throw new LockException(String.format("获取 Redisson 锁 %s 失败: %s", key, ex.getMessage()), ex);
+            throw new LockException(String.format("获取 Reentrant 锁 %s 失败: %s", key, ex.getMessage()), ex);
         }
     }
 
-    @Override
-    public void runWithLock(String key, Runnable action) {
-        getWithLock(key, () -> {
-            action.run();
-            return null;
-        });
+    /**
+     * ReentrantLock 锁处理器
+     */
+    private static class ReentrantLockHandler implements AutoCloseable {
+
+        private final ReentrantLock reentrantLock;
+        private final String key;
+
+        public ReentrantLockHandler(ReentrantLock reentrantLock, String key) {
+            this.reentrantLock = reentrantLock;
+            this.key = key;
+        }
+
+        @Override
+        public void close() {
+            if(this.reentrantLock.isLocked() && this.reentrantLock.isHeldByCurrentThread()) {
+                this.reentrantLock.unlock();
+                if (Accessor.appIsDev)
+                    logger.info("线程 {} 释放 Reentrant 锁 {} 成功", Thread.currentThread().getName(), key);
+            }
+        }
     }
 }
