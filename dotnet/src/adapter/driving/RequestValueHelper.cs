@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json.Nodes;
+
 using BackendExample.Utility;
 
 namespace BackendExample.Adapter.Driving
@@ -91,6 +92,23 @@ namespace BackendExample.Adapter.Driving
             return value;
         }
 
+        /// <summary>
+        /// 获取请求 json 数据中的节点，失败返回 null
+        /// </summary>
+        public static JsonNode? GetRequestJsonNode(JsonNode json, params string[] keys)
+        {
+            if (keys == null || keys.Length == 0)
+                return null;
+            JsonNode? node = json;
+            foreach (string key in keys)
+            {
+                node = json[key];
+                if (node == null)
+                    return null;
+            }
+            return node;
+        }
+
         //==============================================================================================================
 
         /// <summary>
@@ -123,6 +141,24 @@ namespace BackendExample.Adapter.Driving
             if (value.TryGetValue<string>(out string? result) && result != null)
                 return result;
             throw new ControllerException($"请求体 {string.Join('.', keys)} 值不是合法的 string");
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 string 数组值
+        /// </summary>
+        public static IList<string> GetRequestJsonStringTrimList(JsonNode json, params string[] keys)
+        {
+            IList<string> ss = new List<string>();
+            JsonNode? node = GetRequestJsonNode(json, keys);
+            if (node != null && node is JsonArray a)
+            {
+                foreach (JsonNode? n in a)
+                {
+                    if (n != null && n is JsonValue v && v.TryGetValue<string>(out string? s))
+                        ss.Add(s?.Trim() ?? string.Empty);
+                }
+            }
+            return ss;
         }
 
         //==============================================================================================================
