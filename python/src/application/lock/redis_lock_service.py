@@ -39,7 +39,7 @@ class RedisLockService(LockService):
         self._release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
 
     @asynccontextmanager
-    async def lock(
+    async def lock_async(
             self,
             key: str,
             timeout: float = 10.0

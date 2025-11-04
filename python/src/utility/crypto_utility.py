@@ -21,6 +21,6 @@ def decode_jwt(token: str, key: str) -> dict[str, Any]:
     return payload
 
 
-def encode_md5(string: str) -> str:
+def encode_md5(input: str) -> str:
     """MD5编码"""
-    return hashlib.md5(string.encode('utf-8')).hexdigest()
+    return hashlib.md5(input.encode('utf-8')).hexdigest()

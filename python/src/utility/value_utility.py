@@ -46,9 +46,9 @@ def to_bool_or_none(value) -> bool | None:
 def to_bool_or_default(value, default: bool) -> bool:
     """转 bool，失败返回默认值"""
     b = to_bool_or_none(value)
-    if b is None:
-        return default
-    return b
+    if b is not None:
+        return b
+    return default
 
 
 # ======================================================================================================================
@@ -68,9 +68,9 @@ def to_int_or_none(value) -> int | None:
 def to_int_or_default(value, default: int) -> int:
     """转 int，失败返回默认值"""
     i = to_int_or_none(value)
-    if i is None:
-        return default
-    return i
+    if i is not None:
+        return i
+    return default
 
 
 # ======================================================================================================================
@@ -82,7 +82,7 @@ def to_decimal_or_none(value) -> Decimal | None:
     if isinstance(value, Decimal):
         return value
     try:
-        return Decimal(str(value))  # 需要 str()，否则 Decimal128 无法解析
+        return Decimal(str(value).strip())  # 需要 str()，否则 Decimal128 无法解析
     except Exception as ex:
         return None
 
@@ -90,9 +90,9 @@ def to_decimal_or_none(value) -> Decimal | None:
 def to_decimal_or_default(value, default: Decimal) -> Decimal:
     """转 decimal，失败返回默认值"""
     d = to_decimal_or_none(value)
-    if d is None:
-        return default
-    return d
+    if d is not None:
+        return d
+    return default
 
 
 # ======================================================================================================================
@@ -110,7 +110,7 @@ def to_datetime_or_none(value) -> datetime | None:
         return value
     try:
         # return datetime.fromisoformat(value)
-        return datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
+        return datetime.strptime(str(value).strip(), "%Y-%m-%d %H:%M:%S")
     except Exception as ex:
         return None
 
@@ -118,9 +118,9 @@ def to_datetime_or_none(value) -> datetime | None:
 def to_datetime_or_default(value, default: datetime) -> datetime:
     """转 datetime，失败返回默认值"""
     dt = to_datetime_or_none(value)
-    if dt is None:
-        return default
-    return dt
+    if dt is not None:
+        return dt
+    return default
 
 
 # ======================================================================================================================
@@ -138,7 +138,7 @@ def to_date_or_none(value) -> date | None:
     if isinstance(value, date):
         return value
     try:
-        return datetime.strptime(str(value), "%Y-%m-%d").date()
+        return datetime.strptime(str(value).strip(), "%Y-%m-%d").date()
     except Exception as ex:
         return None
 
@@ -146,9 +146,9 @@ def to_date_or_none(value) -> date | None:
 def to_date_or_default(value, default: date) -> date:
     """转 date，失败返回默认值"""
     d = to_date_or_none(value)
-    if d is None:
-        return default
-    return d
+    if d is not None:
+        return d
+    return default
 
 
 # ======================================================================================================================
@@ -166,7 +166,7 @@ def to_time_or_none(value) -> time | None:
     if isinstance(value, time):
         return value
     try:
-        return datetime.strptime(str(value), "%H:%M:%S").time()
+        return datetime.strptime(str(value).strip(), "%H:%M:%S").time()
     except Exception as ex:
         return None
 
@@ -174,6 +174,6 @@ def to_time_or_none(value) -> time | None:
 def to_time_or_default(value, default: time) -> time:
     """转 time，失败返回默认值"""
     t = to_time_or_none(value)
-    if t is None:
-        return default
-    return t
+    if t is not None:
+        return t
+    return default

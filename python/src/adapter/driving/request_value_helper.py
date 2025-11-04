@@ -39,7 +39,7 @@ def get_request_json_value_req(json, *keys: str):
 
 # ======================================================================================================================
 
-def get_request_json_string_trim(json, default: str, *keys: str) -> str:
+def get_request_json_string_trim_or_default(json, default: str, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     if value is None:
@@ -49,13 +49,17 @@ def get_request_json_string_trim(json, default: str, *keys: str) -> str:
 
 def get_request_json_string_trim_or_empty(json, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败返回空字符串"""
-    return get_request_json_string_trim(json, "", *keys)
+    return get_request_json_string_trim_or_default(json, "", *keys)
 
 
 def get_request_json_string_trim_req(json, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
-    return str(value).strip()
+    s = str(value).strip()
+    if value_utility.is_blank(s):
+        raise ControllerException(f"请求体 {'.'.join(keys)} 值不能为空")
+    return s
+
 
 def get_request_json_string_trim_list(json, *keys: str) -> list[str]:
     """获取请求 json 数据中 string 数组值"""
@@ -64,9 +68,16 @@ def get_request_json_string_trim_list(json, *keys: str) -> list[str]:
         return [str(v).strip() for v in value]
     return []
 
+
 # ======================================================================================================================
 
-def get_request_json_bool(json, default: bool, *keys: str) -> bool:
+def get_request_json_bool_or_none(json, *keys: str) -> bool | None:
+    """获取请求 json 数据中 bool 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_bool_or_none(value)
+
+
+def get_request_json_bool_or_default(json, default: bool, *keys: str) -> bool:
     """获取请求 json 数据中 bool 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_bool_or_default(value, default)
@@ -76,14 +87,20 @@ def get_request_json_bool_req(json, *keys: str) -> bool:
     """获取请求 json 数据中 bool 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     b = value_utility.to_bool_or_none(value)
-    if b is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 bool")
-    return b
+    if b is not None:
+        return b
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 bool")
 
 
 # ======================================================================================================================
 
-def get_request_json_int(json, default: int, *keys: str) -> int:
+def get_request_json_int_or_none(json, *keys: str) -> int | None:
+    """获取请求 json 数据中 int 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_int_or_none(value)
+
+
+def get_request_json_int_or_default(json, default: int, *keys: str) -> int:
     """获取请求 json 数据中 int 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_int_or_default(value, default)
@@ -93,14 +110,20 @@ def get_request_json_int_req(json, *keys: str) -> int:
     """获取请求 json 数据中 int 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     i = value_utility.to_int_or_none(value)
-    if i is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 int")
-    return i
+    if i is not None:
+        return i
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 int")
 
 
 # ======================================================================================================================
 
-def get_request_json_decimal(json, default: Decimal, *keys: str) -> Decimal:
+def get_request_json_decimal_or_none(json, *keys: str) -> Decimal | None:
+    """获取请求 json 数据中 decimal 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_decimal_or_none(value)
+
+
+def get_request_json_decimal_or_default(json, default: Decimal, *keys: str) -> Decimal:
     """获取请求 json 数据中 decimal 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_decimal_or_default(value, default)
@@ -110,14 +133,20 @@ def get_request_json_decimal_req(json, *keys: str) -> Decimal:
     """获取请求 json 数据中 decimal 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     d = value_utility.to_decimal_or_none(value)
-    if d is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 decimal")
-    return d
+    if d is not None:
+        return d
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 decimal")
 
 
 # ======================================================================================================================
 
-def get_request_json_datetime(json, default: datetime, *keys: str) -> datetime:
+def get_request_json_datetime_or_none(json, *keys: str) -> datetime | None:
+    """获取请求 json 数据中 datetime 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_datetime_or_none(value)
+
+
+def get_request_json_datetime_or_default(json, default: datetime, *keys: str) -> datetime:
     """获取请求 json 数据中 datetime 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_datetime_or_default(value, default)
@@ -127,14 +156,20 @@ def get_request_json_datetime_req(json, *keys: str) -> datetime:
     """获取请求 json 数据中 datetime 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     dt = value_utility.to_datetime_or_none(value)
-    if dt is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 datetime")
-    return dt
+    if dt is not None:
+        return dt
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 datetime")
 
 
 # ======================================================================================================================
 
-def get_request_json_date(json, default: date, *keys: str) -> date:
+def get_request_json_date_or_none(json, *keys: str) -> date | None:
+    """获取请求 json 数据中 date 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_date_or_none(value)
+
+
+def get_request_json_date_or_default(json, default: date, *keys: str) -> date:
     """获取请求 json 数据中 date 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_date_or_default(value, default)
@@ -144,14 +179,20 @@ def get_request_json_date_req(json, *keys: str) -> date:
     """获取请求 json 数据中 date 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     d = value_utility.to_date_or_none(value)
-    if d is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 date")
-    return d
+    if d is not None:
+        return d
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 date")
 
 
 # ======================================================================================================================
 
-def get_request_json_time(json, default: time, *keys: str) -> time:
+def get_request_json_time_or_none(json, *keys: str) -> time | None:
+    """获取请求 json 数据中 time 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_time_or_none(value)
+
+
+def get_request_json_time_or_default(json, default: time, *keys: str) -> time:
     """获取请求 json 数据中 time 值，失败返回默认值"""
     value = get_request_json_value(json, *keys)
     return value_utility.to_time_or_default(value, default)
@@ -161,14 +202,14 @@ def get_request_json_time_req(json, *keys: str) -> time:
     """获取请求 json 数据中 time 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     t = value_utility.to_time_or_none(value)
-    if t is None:
-        raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 time")
-    return t
+    if t is not None:
+        return t
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 time")
 
 
 # ======================================================================================================================
 
-def get_request_param_string_trim(request: Request, default: str, key: str) -> str:
+def get_request_param_string_trim_or_default(request: Request, default: str, key: str) -> str:
     """获取请求参数中 string 值，失败返回默认值"""
     value = request.query_params.get(key)
     if value is None:
@@ -178,20 +219,29 @@ def get_request_param_string_trim(request: Request, default: str, key: str) -> s
 
 def get_request_param_string_trim_or_empty(request: Request, key: str) -> str:
     """获取请求参数中 string 值，失败返回空字符串"""
-    return get_request_param_string_trim(request, "", key)
+    return get_request_param_string_trim_or_default(request, "", key)
 
 
 def get_request_param_string_trim_req(request: Request, key: str) -> str:
     """获取请求请求参数中 string 值，失败抛出异常"""
     value = request.query_params.get(key)
     if value is None:
-        raise ControllerException(f"请求参数 {key} 值缺失")
-    return str(value).strip()
+        raise ControllerException(f"请求参数缺少 {key}")
+    s = str(value).strip()
+    if value_utility.is_blank(s):
+        raise ControllerException(f"请求参数 {key} 值不能为空")
+    return s
 
 
 # ======================================================================================================================
 
-def get_request_param_bool(request: Request, default: bool, key: str) -> bool:
+def get_request_param_bool_or_none(request: Request, key: str) -> bool | None:
+    """获取请求参数中 bool 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_bool_or_none(value)
+
+
+def get_request_param_bool_or_default(request: Request, default: bool, key: str) -> bool:
     """获取请求参数中 bool 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_bool_or_default(value, default)
@@ -199,16 +249,22 @@ def get_request_param_bool(request: Request, default: bool, key: str) -> bool:
 
 def get_request_param_bool_req(request: Request, key: str) -> bool:
     """获取请求参数中 bool 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     b = value_utility.to_bool_or_none(value)
-    if b is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 bool")
-    return b
+    if b is not None:
+        return b
+    raise ControllerException(f"请求参数 {key} 值不是合法 bool")
 
 
 # ======================================================================================================================
 
-def get_request_param_int(request: Request, default: int, key: str) -> int:
+def get_request_param_int_or_none(request: Request, key: str) -> int | None:
+    """获取请求参数中 int 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_int_or_none(value)
+
+
+def get_request_param_int_or_default(request: Request, default: int, key: str) -> int:
     """获取请求参数中 int 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_int_or_default(value, default)
@@ -216,16 +272,22 @@ def get_request_param_int(request: Request, default: int, key: str) -> int:
 
 def get_request_param_int_req(request: Request, key: str) -> int:
     """获取请求参数中 int 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     i = value_utility.to_int_or_none(value)
-    if i is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 int")
-    return i
+    if i is not None:
+        return i
+    raise ControllerException(f"请求参数 {key} 值不是合法 int")
 
 
 # ======================================================================================================================
 
-def get_request_param_decimal(request: Request, default: Decimal, key: str) -> Decimal:
+def get_request_param_decimal_or_none(request: Request, key: str) -> Decimal | None:
+    """获取请求参数中 decimal 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_decimal_or_none(value)
+
+
+def get_request_param_decimal_or_default(request: Request, default: Decimal, key: str) -> Decimal:
     """获取请求参数中 decimal 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_decimal_or_default(value, default)
@@ -233,16 +295,22 @@ def get_request_param_decimal(request: Request, default: Decimal, key: str) -> D
 
 def get_request_param_decimal_req(request: Request, key: str) -> Decimal:
     """获取请求参数中 decimal 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     d = value_utility.to_decimal_or_none(value)
-    if d is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 decimal")
-    return d
+    if d is not None:
+        return d
+    raise ControllerException(f"请求参数 {key} 值不是合法 decimal")
 
 
 # ======================================================================================================================
 
-def get_request_param_datetime(request: Request, default: datetime, key: str) -> datetime:
+def get_request_param_datetime_or_none(request: Request, key: str) -> datetime | None:
+    """获取请求参数中 datetime 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_datetime_or_none(value)
+
+
+def get_request_param_datetime_or_default(request: Request, default: datetime, key: str) -> datetime:
     """获取请求参数中 datetime 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_datetime_or_default(value, default)
@@ -250,16 +318,22 @@ def get_request_param_datetime(request: Request, default: datetime, key: str) ->
 
 def get_request_param_datetime_req(request: Request, key: str) -> datetime:
     """获取请求参数中 datetime 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     dt = value_utility.to_datetime_or_none(value)
-    if dt is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 datetime")
-    return dt
+    if dt is not None:
+        return dt
+    raise ControllerException(f"请求参数 {key} 值不是合法 datetime")
 
 
 # ======================================================================================================================
 
-def get_request_param_date(request: Request, default: date, key: str) -> date:
+def get_request_param_date_or_none(request: Request, key: str) -> date | None:
+    """获取请求参数中 date 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_date_or_none(value)
+
+
+def get_request_param_date_or_default(request: Request, default: date, key: str) -> date:
     """获取请求参数中 date 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_date_or_default(value, default)
@@ -267,16 +341,22 @@ def get_request_param_date(request: Request, default: date, key: str) -> date:
 
 def get_request_param_date_req(request: Request, key: str) -> date:
     """获取请求参数中 date 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     d = value_utility.to_date_or_none(value)
-    if d is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 date")
-    return d
+    if d is not None:
+        return d
+    raise ControllerException(f"请求参数 {key} 值不是合法 date")
 
 
 # ======================================================================================================================
 
-def get_request_param_time(request: Request, default: time, key: str) -> time:
+def get_request_param_time_or_none(request: Request, key: str) -> time | None:
+    """获取请求参数中 time 值，失败返回 None"""
+    value = get_request_param_string_trim_or_empty(request, key)
+    return value_utility.to_time_or_none(value)
+
+
+def get_request_param_time_or_default(request: Request, default: time, key: str) -> time:
     """获取请求参数中 time 值，失败返回默认值"""
     value = get_request_param_string_trim_or_empty(request, key)
     return value_utility.to_time_or_default(value, default)
@@ -284,11 +364,11 @@ def get_request_param_time(request: Request, default: time, key: str) -> time:
 
 def get_request_param_time_req(request: Request, key: str) -> time:
     """获取请求参数中 time 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_empty(request, key)
+    value = get_request_param_string_trim_req(request, key)
     t = value_utility.to_time_or_none(value)
-    if t is None:
-        raise ControllerException(f"请求参数 {key} 值不是合法 time")
-    return t
+    if t is not None:
+        return t
+    raise ControllerException(f"请求参数 {key} 值不是合法 time")
 
 
 # ======================================================================================================================

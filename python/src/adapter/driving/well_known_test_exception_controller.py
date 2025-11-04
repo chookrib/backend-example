@@ -1,4 +1,5 @@
 import logging
+from fastapi import HTTPException
 
 from fastapi import APIRouter
 
@@ -13,3 +14,8 @@ def test_exception():
         1 / 0
     except Exception as ex:
         raise Exception("测试Exception") from ex
+
+@router.get("/.well-known/test/exception/http")
+def test_exception_http():
+    """测试异常"""
+    raise HTTPException(status_code=500, detail="测试 HTTPException")

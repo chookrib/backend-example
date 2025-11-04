@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from fastapi import APIRouter, Request
 
@@ -43,5 +44,10 @@ async def test_request_param_default(id: str = ""):
 
 @router.get("/.well-known/test/request/param-none")
 async def test_request_param_none(id: str | None = None):
+    """测试请求，获取 id"""
+    return Result.ok(data=id)
+
+@router.get("/.well-known/test/request/param-optional-int")
+async def test_request_param_optional_int(id: Optional[int] = None):
     """测试请求，获取 id"""
     return Result.ok(data=id)

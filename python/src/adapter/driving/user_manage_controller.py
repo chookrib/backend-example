@@ -23,8 +23,8 @@ async def user_list(request: Request):
     await request_auth_helper.require_login_user_admin(request)
 
     request_json = await request_value_helper.get_request_json(request)
-    page_num = request_value_helper.get_request_json_int(request_json, 1, "pageNum")
-    page_size = request_value_helper.get_request_json_int(request_json, 1, "pageSize")
+    page_num = request_value_helper.get_request_json_int_or_default(request_json, 1, "pageNum")
+    page_size = request_value_helper.get_request_json_int_or_default(request_json, 1, "pageSize")
     # criteria_json = request_json.get("criteria", {})
 
     criteria = UserQueryCriteria()

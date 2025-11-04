@@ -25,7 +25,7 @@ class AsyncioLockService(LockService):
         self._internal_lock = asyncio.Lock()
 
     @asynccontextmanager
-    async def lock(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
+    async def lock_async(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
         """
         获取一个进程内锁
 

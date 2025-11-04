@@ -18,7 +18,7 @@ test_lock_service = ioc_container.resolve(TestLockService)  # type: ignore
 @router.get("/.well-known/test/lock/set-count")
 def test_lock_set_count(request: Request):
     """设置 count"""
-    value = request_value_helper.get_request_param_int(request, 1, "value")
+    value = request_value_helper.get_request_param_int_or_default(request, 1, "value")
     test_lock_service.set_count(value)
     return Result.ok(data={"count": value})
 
