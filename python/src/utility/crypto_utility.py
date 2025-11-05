@@ -6,7 +6,7 @@ from jose import jwt
 
 
 def encode_jwt(key: str, exp: datetime, claims: dict[str, Any] | None = None) -> str:
-    """JWT编码"""
+    """JWT 编码"""
     if claims is None:
         claims = {}
     claims["exp"] = datetime.timestamp(exp)
@@ -14,7 +14,7 @@ def encode_jwt(key: str, exp: datetime, claims: dict[str, Any] | None = None) ->
 
 
 def decode_jwt(token: str, key: str) -> dict[str, Any]:
-    """JWT解码"""
+    """JWT 解码"""
     payload = jwt.decode(token, key)
     if "exp" not in payload or datetime.fromtimestamp(payload["exp"]) < datetime.now():
         raise Exception("JWT令牌已过期")
@@ -22,5 +22,5 @@ def decode_jwt(token: str, key: str) -> dict[str, Any]:
 
 
 def encode_md5(input: str) -> str:
-    """MD5编码"""
+    """MD5 编码"""
     return hashlib.md5(input.encode('utf-8')).hexdigest()

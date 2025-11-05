@@ -37,15 +37,18 @@ async def test_request_param(id: str):
     """测试请求，获取 id"""
     return Result.ok(data=id)
 
+
 @router.get("/.well-known/test/request/param-default")
 async def test_request_param_default(id: str = ""):
     """测试请求，获取 id"""
     return Result.ok(data=id)
 
+
 @router.get("/.well-known/test/request/param-none")
 async def test_request_param_none(id: str | None = None):
     """测试请求，获取 id"""
     return Result.ok(data=id)
+
 
 @router.get("/.well-known/test/request/param-optional-int")
 async def test_request_param_optional_int(id: Optional[int] = None):
