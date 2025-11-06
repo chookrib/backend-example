@@ -1,0 +1,95 @@
+### 准备
+< {%
+    client.global.clearAll();
+    client.global.set('secret', 'jwt-secret-must-long-than-32-str');
+    client.global.set('expiresAt', '2026-01-01 00:00:00');
+    // console.log('client.global', client.global);
+%}
+GET http://{{host}}/.well-known/info
+
+### JWT 编码
+POST http://{{host}}/.well-known/test/crypto/jwt-encode
+Content-Type: application/json
+
+{
+  "secret": "{{secret}}",
+  "expiresAt": "{{expiresAt}}",
+  "payload": {
+    "string": "test",
+    "boolean": true,
+    "number": 123
+  }
+}
+
+> {%
+    console.log(response.body);
+    client.global.set('token', response.body.data.token);
+%}
+
+### JWT 解码，正确的 secret
+POST http://{{host}}/.well-known/test/crypto/jwt-decode
+Content-Type: application/json
+
+{
+  "secret": "{{secret}}",
+  "token": "{{token}}"
+}
+
+> {%
+    console.log(response.body);
+%}
+
+### JWT 解码，错误的 secret
+POST http://{{host}}/.well-known/test/crypto/jwt-decode
+Content-Type: application/json
+
+{
+  "secret": "{{$random.uuid}}",
+  "token": "{{token}}"
+}
+
+> {%
+    console.log(response.body);
+%}
+
+### JWT 编码，已过期
+< {%
+    client.global.set('expiresAtExpired', '2025-01-01 00:00:00');
+%}
+POST http://{{host}}/.well-known/test/crypto/jwt-encode
+Content-Type: application/json
+
+{
+  "secret": "{{secret}}",
+  "expiresAt": "{{expiresAtExpired}}",
+  "payload": {
+    "string": "test",
+    "boolean": true,
+    "number": 123
+  }
+}
+
+> {%
+    console.log(response.body);
+    client.global.set('tokenExpired', response.body.data.token);
+%}
+
+### JWT 解码，已过期
+POST http://{{host}}/.well-known/test/crypto/jwt-decode
+Content-Type: application/json
+
+{
+  "secret": "{{secret}}",
+  "token": "{{tokenExpired}}"
+}
+
+> {%
+    console.log(response.body);
+%}
+
+### MD5 编码
+GET http://{{host}}/.well-known/test/crypto/md5-encode?text=hello
+
+> {%
+    console.log(response.body);
+%}

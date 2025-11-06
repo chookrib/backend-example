@@ -43,7 +43,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 insert into t_user
                     (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
                 values
-                    ('0', 'admin', '{crypto_utility.encode_md5("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                    ('0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, datetime('now', 'localtime'))
                 """)
             await db.commit()
 

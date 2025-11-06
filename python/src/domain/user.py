@@ -66,7 +66,7 @@ class User(BaseModel):
         return User(
             id=id,
             username=username,
-            password=crypto_utility.encode_md5(password),
+            password=crypto_utility.md5_encode(password),
             nickname=nickname,
             mobile="",
             is_admin=False,
@@ -75,7 +75,7 @@ class User(BaseModel):
 
     def is_password_match(self, password: str) -> bool:
         """检查密码是否匹配"""
-        return crypto_utility.encode_md5(password) == self.password
+        return crypto_utility.md5_encode(password) == self.password
 
     def set_admin(self, is_admin: bool) -> None:
         """设置是否为管理员"""
@@ -89,7 +89,7 @@ class User(BaseModel):
         if not self.is_password_match(old_password):
             raise DomainException("密码错误")
 
-        self.password = crypto_utility.encode_md5(new_password)
+        self.password = crypto_utility.md5_encode(new_password)
 
     async def modify_nickname(self, nickname: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改昵称"""
@@ -145,7 +145,7 @@ class User(BaseModel):
         return User(
             id=id,
             username=username,
-            password=crypto_utility.encode_md5(password),
+            password=crypto_utility.md5_encode(password),
             nickname=nickname,
             mobile=mobile,
             is_admin=False,

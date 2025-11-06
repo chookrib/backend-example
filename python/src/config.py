@@ -10,10 +10,10 @@ class Settings(BaseSettings):
     APP_LOCK_SERVICE: str = "asyncio"
     APP_LOCK_REDIS_URL: str = ""
 
-    APP_SQLITE_PATH: str = ""
+    APP_JWT_SECRET: str = ""
+    APP_JWT_EXPIRES: str = ""
 
-    APP_JWT_EXPIRES_DAY: str = ""
-    APP_JWT_SECRET_KEY: str = ""
+    APP_SQLITE_PATH: str = ""
 
     class Config:
         env_file = ".env"
