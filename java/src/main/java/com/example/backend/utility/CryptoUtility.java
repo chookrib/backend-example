@@ -88,7 +88,7 @@ public class CryptoUtility {
             }
             return sb.toString();
         } catch (java.security.NoSuchAlgorithmException ex) {
-            throw new RuntimeException("MD5 编码异常", ex);
+            throw new UtilityException("MD5 编码异常", ex);
         }
     }
 }
