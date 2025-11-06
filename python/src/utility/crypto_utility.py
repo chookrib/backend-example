@@ -13,13 +13,13 @@ def jwt_encode( payload: dict[str, Any] | None, secret: str, expires_at: datetim
     if payload is None:
         payload = {}
     payload["exp"] = int(datetime.timestamp(expires_at))
-    return jwt.encode(claims=payload, key=secret, algorithm='HS256')
+    return jwt.encode(claims=payload, key=secret, algorithm="HS256")
 
 
 def jwt_decode(token: str, secret: str) -> dict[str, Any]:
     """JWT 解码"""
     try:
-        payload = jwt.decode(token=token, key=secret, algorithms=['HS256'])
+        payload = jwt.decode(token=token, key=secret, algorithms=["HS256"])
     except Exception as ex:
         raise UtilityException(f"JWT 解码失败") from ex
     # jwt.decode 时会判断 exp 是否过期
