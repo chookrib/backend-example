@@ -1,6 +1,5 @@
-﻿using System.Collections;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -14,63 +13,95 @@ namespace BackendExample.Utility
     public class CryptoUtility
     {
         /// <summary>
-        /// JWT 编码
+        /// JWT 编码，secret 要大于16位
         /// </summary>
-        public static string EncodeJwt(Dictionary<string, string> payload, DateTime expires, string key)
+        public static string JwtEncode(IDictionary<string, object> payload, string secret, DateTime expiresAt)
         {
-            //List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? "")).ToList();
-            List<Claim> claims = payload.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-            SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var handler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            var jwtPayload = new JwtPayload();
+            foreach (var pair in payload)
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = expires,
-                SigningCredentials = credentials
-            };
+                jwtPayload[pair.Key] = pair.Value;
+            }
+            jwtPayload["exp"] = new DateTimeOffset(expiresAt).ToUnixTimeSeconds();
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var header = new JwtHeader(credentials);
+            var token = new JwtSecurityToken(header, jwtPayload);
+            return handler.WriteToken(token);
         }
 
         /// <summary>
-        /// JWT 解码
+        /// JWT 解码，secret 要大于16位
         /// </summary>
-        public static Dictionary<string, string> DecodeJwt(string token, string key)
+        public static IDictionary<string, object> JwtDecode(string token, string secret)
         {
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            TokenValidationParameters validationParameters = new TokenValidationParameters
+            var handler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime = true,
+                ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-                //ClockSkew = TimeSpan.FromMinutes(5) // 可选，默认5分钟
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                ValidateLifetime = true,
+                // ClockSkew 默认为5分钟 TimeSpan.FromMinutes(5)
                 ClockSkew = TimeSpan.Zero
             };
 
-            tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-            JwtSecurityToken? jwtToken = validatedToken as JwtSecurityToken;
-            if (jwtToken == null)
-                //throw new SecurityTokenException("无效的 JWT");
-                throw new Exception("无效的 JWT");
+            try
+            {
+                handler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                var jwtToken = validatedToken as JwtSecurityToken;
+                if (jwtToken == null)
+                {
+                    throw new UtilityException("JWT 解码失败");
+                }
+                return jwtToken.Payload;
+            }
+            catch (Exception ex)
+            {
+                throw new UtilityException("JWT 解码失败", ex);
+            }
+        }
 
-            return jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+        /// <summary>
+        /// JWT 计算过期时长（分钟）
+        /// </summary>
+        public static int JwtExpiresMinute(string expires)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(expires.ToLower(), @"^(\d+)([dhm])$");
+            if (!match.Success)
+            {
+                throw new UtilityException("JWT EXPIRES 配置错误，值应为时长（正整数）加时长单位（d/h/m）");
+            }
+            int num;
+            if (!int.TryParse(match.Groups[1].Value, out num))
+            {
+                throw new UtilityException("JWT EXPIRES 配置错误，时长应为正整数");
+            }
+            string unit = match.Groups[2].Value;
+            if (unit == "d")
+            {
+                return num * 24 * 60;
+            }
+            if (unit == "h")
+            {
+                return num * 60;
+            }
+            return num;
         }
 
         /// <summary>
         /// MD5 编码
         /// </summary>
-        public static string EncodeMd5(string input)
+        public static string Md5Encode(string text)
         {
             using MD5 md5 = MD5.Create();
-            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
-            return Convert.ToHexString(hashBytes);
+            byte[] textBytes = Encoding.UTF8.GetBytes(text);
+            byte[] hashBytes = md5.ComputeHash(textBytes);
+            return Convert.ToHexString(hashBytes).ToLower();    // 默认为大写，转为小写，保持统一
         }
     }
 }

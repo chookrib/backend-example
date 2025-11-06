@@ -67,7 +67,7 @@ namespace BackendExample.Domain
             {
                 Id = id,
                 Username = username,
-                Password = CryptoUtility.EncodeMd5(password),
+                Password = CryptoUtility.Md5Encode(password),
                 Nickname = nickname,
                 Mobile = "",
                 IsAdmin = false,
@@ -80,7 +80,7 @@ namespace BackendExample.Domain
         /// </summary>
         public bool IsPasswordMatch(string password)
         {
-            return this.Password == CryptoUtility.EncodeMd5(password);
+            return this.Password == CryptoUtility.Md5Encode(password);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace BackendExample.Domain
             if (!IsPasswordMatch(oldPassword))
                 throw new DomainException("密码错误");
 
-            this.Password = CryptoUtility.EncodeMd5(newPassword);
+            this.Password = CryptoUtility.Md5Encode(newPassword);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace BackendExample.Domain
             {
                 Id = id,
                 Username = username,
-                Password = CryptoUtility.EncodeMd5(password),
+                Password = CryptoUtility.Md5Encode(password),
                 Nickname = nickname,
                 Mobile = mobile,
                 IsAdmin = false,

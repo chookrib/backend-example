@@ -9,24 +9,29 @@ namespace BackendExample.Application
     public class UserAuthService
     {
         private readonly UserRepository userRepository;
-        private readonly int jwtExpiresDay;
-        private readonly string jwtSecretKey;
+        private readonly int jwtExpiresMinute;
+        private readonly string jwtSecret;
 
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
         {
-            int? jwtExpiresDayValue = ValueUtility.ToIntOrNull(
-                configuration.GetValue<string>("App:JwtExpiresDay", string.Empty)
-                );
-            if (!jwtExpiresDayValue.HasValue || jwtExpiresDayValue < 0)
-                throw new ApplicationException("App:JwtExpiresDay 配置错误");
-            this.jwtExpiresDay = jwtExpiresDayValue.Value;
-            this.jwtSecretKey = configuration.GetValue<string>("App:JwtSecretKey", string.Empty);
-            if(ValueUtility.IsBlank(this.jwtSecretKey))
-                throw new ApplicationException("App:JwtSecretKey 配置错误");
-            // secret key 必须要大于 128 位 (16 字节)
-            if(this.jwtSecretKey.Length < 16)
-                throw new ApplicationException("App:JwtSecretKey 配置错误，不足 16 位");
-
+            if (!ValueUtility.IsBlank(configuration.GetValue<string>("App:JwtSecret", string.Empty)))
+            {
+                this.jwtSecret = configuration.GetValue<string>("App:JwtSecret", string.Empty);
+            }
+            else
+            {
+                throw new ApplicationException("App:JwtSecret 配置错误");
+            }
+            try
+            {
+                this.jwtExpiresMinute = CryptoUtility.JwtExpiresMinute(
+                    configuration.GetValue<string>("App:JwtExpires", string.Empty)
+                    );
+            }
+            catch
+            {
+                throw new ApplicationException("App:JwtExpires 配置错误");
+            }
             this.userRepository = userRepository;
         }
 
@@ -38,10 +43,10 @@ namespace BackendExample.Application
             User? user = await this.userRepository.SelectByUsername(username);
             if (user == null || !user.IsPasswordMatch(password))
                 throw new ApplicationException("密码错误");
-            return CryptoUtility.EncodeJwt(new Dictionary<string, string>()
+            return CryptoUtility.JwtEncode(new Dictionary<string, object>()
             {
                 { "id", user.Id }
-            }, DateTime.Now.AddDays(this.jwtExpiresDay), this.jwtSecretKey);
+            }, this.jwtSecret, DateTime.Now.AddMinutes(this.jwtExpiresMinute));
         }
 
         /// <summary>
@@ -51,10 +56,10 @@ namespace BackendExample.Application
         {
             try
             {
-                Dictionary<string, string> payload = CryptoUtility.DecodeJwt(accessToken, this.jwtSecretKey);
+                IDictionary<string, object> payload = CryptoUtility.JwtDecode(accessToken, this.jwtSecret);
                 //return payload["id"];
-                if (payload.TryGetValue("id", out string? id) && id != null)
-                    return id;
+                if (payload.TryGetValue("id", out object? id) && id != null)
+                    return id.ToString()!;
                 return string.Empty;
             }
             catch
