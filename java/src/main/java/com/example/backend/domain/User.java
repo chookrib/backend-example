@@ -89,7 +89,7 @@ public class User {
         User user = new User();
         user.id = id;
         user.username = username;
-        user.password = CryptoUtility.encodeMd5(password);
+        user.password = CryptoUtility.md5Encode(password);
         user.nickname = nickname;
         user.mobile = "";
         user.isAdmin = false;
@@ -101,7 +101,7 @@ public class User {
      * 检查密码是否匹配
      */
     public boolean isPasswordMatch(String password) {
-        return this.password.equals(CryptoUtility.encodeMd5(password));
+        return this.password.equals(CryptoUtility.md5Encode(password));
     }
 
     /**
@@ -122,7 +122,7 @@ public class User {
             throw new DomainException("密码错误");
         }
 
-        this.password = CryptoUtility.encodeMd5(newPassword);
+        this.password = CryptoUtility.md5Encode(newPassword);
     }
 
     /**
@@ -183,7 +183,7 @@ public class User {
         User user = new User();
         user.id = id;
         user.username = username;
-        user.password = CryptoUtility.encodeMd5(password);
+        user.password = CryptoUtility.md5Encode(password);
         user.nickname = nickname;
         user.mobile = mobile;
         user.isAdmin = false;

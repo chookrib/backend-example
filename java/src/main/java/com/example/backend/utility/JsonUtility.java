@@ -20,7 +20,7 @@ public class JsonUtility {
         try {
             return new ObjectMapper().readTree(data);
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException("反序列化JSON异常", ex);
+            throw new UtilityException("反序列化 JSON 异常", ex);
         }
     }
 
@@ -31,7 +31,7 @@ public class JsonUtility {
         try {
             return new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException("序列化JSON异常", ex);
+            throw new UtilityException("序列化 JSON 异常", ex);
         }
     }
 
@@ -44,7 +44,7 @@ public class JsonUtility {
     //                //.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
     //                .convertValue(data, Map.class);
     //    //} catch (Exception ex) {
-    //    //    throw new RuntimeException("对象转 Map 异常", ex);
+    //    //    throw new UtilityException("对象转 Map 异常", ex);
     //    //}
     //}
 
@@ -58,19 +58,20 @@ public class JsonUtility {
         try {
             return objectMapper.readTree(data);
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException("反序列化JSON异常", ex);
+            throw new UtilityException("反序列化 JSON 异常", ex);
         }
     }
 
     /**
      * 反序列化 JSON 字符串为为指定类型对象
      */
-    public static <T> T deserialize(String data, TypeReference<T> type) {
-        try {
-            return new ObjectMapper().readValue(data, type);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("反序列化JSON异常", ex);
-        }
+    public static <T> T deserialize(JsonNode data, TypeReference<T> type) {
+        //try {
+            //return new ObjectMapper().readValue(data, type);
+            return new ObjectMapper().convertValue(data, type);
+        //} catch (JsonProcessingException ex) {
+        //    throw new UtilityException("反序列化 JSON 异常", ex);
+        //}
     }
 
     /**

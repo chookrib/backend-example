@@ -7,6 +7,7 @@ import com.example.backend.utility.ValueUtility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,24 +18,26 @@ import java.util.Map;
 @Component
 public class UserAuthService {
 
-    private int jwtExpiresDay;
+    private int jwtExpiresMinute;
 
-    private String jwtSecretKey;
+    private String jwtSecret;
 
     private final UserRepository userRepository;
 
     public UserAuthService(
-            @Value("${app.jwt-expires-day:}") String jwtExpiresDay,
-            @Value("${app.jwt-secret-key:}") String jwtSecretKey,
+            @Value("${app.jwt-secret:}") String jwtSecret,
+            @Value("${app.jwt-expires:}") String jwtExpires,
             UserRepository userRepository) {
-        Integer jwtExpiresDayValue = ValueUtility.toIntOrNull(jwtExpiresDay);
-        if(jwtExpiresDayValue == null || jwtExpiresDayValue <= 0)
-            throw new ApplicationException("app.jwt-expires-day 配置错误");
-        this.jwtExpiresDay = jwtExpiresDayValue;
-        if(ValueUtility.isBlank(jwtSecretKey))
-            throw new ApplicationException("app.jwt-secret-key 配置错误");
-        this.jwtSecretKey = jwtSecretKey;
-
+        if (!ValueUtility.isBlank(jwtSecret)) {
+            this.jwtSecret = jwtSecret;
+        } else {
+            throw new ApplicationException("app.jwt-secret 配置错误");
+        }
+        try {
+            this.jwtExpiresMinute = CryptoUtility.jwtExpiresMinute(jwtExpires);
+        } catch (Exception ex) {
+            throw new ApplicationException("app.jwt-expires 配置错误");
+        }
         this.userRepository = userRepository;
     }
 
@@ -48,10 +51,11 @@ public class UserAuthService {
         }
         Map<String, String> payload = new HashMap<>();
         payload.put("id", user.getId());
-        return CryptoUtility.encodeJwt(
+        return CryptoUtility.jwtEncode(
                 payload,
-                new Date(System.currentTimeMillis() + this.jwtExpiresDay * 24 * 60 * 60 * 1000L),
-                this.jwtSecretKey);
+                this.jwtSecret,
+                LocalDateTime.now().plusMinutes(this.jwtExpiresMinute)
+        );
     }
 
     /**
@@ -59,8 +63,8 @@ public class UserAuthService {
      */
     public String getLoginUserId(String accessToken) {
         try {
-            Map<String, String> payload = CryptoUtility.decodeJwt(accessToken, this.jwtSecretKey);
-            return payload.getOrDefault("id", "");
+            Map<String, ?> payload = CryptoUtility.jwtDecode(accessToken, this.jwtSecret);
+            return String.valueOf(payload.get("id"));
         } catch (Exception ex) {
             return "";
         }
