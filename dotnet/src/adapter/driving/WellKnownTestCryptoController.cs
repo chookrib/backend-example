@@ -37,19 +37,58 @@ namespace BackendExample.Adapter.Driving
             string secret = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "secret");
             string token = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "token");
             IDictionary<string, object> payload = CryptoUtility.JwtDecode(token, secret);
-            string payloadString = JsonUtility.Serialize(payload); // 手动序列化，防止受全局 json 转换影响
-            return Result.OkData(new { payload = payloadString });
+
+            string headerDecoded = string.Empty;
+            string payloadDecoded = string.Empty;
+            string[] tokenParts = token.Split('.');
+            if (tokenParts.Length > 1)
+            {
+                headerDecoded = CryptoUtility.Base64Decode(tokenParts[0]);
+            }
+            if (tokenParts.Length > 2)
+            {
+                payloadDecoded = CryptoUtility.Base64Decode(tokenParts[1]);
+            }
+
+            return Result.OkData(new
+            {
+                payload = JsonUtility.Serialize(payload), // 手动序列化，防止受全局 json 转换影响,
+                headerDecoded = headerDecoded,
+                payloadDecoded = payloadDecoded
+            });
         }
 
         /// <summary>
-        /// MD5 解码
+        /// BASE64 编码
+        /// </summary>
+        [HttpGet("/.well-known/test/crypto/base64-encode")]
+        public Result TestCryptoBase64Encode()
+        {
+            string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
+            string base64 = CryptoUtility.Base64Encode(text);
+            return Result.OkData(new { base64 });
+        }
+
+        /// <summary>
+        /// BASE64 解码
+        /// </summary>
+        [HttpGet("/.well-known/test/crypto/base64-decode")]
+        public Result TestCryptoBaseDecode()
+        {
+            string base64 = RequestValueHelper.GetRequestParamStringTrimReq(Request, "base64");
+            string text = CryptoUtility.Base64Decode(base64);
+            return Result.OkData(new { text });
+        }
+
+        /// <summary>
+        /// MD5 编码
         /// </summary>
         [HttpGet("/.well-known/test/crypto/md5-encode")]
         public Result TestCryptoMd5Encode()
         {
             string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
-            string result = CryptoUtility.Md5Encode(text);
-            return Result.OkData(new { result });
+            string md5 = CryptoUtility.Md5Encode(text);
+            return Result.OkData(new { md5 });
         }
     }
 }

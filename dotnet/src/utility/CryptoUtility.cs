@@ -15,8 +15,11 @@ namespace BackendExample.Utility
         /// <summary>
         /// JWT 编码，secret 要大于16位
         /// </summary>
-        public static string JwtEncode(IDictionary<string, object> payload, string secret, DateTime expiresAt)
+        public static string JwtEncode(IDictionary<string, object>? payload, string secret, DateTime expiresAt)
         {
+            if(payload == null)
+                payload = new Dictionary<string, object>();
+
             var handler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -91,6 +94,29 @@ namespace BackendExample.Utility
                 return num * 60;
             }
             return num;
+        }
+
+        /// <summary>
+        /// BASE64 编码
+        /// </summary>
+        public static string Base64Encode(string text)
+        {
+            byte[] textBytes = Encoding.UTF8.GetBytes(text);
+            return Convert.ToBase64String(textBytes);
+        }
+
+        /// <summary>
+        /// BASE64 解码
+        /// </summary>
+        public static string Base64Decode(string base64Text)
+        {
+            int mod = base64Text.Length % 4;
+            if (mod > 0)
+            {
+                base64Text += new string('=', 4 - mod);
+            }
+            byte[] bytes = Convert.FromBase64String(base64Text);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         /// <summary>
