@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import re
 from datetime import datetime
@@ -8,7 +9,7 @@ from jose import jwt
 from src.utility.utility_exception import UtilityException
 
 
-def jwt_encode( payload: dict[str, Any] | None, secret: str, expires_at: datetime) -> str:
+def jwt_encode(payload: dict[str, Any] | None, secret: str, expires_at: datetime) -> str:
     """JWT 编码"""
     if payload is None:
         payload = {}
@@ -45,6 +46,17 @@ def jwt_expires_minute(expires: str) -> int:
     if unit == "h":
         return num * 60
     return num
+
+
+def base64_encode(text: str) -> str:
+    """BASE64 编码"""
+    return base64.b64encode(text.encode('utf-8')).decode('utf-8')
+
+
+def base64_decode(base64_text: str) -> str:
+    """BASE64 解码"""
+    padding = '=' * (-len(base64_text) % 4)
+    return base64.b64decode((base64_text + padding).encode('utf-8')).decode('utf-8')
 
 
 def md5_encode(text: str) -> str:
