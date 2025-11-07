@@ -49,8 +49,44 @@ public class WellKnownTestCryptoController {
         String secret = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "secret");
         String token = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "token");
         Map<String, ?> payload = CryptoUtility.jwtDecode(token, secret);
-        String payloadString = JsonUtility.serialize(payload);
-        return Result.okData(Map.of("payload", payloadString));
+
+        String headerDecoded = "";
+        String payloadDecoded = "";
+        String[] tokenParts = token.split("\\.");
+        if (tokenParts.length > 1) {
+            headerDecoded = CryptoUtility.base64Decode(tokenParts[0]);
+        }
+        if (tokenParts.length > 2) {
+            payloadDecoded = CryptoUtility.base64Decode(tokenParts[1]);
+        }
+
+        return Result.okData(Map.of(
+                "payload", JsonUtility.serialize(payload),
+                "headerDecoded", headerDecoded,
+                "payloadDecoded", payloadDecoded
+        ));
+    }
+
+    /**
+     * BASE64 编码
+     */
+    @RequestMapping(value = "/.well-known/test/crypto/base64-encode", method = RequestMethod.GET)
+    public Result testCryptoBase64Encode(HttpServletRequest request)
+    {
+        String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
+        String base64 = CryptoUtility.base64Encode(text);
+        return Result.okData(Map.of("base64", base64));
+    }
+
+    /**
+     * BASE64 解码
+     */
+    @RequestMapping(value = "/.well-known/test/crypto/base64-decode", method = RequestMethod.GET)
+    public Result testCryptoBase64Decode(HttpServletRequest request)
+    {
+        String base64 = RequestValueHelper.getRequestParamStringTrimReq(request, "base64");
+        String text = CryptoUtility.base64Decode(base64);
+        return Result.okData(Map.of("text", text));
     }
 
     /**
@@ -60,8 +96,8 @@ public class WellKnownTestCryptoController {
     public Result testCryptoMd5Encode(HttpServletRequest request)
     {
         String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
-        String result = CryptoUtility.md5Encode(text);
-        return Result.okData(Map.of("result", result));
+        String md5 = CryptoUtility.md5Encode(text);
+        return Result.okData(Map.of("md5", md5));
     }
 }
 

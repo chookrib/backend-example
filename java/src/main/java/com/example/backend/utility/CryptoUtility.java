@@ -22,6 +22,9 @@ public class CryptoUtility {
      * JWT 编码
      */
     public static String jwtEncode(Map<String, ?> payload, String secret, LocalDateTime expiresAt) {
+        if(payload == null) {
+            payload = new HashMap<>();
+        }
         Date expiresAtDate = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant());
         return JWT.create()
                 .withPayload(payload)
@@ -73,6 +76,21 @@ public class CryptoUtility {
             return num * 60;
         }
         return num;
+    }
+
+    /**
+     * BASE64 编码
+     */
+    public static String base64Encode(String text) {
+        return java.util.Base64.getEncoder().encodeToString(text.getBytes());
+    }
+
+    /**
+     * BASE64 解码
+     */
+    public static String base64Decode(String base64Text) {
+        byte[] decodedBytes = java.util.Base64.getDecoder().decode(base64Text);
+        return new String(decodedBytes);
     }
 
     /**

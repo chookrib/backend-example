@@ -87,6 +87,21 @@ Content-Type: application/json
     console.log(response.body);
 %}
 
+### BASE64 编码
+GET http://{{host}}/.well-known/test/crypto/base64-encode?text=hello
+
+> {%
+    console.log(response.body);
+    client.global.set('base64', response.body.data.base64);
+%}
+
+### BASE64 解码
+GET http://{{host}}/.well-known/test/crypto/base64-decode?base64={{base64}}
+
+> {%
+    console.log(response.body);
+%}
+
 ### MD5 编码
 GET http://{{host}}/.well-known/test/crypto/md5-encode?text=hello
 
