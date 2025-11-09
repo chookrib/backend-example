@@ -45,7 +45,7 @@ for logger_name in [
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """自定义FastAPI生命周期管理器"""
+    """自定义 FastAPI 生命周期管理器"""
 
     # yield 之前的代码会在 FastAPI 启动前执行
 
