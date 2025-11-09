@@ -73,6 +73,13 @@ async def test_lock_asyncio_sleep():
     return Result.ok()
 
 
+@router.get("/.well-known/test/lock/time-sleep")
+def test_lock_time_sleep():
+    """同步 time.sleep"""
+    import time
+    time.sleep(10)
+    return Result.ok()
+
 # ======================================================================================================================
 
 
