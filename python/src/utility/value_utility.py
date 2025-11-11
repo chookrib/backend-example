@@ -1,3 +1,5 @@
+import re
+
 from datetime import datetime, date, time
 from decimal import Decimal
 
@@ -137,8 +139,17 @@ def to_date_or_none(value) -> date | None:
         return None
     if isinstance(value, date):
         return value
+    if isinstance(value, datetime):
+        return value.date()
+
     try:
-        return datetime.strptime(str(value).strip(), "%Y-%m-%d").date()
+        value_str = str(value).strip()
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", value_str):
+            return datetime.strptime(value_str, "%Y-%m-%d").date()
+        elif re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", value_str):
+            return datetime.strptime(value_str, "%Y-%m-%d %H:%M:%S").date()
+        else:
+            return None
     except Exception as ex:
         return None
 
@@ -165,8 +176,17 @@ def to_time_or_none(value) -> time | None:
         return None
     if isinstance(value, time):
         return value
+    if isinstance(value, datetime):
+        return value.time()
+
     try:
-        return datetime.strptime(str(value).strip(), "%H:%M:%S").time()
+        value_str = str(value).strip()
+        if re.match(r"^\d{2}:\d{2}:\d{2}$", value_str):
+            return datetime.strptime(value_str, "%H:%M:%S").time()
+        elif re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", value_str):
+            return datetime.strptime(value_str, "%Y-%m-%d %H:%M:%S").time()
+        else:
+            return None
     except Exception as ex:
         return None
 

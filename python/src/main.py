@@ -194,6 +194,7 @@ from src.adapter.driving import well_known_test_lock_controller
 from src.adapter.driving import well_known_test_request_controller
 from src.adapter.driving import well_known_test_response_code_controller
 from src.adapter.driving import well_known_test_response_json_controller
+from src.adapter.driving import well_known_test_value_controller
 from src.adapter.driving import user_controller
 from src.adapter.driving import user_manage_controller
 
@@ -204,6 +205,7 @@ app.include_router(well_known_test_lock_controller.router)
 app.include_router(well_known_test_request_controller.router)
 app.include_router(well_known_test_response_code_controller.router)
 app.include_router(well_known_test_response_json_controller.router)
+app.include_router(well_known_test_value_controller.router)
 app.include_router(user_controller.router)
 app.include_router(user_manage_controller.router)
 
