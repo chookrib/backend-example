@@ -11,7 +11,7 @@ namespace BackendExample.Adapter.Driving
     {
         [HttpGet("/api/.well-known")]
         [Produces("text/plain")]
-        public string Info()
+        public string WellKnown()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             IEnumerable<AssemblyMetadataAttribute> metadataAttrs = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
