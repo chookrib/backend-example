@@ -21,7 +21,7 @@ public class WellKnownController {
     /**
      * 应用信息，显示非涉密信息
      */
-    @RequestMapping(value = "/.well-known/info", method = RequestMethod.GET, produces = "text/plain")
+    @RequestMapping(value = "/api/.well-known", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
     public String info() {
         Properties props = Application.getManifestProperties();

@@ -1,2 +1,0 @@
-### 应用信息
-GET http://{{host}}/.well-known/info

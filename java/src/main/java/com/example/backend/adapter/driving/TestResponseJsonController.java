@@ -16,18 +16,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 测试响应输出 JSON 数据 Well Known Controller
+ * 测试响应输出 JSON 数据 Controller
  */
 @RestController
-public class WellKnownTestResponseJsonController {
+public class TestResponseJsonController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WellKnownTestResponseJsonController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestResponseJsonController.class);
 
 
     /**
      * 测试响应，class 响应为 json
      */
-    @RequestMapping(value = "/.well-known/test/response/json/class", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/response/json/class", method = RequestMethod.GET)
     public Result testResponseJsonClass() {
         TestDataClass c = new TestDataClass();
         return Result.okData(c);
@@ -36,7 +36,7 @@ public class WellKnownTestResponseJsonController {
     /**
      * 测试响应，嵌套 class 响应为 json
      */
-    @RequestMapping(value = "/.well-known/test/response/json/class-nested", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/response/json/class-nested", method = RequestMethod.GET)
     public Result testResponseJsonClassNested() {
         TestDataNestedClass c = new TestDataNestedClass();
         return Result.okData(c);

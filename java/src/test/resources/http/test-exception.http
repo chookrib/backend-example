@@ -1,0 +1,2 @@
+### 测试异常
+GET http://{{host}}/api/test/exception

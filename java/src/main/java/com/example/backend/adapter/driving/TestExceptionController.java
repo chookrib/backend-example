@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 测试异常 Well Known Controller
+ * 测试异常 Controller
  */
 @RestController
-public class WellKnownTestExceptionController {
+public class TestExceptionController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WellKnownTestExceptionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestExceptionController.class);
 
     /**
      * 测试异常处理
      */
-    @RequestMapping(value = "/.well-known/test/exception", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/exception", method = RequestMethod.GET)
     public Result testException() {
         throw new RuntimeException("测试异常");
     }

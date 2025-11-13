@@ -1,0 +1,5 @@
+### 测试响应，class 响应为 json
+GET http://{{host}}/api/test/response/json/class
+
+### 测试响应，嵌套 class 响应为 json
+GET http://{{host}}/api/test/response/json/class-nested

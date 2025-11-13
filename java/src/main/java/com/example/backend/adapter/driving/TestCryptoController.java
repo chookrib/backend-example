@@ -3,29 +3,26 @@ package com.example.backend.adapter.driving;
 import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.JsonUtility;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 测试 Crypto Well Known Controller
+ * 测试加解密 Controller
  */
 @RestController
-public class WellKnownTestCryptoController {
+public class TestCryptoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WellKnownTestCryptoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestCryptoController.class);
 
     /**
      * JWT 编码
      */
-    @RequestMapping(value = "/.well-known/test/crypto/jwt-encode", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/test/crypto/jwt-encode", method = RequestMethod.POST)
     public Result testCryptoJwtEncode(@RequestBody String requestBody)
     {
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
@@ -42,7 +39,7 @@ public class WellKnownTestCryptoController {
     /**
      * JWT 解码
      */
-    @RequestMapping(value = "/.well-known/test/crypto/jwt-decode", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/test/crypto/jwt-decode", method = RequestMethod.POST)
     public Result testCryptoJwtDecode(@RequestBody String requestBody)
     {
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
@@ -70,7 +67,7 @@ public class WellKnownTestCryptoController {
     /**
      * BASE64 编码
      */
-    @RequestMapping(value = "/.well-known/test/crypto/base64-encode", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/crypto/base64-encode", method = RequestMethod.GET)
     public Result testCryptoBase64Encode(HttpServletRequest request)
     {
         String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
@@ -81,7 +78,7 @@ public class WellKnownTestCryptoController {
     /**
      * BASE64 解码
      */
-    @RequestMapping(value = "/.well-known/test/crypto/base64-decode", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/crypto/base64-decode", method = RequestMethod.GET)
     public Result testCryptoBase64Decode(HttpServletRequest request)
     {
         String base64 = RequestValueHelper.getRequestParamStringTrimReq(request, "base64");
@@ -92,7 +89,7 @@ public class WellKnownTestCryptoController {
     /**
      * MD5 编码
      */
-    @RequestMapping(value = "/.well-known/test/crypto/md5-encode", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/test/crypto/md5-encode", method = RequestMethod.GET)
     public Result testCryptoMd5Encode(HttpServletRequest request)
     {
         String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
