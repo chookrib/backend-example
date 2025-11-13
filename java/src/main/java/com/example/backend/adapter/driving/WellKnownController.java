@@ -23,7 +23,7 @@ public class WellKnownController {
      */
     @RequestMapping(value = "/api/.well-known", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
-    public String info() {
+    public String wellKnown() {
         Properties props = Application.getManifestProperties();
         return "File-Name: " + Application.getFileName() +
                System.lineSeparator() +
