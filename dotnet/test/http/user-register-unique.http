@@ -8,7 +8,7 @@
     // request.variables.set('username', rnd);
     // console.log(.variables);
 %}
-GET http://{{host}}/.well-known/info
+GET http://{{host}}/api/.well-known
 
 ### 注册
 POST http://{{host}}/api/user/register

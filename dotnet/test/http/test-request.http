@@ -1,14 +1,14 @@
 ### 测试请求
-POST http://{{host}}/.well-known/test/request/string
+POST http://{{host}}/api/test/request/string
 
 ###
-POST http://{{host}}/.well-known/test/request/string
+POST http://{{host}}/api/test/request/string
 Content-Type: text/plain
 
 test 测试
 
 ###
-POST http://{{host}}/.well-known/test/request/string
+POST http://{{host}}/api/test/request/string
 Content-Type: application/json
 
 {
@@ -25,16 +25,16 @@ Content-Type: application/json
 }
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-string
+POST http://{{host}}/api/test/request/from-body-string
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-string
+POST http://{{host}}/api/test/request/from-body-string
 Content-Type: text/plain
 
 test 测试
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-string
+POST http://{{host}}/api/test/request/from-body-string
 Content-Type: application/json
 
 {
@@ -51,16 +51,16 @@ Content-Type: application/json
 }
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-json
+POST http://{{host}}/api/test/request/from-body-json
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-json
+POST http://{{host}}/api/test/request/from-body-json
 Content-Type: text/plain
 
 test 测试
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-json
+POST http://{{host}}/api/test/request/from-body-json
 Content-Type: application/json
 
 {
@@ -77,16 +77,16 @@ Content-Type: application/json
 }
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-json
+POST http://{{host}}/api/test/request/from-body-json
 Content-Type: application/json
 
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-dynamic
+POST http://{{host}}/api/test/request/from-body-dynamic
 Content-Type: application/json
 
 ###
-POST http://{{host}}/.well-known/test/request/from-body-dynamic
+POST http://{{host}}/api/test/request/from-body-dynamic
 Content-Type: application/json
 
 {
@@ -105,11 +105,11 @@ Content-Type: application/json
 
 
 ###
-GET http://{{host}}/.well-known/test/request/from-query
+GET http://{{host}}/api/test/request/from-query
 
 ###
-GET http://{{host}}/.well-known/test/request/from-query?id=
+GET http://{{host}}/api/test/request/from-query?id=
 
 ###
-GET http://{{host}}/.well-known/test/request/from-query?id=1
+GET http://{{host}}/api/test/request/from-query?id=1
 

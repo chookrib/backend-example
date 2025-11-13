@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace BackendExample.Adapter.Driving
 {
     /// <summary>
-    /// 测试请求 Well Known Controller
+    /// 测试请求 Controller
     /// </summary>
-    public class WellKnownTestRequestController: ControllerBase
+    public class TestRequestController: ControllerBase
     {
-        [HttpPost("/.well-known/test/request/string")]
+        [HttpPost("/api/test/request/string")]
         async public Task<Result> TestRequestString()
         {
             using StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8);
@@ -19,13 +19,13 @@ namespace BackendExample.Adapter.Driving
             return Result.OkData(body);
         }
 
-        [HttpPost("/.well-known/test/request/from-body-string")]
+        [HttpPost("/api/test/request/from-body-string")]
         public Result TestRequestFromBodyString([FromBody] string body)
         {
             return Result.OkData(body);
         }
 
-        [HttpPost("/.well-known/test/request/from-body-json")]
+        [HttpPost("/api/test/request/from-body-json")]
         public Result TestRequestFromBodyJson([FromBody] JsonElement? body)
         {
             //[FromBody] JsonElement body 只处理 application/json、text/json 以及类似的 JSON 类型
@@ -36,7 +36,7 @@ namespace BackendExample.Adapter.Driving
                 return Result.OkData(body);
         }
 
-        [HttpPost("/.well-known/test/request/from-body-dynamic")]
+        [HttpPost("/api/test/request/from-body-dynamic")]
         public Result TestRequestFromBodyDynamic([FromBody] dynamic? body)
         {
             return Result.OkData(body);
@@ -44,7 +44,7 @@ namespace BackendExample.Adapter.Driving
 
         //==============================================================================================================
 
-        [HttpGet("/.well-known/test/request/from-query")]
+        [HttpGet("/api/test/request/from-query")]
         public Result TestRequestFromQuery([FromQuery][BindRequired] string id)
         {
             return Result.OkData(id);

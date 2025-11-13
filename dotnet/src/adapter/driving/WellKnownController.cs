@@ -9,7 +9,7 @@ namespace BackendExample.Adapter.Driving
     /// </summary>
     public class WellKnownController : ControllerBase
     {
-        [HttpGet("/.well-known/info")]
+        [HttpGet("/api/.well-known")]
         [Produces("text/plain")]
         public string Info()
         {

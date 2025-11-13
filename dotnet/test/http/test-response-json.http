@@ -1,0 +1,18 @@
+### 测试响应，class 响应为 json
+GET http://{{host}}/api/test/response/json/class
+
+### 测试响应，嵌套 class 响应为 json
+GET http://{{host}}/api/test/response/json/class-nested
+
+### 测试响应，class to dynamic 响应为 json
+GET http://{{host}}/api/test/response/json/class/dynamic
+
+### 测试响应，嵌套 class to dynamic 响应为 json
+GET http://{{host}}/api/test/response/json/class-nested/dynamic
+
+### 测试响应，dynamic 响应为 json
+GET http://{{host}}/api/test/response/json/dynamic
+
+### 测试响应，dynamic list 响应为 json
+GET http://{{host}}/api/test/response/json/dynamic-list
+

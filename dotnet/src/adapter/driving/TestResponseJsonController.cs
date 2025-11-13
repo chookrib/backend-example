@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace BackendExample.Adapter.Driving
 {
     /// <summary>
-    /// 测试响应输出 JSON 数据 Well Known Controller
+    /// 测试响应输出 JSON 数据 Controller
     /// </summary>
-    public class WellKnownTestResponseJsonController : ControllerBase
+    public class TestResponseJsonController : ControllerBase
     {
         /// <summary>
         /// 测试响应，class 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/class")]
+        [HttpGet("/api/test/response/json/class")]
         public Result TestResponseJsonClass()
         {
             TestDataClass c = new TestDataClass();
@@ -22,7 +22,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 测试响应，嵌套 class 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/class-nested")]
+        [HttpGet("/api/test/response/json/class-nested")]
         public Result TestResposneJsonClassNested()
         {
             TestDataNestedClass c = new TestDataNestedClass();
@@ -32,7 +32,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 测试响应，class to dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/class/dynamic")]
+        [HttpGet("/api/test/response/json/class/dynamic")]
         public Result TestResponseJsonClassDynamic()
         {
             TestDataClass c = new TestDataClass();
@@ -43,7 +43,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 测试响应，嵌套 class to dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/class-nested/dynamic")]
+        [HttpGet("/api/test/response/json/class-nested/dynamic")]
         public Result TestResponseJsonClassNestedDynamic()
         {
             TestDataNestedClass c = new TestDataNestedClass();
@@ -54,7 +54,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 测试响应，dynamic 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/dynamic")]
+        [HttpGet("/api/test/response/json/dynamic")]
         public Result TestResponseJsonDynamic()
         {
             dynamic d = new ExpandoObject();
@@ -69,7 +69,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 测试响应，dynamic list 响应为 json
         /// </summary>
-        [HttpGet("/.well-known/test/response/json/dynamic-list")]
+        [HttpGet("/api/test/response/json/dynamic-list")]
         public Result TestResponseJsonDynamicList()
         {
             List<dynamic> dl = new List<dynamic>();

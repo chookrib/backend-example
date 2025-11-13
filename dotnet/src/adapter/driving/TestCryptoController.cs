@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace BackendExample.Adapter.Driving
 {
     /// <summary>
-    /// 测试 Crypto Well Known Controller
+    /// 测试加解密 Controller
     /// </summary>
-    public class WellKnownTestCryptoController : ControllerBase
+    public class TestCryptoController : ControllerBase
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(WellKnownTestCryptoController));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(TestCryptoController));
 
         /// <summary>
         /// JWT 编码
         /// </summary>
-        [HttpPost("/.well-known/test/crypto/jwt-encode")]
+        [HttpPost("/api/test/crypto/jwt-encode")]
         public async Task<Result> TestCryptoJwtEncode()
         {
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
@@ -30,7 +30,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// JWT 解码
         /// </summary>
-        [HttpPost("/.well-known/test/crypto/jwt-decode")]
+        [HttpPost("/api/test/crypto/jwt-decode")]
         public async Task<Result> TestCryptoJwtDecode()
         {
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
@@ -61,7 +61,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// BASE64 编码
         /// </summary>
-        [HttpGet("/.well-known/test/crypto/base64-encode")]
+        [HttpGet("/api/test/crypto/base64-encode")]
         public Result TestCryptoBase64Encode()
         {
             string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
@@ -72,7 +72,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// BASE64 解码
         /// </summary>
-        [HttpGet("/.well-known/test/crypto/base64-decode")]
+        [HttpGet("/api/test/crypto/base64-decode")]
         public Result TestCryptoBaseDecode()
         {
             string base64 = RequestValueHelper.GetRequestParamStringTrimReq(Request, "base64");
@@ -83,7 +83,7 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// MD5 编码
         /// </summary>
-        [HttpGet("/.well-known/test/crypto/md5-encode")]
+        [HttpGet("/api/test/crypto/md5-encode")]
         public Result TestCryptoMd5Encode()
         {
             string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
