@@ -8,7 +8,7 @@ from src.utility import value_utility
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-@router.get("/.well-known/test/value/datetime")
+@router.get("/api/test/value/datetime")
 def test_value_datetime():
     """测试日期时间转换"""
     # date = datetime.now().date() + timedelta(days=1)
@@ -19,3 +19,10 @@ def test_value_datetime():
         "time1": value_utility.to_time_or_none("12:12:12"),
         "time2": value_utility.to_time_or_none("12:1:1"),
     })
+
+@router.get("/api/test/value/time")
+def test_value_time():
+    """测试"""
+    # date = datetime.now().date() + timedelta(days=1)
+    date = value_utility.to_time_or_none("12:12:12")
+    return Result.ok(data=date)

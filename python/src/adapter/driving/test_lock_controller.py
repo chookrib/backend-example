@@ -15,7 +15,7 @@ from src.application.lock.test_lock_service import TestLockService
 test_lock_service = ioc_container.resolve(TestLockService)  # type: ignore
 
 
-@router.get("/.well-known/test/lock/set-count")
+@router.get("/api/test/lock/set-count")
 def test_lock_set_count(request: Request):
     """设置 count"""
     value = request_value_helper.get_request_param_int_or_default(request, 1, "value")
@@ -23,7 +23,7 @@ def test_lock_set_count(request: Request):
     return Result.ok(data={"count": value})
 
 
-@router.get("/.well-known/test/lock/sync-decrease-count-in-sync")
+@router.get("/api/test/lock/sync-decrease-count-in-sync")
 def test_lock_sync_decrease_count_in_sync():
     """
     同步减少 count，不加锁，在同步路由方法中调用，会超减
@@ -33,7 +33,7 @@ def test_lock_sync_decrease_count_in_sync():
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/sync-decrease-count-in-async")
+@router.get("/api/test/lock/sync-decrease-count-in-async")
 async def test_lock_sync_decrease_count_in_async():
     """
     同步减少 count，不加锁，在异步路由方法中调用，不会超减（请求会排队执行，不会并发响应）
@@ -43,21 +43,21 @@ async def test_lock_sync_decrease_count_in_async():
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/async-decrease-count")
+@router.get("/api/test/lock/async-decrease-count")
 async def test_lock_async_decrease_count():
     """异步减少 count，不加锁，会超减"""
     await test_lock_service.async_decrease_count()
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/sync-decrease-count-with-async-lock")
+@router.get("/api/test/lock/sync-decrease-count-with-async-lock")
 async def test_lock_sync_decrease_count_with_async_lock():
     """同步减少 count，加异步锁，不会超减（请求会排队执行，不会并发响应）"""
     await test_lock_service.sync_decrease_count_with_async_lock()
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/async-decrease-count-with-async-lock")
+@router.get("/api/test/lock/async-decrease-count-with-async-lock")
 async def test_lock_async_decrease_count_with_async_lock():
     """异步减少 count，加异步锁，不会超减"""
     await test_lock_service.async_decrease_count_with_async_lock()
@@ -66,14 +66,14 @@ async def test_lock_async_decrease_count_with_async_lock():
 
 # ======================================================================================================================
 
-@router.get("/.well-known/test/lock/asyncio-sleep")
+@router.get("/api/test/lock/asyncio-sleep")
 async def test_lock_asyncio_sleep():
     """异步 asyncio.sleep"""
     await test_lock_service.asyncio_sleep()
     return Result.ok()
 
 
-@router.get("/.well-known/test/lock/time-sleep")
+@router.get("/api/test/lock/time-sleep")
 def test_lock_time_sleep():
     """同步 time.sleep"""
     import time
@@ -83,7 +83,7 @@ def test_lock_time_sleep():
 # ======================================================================================================================
 
 
-@router.get("/.well-known/test/lock/exception")
+@router.get("/api/test/lock/exception")
 async def test_lock_exception():
     """测试 LockException 异常"""
     raise LockException("测试 LockException 异常")

@@ -1,0 +1,32 @@
+### 设置 count
+GET http://{{host}}/api/test/lock/set-count?value=1
+
+### 同步减少 count，不加锁，在同步路由方法中调用），会超减
+GET http://{{host}}/api/test/lock/sync-decrease-count-in-sync
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/api/test/lock/sync-decrease-count-in-sync
+
+### 同步 count，不加锁，在异步路由方法中调用，不会超减（请求会排队执行，不会并发响应）
+GET http://{{host}}/api/test/lock/sync-decrease-count-in-async
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/api/test/lock/sync-decrease-count-in-async
+
+### 异步减少 count，不加锁，会超减
+GET http://{{host}}/api/test/lock/async-decrease-count
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/api/test/lock/async-decrease-count
+
+### 同步减少 count，加异步锁，不会超减（请求会排队执行，不会并发响应）
+GET http://{{host}}/api/test/lock/sync-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/api/test/lock/sync-decrease-count-with-async-lock
+
+### 异步减少 count，加异步锁，不会超减
+GET http://{{host}}/api/test/lock/async-decrease-count-with-async-lock
+# ab.exe -n 10 -c 10 http://127.0.0.1:8000/api/test/lock/async-decrease-count-with-async-lock
+
+#=======================================================================================================================
+
+### 异步 asyncio.sleep
+GET http://{{host}}/api/test/lock/asyncio-sleep
+
+#=======================================================================================================================
+
+### 测试 LockException 异常
+GET http://{{host}}/api/test/lock/exception

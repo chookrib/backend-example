@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/.well-known/test/request/string")
+@router.post("/api/test/request/string")
 async def test_request_string(request: Request):
     """测试请求，获取请求体字符串"""
     request_body = await request.body()
@@ -17,14 +17,14 @@ async def test_request_string(request: Request):
     return Result.ok(data=request_string)
 
 
-@router.post("/.well-known/test/request/json")
+@router.post("/api/test/request/json")
 async def test_request_json(request: Request):
     """测试请求，获取请求体 json"""
     request_json = await request.json()  # 无法解析JSON时报错: "Expecting value: line 1 column 1 (char 0)"
     return Result.ok(data=request_json)
 
 
-@router.post("/.well-known/test/request/get")
+@router.post("/api/test/request/get")
 async def test_request_get(request: Request):
     """测试请求，获取请求体 json 中的字段"""
     request_json = await request.json()
@@ -32,25 +32,25 @@ async def test_request_get(request: Request):
     return Result.ok(data=test)
 
 
-@router.get("/.well-known/test/request/param")
+@router.get("/api/test/request/param")
 async def test_request_param(id: str):
     """测试请求，获取 id"""
     return Result.ok(data=id)
 
 
-@router.get("/.well-known/test/request/param-default")
+@router.get("/api/test/request/param-default")
 async def test_request_param_default(id: str = ""):
     """测试请求，获取 id"""
     return Result.ok(data=id)
 
 
-@router.get("/.well-known/test/request/param-none")
+@router.get("/api/test/request/param-none")
 async def test_request_param_none(id: str | None = None):
     """测试请求，获取 id"""
     return Result.ok(data=id)
 
 
-@router.get("/.well-known/test/request/param-optional-int")
+@router.get("/api/test/request/param-optional-int")
 async def test_request_param_optional_int(id: Optional[int] = None):
     """测试请求，获取 id"""
     return Result.ok(data=id)

@@ -1,0 +1,5 @@
+### 测试异常
+GET http://{{host}}/api/test/exception
+
+### 测试 HTTPException
+GET http://{{host}}/api/test/exception/http

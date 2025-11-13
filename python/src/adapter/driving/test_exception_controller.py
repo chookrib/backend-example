@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/.well-known/test/exception")
+@router.get("/api/test/exception")
 def test_exception():
     """测试异常"""
     try:
@@ -15,7 +15,7 @@ def test_exception():
     except Exception as ex:
         raise Exception("测试Exception") from ex
 
-@router.get("/.well-known/test/exception/http")
+@router.get("/api/test/exception/http")
 def test_exception_http():
     """测试异常"""
     raise HTTPException(status_code=500, detail="测试 HTTPException")

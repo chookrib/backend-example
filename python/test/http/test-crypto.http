@@ -5,10 +5,10 @@
     client.global.set('expiresAt', '2026-01-01 00:00:00');
     // console.log('client.global', client.global);
 %}
-GET http://{{host}}/.well-known/info
+GET http://{{host}}/api/.well-known
 
 ### JWT 编码
-POST http://{{host}}/.well-known/test/crypto/jwt-encode
+POST http://{{host}}/api/test/crypto/jwt-encode
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 %}
 
 ### JWT 解码，正确的 secret
-POST http://{{host}}/.well-known/test/crypto/jwt-decode
+POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 %}
 
 ### JWT 解码，错误的 secret
-POST http://{{host}}/.well-known/test/crypto/jwt-decode
+POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
@@ -56,7 +56,7 @@ Content-Type: application/json
 < {%
     client.global.set('expiresAtExpired', '2025-01-01 00:00:00');
 %}
-POST http://{{host}}/.well-known/test/crypto/jwt-encode
+POST http://{{host}}/api/test/crypto/jwt-encode
 Content-Type: application/json
 
 {
@@ -75,7 +75,7 @@ Content-Type: application/json
 %}
 
 ### JWT 解码，已过期
-POST http://{{host}}/.well-known/test/crypto/jwt-decode
+POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
@@ -88,7 +88,7 @@ Content-Type: application/json
 %}
 
 ### BASE64 编码
-GET http://{{host}}/.well-known/test/crypto/base64-encode?text=hello
+GET http://{{host}}/api/test/crypto/base64-encode?text=hello
 
 > {%
     console.log(response.body);
@@ -96,14 +96,14 @@ GET http://{{host}}/.well-known/test/crypto/base64-encode?text=hello
 %}
 
 ### BASE64 解码
-GET http://{{host}}/.well-known/test/crypto/base64-decode?base64={{base64}}
+GET http://{{host}}/api/test/crypto/base64-decode?base64={{base64}}
 
 > {%
     console.log(response.body);
 %}
 
 ### MD5 编码
-GET http://{{host}}/.well-known/test/crypto/md5-encode?text=hello
+GET http://{{host}}/api/test/crypto/md5-encode?text=hello
 
 > {%
     console.log(response.body);

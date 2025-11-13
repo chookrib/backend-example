@@ -8,13 +8,13 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/.well-known/test/response/json/dict")
+@router.get("/api/test/response/json/dict")
 def test_response_json_dict():
     """测试响应，dict 响应为 json"""
     return Result.ok(data=test_data())
 
 
-@router.get("/.well-known/test/response/json/class")
+@router.get("/api/test/response/json/class")
 def test_response_json_class():
     """测试响应，class 响应为 json"""
     return Result.ok(data=TestDataClass())

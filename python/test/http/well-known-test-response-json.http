@@ -1,5 +1,0 @@
-### 测试响应，dict 响应为 json
-GET http://{{host}}/.well-known/test/response/json/dict
-
-### 测试响应，class 响应为 json
-GET http://{{host}}/.well-known/test/response/json/class

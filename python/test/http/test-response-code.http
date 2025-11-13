@@ -1,0 +1,6 @@
+### 测试响应，404
+GET http://{{host}}/api/test/response/code/404
+
+### 测试响应，500
+GET http://{{host}}/api/test/response/code/500
+

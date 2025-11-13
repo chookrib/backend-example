@@ -188,24 +188,24 @@ encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 
 # 注册路由
 from src.adapter.driving import well_known_controller
-from src.adapter.driving import well_known_test_crypto_controller
-from src.adapter.driving import well_known_test_exception_controller
-from src.adapter.driving import well_known_test_lock_controller
-from src.adapter.driving import well_known_test_request_controller
-from src.adapter.driving import well_known_test_response_code_controller
-from src.adapter.driving import well_known_test_response_json_controller
-from src.adapter.driving import well_known_test_value_controller
+from src.adapter.driving import test_crypto_controller
+from src.adapter.driving import test_exception_controller
+from src.adapter.driving import test_lock_controller
+from src.adapter.driving import test_request_controller
+from src.adapter.driving import test_response_code_controller
+from src.adapter.driving import test_response_json_controller
+from src.adapter.driving import test_value_controller
 from src.adapter.driving import user_controller
 from src.adapter.driving import user_manage_controller
 
 app.include_router(well_known_controller.router)
-app.include_router(well_known_test_crypto_controller.router)
-app.include_router(well_known_test_exception_controller.router)
-app.include_router(well_known_test_lock_controller.router)
-app.include_router(well_known_test_request_controller.router)
-app.include_router(well_known_test_response_code_controller.router)
-app.include_router(well_known_test_response_json_controller.router)
-app.include_router(well_known_test_value_controller.router)
+app.include_router(test_crypto_controller.router)
+app.include_router(test_exception_controller.router)
+app.include_router(test_lock_controller.router)
+app.include_router(test_request_controller.router)
+app.include_router(test_response_code_controller.router)
+app.include_router(test_response_json_controller.router)
+app.include_router(test_value_controller.router)
 app.include_router(user_controller.router)
 app.include_router(user_manage_controller.router)
 
