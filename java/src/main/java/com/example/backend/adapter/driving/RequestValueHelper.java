@@ -96,7 +96,7 @@ public class RequestValueHelper {
         if (node.isMissingNode() || !node.isArray())
             return ss;
         for (JsonNode n : node) {
-            ss.add(node.asText().trim());
+            ss.add(n.asText().trim());
         }
         return ss;
     }
