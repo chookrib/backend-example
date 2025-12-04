@@ -23,10 +23,10 @@ namespace BackendExample.Adapter.Driving
             StringBuilder sb = new StringBuilder();
             //foreach (AssemblyMetadataAttribute attr in metadataAttrs)
             //    sb.AppendLine($"AssemblyMetadataAttribute {attr.Key}: {attr.Value}");
-            sb.AppendLine($"AssemblyMetadata BuildTime: {buildTimeAttr?.Value}");
+            sb.AppendLine($"Build-Time: {buildTimeAttr?.Value}");
 
             AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            sb.AppendLine($"AssemblyInformationalVersionAttribute: {versionAttr?.InformationalVersion}");
+            sb.AppendLine($"Informational-Version: {versionAttr?.InformationalVersion}");
 
             sb.AppendLine($"Start-Time: {ValueUtility.FormatDateTime(startTime)}");
 
