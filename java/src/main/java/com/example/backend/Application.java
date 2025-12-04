@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -21,8 +22,11 @@ public class Application {
 
     public static ConfigurableApplicationContext applicationContext;
 
+    public static LocalDateTime startTime;
+
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
+        startTime = LocalDateTime.now();
         Properties props = getManifestProperties();
         logger.info("File-Name: {} Build-Time: {} Git-Commit-Id-Abbrev: {}",
                 getFileName(),
@@ -52,6 +56,13 @@ public class Application {
             logger.warn("app.name 配置缺失");
         else
             logger.info("{} 应用启动成功", Accessor.appName);
+    }
+
+    /**
+     * 取应用启动时间
+     */
+    public static LocalDateTime getStartTime() {
+        return startTime;
     }
 
     /**

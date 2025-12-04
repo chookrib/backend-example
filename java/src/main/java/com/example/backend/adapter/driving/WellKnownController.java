@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 /**
@@ -30,6 +31,8 @@ public class WellKnownController {
                "Build-Time: " + props.getProperty("Build-Time", "") +
                System.lineSeparator() +
                "Git-Commit-Id-Abbrev: " + props.getProperty("Git-Commit-Id-Abbrev", "") +
+               System.lineSeparator() +
+               "Start-Time: " + Application.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
                System.lineSeparator();
     }
 }
