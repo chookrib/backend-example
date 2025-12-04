@@ -17,11 +17,11 @@ start_time: datetime = datetime.now()
 def well_known():
     """应用信息"""
     commit_info = subprocess.check_output(
-        # ["git", "log", "-1", "--pretty=format:%h%d%n%ad"],
-        ["git", "log", "-1", "--pretty=format:%h%d %cd", "--date=iso"],
+        ["git", "log", "-1", "--pretty=format:%h", "--date=iso"],
+        # ["git", "log", "-1", "--pretty=format:%h%d%n%cd"],
         # ["git", "rev-parse", "--short", "HEAD"],
         encoding="utf-8"
     ).strip()
-    content = ("Git-Commit: " + commit_info + os.linesep +
+    content = ("Git-Commit-Id-Abbrev:: " + commit_info + os.linesep +
                "Start-Time: " + value_utility.format_datetime(start_time))
     return Response(content=content, media_type="text/plain")
