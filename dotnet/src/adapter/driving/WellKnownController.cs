@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using BackendExample.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendExample.Adapter.Driving
@@ -9,6 +10,8 @@ namespace BackendExample.Adapter.Driving
     /// </summary>
     public class WellKnownController : ControllerBase
     {
+        private static readonly DateTime startTime = DateTime.Now;
+
         [HttpGet("/api/.well-known")]
         [Produces("text/plain")]
         public string WellKnown()
@@ -24,6 +27,8 @@ namespace BackendExample.Adapter.Driving
 
             AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             sb.AppendLine($"AssemblyInformationalVersionAttribute: {versionAttr?.InformationalVersion}");
+
+            sb.AppendLine($"Start-Time: {ValueUtility.FormatDateTime(startTime)}");
 
             return sb.ToString();
         }
