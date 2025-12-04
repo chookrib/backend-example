@@ -1,24 +1,27 @@
 import logging
+import os
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from fastapi import APIRouter, Response
 
-from src.adapter.driving.result import Result
 from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+start_time: datetime = datetime.now()
 
 
 @router.get("/api/.well-known")
 def well_known():
     """应用信息"""
     commit_info = subprocess.check_output(
-        ["git", "log", "-1", "--pretty=format:%h%d%n%ad"],
+        # ["git", "log", "-1", "--pretty=format:%h%d%n%ad"],
+        ["git", "log", "-1", "--pretty=format:%h%d %cd", "--date=iso"],
         # ["git", "rev-parse", "--short", "HEAD"],
         encoding="utf-8"
     ).strip()
-    return Response(content=commit_info, media_type="text/plain")
-
-
+    content = ("Git-Commit: " + commit_info + os.linesep +
+               "Start-Time: " + value_utility.format_datetime(start_time))
+    return Response(content=content, media_type="text/plain")
