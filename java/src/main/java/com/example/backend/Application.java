@@ -20,9 +20,9 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-    public static ConfigurableApplicationContext applicationContext;
+    private static ConfigurableApplicationContext applicationContext;
 
-    public static LocalDateTime startTime;
+    private static LocalDateTime startTime;
 
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
