@@ -8,11 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -22,11 +19,8 @@ public class Application {
 
     private static ConfigurableApplicationContext applicationContext;
 
-    private static LocalDateTime startTime;
-
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
-        startTime = LocalDateTime.now();
         Properties props = getManifestProperties();
         logger.info("File-Name: {} Build-Time: {} Git-Commit-Id-Abbrev: {}",
                 getFileName(),
@@ -39,7 +33,7 @@ public class Application {
 
         // 打印配置
         Accessor.appIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
-        if(Accessor.appIsDev) {
+        if (Accessor.appIsDev) {
             // 打印 environment
             System.out.println("environment:");
             environment.getPropertySources().forEach(propertySource -> {
@@ -52,17 +46,10 @@ public class Application {
         }
 
         Accessor.appName = environment.getProperty("app.name", "");
-        if(ValueUtility.isBlank(Accessor.appName))
+        if (ValueUtility.isBlank(Accessor.appName))
             logger.warn("app.name 配置缺失");
         else
             logger.info("{} 应用启动成功", Accessor.appName);
-    }
-
-    /**
-     * 取应用启动时间
-     */
-    public static LocalDateTime getStartTime() {
-        return startTime;
     }
 
     /**

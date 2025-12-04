@@ -1,6 +1,7 @@
 package com.example.backend.adapter.driving;
 
 import com.example.backend.Application;
+import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.Properties;
 
 /**
@@ -18,6 +19,8 @@ import java.util.Properties;
 public class WellKnownController {
 
     private static final Logger logger = LoggerFactory.getLogger(WellKnownController.class);
+
+    private static final LocalDateTime startTime = LocalDateTime.now();
 
     /**
      * 应用信息，显示非涉密信息
@@ -32,7 +35,7 @@ public class WellKnownController {
                System.lineSeparator() +
                "Git-Commit-Id-Abbrev: " + props.getProperty("Git-Commit-Id-Abbrev", "") +
                System.lineSeparator() +
-               "Start-Time: " + Application.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
+               "Start-Time: " + ValueUtility.formatDateTime(startTime) +
                System.lineSeparator();
     }
 }
