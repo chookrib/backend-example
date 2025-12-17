@@ -1,4 +1,5 @@
 import logging
+import time
 
 from fastapi import APIRouter, Request
 
@@ -75,10 +76,23 @@ async def test_lock_asyncio_sleep():
 
 @router.get("/api/test/lock/time-sleep")
 def test_lock_time_sleep():
-    """同步 time.sleep"""
-    import time
+    """同步 time.sleep，同步调同步不会阻塞"""
     time.sleep(10)
     return Result.ok()
+
+
+@router.get("/api/test/lock/time-sleep-async")
+async def test_lock_time_sleep_async():
+    """异步 time.sleep，异步调同步会产生阻塞"""
+    time.sleep(10)
+    return Result.ok()
+
+
+@router.get("/api/test/lock/now")
+def test_lock_now():
+    """显示当前时间"""
+    return Result.ok(data={"now": time.time()})
+
 
 # ======================================================================================================================
 
