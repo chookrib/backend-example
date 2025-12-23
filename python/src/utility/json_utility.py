@@ -57,7 +57,7 @@ def custom_jsonable_encoder(obj, **kwargs):
         return obj.value
 
     if isinstance(obj, dict):
-        return {k: custom_jsonable_encoder(v, **kwargs) for k, v in obj.items()}
+        return {to_camel_case(k): custom_jsonable_encoder(v, **kwargs) for k, v in obj.items()}
     if isinstance(obj, list):
         return [custom_jsonable_encoder(item, **kwargs) for item in obj]
     if isinstance(obj, tuple):
