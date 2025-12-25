@@ -2,23 +2,26 @@ import json
 from datetime import datetime, date, time
 from decimal import Decimal
 from enum import Enum
+from typing import Any
 
 
 def deserialize(data):
     """反序列化 JSON 字符串"""
     return json.loads(data)
 
+
 def serialize(data):
     """序列化为 JSON 字符串"""
     return json.dumps(data)
 
-def to_camel_case(string: str) -> str:
-    """键名转为 camel 风格"""
+
+def to_camel_case(value: Any) -> str:
+    """键名转为 camelCase 风格"""
     # 删除前导下划线
-    string = string.lstrip("_")
-    if not string:
+    v = str(value).lstrip("_")  # key 可能不是字符串类型
+    if not v:
         return ""
-    parts = string.split("_")
+    parts = v.split("_")
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
 
 
