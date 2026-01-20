@@ -47,15 +47,16 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     u_nickname text,
                     u_mobile text,
                     u_is_admin integer,
-                    u_created_at text
+                    u_created_at text,
+                    u_updated_at text
                 )
                 """);
         this.jdbcTemplate.execute("delete from t_user where lower(u_username) = 'admin'");
         this.jdbcTemplate.execute(String.format("""
                 insert into t_user
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                    ('0', 'admin', '%s', '管理员', '', 1, datetime('now', 'localtime'))
+                    ('0', 'admin', '%s', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
                 """, CryptoUtility.md5Encode("password"))
         );
     }
@@ -67,14 +68,15 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
      * 转换成 Entity
      */
     private User toUser(SqlRowSet sqlRowSet) {
-        return User.restoreUser(
+        return User.restore(
                 sqlRowSet.getString("u_id"),
                 sqlRowSet.getString("u_username"),
                 sqlRowSet.getString("u_password"),
                 sqlRowSet.getString("u_nickname"),
                 sqlRowSet.getString("u_mobile"),
                 sqlRowSet.getBoolean("u_is_admin"),
-                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN)
+                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
+                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
         );
     }
 
@@ -82,9 +84,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public void insert(User entity) {
         String sql = """
                 insert into t_user
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                    (?, ?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         jdbcTemplate.update(sql,
                 entity.getId(),
@@ -93,7 +95,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 entity.getNickname(),
                 entity.getMobile(),
                 entity.isAdmin(),
-                ValueUtility.formatDateTime(entity.getCreatedAt())
+                ValueUtility.formatDateTime(entity.getCreatedAt()),
+                ValueUtility.formatDateTime(entity.getUpdatedAt())
         );
     }
 
@@ -107,7 +110,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     u_nickname = ?,
                     u_mobile = ?,
                     u_is_admin = ?,
-                    u_created_at = ?
+                    u_created_at = ?,
+                    u_updated_at = ?
                 where
                     u_id = ?
                 """;
@@ -118,6 +122,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 entity.getMobile(),
                 entity.isAdmin(),
                 ValueUtility.formatDateTime(entity.getCreatedAt()),
+                ValueUtility.formatDateTime(entity.getUpdatedAt()),
                 entity.getId()
         );
     }
@@ -222,7 +227,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 user.getNickname(),
                 user.getMobile(),
                 user.isAdmin(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getUpdatedAt()
         );
     }
 

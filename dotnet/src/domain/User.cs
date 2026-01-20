@@ -21,11 +21,13 @@ namespace BackendExample.Domain
 
         public DateTime CreatedAt { get; private set; }
 
+        public DateTime UpdatedAt { get; private set; }
+
         /// <summary>
         /// 还原用户
         /// </summary>
-        public static User RestoreUser(string id, string username, string password, string nickname, string mobile,
-            bool isAdmin, DateTime createdAt)
+        public static User Restore(string id, string username, string password, string nickname, string mobile,
+            bool isAdmin, DateTime createdAt, DateTime updatedAt)
         {
             return new User
             {
@@ -35,14 +37,15 @@ namespace BackendExample.Domain
                 Nickname = nickname,
                 Mobile = mobile,
                 IsAdmin = isAdmin,
-                CreatedAt = createdAt
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt
             };
         }
 
         /// <summary>
         /// 注册用户
         /// </summary>
-        public static async Task<User> RegisterUser(string id, string username, string password, string nickname,
+        public static async Task<User> Register(string id, string username, string password, string nickname,
             UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
@@ -71,7 +74,8 @@ namespace BackendExample.Domain
                 Nickname = nickname,
                 Mobile = "",
                 IsAdmin = false,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
         }
 
@@ -89,6 +93,7 @@ namespace BackendExample.Domain
         public void SetAdmin(bool isAdmin)
         {
             this.IsAdmin = isAdmin;
+            this.UpdatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -103,6 +108,7 @@ namespace BackendExample.Domain
                 throw new DomainException("密码错误");
 
             this.Password = CryptoUtility.Md5Encode(newPassword);
+            this.UpdatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -120,6 +126,7 @@ namespace BackendExample.Domain
             }
 
             this.Nickname = nickname;
+            this.UpdatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -137,12 +144,13 @@ namespace BackendExample.Domain
             }
 
             this.Mobile = mobile;
+            this.UpdatedAt = DateTime.Now;
         }
 
         /// <summary>
         /// 创建用户
         /// </summary>
-        public static async Task<User> CreateUser(string id, string username, string password, string nickname, string mobile,
+        public static async Task<User> Create(string id, string username, string password, string nickname, string mobile,
             UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
@@ -174,15 +182,15 @@ namespace BackendExample.Domain
                 Nickname = nickname,
                 Mobile = mobile,
                 IsAdmin = false,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
         }
 
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task Modify(string username, string nickname, string mobile,
-            UserUniqueSpecification? userUniqueSpecification)
+        public async Task Modify(string username, string nickname, string mobile, UserUniqueSpecification? userUniqueSpecification)
         {
             if (ValueUtility.IsBlank(username))
                 throw new DomainException("用户名不能为空");
@@ -209,6 +217,7 @@ namespace BackendExample.Domain
             this.Username = username;
             this.Nickname = nickname;
             this.Mobile = mobile;
+            this.UpdatedAt = DateTime.Now;
         }
     }
 }

@@ -24,7 +24,7 @@ class UserManageService:
     async def create_user(self, username: str, password: str, nickname: str, mobile: str = "") -> str:
         """创建用户"""
         async with self.lock_service.lock_async(lock_keys.USER):
-            user = await User.create_user(
+            user = await User.create(
                 id=id_generator.generate_id(),
                 username=username,
                 password=password,

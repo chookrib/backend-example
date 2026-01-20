@@ -14,6 +14,7 @@ public class UserDto {
     private String mobile;
     private boolean isAdmin;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public String getId() {
         return this.id;
@@ -43,9 +44,13 @@ public class UserDto {
         return this.createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
     public UserDto(
             String id, String username, /*String password,*/ String nickname, String mobile, boolean isAdmin,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         //this.password = password;
@@ -53,6 +58,7 @@ public class UserDto {
         this.mobile = mobile;
         this.isAdmin = isAdmin;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     ///**

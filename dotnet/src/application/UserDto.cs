@@ -17,7 +17,9 @@
 
         public DateTime CreatedAt { get; private set; }
 
-        public UserDto(string id, string username, string nickname, string mobile, bool isAdmin, DateTime createdAt)
+        public DateTime UpdatedAt { get; private set; }
+
+        public UserDto(string id, string username, string nickname, string mobile, bool isAdmin, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             Username = username;
@@ -25,6 +27,7 @@
             Mobile = mobile;
             IsAdmin = isAdmin;
             CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
         }
     }
 }

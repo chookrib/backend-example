@@ -35,15 +35,16 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                     u_nickname text,
                     u_mobile text,
                     u_is_admin integer,
-                    u_created_at text
+                    u_created_at text,
+                    u_updated_at text
                 )
                 """)
             await db.execute("delete from t_user where lower(u_username) = 'admin'")
             await db.execute(f"""
                 insert into t_user
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                    ('0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                    ('0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
                 """)
             await db.commit()
 
@@ -53,23 +54,24 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     def to_user(self, row: aiosqlite.Row) -> User:
         """转换成 Entity"""
         row_dict = dict(row)
-        return User.restore_user(
+        return User.restore(
             id=row_dict.get("u_id", ""),
             username=row_dict.get("u_username", ""),
             password=row_dict.get("u_password", ""),
             nickname=row_dict.get("u_nickname", ""),
             mobile=row_dict.get("u_mobile", ""),
             is_admin=bool(row_dict.get("u_is_admin", False)),
-            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min)
+            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min),
+            updated_at=value_utility.to_datetime_or_default(row_dict.get("u_updated_at"), datetime.min)
         )
 
     async def insert(self, entity: User) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
                              insert into t_user
-                                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                              values
-                                 (?, ?, ?, ?, ?, ?, ?)
+                                 (?, ?, ?, ?, ?, ?, ?, ?)
                              """, (
                                  entity.id,
                                  entity.username,
@@ -77,8 +79,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                                  entity.nickname,
                                  entity.mobile,
                                  int(entity.is_admin),
-                                 value_utility.format_datetime(entity.created_at)
-                             ))
+                                 value_utility.format_datetime(entity.created_at),
+                                 value_utility.format_datetime(entity.updated_at)
+            ))
             await db.commit()
 
     async def update(self, entity: User) -> None:
@@ -90,7 +93,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                                  u_nickname   = ?,
                                  u_mobile     = ?,
                                  u_is_admin   = ?,
-                                 u_created_at = ?
+                                 u_created_at = ?,
+                                 u_updated_at = ?
                              where u_id = ?
                              """, (
                                  entity.username,
@@ -99,6 +103,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                                  entity.mobile,
                                  int(entity.is_admin),
                                  value_utility.format_datetime(entity.created_at),
+                                 value_utility.format_datetime(entity.updated_at),
                                  entity.id
                              ))
             await db.commit()
@@ -195,7 +200,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             nickname=user.nickname,
             mobile=user.mobile,
             is_admin=user.is_admin,
-            created_at=user.created_at
+            created_at=user.created_at,
+            updated_at=user.updated_at
         )
 
     def build_query_criteria(self, criteria: UserQueryCriteria) -> tuple[str, list]:

@@ -17,6 +17,7 @@ public class User {
     private String mobile;
     private boolean isAdmin;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public String getId() {
         return this.id;
@@ -44,15 +45,19 @@ public class User {
         return this.createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
     private User() {
     }
 
     /**
      * 还原用户
      */
-    public static User restoreUser(
+    public static User restore(
             String id, String username, String password, String nickname, String mobile, boolean isAdmin,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         User user = new User();
         user.id = id;
         user.username = username;
@@ -61,13 +66,14 @@ public class User {
         user.mobile = mobile;
         user.isAdmin = isAdmin;
         user.createdAt = createdAt;
+        user.updatedAt = updatedAt;
         return user;
     }
 
     /**
      * 注册用户
      */
-    public static User registerUser(
+    public static User register(
             String id, String username, String password, String nickname, UserUniqueSpecification userUniqueSpecification) {
         if (ValueUtility.isBlank(username))
             throw new DomainException("用户名不能为空");
@@ -94,6 +100,7 @@ public class User {
         user.mobile = "";
         user.isAdmin = false;
         user.createdAt = LocalDateTime.now();
+        user.updatedAt = LocalDateTime.now();
         return user;
     }
 
@@ -109,6 +116,7 @@ public class User {
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -123,6 +131,7 @@ public class User {
         }
 
         this.password = CryptoUtility.md5Encode(newPassword);
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -138,6 +147,7 @@ public class User {
         }
 
         this.nickname = nickname;
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -153,12 +163,13 @@ public class User {
         }
 
         this.mobile = mobile;
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
      * 创建用户
      */
-    public static User createUser(
+    public static User create(
             String id, String username, String password, String nickname, String mobile, UserUniqueSpecification userUniqueSpecification) {
         if (ValueUtility.isBlank(username))
             throw new DomainException("用户名不能为空");
@@ -188,6 +199,7 @@ public class User {
         user.mobile = mobile;
         user.isAdmin = false;
         user.createdAt = LocalDateTime.now();
+        user.updatedAt = LocalDateTime.now();
         return user;
     }
 
@@ -215,5 +227,6 @@ public class User {
         this.username = username;
         this.nickname = nickname;
         this.mobile = mobile;
+        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -13,6 +13,7 @@ class UserDto(BaseModel):
     mobile: str
     is_admin: bool
     created_at: datetime
+    updated_at: datetime
 
     def to_json(self):
         return {
@@ -23,4 +24,5 @@ class UserDto(BaseModel):
             "isAdmin": self.is_admin,
             # "createdAt": self.created_at.isoformat(),
             "createdAt": self.created_at,
+            "updatedAt": self.updated_at
         }

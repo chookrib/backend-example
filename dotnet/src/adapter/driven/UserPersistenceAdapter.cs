@@ -34,28 +34,30 @@ namespace BackendExample.Adapter.Driven
                     u_nickname text,
                     u_mobile text,
                     u_is_admin integer,
-                    u_created_at text
+                    u_created_at text,
+                    u_updated_at text
                 )
                 """);
             conn.Execute("delete from t_user where lower(u_username) = 'admin'");
             conn.Execute($"""
                 insert into t_user
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                    ('0', 'admin', '{CryptoUtility.Md5Encode("password")}', '管理员', '', 1, datetime('now', 'localtime'))
+                    ('0', 'admin', '{CryptoUtility.Md5Encode("password")}', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
                 """);
         }
 
         private User ToUser(dynamic result)
         {
-            return User.RestoreUser(
+            return User.Restore(
                 result.u_id,
                 result.u_username,
                 result.u_password,
                 result.u_nickname,
                 result.u_mobile,
                 ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue)
+                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue),
+                ValueUtility.ToDateTimeOrDefault(result.u_updated_at.ToString(), DateTime.MinValue)
                 );
         }
 
@@ -65,9 +67,9 @@ namespace BackendExample.Adapter.Driven
             conn.Open();
             await conn.ExecuteAsync("""
                 insert into t_user
-                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at)
+                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt)
+                (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt)
                 """, new
             {
                 id = entity.Id,
@@ -76,7 +78,8 @@ namespace BackendExample.Adapter.Driven
                 nickname = entity.Nickname,
                 mobile = entity.Mobile,
                 isAdmin = entity.IsAdmin ? 1 : 0,
-                createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                updatedAt = entity.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
 
@@ -92,7 +95,8 @@ namespace BackendExample.Adapter.Driven
                     u_nickname = @nickname,
                     u_mobile = @mobile,
                     u_is_admin = @isAdmin,
-                    u_created_at = @createdAt
+                    u_created_at = @createdAt,
+                    u_updated_at = @updatedAt
                 where
                     u_id = @id
                 """, new
@@ -103,10 +107,10 @@ namespace BackendExample.Adapter.Driven
                 nickname = entity.Nickname,
                 mobile = entity.Mobile,
                 isAdmin = entity.IsAdmin ? 1 : 0,
-                createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                updatedAt = entity.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
-
 
         public async Task DeleteById(string id)
         {
@@ -218,7 +222,8 @@ namespace BackendExample.Adapter.Driven
                 result.u_nickname,
                 result.u_mobile,
                 ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue)
+                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue),
+                ValueUtility.ToDateTimeOrDefault(result.u_updated_at.ToString(), DateTime.MinValue)
                 );
         }
 

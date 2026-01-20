@@ -37,7 +37,7 @@ namespace BackendExample.Application
         {
             await using (await this.lockService.LockAsync(LockKeys.USER))
             {
-                User user = await User.RegisterUser(IdGenerator.GenerateId(), username, password, nickname,
+                User user = await User.Register(IdGenerator.GenerateId(), username, password, nickname,
                     this.userUniqueSpecification);
                 await this.userRepository.Insert(user);
                 return user.Id;

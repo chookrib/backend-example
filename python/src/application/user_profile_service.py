@@ -25,7 +25,7 @@ class UserProfileService:
     async def register(self, username: str, password: str, nickname: str) -> str:
         """注册，仅演示使用，未防止恶意注册"""
         async with self.lock_service.lock_async(lock_keys.USER):
-            user = await User.register_user(
+            user = await User.register(
                 id=id_generator.generate_id(),
                 username=username,
                 password=password,

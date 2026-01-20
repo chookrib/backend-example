@@ -41,7 +41,7 @@ public class UserProfileService {
      */
     public String register(String username, String password, String nickname) {
         try (AutoCloseable lock = this.lockService.lock(LockKeys.USER)) {
-            User user = User.registerUser(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
+            User user = User.register(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
             this.userRepository.insert(user);
             return user.getId();
         } catch (Exception ex) {

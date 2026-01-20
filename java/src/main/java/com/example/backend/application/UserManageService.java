@@ -41,7 +41,7 @@ public class UserManageService {
      */
     public String createUser(String username, String password, String nickname, String mobile) {
         try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
-            User user = User.createUser(
+            User user = User.create(
                     IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
             );
             this.userRepository.insert(user);
