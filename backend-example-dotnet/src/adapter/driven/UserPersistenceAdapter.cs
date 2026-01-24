@@ -16,17 +16,18 @@ namespace BackendExample.Adapter.Driven
     public class UserPersistenceAdapter : UserRepository, UserUniqueSpecification, UserQueryHandler
     {
         private readonly string connectionString;
+        private readonly string tableName;
 
         public UserPersistenceAdapter(IConfiguration configuration)
         {
             this.connectionString = configuration.GetConnectionString("SQLite") ?? string.Empty;
             if (ValueUtility.IsBlank(this.connectionString))
                 throw new PersistenceException("ConnectionString:SQLite 配置错误");
-
+            this.tableName = "t_user" + DateTime.Now.ToString("yyyyMMddHHmmss");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            conn.Execute("""
-                create table if not exists t_user
+            conn.Execute($"""
+                create table if not exists {this.tableName}
                 (
                     u_id text primary key,
                     u_username text,
@@ -38,9 +39,9 @@ namespace BackendExample.Adapter.Driven
                     u_updated_at text
                 )
                 """);
-            conn.Execute("delete from t_user where lower(u_username) = 'admin'");
+            conn.Execute($"delete from {this.tableName} where lower(u_username) = 'admin'");
             conn.Execute($"""
-                insert into t_user
+                insert into {this.tableName}
                     (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
                     ('0', 'admin', '{CryptoUtility.Md5Encode("password")}', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
@@ -65,11 +66,11 @@ namespace BackendExample.Adapter.Driven
         {
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            await conn.ExecuteAsync("""
-                insert into t_user
-                (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
+            await conn.ExecuteAsync($"""
+                insert into {this.tableName}
+                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
                 values
-                (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt)
+                    (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt)
                 """, new
             {
                 id = entity.Id,
@@ -87,9 +88,8 @@ namespace BackendExample.Adapter.Driven
         {
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            await conn.ExecuteAsync("""
-                update t_user
-                set
+            await conn.ExecuteAsync($"""
+                update {this.tableName} set
                     u_username = @username,
                     u_password = @password,
                     u_nickname = @nickname,
@@ -118,7 +118,7 @@ namespace BackendExample.Adapter.Driven
                 return;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            await conn.ExecuteAsync("delete from t_user where u_id = @id", new { id });
+            await conn.ExecuteAsync($"delete from {this.tableName} where u_id = @id", new { id });
         }
 
         public async Task<User?> SelectById(string id)
@@ -127,7 +127,7 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_id = @id", new { id });
             if (result == null)
                 return null;
             return ToUser(result);
@@ -149,7 +149,7 @@ namespace BackendExample.Adapter.Driven
 
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = await conn.QueryAsync("select * from t_user where u_id in @ids", new { ids });
+            IEnumerable<dynamic> result = await conn.QueryAsync($"select * from {this.tableName} where u_id in @ids", new { ids });
             foreach (dynamic item in result)
             {
                 User entity = ToUser(item);
@@ -164,7 +164,7 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_username = @username",
+            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_username = @username",
                 new { username });
             if (result == null)
                 return null;
@@ -181,9 +181,9 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(*) from t_user where lower(u_username) = lower(@username)",
+                $"select count(*) from {this.tableName} where lower(u_username) = lower(@username)",
                 new { username }
-                ) == 0;
+            ) == 0;
         }
 
         public async Task<bool> IsNicknameUnique(string nickname)
@@ -193,7 +193,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(*) from t_user where lower(u_nickname) = lower(@nickname)",
+                $"select count(*) from {this.tableName} where lower(u_nickname) = lower(@nickname)",
                 new { nickname }
                 ) == 0;
         }
@@ -205,9 +205,9 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                "select count(*) from t_user where lower(u_mobile) = lower(@mobile)",
+                $"select count(*) from {this.tableName} where lower(u_mobile) = lower(@mobile)",
                 new { mobile }
-                ) == 0;
+            ) == 0;
         }
 
         //==============================================================================================================
@@ -281,7 +281,7 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync("select * from t_user where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_id = @id", new { id });
             if (result == null)
                 return null;
             return ToUserDto(result);
@@ -301,7 +301,7 @@ namespace BackendExample.Adapter.Driven
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return await conn.ExecuteScalarAsync<int>("select count(*) from t_user" + crieriaSql, (object)@params);
+            return await conn.ExecuteScalarAsync<int>($"select count(*) from {this.tableName}{crieriaSql}", (object)@params);
         }
 
         public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts)
@@ -311,7 +311,7 @@ namespace BackendExample.Adapter.Driven
             string sortSql = BuildQuerySort(sorts);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = await conn.QueryAsync("select * from t_user" + crieriaSql + sortSql, (object)@params);
+            IEnumerable<dynamic> result = await conn.QueryAsync($"select * from {this.tableName}{crieriaSql}{sortSql}", (object)@params);
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic item in result)
             {
@@ -333,7 +333,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             IEnumerable<dynamic> result = await conn.QueryAsync(
-                "select * from t_user" + crieriaSql + sortSql + "limit @limitCount offset @limitOffset",
+                $"select * from {this.tableName}{crieriaSql}{sortSql} limit @limitCount offset @limitOffset",
                 (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
