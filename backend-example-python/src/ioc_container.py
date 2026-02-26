@@ -27,7 +27,7 @@ class IocContainer:
             return instance
         sig = inspect.signature(target_cls.__init__)
         kwargs = {}
-        if accessor.app_is_dev:
+        if accessor.app_env_is_dev:
             logger.info(f"正在注册 {target_cls.__name__}，参数: {sig.parameters}")
         for name, param in sig.parameters.items():
             # *args 和 **kwargs 不需要处理

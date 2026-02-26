@@ -74,11 +74,11 @@ class RedisLockService(LockService):
             raise LockException(f"获取 redis 锁 {lock_key} 超时")
 
         try:
-            if accessor.app_is_dev:
+            if accessor.app_env_is_dev:
                 logger.info(f"获取 redis 锁 {lock_key} 成功")
             yield
         finally:
             # 使用 Lua 脚本原子地检查并释放锁
             await self._release_script(keys=[lock_key], args=[lock_value])
-            if accessor.app_is_dev:
+            if accessor.app_env_is_dev:
                 logger.info(f"释放 redis 锁 {lock_key} 成功")

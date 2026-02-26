@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
 
     # yield 之前的代码会在 FastAPI 启动前执行
 
-    if accessor.app_is_dev:
+    if accessor.app_env_is_dev:
         # 打印 pydantic_settings
         print(
             # "\033[31m" +
@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
 
 # 创建 FastAPI 实例
 app = FastAPI(
-    debug=accessor.app_is_dev,
+    debug=accessor.app_env_is_dev,
     docs_url=None,  # Swagger UI 文档的路径 /docs
     redoc_url=None,  # ReDoc 文档的路径 /redoc
     openapi_url=None,  # OpenAPI 文档的路径 /openapi.json
