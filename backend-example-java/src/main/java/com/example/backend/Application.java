@@ -32,8 +32,8 @@ public class Application {
         Accessor.appContext = applicationContext;
 
         // 打印配置
-        Accessor.appIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
-        if (Accessor.appIsDev) {
+        Accessor.appEnvIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
+        if (Accessor.appEnvIsDev) {
             // 打印 environment
             System.out.println("environment:");
             environment.getPropertySources().forEach(propertySource -> {

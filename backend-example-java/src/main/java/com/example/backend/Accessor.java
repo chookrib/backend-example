@@ -16,7 +16,7 @@ public class Accessor {
     /**
      * 应用是否是开发环境
      */
-    public static boolean appIsDev = false;
+    public static boolean appEnvIsDev = false;
 
     /**
      * Spring 应用上下文

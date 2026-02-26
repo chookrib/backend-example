@@ -40,7 +40,7 @@ public class RedissonLockService implements LockService {
         RLock lock = this.redissonClient.getLock(lockKey);
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
-                if (Accessor.appIsDev)
+                if (Accessor.appEnvIsDev)
                     logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), key);
                 return new RedissonLockHandler(lock, key);
             } else {
@@ -68,7 +68,7 @@ public class RedissonLockService implements LockService {
         public void close() {
             if (this.lock.isLocked() && this.lock.isHeldByCurrentThread()) {
                 this.lock.unlock();
-                if (Accessor.appIsDev)
+                if (Accessor.appEnvIsDev)
                     logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
             }
         }

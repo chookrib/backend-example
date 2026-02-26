@@ -23,7 +23,7 @@ public class ReentrantLockService implements LockService {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
-                if (Accessor.appIsDev)
+                if (Accessor.appEnvIsDev)
                     logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
                 return new ReentrantLockHandler(lock, key);
             } else {
@@ -51,7 +51,7 @@ public class ReentrantLockService implements LockService {
         public void close() {
             if(this.reentrantLock.isLocked() && this.reentrantLock.isHeldByCurrentThread()) {
                 this.reentrantLock.unlock();
-                if (Accessor.appIsDev)
+                if (Accessor.appEnvIsDev)
                     logger.info("线程 {} 释放 Reentrant 锁 {} 成功", Thread.currentThread().getName(), key);
             }
         }
