@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
 
 # 创建 FastAPI 实例
 app = FastAPI(
-    debug=True,
+    debug=accessor.app_is_dev,
     docs_url=None,  # Swagger UI 文档的路径 /docs
     redoc_url=None,  # ReDoc 文档的路径 /redoc
     openapi_url=None,  # OpenAPI 文档的路径 /openapi.json

@@ -5,6 +5,7 @@ from src.application.user_auth_service import UserAuthService
 from src.application.user_dto import UserDto
 from src.application.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
+from src.utility import value_utility
 
 user_auth_service = ioc_container.resolve(UserAuthService)  # type: ignore
 user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
@@ -19,7 +20,7 @@ def get_login_user_id(request: Request) -> str:
 def require_login_user_id(request: Request) -> str:
     """获取登录用户Id，失败抛出异常"""
     user_id = get_login_user_id(request)
-    if user_id is None:
+    if value_utility.is_blank(user_id):
         raise NotLoginException()
     return user_id
 
