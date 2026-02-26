@@ -23,7 +23,7 @@ namespace BackendExample.Application
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (Accessor.AppIsDev)
+            if (Accessor.AppEnvIsDev)
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
             return new SemaphoreLockHandler(semaphore, key);
         }
@@ -38,7 +38,7 @@ namespace BackendExample.Application
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (Accessor.AppIsDev)
+            if (Accessor.AppEnvIsDev)
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
             return new AsyncSemaphoreLockHandler(semaphore, key);
         }
@@ -64,7 +64,7 @@ namespace BackendExample.Application
                 {
                     this.semaphore.Release();
                     this.isDisposed = true;
-                    if (Accessor.AppIsDev)
+                    if (Accessor.AppEnvIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
                 }
             }
@@ -91,7 +91,7 @@ namespace BackendExample.Application
                 {
                     this.semaphore.Release();
                     this.isDisposed = true;
-                    if (Accessor.AppIsDev)
+                    if (Accessor.AppEnvIsDev)
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
                 }
                 return default;

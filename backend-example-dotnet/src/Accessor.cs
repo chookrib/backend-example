@@ -13,7 +13,7 @@ public class Accessor
     /// <summary>
     /// 应用是否为开发环境
     /// </summary>
-    public static bool AppIsDev { get; set; }
+    public static bool AppEnvIsDev { get; set; }
 
     /// <summary>
     /// 配置

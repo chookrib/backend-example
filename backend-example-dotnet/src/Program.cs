@@ -45,8 +45,8 @@ namespace BackendExample
             Accessor.Configuration = builder.Configuration;
             //Accessor.AppIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
             //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-            Accessor.AppIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
-            if (Accessor.AppIsDev)
+            Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
+            if (Accessor.AppEnvIsDev)
             {
                 Console.WriteLine($"Configuration:");
                 PrintConfiguration(builder.Configuration);
