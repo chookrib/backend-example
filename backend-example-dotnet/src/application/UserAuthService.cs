@@ -14,7 +14,7 @@ namespace BackendExample.Application
 
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
         {
-            if (!ValueUtility.IsBlank(configuration.GetValue<string>("App:JwtSecret", string.Empty)))
+            if (!ValueUtility.IsEmptyString(configuration.GetValue<string>("App:JwtSecret", string.Empty)))
             {
                 this.jwtSecret = configuration.GetValue<string>("App:JwtSecret", string.Empty);
             }

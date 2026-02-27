@@ -20,7 +20,7 @@ namespace BackendExample.Application
         public RedisLockService(IConfiguration configuration)
         {
             string redisUrl = configuration.GetValue<string>("App:LockRedisUrl") ?? string.Empty;
-            if (ValueUtility.IsBlank(redisUrl))
+            if (ValueUtility.IsEmptyString(redisUrl))
                 throw new ApplicationException("App:LockRedisUrl 配置错误");
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisUrl);

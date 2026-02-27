@@ -141,7 +141,7 @@ namespace BackendExample
             app.Run();
 
             Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
-            if (ValueUtility.IsBlank(Accessor.AppName))
+            if (ValueUtility.IsEmptyString(Accessor.AppName))
                 logger.Warn("App:Name 配置缺失");
             else
                 logger.Info($"{Accessor.AppName} 应用启动成功");

@@ -21,7 +21,7 @@ namespace BackendExample.Adapter.Driven
         public UserPersistenceAdapter(IConfiguration configuration)
         {
             this.connectionString = configuration.GetConnectionString("SQLite") ?? string.Empty;
-            if (ValueUtility.IsBlank(this.connectionString))
+            if (ValueUtility.IsEmptyString(this.connectionString))
                 throw new PersistenceException("ConnectionString:SQLite 配置错误");
             this.tableName = "t_user" + DateTime.Now.ToString("yyyyMMddHHmmss");
             using var conn = new SqliteConnection(this.connectionString);
@@ -114,7 +114,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task DeleteById(string id)
         {
-            if (ValueUtility.IsBlank(id))
+            if (ValueUtility.IsEmptyString(id))
                 return;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -123,7 +123,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<User?> SelectById(string id)
         {
-            if (ValueUtility.IsBlank(id))
+            if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -160,7 +160,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<User?> SelectByUsername(string username)
         {
-            if (ValueUtility.IsBlank(username))
+            if (ValueUtility.IsEmptyString(username))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -176,7 +176,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<bool> IsUsernameUnique(string username)
         {
-            if (ValueUtility.IsBlank(username))
+            if (ValueUtility.IsEmptyString(username))
                 throw new PersistenceException("参数 username 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -188,7 +188,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<bool> IsNicknameUnique(string nickname)
         {
-            if (ValueUtility.IsBlank(nickname))
+            if (ValueUtility.IsEmptyString(nickname))
                 throw new PersistenceException("参数 nickname 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -200,7 +200,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<bool> IsMobileUnique(string mobile)
         {
-            if (ValueUtility.IsBlank(mobile))
+            if (ValueUtility.IsEmptyString(mobile))
                 throw new PersistenceException("参数 mobile 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
@@ -235,7 +235,7 @@ namespace BackendExample.Adapter.Driven
                 return string.Empty;
 
             IList<string> sqls = new List<string>();
-            if (!ValueUtility.IsBlank(criteria.Keyword))
+            if (!ValueUtility.IsEmptyString(criteria.Keyword))
             {
                 sqls.Add("u_username like @Keyword or u_nickname like @keyword");
                 @params.keyword = criteria.Keyword;
@@ -277,7 +277,7 @@ namespace BackendExample.Adapter.Driven
 
         public async Task<UserDto?> QueryById(string id)
         {
-            if (ValueUtility.IsBlank(id))
+            if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();

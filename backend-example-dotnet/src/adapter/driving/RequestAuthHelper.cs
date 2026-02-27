@@ -29,7 +29,7 @@ namespace BackendExample.Adapter.Driving
         public static string RequireLoginUserId(HttpRequest request)
         {
             string userId = GetLoginUserId(request);
-            if (ValueUtility.IsBlank(userId))
+            if (ValueUtility.IsEmptyString(userId))
                 throw new NotLoginException();
             return userId;
         }

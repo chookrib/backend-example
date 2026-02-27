@@ -8,7 +8,7 @@
         /// <summary>
         /// 判断字符串是否为 null 或空字符串
         /// </summary>
-        public static bool IsBlank(string? value)
+        public static bool IsEmptyString(string? value)
         {
             return string.IsNullOrWhiteSpace(value);
         }
@@ -20,7 +20,7 @@
         /// </summary>
         public static bool? ToBoolOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (new List<string>() { "true", "1", "t", "y", "yes", "on" }.Contains(value!.Trim().ToLower()))
                 return true;
@@ -47,7 +47,7 @@
         /// </summary>
         public static int? ToIntOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (int.TryParse(value!.Trim(), out int result))
                 return result;
@@ -72,7 +72,7 @@
         /// </summary>
         public static long? ToLongOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (long.TryParse(value!.Trim(), out long result))
                 return result;
@@ -97,7 +97,7 @@
         /// </summary>
         public static decimal? ToDecimalOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (decimal.TryParse(value!.Trim(), out decimal result))
                 return result;
@@ -130,7 +130,7 @@
         /// </summary>
         public static DateTime? ToDateTimeOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (DateTime.TryParse(value!.Trim(), out DateTime result))
                 return result;
@@ -163,7 +163,7 @@
         /// </summary>
         public static DateOnly? ToDateOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (DateOnly.TryParse(value!.Trim(), out DateOnly result))
                 return result;
@@ -196,7 +196,7 @@
         /// </summary>
         public static TimeOnly? ToTimeOrNull(string? value)
         {
-            if (IsBlank(value))
+            if (IsEmptyString(value))
                 return null;
             if (TimeOnly.TryParse(value!.Trim(), out TimeOnly result))
                 return result;

@@ -72,7 +72,7 @@ namespace BackendExample.Application
         /// </summary>
         public async Task SendMobileCode(string userId, string mobile)
         {
-            if (ValueUtility.IsBlank(mobile))
+            if (ValueUtility.IsEmptyString(mobile))
                 throw new ApplicationException("手机号不能为空");
 
             User user = await this.userRepository.SelectByIdReq(userId);
@@ -86,7 +86,7 @@ namespace BackendExample.Application
         /// </summary>
         public async Task BindMobile(string userId, string mobile, string code)
         {
-            if (ValueUtility.IsBlank(code))
+            if (ValueUtility.IsEmptyString(code))
                 throw new ApplicationException("验证码不能为空");
 
             User user = await this.userRepository.SelectByIdReq(userId);

@@ -141,7 +141,7 @@ namespace BackendExample.Adapter.Driving
             string? s = null;
             if (value.TryGetValue<string>(out string? result))
                 s = result;
-            if(s == null || ValueUtility.IsBlank(s))
+            if(s == null || ValueUtility.IsEmptyString(s))
                 throw new ControllerException($"请求体 {string.Join('.', keys)} 值不能为空");
             return s.Trim();
         }
@@ -510,7 +510,7 @@ namespace BackendExample.Adapter.Driving
             if (!request.Query.ContainsKey(key))
                 throw new ControllerException($"请求参数缺少 {key}");
             string? value = request.Query[key];
-            if (value == null || ValueUtility.IsBlank(value))
+            if (value == null || ValueUtility.IsEmptyString(value))
                 throw new ControllerException($"请求参数 {key} 值不能为空");
             return value.Trim();
         }
