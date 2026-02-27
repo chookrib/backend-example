@@ -32,7 +32,7 @@ class RedisLockService(LockService):
 
     # def __init__(self, redis_client: redis.Redis):
     def __init__(self):
-        if value_utility.is_blank(settings.APP_LOCK_REDIS_URL):
+        if value_utility.is_empty_string(settings.APP_LOCK_REDIS_URL):
             raise ApplicationException("APP_LOCK_REDIS_URL 配置错误")
         self.redis = redis.from_url(settings.APP_LOCK_REDIS_URL)
         # 注册 Lua 脚本以提高效率
@@ -62,12 +62,12 @@ class RedisLockService(LockService):
         while (time.monotonic() - start_time) < timeout:
             # 尝试以原子方式设置 key (SET key value NX PX milliseconds)
             # NX: 只在 key 不存在时设置
-            # PX: 设置过期时间（毫秒）
+            # PX: 值的存活过期时间（毫秒），防止死锁
             # if await self.redis.set(lock_key, lock_value, nx=True, px=lease_time * 1000):
             if await self.redis.set(lock_key, lock_value, nx=True):
                 acquired = True
                 break
-            await asyncio.sleep(poll_interval)
+            await asyncio.sleep(poll_interval)      # 等待一断时间后尝试重新获取锁
 
         if not acquired:
             # raise TimeoutError(f"获取 redis 锁 {lock_key} 超时")

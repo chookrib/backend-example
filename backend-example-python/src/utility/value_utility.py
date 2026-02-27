@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 from decimal import Decimal
 
 
-def is_blank(value) -> bool:
+def is_empty_string(value) -> bool:
     """判断字符串是否为 None 或空字符串"""
     if value is None:
         return True

@@ -10,7 +10,7 @@ class UserAuthService:
     """用户认证Service"""
 
     def __init__(self, user_repository: UserRepository):
-        if not value_utility.is_blank(settings.APP_JWT_SECRET):
+        if not value_utility.is_empty_string(settings.APP_JWT_SECRET):
             self.jwt_secret = settings.APP_JWT_SECRET
         else:
             raise ApplicationException(f"APP_JWT_SECRET 配置错误")

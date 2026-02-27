@@ -19,7 +19,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     """用户持久化Adapter"""
 
     def __init__(self):
-        if value_utility.is_blank(settings.APP_SQLITE_PATH):
+        if value_utility.is_empty_string(settings.APP_SQLITE_PATH):
             raise PersistenceException("APP_SQLITE_PATH 配置错误")
         # self.db_path = str(Path(__file__).resolve().parents[4] / settings.APP_SQLITE_PATH)
         self.db_path = os.path.join(os.getcwd(), settings.APP_SQLITE_PATH)
@@ -110,7 +110,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             await db.commit()
 
     async def delete_by_id(self, id: str) -> None:
-        if value_utility.is_blank(id):
+        if value_utility.is_empty_string(id):
             return None
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(f"delete from {self.table_name} where u_id = ?", (id,))
@@ -118,7 +118,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             await db.commit()
 
     async def select_by_id(self, id: str) -> User | None:
-        if value_utility.is_blank(id):
+        if value_utility.is_empty_string(id):
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -145,7 +145,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 return [self.to_user(row) for row in rows]
 
     async def select_by_username(self, username: str) -> User | None:
-        if value_utility.is_blank(username):
+        if value_utility.is_empty_string(username):
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -159,7 +159,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     # UserUniqueSpecification
 
     async def is_username_unique(self, username: str) -> bool:
-        if value_utility.is_blank(username):
+        if value_utility.is_empty_string(username):
             raise PersistenceException("参数 username 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -169,7 +169,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 return row is None
 
     async def is_nickname_unique(self, nickname: str) -> bool:
-        if value_utility.is_blank(nickname):
+        if value_utility.is_empty_string(nickname):
             raise PersistenceException("参数 nickname 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -179,7 +179,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 return row is None
 
     async def is_mobile_unique(self, mobile: str) -> bool:
-        if value_utility.is_blank(mobile):
+        if value_utility.is_empty_string(mobile):
             raise PersistenceException("参数 mobile 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -209,7 +209,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         """构造查询SQL"""
         sqls = []
         params = []
-        if not value_utility.is_blank(criteria.keyword):
+        if not value_utility.is_empty_string(criteria.keyword):
             sqls.append(" u_username like ? and u_nickname like ? ")
             params.append(f"%{criteria.keyword}%")
             params.append(f"%{criteria.keyword}%")
@@ -239,7 +239,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         return " order by " + ", ".join(sqls)
 
     async def query_by_id(self, id: str) -> UserDto | None:
-        if value_utility.is_blank(id):
+        if value_utility.is_empty_string(id):
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row

@@ -72,7 +72,7 @@ async def lifespan(app: FastAPI):
     user_repository = ioc_container.resolve(UserRepository)  # type: ignore
     await user_repository.init()
 
-    if value_utility.is_blank(settings.APP_NAME):
+    if value_utility.is_empty_string(settings.APP_NAME):
         logger.warning(f"APP_NAME 配置缺失")
     else:
         logger.info(f"{settings.APP_NAME} 应用启动成功")

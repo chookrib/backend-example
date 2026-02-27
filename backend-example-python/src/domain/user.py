@@ -50,13 +50,13 @@ class User(BaseModel):
             nickname: str,
             user_unique_specification: UserUniqueSpecification | None) -> "User":
         """注册用户"""
-        if value_utility.is_blank(username):
+        if value_utility.is_empty_string(username):
             raise DomainException("用户名不能为空")
 
-        if value_utility.is_blank(password):
+        if value_utility.is_empty_string(password):
             raise DomainException("密码不能为空")
 
-        if value_utility.is_blank(nickname):
+        if value_utility.is_empty_string(nickname):
             raise DomainException("昵称不能为空")
 
         if user_unique_specification is not None:
@@ -88,7 +88,7 @@ class User(BaseModel):
 
     def modify_password(self, old_password: str, new_password: str) -> None:
         """修改密码"""
-        if value_utility.is_blank(new_password):
+        if value_utility.is_empty_string(new_password):
             raise DomainException("密码不能为空")
 
         if not self.is_password_match(old_password):
@@ -99,7 +99,7 @@ class User(BaseModel):
 
     async def modify_nickname(self, nickname: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改昵称"""
-        if value_utility.is_blank(nickname):
+        if value_utility.is_empty_string(nickname):
             raise DomainException("昵称不能为空")
 
         if nickname.lower() != self.nickname.lower() and user_unique_specification is not None:
@@ -111,7 +111,7 @@ class User(BaseModel):
 
     async def modify_mobile(self, mobile: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改手机"""
-        if value_utility.is_blank(mobile):
+        if value_utility.is_empty_string(mobile):
             raise DomainException("昵称不能为空")
 
         if mobile.lower() != self.mobile.lower() and user_unique_specification is not None:
@@ -131,13 +131,13 @@ class User(BaseModel):
             user_unique_specification: UserUniqueSpecification | None
     ) -> "User":
         """创建用户"""
-        if value_utility.is_blank(username):
+        if value_utility.is_empty_string(username):
             raise DomainException("用户名不能为空")
 
-        if value_utility.is_blank(password):
+        if value_utility.is_empty_string(password):
             raise DomainException("密码不能为空")
 
-        if value_utility.is_blank(nickname):
+        if value_utility.is_empty_string(nickname):
             raise DomainException("昵称不能为空")
 
         if user_unique_specification is not None:
@@ -147,7 +147,7 @@ class User(BaseModel):
             if not await user_unique_specification.is_nickname_unique(nickname):
                 raise DomainException("昵称已存在")
 
-            if not value_utility.is_blank(mobile) and not await user_unique_specification.is_mobile_unique(mobile):
+            if not value_utility.is_empty_string(mobile) and not await user_unique_specification.is_mobile_unique(mobile):
                 raise DomainException("手机已存在")
 
         return User(
@@ -166,10 +166,10 @@ class User(BaseModel):
                      mobile: str,
                      user_unique_specification: UserUniqueSpecification | None):
         """修改用户"""
-        if value_utility.is_blank(username):
+        if value_utility.is_empty_string(username):
             raise DomainException("用户名不能为空")
 
-        if value_utility.is_blank(nickname):
+        if value_utility.is_empty_string(nickname):
             raise DomainException("昵称不能为空")
 
         if user_unique_specification is not None:
@@ -181,7 +181,7 @@ class User(BaseModel):
                     not await user_unique_specification.is_nickname_unique(nickname)):
                 raise DomainException("昵称已存在")
 
-            if (not value_utility.is_blank(mobile) and mobile.lower() != self.mobile.lower() and
+            if (not value_utility.is_empty_string(mobile) and mobile.lower() != self.mobile.lower() and
                     not await user_unique_specification.is_mobile_unique(mobile)):
                 raise DomainException("手机已存在")
 

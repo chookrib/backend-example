@@ -56,7 +56,7 @@ def get_request_json_string_trim_req(json, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败抛出异常"""
     value = get_request_json_value_req(json, *keys)
     s = str(value).strip()
-    if value_utility.is_blank(s):
+    if value_utility.is_empty_string(s):
         raise ControllerException(f"请求体 {'.'.join(keys)} 值不能为空")
     return s
 
@@ -228,7 +228,7 @@ def get_request_param_string_trim_req(request: Request, key: str) -> str:
     if value is None:
         raise ControllerException(f"请求参数缺少 {key}")
     s = str(value).strip()
-    if value_utility.is_blank(s):
+    if value_utility.is_empty_string(s):
         raise ControllerException(f"请求参数 {key} 值不能为空")
     return s
 
