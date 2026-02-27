@@ -46,9 +46,7 @@ namespace BackendExample.Application
                 Thread.Sleep(200);
             }
 
-            throw new LockException(
-                        $"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 失败"
-                        );
+            throw new LockException($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 失败");
         }
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 10)
