@@ -46,7 +46,7 @@ public class Application {
         }
 
         Accessor.appName = environment.getProperty("app.name", "");
-        if (ValueUtility.isBlank(Accessor.appName))
+        if (ValueUtility.isEmptyString(Accessor.appName))
             logger.warn("app.name 配置缺失");
         else
             logger.info("{} 应用启动成功", Accessor.appName);

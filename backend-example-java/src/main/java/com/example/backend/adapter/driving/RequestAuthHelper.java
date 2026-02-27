@@ -36,7 +36,7 @@ public class RequestAuthHelper {
      */
     public static String requireLoginUserId(HttpServletRequest request) {
         String userId = getLoginUserId(request);
-        if (ValueUtility.isBlank(userId))
+        if (ValueUtility.isEmptyString(userId))
             throw new NotLoginException();
         return userId;
     }

@@ -132,14 +132,14 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public void deleteById(String id) {
-        if (ValueUtility.isBlank(id))
+        if (ValueUtility.isEmptyString(id))
             return;
         jdbcTemplate.update("delete from "+ this.tableName + " where u_id = ?", id);
     }
 
     @Override
     public User selectById(String id) {
-        if (ValueUtility.isBlank(id))
+        if (ValueUtility.isEmptyString(id))
             return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from " + this.tableName + " where u_id = ?", id);
         if (sqlRowSet.next()) {
@@ -175,7 +175,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public User selectByUsername(String username) {
-        if (ValueUtility.isBlank(username))
+        if (ValueUtility.isEmptyString(username))
             return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
                 "select * from " + this.tableName + " where lower(u_username) = lower(?)", username);
@@ -190,7 +190,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isUsernameUnique(String username) {
-        if (ValueUtility.isBlank(username))
+        if (ValueUtility.isEmptyString(username))
             throw new PersistenceException("参数 username 不能为空");
         return jdbcTemplate.queryForObject(
                 "select count(*) from " + this.tableName + " where lower(u_username) = lower(?)", int.class, username
@@ -199,7 +199,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isNicknameUnique(String nickname) {
-        if (ValueUtility.isBlank(nickname))
+        if (ValueUtility.isEmptyString(nickname))
             throw new PersistenceException("参数 nickname 不能为空");
         return jdbcTemplate.queryForObject(
                 "select count(*) from " + this.tableName + " where lower(u_nickname) = lower(?)", int.class, nickname
@@ -208,7 +208,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isMobileUnique(String mobile) {
-        if (ValueUtility.isBlank(mobile))
+        if (ValueUtility.isEmptyString(mobile))
             throw new PersistenceException("参数 mobile 不能为空");
         return jdbcTemplate.queryForObject(
                 "select count(*) from " + this.tableName + " where lower(u_mobile) = lower(?)", int.class, mobile
@@ -243,7 +243,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
             return "";
 
         List<String> sqls = new ArrayList<>();
-        if (!ValueUtility.isBlank(criteria.getKeyword())) {
+        if (!ValueUtility.isEmptyString(criteria.getKeyword())) {
             sqls.add("u_username like :keyword or u_nickname like :keyword");
             paramMap.put("keyword", "%" + criteria.getKeyword() + "%");
         }
@@ -276,7 +276,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public UserDto queryById(String id) {
-        if (ValueUtility.isBlank(id))
+        if (ValueUtility.isEmptyString(id))
             return null;
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from " + this.tableName + " where u_id = ?", id);
         if (sqlRowSet.next()) {

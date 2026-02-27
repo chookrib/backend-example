@@ -82,7 +82,7 @@ public class RequestValueHelper {
     public static String getRequestJsonStringTrimReq(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValueReq(json, keys);
         String s =  node.asText().trim();
-        if(ValueUtility.isBlank(s))
+        if(ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
         return s.trim();
     }
@@ -337,7 +337,7 @@ public class RequestValueHelper {
         String value = request.getParameter(key);
         if (value == null)
             throw new ControllerException(String.format("请求参数缺少 %s", key));
-        if(ValueUtility.isBlank(value))
+        if(ValueUtility.isEmptyString(value))
             throw new ControllerException(String.format("请求参数 %s 值不能为空", key));
         return value;
     }

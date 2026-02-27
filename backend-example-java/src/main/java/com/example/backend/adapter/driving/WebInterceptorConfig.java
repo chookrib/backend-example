@@ -1,7 +1,7 @@
 //package com.example.backend.adapter.driving;
 //
-//import com.example.backend.application.UserProfileService;
-//import io.micrometer.common.util.StringUtils;
+//import com.example.backend.application.UserAuthService;
+//import com.example.backend.utility.ValueUtility;
 //import jakarta.servlet.http.HttpServletRequest;
 //import jakarta.servlet.http.HttpServletResponse;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@
 //    public class AccessTokenInterceptor implements HandlerInterceptor {
 //
 //        @Autowired
-//        private UserProfileService userProfileService;
+//        private UserAuthService userAuthService;
 //
 //        @Override
 //        public boolean preHandle(
@@ -78,8 +78,8 @@
 //
 //            String accessToken = request.getHeader("Access-Token");
 //
-//            String userId = userProfileService.getLoginUserId(accessToken);
-//            if (StringUtils.isBlank(userId)) {
+//            String userId = userAuthService.getLoginUserId(accessToken);
+//            if (ValueUtility.isEmptyString(userId)) {
 //                throw new NotLoginException();
 //            }
 //            request.setAttribute("userId", userId);

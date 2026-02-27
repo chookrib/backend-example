@@ -75,7 +75,7 @@ public class UserProfileService {
      * 发送手机验证码
      */
     public void sendMobileCode(String userId, String mobile) {
-        if (ValueUtility.isBlank(mobile))
+        if (ValueUtility.isEmptyString(mobile))
             throw new ApplicationException("手机号不能为空");
 
         User user = this.userRepository.selectByIdReq(userId);
@@ -88,7 +88,7 @@ public class UserProfileService {
      * 绑定手机
      */
     public void bindMobile(String userId, String mobile, String code) {
-        if (ValueUtility.isBlank(code))
+        if (ValueUtility.isEmptyString(code))
             throw new ApplicationException("验证码不能为空");
 
         User user = this.userRepository.selectByIdReq(userId);

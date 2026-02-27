@@ -75,13 +75,13 @@ public class User {
      */
     public static User register(
             String id, String username, String password, String nickname, UserUniqueSpecification userUniqueSpecification) {
-        if (ValueUtility.isBlank(username))
+        if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
-        if (ValueUtility.isBlank(password))
+        if (ValueUtility.isEmptyString(password))
             throw new DomainException("密码不能为空");
 
-        if (ValueUtility.isBlank(nickname))
+        if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueSpecification != null) {
@@ -123,7 +123,7 @@ public class User {
      * 修改密码
      */
     public void modifyPassword(String oldPassword, String newPassword) {
-        if (ValueUtility.isBlank(newPassword))
+        if (ValueUtility.isEmptyString(newPassword))
             throw new DomainException("密码不能为空");
 
         if (!isPasswordMatch(oldPassword)) {
@@ -138,7 +138,7 @@ public class User {
      * 修改昵称
      */
     public void modifyNickname(String nickname, UserUniqueSpecification userUniqueSpecification) {
-        if (ValueUtility.isBlank(nickname))
+        if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
         if (!nickname.equalsIgnoreCase(this.nickname) && userUniqueSpecification != null) {
@@ -154,7 +154,7 @@ public class User {
      * 修改手机
      */
     public void modifyMobile(String mobile, UserUniqueSpecification userUniqueSpecification) {
-        if (ValueUtility.isBlank(mobile))
+        if (ValueUtility.isEmptyString(mobile))
             throw new DomainException("手机不能为空");
 
         if (!mobile.equalsIgnoreCase(this.mobile) && userUniqueSpecification != null) {
@@ -171,13 +171,13 @@ public class User {
      */
     public static User create(
             String id, String username, String password, String nickname, String mobile, UserUniqueSpecification userUniqueSpecification) {
-        if (ValueUtility.isBlank(username))
+        if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
-        if (ValueUtility.isBlank(password))
+        if (ValueUtility.isEmptyString(password))
             throw new DomainException("密码不能为空");
 
-        if (ValueUtility.isBlank(nickname))
+        if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueSpecification != null) {
@@ -187,7 +187,7 @@ public class User {
             if (!userUniqueSpecification.isNicknameUnique(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isBlank(mobile) && !userUniqueSpecification.isMobileUnique(mobile))
+            if (!ValueUtility.isEmptyString(mobile) && !userUniqueSpecification.isMobileUnique(mobile))
                 throw new DomainException("手机已存在");
         }
 
@@ -207,10 +207,10 @@ public class User {
      * 修改用户
      */
     public void modify(String username, String nickname, String mobile, UserUniqueSpecification userUniqueSpecification) {
-        if (ValueUtility.isBlank(username))
+        if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
-        if (ValueUtility.isBlank(nickname))
+        if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
         if (userUniqueSpecification != null) {
@@ -220,7 +220,7 @@ public class User {
             if (!nickname.equalsIgnoreCase(this.nickname) && !userUniqueSpecification.isNicknameUnique(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isBlank(mobile) && !mobile.equalsIgnoreCase(this.mobile) && !userUniqueSpecification.isMobileUnique(mobile))
+            if (!ValueUtility.isEmptyString(mobile) && !mobile.equalsIgnoreCase(this.mobile) && !userUniqueSpecification.isMobileUnique(mobile))
                 throw new DomainException("手机已存在");
         }
 

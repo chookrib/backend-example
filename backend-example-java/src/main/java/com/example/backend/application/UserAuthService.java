@@ -28,7 +28,7 @@ public class UserAuthService {
             @Value("${app.jwt-secret:}") String jwtSecret,
             @Value("${app.jwt-expires:}") String jwtExpires,
             UserRepository userRepository) {
-        if (!ValueUtility.isBlank(jwtSecret)) {
+        if (!ValueUtility.isEmptyString(jwtSecret)) {
             this.jwtSecret = jwtSecret;
         } else {
             throw new ApplicationException("app.jwt-secret 配置错误");
