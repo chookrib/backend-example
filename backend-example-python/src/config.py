@@ -4,6 +4,11 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """应用配置"""
 
+    model_config = {
+        "env_file": ".env",
+        # "env_file_encoding": "utf-8",
+    }
+
     APP_NAME: str = ""
     APP_ENV: str = ""
 
@@ -14,10 +19,5 @@ class Settings(BaseSettings):
     APP_JWT_EXPIRES: str = ""
 
     APP_SQLITE_PATH: str = ""
-
-    class Config:
-        env_file = ".env"
-        # env_file = os.getenv("ENV_FILE", ".env")
-        # env_file_encoding = "utf-8"
 
 settings = Settings()

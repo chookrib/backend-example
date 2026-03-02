@@ -112,7 +112,7 @@ class User(BaseModel):
     async def modify_mobile(self, mobile: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改手机"""
         if value_utility.is_empty_string(mobile):
-            raise DomainException("昵称不能为空")
+            raise DomainException("手机不能为空")
 
         if mobile.lower() != self.mobile.lower() and user_unique_specification is not None:
             if not await user_unique_specification.is_mobile_unique(mobile):
