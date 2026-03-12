@@ -1,5 +1,6 @@
-package com.example.backend.adapter.driving;
+package com.example.backend.adapter.driving.test;
 
+import com.example.backend.adapter.driving.Result;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,8 @@
-package com.example.backend.application.lock;
+package com.example.backend.application.test;
 
 import com.example.backend.application.ApplicationException;
+import com.example.backend.application.lock.LockKeys;
+import com.example.backend.application.lock.LockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

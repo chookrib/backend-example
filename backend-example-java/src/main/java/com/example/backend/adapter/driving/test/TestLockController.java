@@ -1,7 +1,9 @@
-package com.example.backend.adapter.driving;
+package com.example.backend.adapter.driving.test;
 
+import com.example.backend.adapter.driving.RequestValueHelper;
+import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.lock.LockException;
-import com.example.backend.application.lock.TestLockService;
+import com.example.backend.application.test.TestLockService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

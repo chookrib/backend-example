@@ -1,4 +1,4 @@
-package com.example.backend.adapter.driving;
+package com.example.backend.adapter.driving.test;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
