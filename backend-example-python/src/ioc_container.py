@@ -106,7 +106,7 @@ class IocContainer:
 
     def resolve(self, cls: type[T]) -> T:
         if cls not in self._instances:
-            raise TypeError(f"{cls} 未注册或未实例化")
+            raise TypeError(f"{cls} 未注册")
         return self._instances[cls]
 
 
@@ -129,7 +129,7 @@ elif settings.APP_LOCK_SERVICE == "redis":
 
     ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
 else:
-    raise Exception(f"APP_LOCK_SERVICE 配置错误")
+    raise ValueError(f"APP_LOCK_SERVICE 配置错误")
 
 from src.application.test.test_lock_service import TestLockService
 
