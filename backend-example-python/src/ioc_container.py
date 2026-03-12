@@ -17,35 +17,96 @@ class IocContainer:
         self._instances = {}
 
     def register(self, cls: type[T], provider_cls: type[T] | None = None) -> T:
+        cls_text = f"{cls.__name__}{', ' + provider_cls.__name__ if provider_cls else ''}"
+        if provider_cls is not None:
+            if not issubclass(provider_cls, cls):
+                raise TypeError(f"注册 {cls_text} 异常：{provider_cls.__name__} 必须继承自 {cls.__name__}")
+            if inspect.isabstract(provider_cls):
+                raise TypeError(f"注册 {cls_text} 异常：{provider_cls.__name__} 是抽象类，无法实例化")
+        else:
+            if inspect.isabstract(cls):
+                raise TypeError(f"注册 {cls_text} 异常：{cls.__name__} 是抽象类，无法实例化")
+
         if cls in self._instances:
-            return self._instances[cls]
+            raise TypeError(f"注册 {cls_text} 异常：{cls.__name__} 不能重复注册")
+
+        if accessor.app_env_is_dev:
+            logger.info(f"注册 {cls_text}：准备实例化 ->")
+
+        if provider_cls is not None and provider_cls in self._instances:
+            provider_cls_instance = self._instances[provider_cls]
+            self._instances[cls] = provider_cls_instance
+            if accessor.app_env_is_dev:
+                logger.info(f"<- IoC容器已存在 {provider_cls.__name__} 实例，完成注册")
+            return provider_cls_instance
+
         target_cls = provider_cls or cls
-        # 如果实现类已注册，直接复用实例
-        if target_cls in self._instances:
-            instance = self._instances[target_cls]
-            self._instances[cls] = instance
-            return instance
         sig = inspect.signature(target_cls.__init__)
         kwargs = {}
+        path = [target_cls]
+        for name, param in sig.parameters.items():
+            # *args 和 **kwargs 不需要处理
+            if name == 'self' or param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+                continue
+            param_cls = param.annotation
+            if param_cls is inspect.Parameter.empty:
+                raise TypeError(f"{target_cls.__name__} __init__ 方法参数 {name} 缺少类型注解")
+            kwargs[name] = self._register_param(name, param_cls, path)
+
+        instance = target_cls(**kwargs)
+        self._instances[cls] = instance
+
+        # 如果 provider_cls 和 cls 不同，将 provider_cls 实例添加到实例字典，避免重复实例化
+        if not target_cls in self._instances:
+            self._instances[target_cls] = instance
+
         if accessor.app_env_is_dev:
-            logger.info(f"正在注册 {target_cls.__name__}，参数: {sig.parameters}")
+            logger.info(f"<- 成功实例化 {target_cls.__name__}，完成注册")
+
+        return instance
+
+    def _register_param(self, param_name: str, param_cls: type[T], path: list) -> T:
+        param_text_prefix = f"{' ' * 4 * len(path)}"
+        param_text = f"{param_text_prefix}参数 {param_name} 类型 {param_cls.__name__}"
+        if param_cls in self._instances:
+            if accessor.app_env_is_dev:
+                logger.info(f"{param_text} 在IoC容器中已存在实例，直接使用")
+            return self._instances[param_cls]
+        elif inspect.isabstract(param_cls):
+            raise TypeError(f"{param_text} 是抽象类，无法实例化")
+
+        sig = inspect.signature(param_cls.__init__)
+        kwargs = {}
+        if accessor.app_env_is_dev:
+            logger.info(f"{param_text} 准备实例化 ->")
+
+        path.append(param_cls)
         for name, param in sig.parameters.items():
             # *args 和 **kwargs 不需要处理
             if name == 'self' or param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
                 continue
             dep_cls = param.annotation
             if dep_cls is inspect.Parameter.empty:
-                raise Exception(f"参数 {name} 缺少类型注解")
-            kwargs[name] = self.register(dep_cls)
-        instance = target_cls(**kwargs)
-        self._instances[cls] = instance
-        # 将实现类添加到实例字典，避免重复实例化
-        self._instances[target_cls] = instance
+                raise TypeError(f"{param_cls.__name__} __init__ 方法参数 {name} 缺少类型注解")
+
+            if dep_cls in path:
+                raise TypeError(f"检测到循环依赖: {' -> '.join([c.__name__ for c in path + [dep_cls]])}")
+
+            kwargs[name] = self._register_param(name, dep_cls, path)
+        path.pop()
+        if accessor.app_env_is_dev:
+            logger.info(f"{param_text_prefix}<- 参数 {param_name} 类型 {param_cls.__name__} 成功实例化并加入IoC容器")
+
+        instance = param_cls(**kwargs)
+        # 将 param_cls 实例添加到实例字典，避免重复实例化
+        if not param_cls in self._instances:
+            self._instances[param_cls] = instance
+
         return instance
 
     def resolve(self, cls: type[T]) -> T:
         if cls not in self._instances:
-            raise Exception(f"{cls} 未注册或未实例化")
+            raise TypeError(f"{cls} 未注册或未实例化")
         return self._instances[cls]
 
 
@@ -102,14 +163,10 @@ ioc_container.register(cls=UserAuthService)
 ioc_container.register(cls=UserProfileService)
 ioc_container.register(cls=UserManageService)
 
+# 测试IoC注册，循环依赖会报错
+from src.application.test.test_ioc_class_1 import TestIocClass1
+
+ioc_container.register(cls=TestIocClass1)
+
 # for k, v in ioc_container._instances.items():
 #     print(f"{k}: {v}")
-
-# 测试注册循环依赖，会报错
-# ImportError: cannot import name 'TestService2' from partially initialized module 'application.ioc_test.test_service_2' (most likely due to a circular import)
-# from src.application.test.test_ioc_service_1 import TestIocService1
-# from src.application.test.test_ioc_service_2 import TestIocService2
-# ioc_container.register(cls=TestIocService1)
-# ioc_container.register(cls=TestIocService2)
-
-
