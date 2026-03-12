@@ -4,7 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace BackendExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving.Test
 {
     /// <summary>
     /// 测试请求 Controller

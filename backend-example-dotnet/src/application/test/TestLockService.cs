@@ -1,6 +1,8 @@
-﻿using log4net;
+﻿using BackendExample.Application.Lock;
 
-namespace BackendExample.Application
+using log4net;
+
+namespace BackendExample.Application.Test
 {
     /// <summary>
     /// 测试锁 Service

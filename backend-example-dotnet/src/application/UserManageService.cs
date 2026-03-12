@@ -1,4 +1,5 @@
-﻿using BackendExample.Domain;
+﻿using BackendExample.Application.Lock;
+using BackendExample.Domain;
 
 namespace BackendExample.Application
 {

@@ -6,7 +6,7 @@ using log4net;
 
 using StackExchange.Redis;
 
-namespace BackendExample.Application
+namespace BackendExample.Application.Lock
 {
     /// <summary>
     /// 基于 Redis 实现的锁 Service

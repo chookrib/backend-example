@@ -4,7 +4,7 @@ using log4net;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving.Test
 {
     /// <summary>
     /// 测试加解密 Controller

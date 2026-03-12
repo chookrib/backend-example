@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application
+﻿namespace BackendExample.Application.Lock
 {
     /// <summary>
     /// 锁 Service 接口

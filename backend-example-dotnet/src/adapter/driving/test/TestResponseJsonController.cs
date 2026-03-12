@@ -2,7 +2,7 @@
 using BackendExample.Utility;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving.Test
 {
     /// <summary>
     /// 测试响应输出 JSON 数据 Controller

@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving
+namespace BackendExample.Adapter.Driving.Test
 {
     /// <summary>
     /// 测试异常 Controller

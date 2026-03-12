@@ -2,7 +2,7 @@
 
 using log4net;
 
-namespace BackendExample.Application
+namespace BackendExample.Application.Lock
 {
     /// <summary>
     /// 基于 SemaphoreSlim 实现的锁 Service

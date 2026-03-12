@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+
+using BackendExample.Application.Lock;
 using BackendExample.Domain;
 using BackendExample.Utility;
 

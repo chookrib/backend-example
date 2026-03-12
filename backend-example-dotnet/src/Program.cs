@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using BackendExample.Adapter.Driven;
 using BackendExample.Adapter.Driving;
 using BackendExample.Application;
+using BackendExample.Application.Lock;
+using BackendExample.Application.Test;
 using BackendExample.Domain;
 using BackendExample.Utility;
 
@@ -75,6 +77,10 @@ namespace BackendExample
             builder.Services.AddSingleton<UserAuthService>();
             builder.Services.AddSingleton<UserProfileService>();
             builder.Services.AddSingleton<UserManageService>();
+
+            // 测试注册循环依赖，会报错
+            //builder.Services.AddSingleton<Application.Test.TestIocService1>();
+            //builder.Services.AddSingleton<Application.Test.TestIocService2>();
 
             // 注册 Controller
             builder.Services.AddControllers().AddJsonOptions(options =>
