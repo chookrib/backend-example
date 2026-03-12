@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 from src.ioc_container import ioc_container
-from src.application.lock.test_lock_service import TestLockService
+from src.application.test.test_lock_service import TestLockService
 
 test_lock_service = ioc_container.resolve(TestLockService)  # type: ignore
 

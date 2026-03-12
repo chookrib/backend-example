@@ -1,5 +1,4 @@
 import logging
-from email.quoprimime import header_decode
 
 from fastapi import APIRouter, Request
 

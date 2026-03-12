@@ -188,13 +188,13 @@ encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
 
 # 注册路由
 from src.adapter.driving import well_known_controller
-from src.adapter.driving import test_crypto_controller
-from src.adapter.driving import test_exception_controller
-from src.adapter.driving import test_lock_controller
-from src.adapter.driving import test_request_controller
-from src.adapter.driving import test_response_code_controller
-from src.adapter.driving import test_response_json_controller
-from src.adapter.driving import test_value_controller
+from src.adapter.driving.test import test_crypto_controller
+from src.adapter.driving.test import test_exception_controller
+from src.adapter.driving.test import test_lock_controller
+from src.adapter.driving.test import test_request_controller
+from src.adapter.driving.test import test_response_code_controller
+from src.adapter.driving.test import test_response_json_controller
+from src.adapter.driving.test import test_value_controller
 from src.adapter.driving import user_controller
 from src.adapter.driving import user_manage_controller
 

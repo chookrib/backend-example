@@ -70,7 +70,7 @@ elif settings.APP_LOCK_SERVICE == "redis":
 else:
     raise Exception(f"APP_LOCK_SERVICE 配置错误")
 
-from src.application.lock.test_lock_service import TestLockService
+from src.application.test.test_lock_service import TestLockService
 
 ioc_container.register(cls=TestLockService)
 
@@ -104,3 +104,12 @@ ioc_container.register(cls=UserManageService)
 
 # for k, v in ioc_container._instances.items():
 #     print(f"{k}: {v}")
+
+# 测试注册循环依赖，会报错
+# ImportError: cannot import name 'TestService2' from partially initialized module 'application.ioc_test.test_service_2' (most likely due to a circular import)
+# from src.application.test.test_ioc_service_1 import TestIocService1
+# from src.application.test.test_ioc_service_2 import TestIocService2
+# ioc_container.register(cls=TestIocService1)
+# ioc_container.register(cls=TestIocService2)
+
+
