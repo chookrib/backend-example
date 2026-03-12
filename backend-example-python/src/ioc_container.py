@@ -66,6 +66,10 @@ class IocContainer:
         return instance
 
     def _register_param(self, param_name: str, param_cls: type[T], path: list) -> T:
+        # # python 循环依赖会自已抛异常，无需进行判断
+        # if param_cls in path:
+        #     raise TypeError(f"检测到循环依赖: {' -> '.join([c.__name__ for c in path + [param_cls]])}")
+
         param_text_prefix = f"{' ' * 4 * len(path)}"
         param_text = f"{param_text_prefix}参数 {param_name} 类型 {param_cls.__name__}"
         if param_cls in self._instances:
@@ -88,9 +92,6 @@ class IocContainer:
             dep_cls = param.annotation
             if dep_cls is inspect.Parameter.empty:
                 raise TypeError(f"{param_cls.__name__} __init__ 方法参数 {name} 缺少类型注解")
-
-            if dep_cls in path:
-                raise TypeError(f"检测到循环依赖: {' -> '.join([c.__name__ for c in path + [dep_cls]])}")
 
             kwargs[name] = self._register_param(name, dep_cls, path)
         path.pop()
