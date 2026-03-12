@@ -78,9 +78,10 @@ namespace BackendExample
             builder.Services.AddSingleton<UserProfileService>();
             builder.Services.AddSingleton<UserManageService>();
 
-            // 测试注册循环依赖，会报错
-            //builder.Services.AddSingleton<Application.Test.TestIocService1>();
-            //builder.Services.AddSingleton<Application.Test.TestIocService2>();
+            // 测试IoC注册，循环依赖会报错
+            builder.Services.AddSingleton<Application.Test.TestIocClass3>();
+            builder.Services.AddSingleton<Application.Test.TestIocClass2>();
+            builder.Services.AddSingleton<Application.Test.TestIocClass1>();
 
             // 注册 Controller
             builder.Services.AddControllers().AddJsonOptions(options =>
