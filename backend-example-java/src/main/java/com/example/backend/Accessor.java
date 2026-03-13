@@ -4,7 +4,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 /**
- * 访问器
+ * 访问器，方便在应用程序中访问配置和服务
  */
 public class Accessor {
 

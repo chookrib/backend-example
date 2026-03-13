@@ -29,8 +29,12 @@ public class Application {
 
         ConfigurableEnvironment environment = applicationContext.getEnvironment();
 
+        // 为 Accessor 赋值
         Accessor.appContext = applicationContext;
         Accessor.appEnvIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
+        Accessor.appName = environment.getProperty("app.name", "");
+        if (ValueUtility.isEmptyString(Accessor.appName))
+            logger.warn("app.name 配置缺失");
 
         // 仅在开发环境打印配置，不记录日志
         if (Accessor.appEnvIsDev) {
@@ -45,11 +49,7 @@ public class Application {
             });
         }
 
-        Accessor.appName = environment.getProperty("app.name", "");
-        if (ValueUtility.isEmptyString(Accessor.appName))
-            logger.warn("app.name 配置缺失");
-        else
-            logger.info("{} 应用启动成功", Accessor.appName);
+        logger.info("应用启动完成: {}", Accessor.appName);
     }
 
     /**
