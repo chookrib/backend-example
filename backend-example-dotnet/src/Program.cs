@@ -44,10 +44,16 @@ namespace BackendExample
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+            // 为 Accessor 赋值
             Accessor.Configuration = builder.Configuration;
-            //Accessor.AppIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
+            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
             //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
             Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
+            Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
+            if (ValueUtility.IsEmptyString(Accessor.AppName))
+                logger.Warn("App:Name 配置缺失");
+
+            // 仅在开发环境打印配置，不记录日志
             if (Accessor.AppEnvIsDev)
             {
                 Console.WriteLine($"Configuration:");
@@ -147,11 +153,7 @@ namespace BackendExample
 
             app.Run();
 
-            Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
-            if (ValueUtility.IsEmptyString(Accessor.AppName))
-                logger.Warn("App:Name 配置缺失");
-            else
-                logger.Info($"{Accessor.AppName} 应用启动成功");
+            logger.Info($"应用启动完成: {Accessor.AppName}");
         }
 
         #region json 转换器
