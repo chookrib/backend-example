@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__)
 for logger_name in [
     "uvicorn",
     "uvicorn.access",
-    # "uvicorn.error", "uvicorn.asgi"
+    "uvicorn.error",
+    # "uvicorn.asgi"
 ]:
     uvicorn_logger = logging.getLogger(logger_name)
     uvicorn_logger.handlers.clear()
@@ -49,6 +50,7 @@ async def lifespan(app: FastAPI):
 
     # yield 之前的代码会在 FastAPI 启动前执行
 
+    # 仅在开发环境打印配置，不记录日志
     if accessor.app_env_is_dev:
         # 打印 pydantic_settings
         print(
@@ -72,10 +74,9 @@ async def lifespan(app: FastAPI):
     user_repository = ioc_container.resolve(UserRepository)  # type: ignore
     await user_repository.init()
 
-    if value_utility.is_empty_string(settings.APP_NAME):
+    if value_utility.is_empty_string(accessor.APP_NAME):
         logger.warning(f"APP_NAME 配置缺失")
-    else:
-        logger.info(f"{settings.APP_NAME} 应用启动成功")
+    logger.info(f"应用启动完成: {settings.APP_NAME}")
 
     yield
 

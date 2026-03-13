@@ -2,7 +2,7 @@ from src.config import settings
 
 
 class Accessor:
-    """访问器"""
+    """访问器，方便在应用程序中访问配置和服务"""
 
     def __init__(self):
         # 应用名称

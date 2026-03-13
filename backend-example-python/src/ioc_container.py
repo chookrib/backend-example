@@ -20,24 +20,28 @@ class IocContainer:
         cls_text = f"{cls.__name__}{', ' + provider_cls.__name__ if provider_cls else ''}"
         if provider_cls is not None:
             if not issubclass(provider_cls, cls):
-                raise TypeError(f"注册 {cls_text} 异常：{provider_cls.__name__} 必须继承自 {cls.__name__}")
+                raise TypeError(f"注册 {cls_text} 异常: {provider_cls.__name__} 必须继承自 {cls.__name__}")
             if inspect.isabstract(provider_cls):
-                raise TypeError(f"注册 {cls_text} 异常：{provider_cls.__name__} 是抽象类，无法实例化")
+                raise TypeError(f"注册 {cls_text} 异常: {provider_cls.__name__} 是抽象类, 无法实例化")
         else:
             if inspect.isabstract(cls):
-                raise TypeError(f"注册 {cls_text} 异常：{cls.__name__} 是抽象类，无法实例化")
+                raise TypeError(f"注册 {cls_text} 异常: {cls.__name__} 是抽象类，无法实例化")
 
         if cls in self._instances:
-            raise TypeError(f"注册 {cls_text} 异常：{cls.__name__} 不能重复注册")
-
-        if accessor.app_env_is_dev:
-            logger.info(f"注册 {cls_text}：准备实例化 ->")
+            # 需注册的类有可能在构造函数参数实例化时已经构造，故不能判断重复
+            # raise TypeError(f"注册 {cls_text} 异常: {cls.__name__} 不能重复注册")
+            if accessor.app_env_is_dev:
+                logger.info(f"注册 {cls_text}: IoC容器已存在 {cls.__name__} 实例，跳过注册")
+            return self._instances[cls]
+        else:
+            if accessor.app_env_is_dev:
+                logger.info(f"注册 {cls_text}: 准备实例化 >>>")
 
         if provider_cls is not None and provider_cls in self._instances:
             provider_cls_instance = self._instances[provider_cls]
             self._instances[cls] = provider_cls_instance
             if accessor.app_env_is_dev:
-                logger.info(f"<- IoC容器已存在 {provider_cls.__name__} 实例，完成注册")
+                logger.info(f"<<< IoC容器已存在 {provider_cls.__name__} 实例，完成注册")
             return provider_cls_instance
 
         target_cls = provider_cls or cls
@@ -61,7 +65,7 @@ class IocContainer:
             self._instances[target_cls] = instance
 
         if accessor.app_env_is_dev:
-            logger.info(f"<- 成功实例化 {target_cls.__name__}，完成注册")
+            logger.info(f"<<< 成功实例化 {target_cls.__name__}，完成注册")
 
         return instance
 
@@ -82,7 +86,7 @@ class IocContainer:
         sig = inspect.signature(param_cls.__init__)
         kwargs = {}
         if accessor.app_env_is_dev:
-            logger.info(f"{param_text} 准备实例化 ->")
+            logger.info(f"{param_text} 准备实例化 >>>")
 
         path.append(param_cls)
         for name, param in sig.parameters.items():
@@ -96,7 +100,7 @@ class IocContainer:
             kwargs[name] = self._register_param(name, dep_cls, path)
         path.pop()
         if accessor.app_env_is_dev:
-            logger.info(f"{param_text_prefix}<- 参数 {param_name} 类型 {param_cls.__name__} 成功实例化并加入IoC容器")
+            logger.info(f"{param_text_prefix}<<< 参数 {param_name} 类型 {param_cls.__name__} 成功实例化并加入IoC容器")
 
         instance = param_cls(**kwargs)
         # 将 param_cls 实例添加到实例字典，避免重复实例化
