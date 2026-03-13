@@ -30,9 +30,9 @@ public class Application {
         ConfigurableEnvironment environment = applicationContext.getEnvironment();
 
         Accessor.appContext = applicationContext;
-
-        // 打印配置
         Accessor.appEnvIsDev = environment.getProperty("app.env", "").equalsIgnoreCase("dev");
+
+        // 仅在开发环境打印配置，不记录日志
         if (Accessor.appEnvIsDev) {
             // 打印 environment
             System.out.println("environment:");
