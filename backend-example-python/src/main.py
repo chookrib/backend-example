@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi import encoders
@@ -71,10 +72,10 @@ async def lifespan(app: FastAPI):
     # 服务初始化
     from src.ioc_container import ioc_container
     from src.domain.user_repository import UserRepository
-    user_repository = ioc_container.resolve(UserRepository)  # type: ignore
+    user_repository = ioc_container.resolve(UserRepository)
     await user_repository.init()
 
-    if value_utility.is_empty_string(accessor.APP_NAME):
+    if value_utility.is_empty_string(accessor.app_name):
         logger.warning(f"APP_NAME 配置缺失")
     logger.info(f"应用启动完成: {settings.APP_NAME}")
 
@@ -185,7 +186,8 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
 
 
 # 替换 FastAPI 默认 jsonable_encoder
-encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
+# encoders.jsonable_encoder = json_utility.custom_jsonable_encoder  # type: ignore
+encoders.jsonable_encoder = cast(Any, json_utility.custom_jsonable_encoder)
 
 # 注册路由
 from src.adapter.driving import well_known_controller

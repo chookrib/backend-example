@@ -13,7 +13,7 @@ router = APIRouter()
 from src.ioc_container import ioc_container
 from src.application.test.test_lock_service import TestLockService
 
-test_lock_service = ioc_container.resolve(TestLockService)  # type: ignore
+test_lock_service = ioc_container.resolve(TestLockService)
 
 
 @router.get("/api/test/lock/set-count")

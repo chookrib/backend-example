@@ -1,6 +1,7 @@
 import inspect
 import logging
-from typing import TypeVar
+from abc import ABCMeta
+from typing import TypeVar, Any, overload
 
 from src.accessor import accessor
 from src.config import settings
@@ -16,7 +17,15 @@ class IocContainer:
     def __init__(self):
         self._instances = {}
 
-    def register(self, cls: type[T], provider_cls: type[T] | None = None) -> T:
+    @overload
+    def register(self, cls: type[T], provider_cls: None = None) -> T:
+        ...
+
+    @overload
+    def register(self, cls: type[Any], provider_cls: type[T]) -> T:
+        ...
+
+    def register(self, cls: type[Any], provider_cls: type[Any] | None = None) -> Any:
         cls_text = f"{cls.__name__}{', ' + provider_cls.__name__ if provider_cls else ''}"
         if provider_cls is not None:
             if not issubclass(provider_cls, cls):
@@ -109,7 +118,15 @@ class IocContainer:
 
         return instance
 
+    @overload
     def resolve(self, cls: type[T]) -> T:
+        ...
+
+    @overload
+    def resolve(self, cls: ABCMeta) -> Any:
+        ...
+
+    def resolve(self, cls: type[Any]) -> Any:
         if cls not in self._instances:
             raise TypeError(f"{cls} 未注册")
         return self._instances[cls]
@@ -128,11 +145,11 @@ from src.application.lock.lock_service import LockService
 if settings.APP_LOCK_SERVICE == "asyncio":
     from src.application.lock.asyncio_lock_service import AsyncioLockService
 
-    ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)  # type: ignore
+    ioc_container.register(cls=LockService, provider_cls=AsyncioLockService)
 elif settings.APP_LOCK_SERVICE == "redis":
     from src.application.lock.redis_lock_service import RedisLockService
 
-    ioc_container.register(cls=LockService, provider_cls=RedisLockService)  # type: ignore
+    ioc_container.register(cls=LockService, provider_cls=RedisLockService)
 else:
     raise ValueError(f"APP_LOCK_SERVICE 配置错误")
 
@@ -145,7 +162,7 @@ ioc_container.register(cls=TestLockService)
 from src.domain.sms_gateway import SmsGateway
 from src.adapter.driven.sms_gateway_adapter import SmsGatewayAdapter
 
-ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)  # type: ignore
+ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)
 
 # ======================================================================================================================
 # 注册 Driven Adapter - Persistence
@@ -154,9 +171,9 @@ from src.domain.user_unique_specification import UserUniqueSpecification
 from src.application.user_query_handler import UserQueryHandler
 from src.adapter.driven.user_persistence_adapter import UserPersistenceAdapter
 
-ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)  # type: ignore
-ioc_container.register(cls=UserUniqueSpecification, provider_cls=UserPersistenceAdapter)  # type: ignore
-ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)  # type: ignore
+ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)
+ioc_container.register(cls=UserUniqueSpecification, provider_cls=UserPersistenceAdapter)
+ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter)
 
 # ======================================================================================================================
 # 注册 Application Service

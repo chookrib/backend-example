@@ -7,8 +7,8 @@ from src.application.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
 from src.utility import value_utility
 
-user_auth_service = ioc_container.resolve(UserAuthService)  # type: ignore
-user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
+user_auth_service = ioc_container.resolve(UserAuthService)
+user_query_handler = ioc_container.resolve(UserQueryHandler)
 
 
 def get_login_user_id(request: Request) -> str:

@@ -13,8 +13,8 @@ from src.utility import value_utility
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-user_manage_service = ioc_container.resolve(UserManageService)  # type: ignore
-user_query_handler = ioc_container.resolve(UserQueryHandler)  # type: ignore
+user_manage_service = ioc_container.resolve(UserManageService)
+user_query_handler = ioc_container.resolve(UserQueryHandler)
 
 
 @router.post("/api/admin/user/list")
