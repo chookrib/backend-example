@@ -114,6 +114,41 @@ namespace BackendExample.Adapter.Driving
         /// <summary>
         /// 获取请求 json 数据中 string 值，失败返回默认值
         /// </summary>
+        public static string GetRequestJsonStringOrDefault(JsonNode json, string defaultValue, params string[] keys)
+        {
+            JsonValue? value = GetRequestJsonValue(json, keys);
+            if (value == null)
+                return defaultValue;
+            if (value.TryGetValue<string>(out string? result) && result != null)
+                return result;
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 string 值，失败返回空字符串
+        /// </summary>
+        public static string GetRequestJsonStringOrEmpty(JsonNode json, params string[] keys)
+        {
+            return GetRequestJsonStringOrDefault(json, string.Empty, keys);
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 string 值，失败抛出异常
+        /// </summary>
+        public static string GetRequestJsonStringReq(JsonNode json, params string[] keys)
+        {
+            JsonValue value = GetRequestJsonValueReq(json, keys);
+            string? s = null;
+            if (value.TryGetValue<string>(out string? result))
+                s = result;
+            if (s == null || ValueUtility.IsEmptyString(s))
+                throw new ControllerException($"请求体 {string.Join('.', keys)} 值不能为空");
+            return s;
+        }
+
+        /// <summary>
+        /// 获取请求 json 数据中 string 值，失败返回默认值
+        /// </summary>
         public static string GetRequestJsonStringTrimOrDefault(JsonNode json, string defaultValue, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
