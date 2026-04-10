@@ -209,6 +209,29 @@ def get_request_json_time_req(json, *keys: str) -> time:
 
 # ======================================================================================================================
 
+def get_request_param_string_or_default(request: Request, default: str, key: str) -> str:
+    """获取请求参数中 string 值，失败返回默认值"""
+    value = request.query_params.get(key)
+    if value is None:
+        return default
+    return str(value)
+
+
+def get_request_param_string_or_empty(request: Request, key: str) -> str:
+    """获取请求参数中 string 值，失败返回空字符串"""
+    return get_request_param_string_or_default(request, "", key)
+
+
+def get_request_param_string_req(request: Request, key: str) -> str:
+    """获取请求请求参数中 string 值，失败抛出异常"""
+    value = request.query_params.get(key)
+    if value is None:
+        raise ControllerException(f"请求参数缺少 {key}")
+    s = str(value)
+    if value_utility.is_empty_string(s):
+        raise ControllerException(f"请求参数 {key} 值不能为空")
+    return s
+
 def get_request_param_string_trim_or_default(request: Request, default: str, key: str) -> str:
     """获取请求参数中 string 值，失败返回默认值"""
     value = request.query_params.get(key)
