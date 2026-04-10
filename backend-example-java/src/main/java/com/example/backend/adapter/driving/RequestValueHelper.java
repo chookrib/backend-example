@@ -314,6 +314,34 @@ public class RequestValueHelper {
     //==================================================================================================================
 
     /**
+     * 获取请求 json 数据中 string 值，失败返回默认值
+     */
+    public static String getRequestJsonStringOrDefault(JsonNode json, String defaultValue, String... keys) {
+        JsonNode node = getRequestJsonValue(json, keys);
+        if (node.isMissingNode())
+            return defaultValue;
+        return node.asText();
+    }
+
+    /**
+     * 获取请求 json 数据中 string 值，失败返回空字符串
+     */
+    public static String getRequestJsonStringOrEmpty(JsonNode json, String... keys) {
+        return getRequestJsonStringOrDefault(json, "", keys);
+    }
+
+    /**
+     * 获取请求 json 数据中 string 值，失败抛出异常
+     */
+    public static String getRequestJsonStringReq(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueReq(json, keys);
+        String s =  node.asText();
+        if(ValueUtility.isEmptyString(s))
+            throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
+        return s;
+    }
+
+    /**
      * 获取请求参数中 string 值，失败返回默认值
      */
     public static String getRequestParamStringTrimOrDefault(HttpServletRequest request, String defaultValue, String key) {
