@@ -7,6 +7,8 @@ class Accessor:
     def __init__(self):
         # 应用名称
         self.app_name = settings.APP_NAME
+        # 应用运行环境
+        self.app_env = settings.APP_ENV
         # 应用是否为开发环境
         self.app_env_is_dev = settings.APP_ENV.lower() == "dev"
 
