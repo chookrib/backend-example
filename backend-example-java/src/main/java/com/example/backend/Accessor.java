@@ -14,9 +14,16 @@ public class Accessor {
     public static String appName = "";
 
     /**
-     * 应用是否是开发环境
+     * 应用运行环境
      */
-    public static boolean appEnvIsDev = false;
+    public static String appEnv = "";
+
+    /**
+     * 应用运行环境是否是开发环境
+     */
+    public static boolean appEnvIsDev() {
+        return appEnv.equalsIgnoreCase("dev");
+    }
 
     /**
      * Spring 应用上下文
