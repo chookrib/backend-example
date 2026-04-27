@@ -56,7 +56,7 @@ namespace BackendExample
             //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
             // 仅在开发环境打印配置，不记录日志
-            if (Accessor.AppEnvIsDev)
+            if (Accessor.AppEnvIsDev())
             {
                 Console.WriteLine($"Configuration:");
                 PrintConfiguration(builder.Configuration);

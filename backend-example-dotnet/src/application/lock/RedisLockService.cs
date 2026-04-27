@@ -39,7 +39,7 @@ namespace BackendExample.Application.Lock
             {
                 if (this.redisDatabase.StringSet(lockKey, token, expiry, When.NotExists))
                 {
-                    if (Accessor.AppEnvIsDev)
+                    if (Accessor.AppEnvIsDev())
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 成功");
                     return new RedisLockHandle(this.redisDatabase, lockKey, token);
                 }
@@ -61,7 +61,7 @@ namespace BackendExample.Application.Lock
             {
                 if (await this.redisDatabase.StringSetAsync(lockKey, token, expiry, When.NotExists))
                 {
-                    if (Accessor.AppEnvIsDev)
+                    if (Accessor.AppEnvIsDev())
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 异步锁 {key} 成功");
                     return new AsyncRedisLockHandle(this.redisDatabase, lockKey, token);
                 }
@@ -101,7 +101,7 @@ else
     return 0
 end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev)
+                    if (Accessor.AppEnvIsDev())
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 同步锁 {lockKey} 成功");
                 }
             }
@@ -135,7 +135,7 @@ else
     return 0
 end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev)
+                    if (Accessor.AppEnvIsDev())
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 异步锁 {lockKey} 成功");
                 }
             }

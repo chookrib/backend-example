@@ -18,7 +18,10 @@ public class Accessor
     /// <summary>
     /// 应用运行环境是否为开发环境
     /// </summary>
-    public static bool AppEnvIsDev { get{ return AppEnv.ToLower() == "dev"; } }
+    public static bool AppEnvIsDev()
+    {
+        return AppEnv.ToLower() == "dev";
+    }
 
     /// <summary>
     /// 配置
