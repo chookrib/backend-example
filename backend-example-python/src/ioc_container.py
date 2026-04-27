@@ -39,17 +39,17 @@ class IocContainer:
         if cls in self._instances:
             # 需注册的类有可能在构造函数参数实例化时已经构造，故不能判断重复
             # raise TypeError(f"注册 {cls_text} 异常: {cls.__name__} 不能重复注册")
-            if accessor.app_env_is_dev:
+            if accessor.app_env_is_dev():
                 logger.info(f"注册 {cls_text}: IoC容器已存在 {cls.__name__} 实例，跳过注册")
             return self._instances[cls]
         else:
-            if accessor.app_env_is_dev:
+            if accessor.app_env_is_dev():
                 logger.info(f"注册 {cls_text}: 准备实例化 >>>")
 
         if provider_cls is not None and provider_cls in self._instances:
             provider_cls_instance = self._instances[provider_cls]
             self._instances[cls] = provider_cls_instance
-            if accessor.app_env_is_dev:
+            if accessor.app_env_is_dev():
                 logger.info(f"<<< IoC容器已存在 {provider_cls.__name__} 实例，完成注册")
             return provider_cls_instance
 
@@ -73,7 +73,7 @@ class IocContainer:
         if not target_cls in self._instances:
             self._instances[target_cls] = instance
 
-        if accessor.app_env_is_dev:
+        if accessor.app_env_is_dev():
             logger.info(f"<<< 成功实例化 {target_cls.__name__}，完成注册")
 
         return instance
@@ -86,7 +86,7 @@ class IocContainer:
         param_text_prefix = f"{' ' * 4 * len(path)}"
         param_text = f"{param_text_prefix}参数 {param_name} 类型 {param_cls.__name__}"
         if param_cls in self._instances:
-            if accessor.app_env_is_dev:
+            if accessor.app_env_is_dev():
                 logger.info(f"{param_text} 在IoC容器中已存在实例，直接使用")
             return self._instances[param_cls]
         elif inspect.isabstract(param_cls):
@@ -94,7 +94,7 @@ class IocContainer:
 
         sig = inspect.signature(param_cls.__init__)
         kwargs = {}
-        if accessor.app_env_is_dev:
+        if accessor.app_env_is_dev():
             logger.info(f"{param_text} 准备实例化 >>>")
 
         path.append(param_cls)
@@ -108,7 +108,7 @@ class IocContainer:
 
             kwargs[name] = self._register_param(name, dep_cls, path)
         path.pop()
-        if accessor.app_env_is_dev:
+        if accessor.app_env_is_dev():
             logger.info(f"{param_text_prefix}<<< 参数 {param_name} 类型 {param_cls.__name__} 成功实例化并加入IoC容器")
 
         instance = param_cls(**kwargs)
