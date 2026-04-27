@@ -11,9 +11,14 @@ public class Accessor
     public static string AppName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 应用是否为开发环境
+    /// 应用运行环境
     /// </summary>
-    public static bool AppEnvIsDev { get; set; }
+    public static string AppEnv { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 应用运行环境是否为开发环境
+    /// </summary>
+    public static bool AppEnvIsDev { get{ return AppEnv.ToLower() == "dev"; } }
 
     /// <summary>
     /// 配置

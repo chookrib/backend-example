@@ -46,12 +46,14 @@ namespace BackendExample
 
             // 为 Accessor 赋值
             Accessor.Configuration = builder.Configuration;
-            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
-            //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-            Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
             Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
             if (ValueUtility.IsEmptyString(Accessor.AppName))
                 logger.Warn("App:Name 配置缺失");
+            Accessor.AppEnv = builder.Configuration.GetValue<string>("App:Env", string.Empty);
+
+            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
+            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
+            //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
             // 仅在开发环境打印配置，不记录日志
             if (Accessor.AppEnvIsDev)
