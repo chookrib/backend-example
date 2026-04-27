@@ -31,10 +31,10 @@ public class Application {
 
         // 为 Accessor 赋值
         Accessor.appContext = applicationContext;
-        Accessor.appEnv = environment.getProperty("app.env", "");
         Accessor.appName = environment.getProperty("app.name", "");
         if (ValueUtility.isEmptyString(Accessor.appName))
             logger.warn("app.name 配置缺失");
+        Accessor.appEnv = environment.getProperty("app.env", "");
 
         // 仅在开发环境打印配置，不记录日志
         if (Accessor.appEnvIsDev()) {
