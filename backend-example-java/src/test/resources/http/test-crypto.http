@@ -10,7 +10,6 @@
     const HH = pad(d.getHours());
     const mm = pad(d.getMinutes());
     const ss = pad(d.getSeconds());
-
     client.global.set('expiresAt', `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`);
 %}
 GET http://{{host}}/api/.well-known

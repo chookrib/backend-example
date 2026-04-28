@@ -1,16 +1,22 @@
-### 测试请求
+### 测试请求，获取请求体字符串，无请求体
 POST http://{{host}}/api/test/request/string-required
 
-###
+### 测试请求，获取请求体字符串 @RequestBody(required = false)，无请求体
 POST http://{{host}}/api/test/request/string
 
-###
+### 测试请求，获取请求体字符串，请求头 text，请求体 text
 POST http://{{host}}/api/test/request/string
 Content-Type: text/plain; charset=utf-8
 
 test 测试
 
-###
+### 测试请求，获取请求体字符串，请求头 json，请求体 text
+POST http://{{host}}/api/test/request/string
+Content-Type: application/json; charset=utf-8
+
+test 测试
+
+### 测试请求，获取请求体字符串，请求头 json，请求体 json
 POST http://{{host}}/api/test/request/string
 Content-Type: application/json; charset=utf-8
 
@@ -27,25 +33,25 @@ Content-Type: application/json; charset=utf-8
   }
 }
 
-###
+### 测试请求，获取请求体 JsonNode，无请求体
 POST http://{{host}}/api/test/request/jsonnode-required
 
-###
+### 测试请求，获取请求体 JsonNode @RequestBody(required = false)，无请求体
 POST http://{{host}}/api/test/request/jsonnode
 
-###
+### 测试请求，获取请求体 JsonNode，请求头 text，请求体 text
 POST http://{{host}}/api/test/request/jsonnode
 Content-Type: text/plain; charset=utf-8
 
 test 测试
 
-###
+### 测试请求，获取请求体 JsonNode，请求头 json，请求体 text
 POST http://{{host}}/api/test/request/jsonnode
 Content-Type: application/json; charset=utf-8
 
 test 测试
 
-###
+### 测试请求，获取请求体 JsonNode，请求头 json，请求体 json
 POST http://{{host}}/api/test/request/jsonnode
 Content-Type: application/json; charset=utf-8
 
@@ -62,19 +68,25 @@ Content-Type: application/json; charset=utf-8
   }
 }
 
-###
+### 测试请求，获取请求体 Object，无请求体
 POST http://{{host}}/api/test/request/object-required
 
-###
+### 测试请求，获取请求体 Object @RequestBody(required = false)，无请求体
 POST http://{{host}}/api/test/request/object
 
-###
+### 测试请求，获取请求体 Object，请求头 text，请求体 text
 POST http://{{host}}/api/test/request/object
 Content-Type: text/plain; charset=utf-8
 
 test 测试
 
-###
+### 测试请求，获取请求体 Object，请求头 json，请求体 text
+POST http://{{host}}/api/test/request/object
+Content-Type: application/json; charset=utf-8
+
+test 测试
+
+### 测试请求，获取请求体 Object，请求头 json，请求体 json
 POST http://{{host}}/api/test/request/object
 Content-Type: application/json; charset=utf-8
 
