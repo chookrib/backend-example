@@ -102,8 +102,6 @@ Content-Type: application/json
   }
 }
 
-
-
 ###
 GET http://{{host}}/api/test/request/from-query
 
@@ -112,4 +110,3 @@ GET http://{{host}}/api/test/request/from-query?id=
 
 ###
 GET http://{{host}}/api/test/request/from-query?id=1
-

@@ -1,7 +1,5 @@
 ### 登录
-< {%
-    client.global.clearAll();
-%}
+# @name login
 POST http://{{host}}/api/user/login
 Content-Type: application/json
 
@@ -10,14 +8,10 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {%
-    client.global.set('accessToken', response.body.data.accessToken);
-%}
-
 ### 用户列表
 POST http://{{host}}/api/admin/user/list
 Content-Type: application/json
-Access-Token: {{accessToken}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
 {
   "pageNum": 1,

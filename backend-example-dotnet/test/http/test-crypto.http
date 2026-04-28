@@ -1,13 +1,8 @@
-### 准备
-< {%
-    client.global.clearAll();
-    client.global.set('secret', 'jwt-secret-must-long-than-32-str');
-    client.global.set('expiresAt', '2026-01-01 00:00:00');
-    // console.log('client.global', client.global);
-%}
-GET http://{{host}}/api/.well-known
+@secret=jwt-secret-must-long-than-32-str
+@expiresAt={{$localDatetime "yyyy-MM-dd HH:mm:ss" 1 h}} 
 
 ### JWT 编码
+# @name jwtEncode
 POST http://{{host}}/api/test/crypto/jwt-encode
 Content-Type: application/json
 
@@ -21,41 +16,28 @@ Content-Type: application/json
   }
 }
 
-> {%
-    console.log(response.body);
-    client.global.set('token', response.body.data.token);
-%}
-
 ### JWT 解码，正确的 secret
 POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
   "secret": "{{secret}}",
-  "token": "{{token}}"
+  "token": "{{jwtEncode.response.body.$.data.token}}"
 }
-
-> {%
-    console.log(response.body);
-%}
 
 ### JWT 解码，错误的 secret
 POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
-  "secret": "{{$random.uuid}}",
-  "token": "{{token}}"
+  "secret": "jwt-secret-must-long-than-32-str-wrong",
+  "token": "{{jwtEncode.response.body.$.data.token}}"
 }
 
-> {%
-    console.log(response.body);
-%}
-
 ### JWT 编码，已过期
-< {%
-    client.global.set('expiresAtExpired', '2025-01-01 00:00:00');
-%}
+@expiresAtExpired=2025-01-01 00:00:00
+
+# @name jwtEncodeExpired
 POST http://{{host}}/api/test/crypto/jwt-encode
 Content-Type: application/json
 
@@ -69,42 +51,22 @@ Content-Type: application/json
   }
 }
 
-> {%
-    console.log(response.body);
-    client.global.set('tokenExpired', response.body.data.token);
-%}
-
 ### JWT 解码，已过期
 POST http://{{host}}/api/test/crypto/jwt-decode
 Content-Type: application/json
 
 {
   "secret": "{{secret}}",
-  "token": "{{tokenExpired}}"
+  "token": "{{jwtEncodeExpired.response.body.$.data.token}}"
 }
 
-> {%
-    console.log(response.body);
-%}
-
 ### BASE64 编码
+# @name base64Encode
 GET http://{{host}}/api/test/crypto/base64-encode?text=hello
 
-> {%
-    console.log(response.body);
-    client.global.set('base64', response.body.data.base64);
-%}
-
 ### BASE64 解码
-GET http://{{host}}/api/test/crypto/base64-decode?base64={{base64}}
-
-> {%
-    console.log(response.body);
-%}
+GET http://{{host}}/api/test/crypto/base64-decode?base64={{base64Encode.response.body.$.data.base64}}
 
 ### MD5 编码
 GET http://{{host}}/api/test/crypto/md5-encode?text=hello
 
-> {%
-    console.log(response.body);
-%}

@@ -14,10 +14,12 @@ namespace BackendExample.Application.Lock
     public class RedisLockService : LockService
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(RedisLockService));
+
         private readonly IDatabase redisDatabase;
+        private readonly string lockKeyPrefix;
+        private readonly bool enableLog;
 
-
-        public RedisLockService(IConfiguration configuration)
+        public RedisLockService(ApplicationConfig applicationConfig, IConfiguration configuration)
         {
             string redisUrl = configuration.GetValue<string>("App:LockRedisUrl") ?? string.Empty;
             if (ValueUtility.IsEmptyString(redisUrl))
@@ -25,11 +27,14 @@ namespace BackendExample.Application.Lock
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisUrl);
             this.redisDatabase = redis.GetDatabase();     // 根据 redisUrl 中指定的数据库取数据库
+
+            this.lockKeyPrefix = applicationConfig.GetAppName();
+            this.enableLog = applicationConfig.IsAppEnvDev();
         }
 
         public IDisposable Lock(string key, int timeout = 10)
         {
-            string lockKey = Accessor.AppName + ":lock:" + key;
+            string lockKey = this.lockKeyPrefix + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;
@@ -39,9 +44,11 @@ namespace BackendExample.Application.Lock
             {
                 if (this.redisDatabase.StringSet(lockKey, token, expiry, When.NotExists))
                 {
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 成功");
-                    return new RedisLockHandle(this.redisDatabase, lockKey, token);
+                    }
+                    return new RedisLockHandle(this.enableLog, this.redisDatabase, lockKey, token);
                 }
                 Thread.Sleep(200);
             }
@@ -51,7 +58,7 @@ namespace BackendExample.Application.Lock
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 10)
         {
-            string lockKey = Accessor.AppName + ":lock:" + key;
+            string lockKey = this.lockKeyPrefix + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;
@@ -61,9 +68,11 @@ namespace BackendExample.Application.Lock
             {
                 if (await this.redisDatabase.StringSetAsync(lockKey, token, expiry, When.NotExists))
                 {
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 异步锁 {key} 成功");
-                    return new AsyncRedisLockHandle(this.redisDatabase, lockKey, token);
+                    }
+                    return new AsyncRedisLockHandle(this.enableLog, this.redisDatabase, lockKey, token);
                 }
                 await Task.Delay(200);
             }
@@ -78,13 +87,15 @@ namespace BackendExample.Application.Lock
         /// </summary>
         private sealed class RedisLockHandle : IDisposable
         {
+            private readonly bool enableLog;
             private readonly IDatabase redisDatabase;
             private readonly string lockKey;
             private readonly string token;
             private bool isDisposed;
 
-            public RedisLockHandle(IDatabase redisDatabase, string lockKey, string token)
+            public RedisLockHandle(bool enableLog, IDatabase redisDatabase, string lockKey, string token)
             {
+                this.enableLog = enableLog;
                 this.redisDatabase = redisDatabase;
                 this.lockKey = lockKey;
                 this.token = token;
@@ -101,8 +112,10 @@ else
     return 0
 end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 同步锁 {lockKey} 成功");
+                    }
                 }
             }
         }
@@ -112,13 +125,15 @@ end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
         /// </summary>
         private sealed class AsyncRedisLockHandle : IAsyncDisposable
         {
+            private readonly bool enableLog;
             private readonly IDatabase redisDatabase;
             private readonly string lockKey;
             private readonly string token;
             private bool isDisposed;
 
-            public AsyncRedisLockHandle(IDatabase redisDatabase, string lockKey, string token)
+            public AsyncRedisLockHandle(bool enableLog, IDatabase redisDatabase, string lockKey, string token)
             {
+                this.enableLog = enableLog;
                 this.redisDatabase = redisDatabase;
                 this.lockKey = lockKey;
                 this.token = token;
@@ -135,8 +150,10 @@ else
     return 0
 end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 异步锁 {lockKey} 成功");
+                    }
                 }
             }
         }

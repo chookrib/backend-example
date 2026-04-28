@@ -54,6 +54,11 @@ namespace BackendExample.Application
         /// </summary>
         public string GetLoginUserId(string accessToken)
         {
+            if (ValueUtility.IsEmptyString(accessToken))
+            {
+                return string.Empty;
+            }
+
             try
             {
                 IDictionary<string, object> payload = CryptoUtility.JwtDecode(accessToken, this.jwtSecret);
@@ -66,6 +71,20 @@ namespace BackendExample.Application
             {
                 return string.Empty;
             }
+        }
+
+        /// <summary>
+        /// 根据 AccessToken 获取登录用户
+        /// </summary>
+        public async Task<User?> GetLoginUser(string accessToken)
+        {
+            string loginUserId = GetLoginUserId(accessToken);
+            if (ValueUtility.IsEmptyString(loginUserId))
+            {
+                return null;
+            }
+
+            return await this.userRepository.SelectById(loginUserId);
         }
     }
 }

@@ -1,13 +1,5 @@
 ### 登录
-< {%
-    client.global.clearAll();
-
-    const rnd = $random.name.username;
-    client.global.set('username', rnd);
-    // console.log('client.global', client.global);
-    // request.variables.set('username', rnd);
-    // console.log(.variables);
-%}
+# @name login
 POST http://{{host}}/api/user/login
 Content-Type: application/json
 
@@ -16,14 +8,12 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {%
-    client.global.set('accessToken', response.body.data.accessToken);
-%}
-
 ### 创建
+@username={{$timestamp}}
+# @name create
 POST http://{{host}}/api/admin/user/create
 Content-Type: application/json
-Access-Token: {{accessToken}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
 {
   "username": "{{username}}",
@@ -33,42 +23,37 @@ Access-Token: {{accessToken}}
   "mobile": ""
 }
 
-> {%
-    client.global.set("userId", response.body.data.id);
-%}
-
 ### 创建后获取
-GET http://{{host}}/api/admin/user/get?id={{userId}}
-Access-Token: {{accessToken}}
+GET http://{{host}}/api/admin/user/get?id={{create.response.body.$.data.id}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
-### 更新手机
+### 更新
 POST http://{{host}}/api/admin/user/modify
 Content-Type: application/json
-Access-Token: {{accessToken}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
 {
-  "id": "{{userId}}",
+  "id": "{{create.response.body.$.data.id}}",
   "username": "{{username}}",
   "password": "password",
   "confirmPassword": "password",
   "nickname": "{{username}}",
-  "mobile": "138{{$random.integer(10000000, 99999999)}}"
+  "mobile": "138{{$randomInt 10000000 99999999}}"
 }
 
 ### 更新手机后获取
-GET http://{{host}}/api/admin/user/get?id={{userId}}
-Access-Token: {{accessToken}}
+GET http://{{host}}/api/admin/user/get?id={{create.response.body.$.data.id}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
 ### 删除
 POST http://{{host}}/api/admin/user/remove
-Access-Token: {{accessToken}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
 {
-  "id": "{{userId}}"
+  "id": "{{create.response.body.$.data.id}}"
 }
 
 ### 删除后获取
-GET http://{{host}}/api/admin/user/get?id={{userId}}
-Access-Token: {{accessToken}}
-
+GET http://{{host}}/api/admin/user/get?id={{create.response.body.$.data.id}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 

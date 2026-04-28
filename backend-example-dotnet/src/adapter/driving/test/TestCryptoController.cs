@@ -36,25 +36,25 @@ namespace BackendExample.Adapter.Driving.Test
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string secret = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "secret");
             string token = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "token");
-            IDictionary<string, object> payload = CryptoUtility.JwtDecode(token, secret);
+            IDictionary<string, object> payloadDecode = CryptoUtility.JwtDecode(token, secret);
 
-            string headerDecoded = string.Empty;
-            string payloadDecoded = string.Empty;
+            string part0Decoded = string.Empty;
+            string part1Decoded = string.Empty;
             string[] tokenParts = token.Split('.');
             if (tokenParts.Length > 1)
             {
-                headerDecoded = CryptoUtility.Base64Decode(tokenParts[0]);
+                part0Decoded = CryptoUtility.Base64Decode(tokenParts[0]);
             }
             if (tokenParts.Length > 2)
             {
-                payloadDecoded = CryptoUtility.Base64Decode(tokenParts[1]);
+                part1Decoded = CryptoUtility.Base64Decode(tokenParts[1]);
             }
 
             return Result.OkData(new
             {
-                payload = JsonUtility.Serialize(payload), // 手动序列化，防止受全局 json 转换影响,
-                headerDecoded = headerDecoded,
-                payloadDecoded = payloadDecoded
+                payloadDecode = JsonUtility.Serialize(payloadDecode), // 手动序列化，防止受全局 json 转换影响,
+                part0Decoded = part0Decoded,
+                part1Decoded = part1Decoded
             });
         }
 

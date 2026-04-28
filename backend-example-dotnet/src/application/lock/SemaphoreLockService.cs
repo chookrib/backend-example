@@ -11,7 +11,13 @@ namespace BackendExample.Application.Lock
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(SemaphoreLockService));
 
+        private readonly bool enableLog;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> locks = new();
+
+        public SemaphoreLockService(ApplicationConfig applicationConfig)
+        {
+            this.enableLog = applicationConfig.IsAppEnvDev();
+        }
 
         public IDisposable Lock(string key, int timeout = 30)
         {
@@ -23,9 +29,11 @@ namespace BackendExample.Application.Lock
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (Accessor.AppEnvIsDev())
+            if (this.enableLog)
+            {
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
-            return new SemaphoreLockHandler(semaphore, key);
+            }
+            return new SemaphoreLockHandler(this.enableLog, semaphore, key);
         }
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 30)
@@ -38,9 +46,11 @@ namespace BackendExample.Application.Lock
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (Accessor.AppEnvIsDev())
+            if (this.enableLog)
+            {
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
-            return new AsyncSemaphoreLockHandler(semaphore, key);
+            }
+            return new AsyncSemaphoreLockHandler(this.enableLog, semaphore, key);
         }
 
         /// <summary>
@@ -48,12 +58,14 @@ namespace BackendExample.Application.Lock
         /// </summary>
         public sealed class SemaphoreLockHandler : IDisposable
         {
+            private readonly bool enableLog;
             private readonly SemaphoreSlim semaphore;
             private readonly string key;
             bool isDisposed = false;
 
-            public SemaphoreLockHandler(SemaphoreSlim semaphore, string key)
+            public SemaphoreLockHandler(bool enableLog, SemaphoreSlim semaphore, string key)
             {
+                this.enableLog = enableLog;
                 this.semaphore = semaphore;
                 this.key = key;
             }
@@ -64,8 +76,10 @@ namespace BackendExample.Application.Lock
                 {
                     this.semaphore.Release();
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
+                    }
                 }
             }
         }
@@ -75,12 +89,14 @@ namespace BackendExample.Application.Lock
         /// </summary>
         public sealed class AsyncSemaphoreLockHandler : IAsyncDisposable
         {
+            private readonly bool enableLog;
             private readonly SemaphoreSlim semaphore;
             private readonly string key;
             bool isDisposed = false;
 
-            public AsyncSemaphoreLockHandler(SemaphoreSlim semaphore, string key)
+            public AsyncSemaphoreLockHandler(bool enableLog, SemaphoreSlim semaphore, string key)
             {
+                this.enableLog = enableLog;
                 this.semaphore = semaphore;
                 this.key = key;
             }
@@ -91,8 +107,10 @@ namespace BackendExample.Application.Lock
                 {
                     this.semaphore.Release();
                     this.isDisposed = true;
-                    if (Accessor.AppEnvIsDev())
+                    if (this.enableLog)
+                    {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
+                    }
                 }
                 return default;
             }

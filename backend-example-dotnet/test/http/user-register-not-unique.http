@@ -1,14 +1,4 @@
-### 准备
-< {%
-    client.global.clearAll();
-
-    const rnd = $random.name.username;
-    client.global.set('username', rnd);
-    // console.log('client.global', client.global);
-    // request.variables.set('username', rnd);
-    // console.log(.variables);
-%}
-GET http://{{host}}/api/.well-known
+@username=user2
 
 ### 注册
 POST http://{{host}}/api/user/register

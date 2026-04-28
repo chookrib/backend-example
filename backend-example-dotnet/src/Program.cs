@@ -44,25 +44,9 @@ namespace BackendExample
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            // 为 Accessor 赋值
-            Accessor.Configuration = builder.Configuration;
-            Accessor.AppName = builder.Configuration.GetValue<string>("App:Name", string.Empty);
-            if (ValueUtility.IsEmptyString(Accessor.AppName))
-                logger.Warn("App:Name 配置缺失");
-            Accessor.AppEnv = builder.Configuration.GetValue<string>("App:Env", string.Empty);
-
-            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("App:Env", string.Empty).ToLower() == "dev";
-            //Accessor.AppEnvIsDev = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
-            //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-
-            // 仅在开发环境打印配置，不记录日志
-            if (Accessor.AppEnvIsDev())
-            {
-                Console.WriteLine($"Configuration:");
-                PrintConfiguration(builder.Configuration);
-            }
-
             // =========================================================================================================
+            // 注册 ApplicationConfig
+            builder.Services.AddSingleton<ApplicationConfig>();
 
             // 注册锁 Service
             string lockService = builder.Configuration.GetValue<string>("App:LockService", "semaphore").ToLower();
@@ -122,11 +106,9 @@ namespace BackendExample
 
             WebApplication app = builder.Build();
 
-            Accessor.ServiceProvider = app.Services;
-
             // Configure the HTTP request pipeline.
 
-            //app.UseAuthorization();
+            // app.UseAuthorization();
 
             // 全局异常处理
             app.UseExceptionHandler(configure =>
@@ -153,9 +135,25 @@ namespace BackendExample
 
             app.MapControllers();
 
-            app.Run();
+            //==========================================================================================================
 
-            logger.Info($"应用启动完成: {Accessor.AppName}");
+            ApplicationConfig applicationConfig = app.Services.GetRequiredService<ApplicationConfig>();
+
+            // 仅在开发环境打印配置，不记录日志
+            if (applicationConfig.IsAppEnvDev())
+            {
+                Console.WriteLine($"Configuration:");
+                PrintConfiguration(builder.Configuration);
+            }
+
+            if (ValueUtility.IsEmptyString(applicationConfig.GetAppName()))
+                logger.Warn("App:Name 配置缺失");
+
+            logger.Info($"应用启动完成: {applicationConfig.GetAppName()}");
+
+            //==========================================================================================================
+
+            app.Run();
         }
 
         #region json 转换器

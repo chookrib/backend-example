@@ -9,11 +9,13 @@ namespace BackendExample.Adapter.Driving
     /// </summary>
     public class UserManageController : ControllerBase
     {
+        private readonly UserAuthService userAuthService;
         private readonly UserQueryHandler userQueryHandler;
         private readonly UserManageService userManageService;
 
-        public UserManageController(UserQueryHandler userQueryHandler, UserManageService userManageService)
+        public UserManageController(UserAuthService userAuthService, UserQueryHandler userQueryHandler, UserManageService userManageService)
         {
+            this.userAuthService = userAuthService;
             this.userQueryHandler = userQueryHandler;
             this.userManageService = userManageService;
         }
@@ -24,7 +26,7 @@ namespace BackendExample.Adapter.Driving
         [HttpPost("/api/admin/user/list")]
         public async Task<Result> UserList()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request, this.userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             int pageNum = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -60,7 +62,7 @@ namespace BackendExample.Adapter.Driving
         [HttpGet("/api/admin/user/get")]
         public async Task<Result> UserGet()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request, this.userAuthService);
 
             string id = RequestValueHelper.GetRequestParamStringTrimReq(Request, "id");
             UserDto userDto = await this.userQueryHandler.QueryByIdReq(id);
@@ -76,7 +78,7 @@ namespace BackendExample.Adapter.Driving
         [HttpPost("/api/admin/user/create")]
         public async Task<Result> UserCreate()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request, this.userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
@@ -97,7 +99,7 @@ namespace BackendExample.Adapter.Driving
         [HttpPost("/api/admin/user/modify")]
         public async Task<Result> UserModify()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request, this.userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
@@ -116,7 +118,7 @@ namespace BackendExample.Adapter.Driving
         [HttpPost("/api/admin/user/remove")]
         public async Task<Result> UserRemove()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request);
+            await RequestAuthHelper.RequireLoginUserAdmin(Request, this.userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");

@@ -1,16 +1,7 @@
-### 准备
-< {%
-    client.global.clearAll();
-
-    const rnd = $random.name.username;
-    client.global.set('username', rnd);
-    // console.log('client.global', client.global);
-    // request.variables.set('username', rnd);
-    // console.log(.variables);
-%}
-GET http://{{host}}/api/.well-known
+@username=user1
 
 ### 注册
+# {{username}} 每次都会计算，故不能到
 POST http://{{host}}/api/user/register
 Content-Type: application/json
 
@@ -21,10 +12,8 @@ Content-Type: application/json
   "nickname": "{{username}}"
 }
 
-> {%
-%}
-
 ### 登录
+# @name login
 POST http://{{host}}/api/user/login
 Content-Type: application/json
 
@@ -33,11 +22,7 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {%
-    client.global.set('accessToken', response.body.data.accessToken);
-%}
-
 ### 取用户信息
 GET http://{{host}}/api/user/profile
-Access-Token: {{accessToken}}
+Access-Token: {{login.response.body.$.data.accessToken}}
 
