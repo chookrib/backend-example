@@ -4,11 +4,11 @@ from datetime import datetime
 import aiosqlite
 
 from src.adapter.driven.persistence_exception import PersistenceException
+from src.application.application_config import application_config
 from src.application.user_dto import UserDto
 from src.application.user_query_criteria import UserQueryCriteria
 from src.application.user_query_handler import UserQueryHandler
 from src.application.user_query_sort import UserQuerySort
-from src.config import settings
 from src.domain.user import User
 from src.domain.user_repository import UserRepository
 from src.domain.user_unique_specification import UserUniqueSpecification
@@ -19,10 +19,10 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     """用户持久化Adapter"""
 
     def __init__(self):
-        if value_utility.is_empty_string(settings.APP_SQLITE_PATH):
+        if value_utility.is_empty_string(application_config.APP_SQLITE_PATH):
             raise PersistenceException("APP_SQLITE_PATH 配置错误")
         # self.db_path = str(Path(__file__).resolve().parents[4] / settings.APP_SQLITE_PATH)
-        self.db_path = os.path.join(os.getcwd(), settings.APP_SQLITE_PATH)
+        self.db_path = os.path.join(os.getcwd(), application_config.APP_SQLITE_PATH)
         self.table_name = "t_user" + datetime.now().strftime("%Y%m%d%H%M%S")
 
     async def init(self) -> None:
@@ -74,14 +74,14 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                              values
                                  (?, ?, ?, ?, ?, ?, ?, ?)
                              """, (
-                                 entity.id,
-                                 entity.username,
-                                 entity.password,
-                                 entity.nickname,
-                                 entity.mobile,
-                                 int(entity.is_admin),
-                                 value_utility.format_datetime(entity.created_at),
-                                 value_utility.format_datetime(entity.updated_at)
+                entity.id,
+                entity.username,
+                entity.password,
+                entity.nickname,
+                entity.mobile,
+                int(entity.is_admin),
+                value_utility.format_datetime(entity.created_at),
+                value_utility.format_datetime(entity.updated_at)
             ))
             await db.commit()
 
@@ -98,15 +98,15 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                                  u_updated_at = ?
                              where u_id = ?
                              """, (
-                                 entity.username,
-                                 entity.password,
-                                 entity.nickname,
-                                 entity.mobile,
-                                 int(entity.is_admin),
-                                 value_utility.format_datetime(entity.created_at),
-                                 value_utility.format_datetime(entity.updated_at),
-                                 entity.id
-                             ))
+                entity.username,
+                entity.password,
+                entity.nickname,
+                entity.mobile,
+                int(entity.is_admin),
+                value_utility.format_datetime(entity.created_at),
+                value_utility.format_datetime(entity.updated_at),
+                entity.id
+            ))
             await db.commit()
 
     async def delete_by_id(self, id: str) -> None:

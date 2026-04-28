@@ -4,11 +4,9 @@ from collections import defaultdict
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from src.accessor import accessor
-from src.application.application_exception import ApplicationException
 from src.application.lock.lock_exception import LockException
 from src.application.lock.lock_service import LockService
-from src.config import settings
+from src.application.application_config import application_config
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +18,10 @@ class AsyncioLockService(LockService):
 
     def __init__(self):
         # 使用 defaultdict 来为每个新的 key 自动创建一个 asyncio.Lock
-        self._locks = defaultdict(asyncio.Lock)
+        self.locks = defaultdict(asyncio.Lock)
         # 这个锁用于保护对 _locks 字典的并发访问，防止竞态条件
-        self._internal_lock = asyncio.Lock()
+        self.internal_lock = asyncio.Lock()
+        self.enable_log = application_config.is_app_env_dev()
 
     @asynccontextmanager
     async def lock_async(self, key: str, timeout: float = 10.0) -> AsyncGenerator[None, None]:
@@ -32,12 +31,12 @@ class AsyncioLockService(LockService):
         :param key: 锁标识
         :param timeout: 获取锁的超时时间（秒）
         """
-        async with self._internal_lock:
-            resource_lock = self._locks[key]
+        async with self.internal_lock:
+            resource_lock = self.locks[key]
 
         try:
             await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
-            if accessor.app_env_is_dev():
+            if self.enable_log:
                 logger.info(f"获取 asyncio 锁 {key} 成功")
             yield
         except asyncio.TimeoutError as ex:
@@ -45,5 +44,5 @@ class AsyncioLockService(LockService):
             raise LockException(f"获取 asyncio 锁 {key} 超时") from ex
         finally:
             resource_lock.release()
-            if accessor.app_env_is_dev():
+            if self.enable_log:
                 logger.info(f"释放 asyncio 锁 {key} 成功")

@@ -8,10 +8,9 @@ from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 
-from src.accessor import accessor
 from src.adapter.driving import result_codes
 from src.adapter.driving.result import Result
-from src.config import settings
+from src.application.application_config import application_config
 from src.utility import json_utility, value_utility
 
 # 设置日志格式
@@ -49,15 +48,19 @@ for logger_name in [
 async def lifespan(app: FastAPI):
     """自定义 FastAPI 生命周期管理器"""
 
-    # yield 之前的代码会在 FastAPI 启动前执行
+    # 服务初始化
+    from src.ioc_container import ioc_container
+    from src.domain.user_repository import UserRepository
+    user_repository = ioc_container.resolve(UserRepository)
+    await user_repository.init()
 
     # 仅在开发环境打印配置，不记录日志
-    if accessor.app_env_is_dev():
+    if application_config.is_app_env_dev():
         # 打印 pydantic_settings
         print(
             # "\033[31m" +
             "pydantic_settings:\n"
-            + "\n".join(f"    {key} = {value}" for key, value in settings.__dict__.items())
+            + "\n".join(f"    {key} = {value}" for key, value in application_config.__dict__.items())
             # + "\033[0m"
         )
 
@@ -69,24 +72,18 @@ async def lifespan(app: FastAPI):
             # + "\033[0m"
         )
 
-    # 服务初始化
-    from src.ioc_container import ioc_container
-    from src.domain.user_repository import UserRepository
-    user_repository = ioc_container.resolve(UserRepository)
-    await user_repository.init()
-
-    if value_utility.is_empty_string(accessor.app_name):
+    if value_utility.is_empty_string(application_config.APP_NAME):
         logger.warning(f"APP_NAME 配置缺失")
-    logger.info(f"应用启动完成: {settings.APP_NAME}")
+    logger.info(f"应用启动完成: {application_config.APP_NAME}")
 
+    # yield 之前的代码会在 FastAPI 启动前执行
     yield
-
     # yield 之后的代码会在 FastAPI 关闭前执行
 
 
 # 创建 FastAPI 实例
 app = FastAPI(
-    debug=accessor.app_env_is_dev(),
+    debug=application_config.is_app_env_dev(),
     docs_url=None,  # Swagger UI 文档的路径 /docs
     redoc_url=None,  # ReDoc 文档的路径 /redoc
     openapi_url=None,  # OpenAPI 文档的路径 /openapi.json

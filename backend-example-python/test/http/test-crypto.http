@@ -1,9 +1,16 @@
 ### 准备
 < {%
-    client.global.clearAll();
     client.global.set('secret', 'jwt-secret-must-long-than-32-str');
-    client.global.set('expiresAt', '2026-01-01 00:00:00');
-    // console.log('client.global', client.global);
+
+    const d = new Date(Date.now() + 60 * 60 * 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const MM = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const HH = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+    client.global.set('expiresAt', `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`);
 %}
 GET http://{{host}}/api/.well-known
 

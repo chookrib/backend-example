@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
+from src.application.application_config import application_config
 from src.application.application_exception import ApplicationException
-from src.config import settings
 from src.domain.user_repository import UserRepository
 from src.utility import crypto_utility, value_utility
 
@@ -10,12 +10,12 @@ class UserAuthService:
     """用户认证Service"""
 
     def __init__(self, user_repository: UserRepository):
-        if not value_utility.is_empty_string(settings.APP_JWT_SECRET):
-            self.jwt_secret = settings.APP_JWT_SECRET
+        if not value_utility.is_empty_string(application_config.APP_JWT_SECRET):
+            self.jwt_secret = application_config.APP_JWT_SECRET
         else:
             raise ApplicationException(f"APP_JWT_SECRET 配置错误")
         try:
-            self.jwt_expires_minute = crypto_utility.jwt_expires_minute(settings.APP_JWT_EXPIRES)
+            self.jwt_expires_minute = crypto_utility.jwt_expires_minute(application_config.APP_JWT_EXPIRES)
         except Exception as ex:
             raise ApplicationException(f"APP_JWT_EXPIRES 配置错误") from ex
         self.user_repository = user_repository

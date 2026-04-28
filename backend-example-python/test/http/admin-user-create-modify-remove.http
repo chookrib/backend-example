@@ -1,26 +1,8 @@
-### 登录
+### 创建
 < {%
-    client.global.clearAll();
-
     const rnd = $random.name.username;
     client.global.set('username', rnd);
-    // console.log('client.global', client.global);
-    // request.variables.set('username', rnd);
-    // console.log(.variables);
 %}
-POST http://{{host}}/api/user/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "password"
-}
-
-> {%
-    client.global.set('accessToken', response.body.data.accessToken);
-%}
-
-### 创建
 POST http://{{host}}/api/admin/user/create
 Content-Type: application/json
 Access-Token: {{accessToken}}

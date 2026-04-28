@@ -7,11 +7,10 @@ from typing import AsyncGenerator
 
 import redis.asyncio as redis
 
-from src.accessor import accessor
+from src.application.application_config import application_config
 from src.application.application_exception import ApplicationException
 from src.application.lock.lock_exception import LockException
 from src.application.lock.lock_service import LockService
-from src.config import settings
 from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
@@ -32,11 +31,13 @@ class RedisLockService(LockService):
 
     # def __init__(self, redis_client: redis.Redis):
     def __init__(self):
-        if value_utility.is_empty_string(settings.APP_LOCK_REDIS_URL):
+        if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_URL):
             raise ApplicationException("APP_LOCK_REDIS_URL 配置错误")
-        self.redis = redis.from_url(settings.APP_LOCK_REDIS_URL)
+        self.redis = redis.from_url(application_config.APP_LOCK_REDIS_URL)
         # 注册 Lua 脚本以提高效率
-        self._release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
+        self.release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
+        self.lock_key_prefix = application_config.APP_NAME
+        self.enable_log = application_config.is_app_env_dev()
 
     @asynccontextmanager
     async def lock_async(
@@ -53,7 +54,7 @@ class RedisLockService(LockService):
         # lease_time: int = 30  # 锁的租约时间（秒）。锁会自动在这个时间后释放，防止死锁
         poll_interval: float = 0.2  # 尝试获取锁的轮询间隔（秒）
 
-        lock_key = f"{accessor.app_name}:lock:{key}"
+        lock_key = f"{self.lock_key_prefix}:lock:{key}"
         lock_value = str(uuid.uuid4())
 
         start_time = time.monotonic()
@@ -67,18 +68,18 @@ class RedisLockService(LockService):
             if await self.redis.set(lock_key, lock_value, nx=True):
                 acquired = True
                 break
-            await asyncio.sleep(poll_interval)      # 等待一断时间后尝试重新获取锁
+            await asyncio.sleep(poll_interval)  # 等待一断时间后尝试重新获取锁
 
         if not acquired:
             # raise TimeoutError(f"获取 redis 锁 {lock_key} 超时")
             raise LockException(f"获取 redis 锁 {lock_key} 超时")
 
         try:
-            if accessor.app_env_is_dev():
+            if self.enable_log:
                 logger.info(f"获取 redis 锁 {lock_key} 成功")
             yield
         finally:
             # 使用 Lua 脚本原子地检查并释放锁
-            await self._release_script(keys=[lock_key], args=[lock_value])
-            if accessor.app_env_is_dev():
+            await self.release_script(keys=[lock_key], args=[lock_value])
+            if self.enable_log:
                 logger.info(f"释放 redis 锁 {lock_key} 成功")
