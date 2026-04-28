@@ -1,9 +1,6 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.application.UserDto;
-import com.example.backend.application.UserManageService;
-import com.example.backend.application.UserQueryCriteria;
-import com.example.backend.application.UserQueryHandler;
+import com.example.backend.application.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +16,12 @@ public class UserManageController {
 
     private final UserQueryHandler userQueryHandler;
     private final UserManageService userManageService;
+    private final UserAuthService userAuthService;
 
-    public UserManageController(UserQueryHandler userQueryHandler, UserManageService userManageService) {
+    public UserManageController(UserQueryHandler userQueryHandler, UserManageService userManageService, UserAuthService userAuthService) {
         this.userQueryHandler = userQueryHandler;
         this.userManageService = userManageService;
+        this.userAuthService = userAuthService;
     }
 
     /**
@@ -30,7 +29,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/list", method = RequestMethod.POST)
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request);
+        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         int pageNum = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -63,7 +62,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/get", method = RequestMethod.GET)
     public Result userGet(HttpServletRequest request) {
-        RequestAuthHelper.requireLoginUserAdmin(request);
+        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
 
         String id = RequestValueHelper.getRequestParamStringTrimReq(request, "id");
         UserDto userDto = this.userQueryHandler.queryByIdReq(id);
@@ -77,7 +76,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/create", method = RequestMethod.POST)
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request);
+        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
@@ -96,7 +95,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/modify", method = RequestMethod.POST)
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request);
+        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
@@ -114,7 +113,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/remove", method = RequestMethod.POST)
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request);
+        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");

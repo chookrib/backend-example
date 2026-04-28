@@ -1,6 +1,6 @@
 package com.example.backend.application.lock;
 
-import com.example.backend.Accessor;
+import com.example.backend.application.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,17 +15,24 @@ public class ReentrantLockService implements LockService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReentrantLockService.class);
 
+    private final boolean enableLog;
+
     // 存储锁对象的Map，Key为锁标识，Value为ReentrantLock实例
     private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
+
+    public ReentrantLockService(boolean enableLog){
+        this.enableLog = enableLog;
+    }
 
     @Override
     public AutoCloseable lock(String key) {
         ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
-                if (Accessor.appEnvIsDev())
+                if (enableLog) {
                     logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
-                return new ReentrantLockHandler(lock, key);
+                }
+                return new ReentrantLockHandler(enableLog, lock, key);
             } else {
                 throw new LockException(String.format("获取 Reentrant 锁 %s 失败", key));
             }
@@ -39,10 +46,12 @@ public class ReentrantLockService implements LockService {
      */
     private static class ReentrantLockHandler implements AutoCloseable {
 
+        private final boolean enableLog;
         private final ReentrantLock reentrantLock;
         private final String key;
 
-        public ReentrantLockHandler(ReentrantLock reentrantLock, String key) {
+        public ReentrantLockHandler(boolean enableLog, ReentrantLock reentrantLock, String key) {
+            this.enableLog = enableLog;
             this.reentrantLock = reentrantLock;
             this.key = key;
         }
@@ -51,8 +60,9 @@ public class ReentrantLockService implements LockService {
         public void close() {
             if(this.reentrantLock.isLocked() && this.reentrantLock.isHeldByCurrentThread()) {
                 this.reentrantLock.unlock();
-                if (Accessor.appEnvIsDev())
+                if (enableLog) {
                     logger.info("线程 {} 释放 Reentrant 锁 {} 成功", Thread.currentThread().getName(), key);
+                }
             }
         }
     }

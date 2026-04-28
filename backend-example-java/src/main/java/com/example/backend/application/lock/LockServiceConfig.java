@@ -1,5 +1,6 @@
 package com.example.backend.application.lock;
 
+import com.example.backend.application.ApplicationConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +15,10 @@ public class LockServiceConfig {
             havingValue = "reentrant",
             matchIfMissing = true
     )
-    public LockService reentrantLockService() {
-        return new ReentrantLockService();
+    public LockService reentrantLockService(ApplicationConfig applicationConfig) {
+        return new ReentrantLockService(
+                applicationConfig.isAppEnvDev()
+        );
     }
 
     //==================================================================================================================
@@ -34,8 +37,10 @@ public class LockServiceConfig {
             name = "app.lock-service",
             havingValue = "redisson"
     )
-    public LockService redissonLockService() {
+    public LockService redissonLockService(ApplicationConfig applicationConfig) {
         return new RedissonLockService(
+                applicationConfig.getAppName(),
+                applicationConfig.isAppEnvDev(),
                 this.redissonAddress,
                 this.redissonPassword,
                 this.redissonDatabase

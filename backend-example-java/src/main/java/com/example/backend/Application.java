@@ -1,5 +1,6 @@
 package com.example.backend;
 
+import com.example.backend.application.ApplicationConfig;
 import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +28,12 @@ public class Application {
                 props.getProperty("Build-Time", ""),
                 props.getProperty("Git-Commit-Id-Abbrev", ""));
 
-        ConfigurableEnvironment environment = applicationContext.getEnvironment();
-
-        // 为 Accessor 赋值
-        Accessor.appContext = applicationContext;
-        Accessor.appName = environment.getProperty("app.name", "");
-        if (ValueUtility.isEmptyString(Accessor.appName))
-            logger.warn("app.name 配置缺失");
-        Accessor.appEnv = environment.getProperty("app.env", "");
+        ApplicationConfig applicationConfig = applicationContext.getBean(ApplicationConfig.class);
 
         // 仅在开发环境打印配置，不记录日志
-        if (Accessor.appEnvIsDev()) {
+        if (applicationConfig.isAppEnvDev()) {
             // 打印 environment
+            ConfigurableEnvironment environment = applicationContext.getEnvironment();
             System.out.println("environment:");
             environment.getPropertySources().forEach(propertySource -> {
                 if (propertySource.getSource() instanceof java.util.Map) {
@@ -49,7 +44,13 @@ public class Application {
             });
         }
 
-        logger.info("应用启动完成: {}", Accessor.appName);
+        // ConfigurableEnvironment environment = applicationContext.getEnvironment();
+        // String appName = environment.getProperty("app.name", "");
+        if (ValueUtility.isEmptyString(applicationConfig.getAppName())) {
+            logger.warn("app.name 配置缺失");
+        }
+
+        logger.info("应用启动完成: {}", applicationConfig.getAppName());
     }
 
     /**

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,11 +61,27 @@ public class UserAuthService {
      * 根据 AccessToken 获取登录用户 Id
      */
     public String getLoginUserId(String accessToken) {
+        if (ValueUtility.isEmptyString(accessToken)) {
+            return "";
+        }
+
         try {
             Map<String, ?> payload = CryptoUtility.jwtDecode(accessToken, this.jwtSecret);
             return String.valueOf(payload.get("id"));
         } catch (Exception ex) {
             return "";
         }
+    }
+
+    /**
+     * 根据 AccessToken 获取登录用户
+     */
+    public User getLoginUser(String accessToken) {
+        String loginUserId = getLoginUserId(accessToken);
+        if (ValueUtility.isEmptyString(loginUserId)) {
+            return null;
+        }
+
+        return userRepository.selectById(loginUserId);
     }
 }
