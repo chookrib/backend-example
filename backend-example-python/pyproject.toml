@@ -3,7 +3,7 @@ name = "backend-example-python"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "aiosqlite>=0.21.0",
     "fastapi>=0.123.9",
