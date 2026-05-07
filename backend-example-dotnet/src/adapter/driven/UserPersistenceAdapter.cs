@@ -27,24 +27,25 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             conn.Execute($"""
-                create table if not exists {this.tableName}
+                CREATE TABLE IF NOT EXISTS {this.tableName}
                 (
-                    u_id text primary key,
-                    u_username text,
-                    u_password text,
-                    u_nickname text,
-                    u_mobile text,
-                    u_is_admin integer,
-                    u_created_at text,
-                    u_updated_at text
+                    u_id TEXT PRIMARY KEY,
+                    u_username TEXT,
+                    u_password TEXT,
+                    u_nickname TEXT,
+                    u_mobile TEXT,
+                    u_is_admin INTEGER,
+                    u_created_at TEXT,
+                    u_updated_at TEXT
                 )
                 """);
-            conn.Execute($"delete from {this.tableName} where lower(u_username) = 'admin'");
+            conn.Execute($"DELETE FROM {this.tableName} WHERE LOWER(u_username) = 'admin'");
             conn.Execute($"""
-                insert into {this.tableName}
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
-                values
-                    ('0', 'admin', '{CryptoUtility.Md5Encode("password")}', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
+                INSERT INTO {this.tableName} (
+                    u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                ) VALUES (
+                    '0', 'admin', '{CryptoUtility.Md5Encode("password")}', '管理员', '', 1, DATETIME('now', 'localtime'), DATETIME('now', 'localtime')
+                )
                 """);
         }
 
@@ -67,10 +68,11 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             await conn.ExecuteAsync($"""
-                insert into {this.tableName}
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
-                values
-                    (@id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt)
+                INSERT INTO {this.tableName} (
+                    u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                ) VALUES (
+                    @id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt
+                )
                 """, new
             {
                 id = entity.Id,
@@ -89,15 +91,16 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             await conn.ExecuteAsync($"""
-                update {this.tableName} set
-                    u_username = @username,
-                    u_password = @password,
-                    u_nickname = @nickname,
-                    u_mobile = @mobile,
-                    u_is_admin = @isAdmin,
-                    u_created_at = @createdAt,
-                    u_updated_at = @updatedAt
-                where
+                UPDATE {this.tableName}
+                    SET
+                        u_username = @username,
+                        u_password = @password,
+                        u_nickname = @nickname,
+                        u_mobile = @mobile,
+                        u_is_admin = @isAdmin,
+                        u_created_at = @createdAt,
+                        u_updated_at = @updatedAt
+                WHERE
                     u_id = @id
                 """, new
             {
@@ -118,7 +121,7 @@ namespace BackendExample.Adapter.Driven
                 return;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            await conn.ExecuteAsync($"delete from {this.tableName} where u_id = @id", new { id });
+            await conn.ExecuteAsync($"DELETE FROM {this.tableName} WHERE u_id = @id", new { id });
         }
 
         public async Task<User?> SelectById(string id)
@@ -127,7 +130,9 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+                $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
+                );
             if (result == null)
                 return null;
             return ToUser(result);
@@ -149,7 +154,9 @@ namespace BackendExample.Adapter.Driven
 
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = await conn.QueryAsync($"select * from {this.tableName} where u_id in @ids", new { ids });
+            IEnumerable<dynamic> result = await conn.QueryAsync(
+                $"SELECT * FROM {this.tableName} WHERE u_id IN @ids", new { ids }
+                );
             foreach (dynamic item in result)
             {
                 User entity = ToUser(item);
@@ -164,8 +171,9 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_username = @username",
-                new { username });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+                $"SELECT * FROM {this.tableName} WHERE u_username = @username", new { username }
+                );
             if (result == null)
                 return null;
             return ToUser(result);
@@ -181,8 +189,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                $"select count(*) from {this.tableName} where lower(u_username) = lower(@username)",
-                new { username }
+                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
             ) == 0;
         }
 
@@ -193,8 +200,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                $"select count(*) from {this.tableName} where lower(u_nickname) = lower(@nickname)",
-                new { nickname }
+                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_nickname) = LOWER(@nickname)", new { nickname }
                 ) == 0;
         }
 
@@ -205,8 +211,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             return await conn.ExecuteScalarAsync<int>(
-                $"select count(*) from {this.tableName} where lower(u_mobile) = lower(@mobile)",
-                new { mobile }
+                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_mobile) = LOWER(@mobile)", new { mobile }
             ) == 0;
         }
 
@@ -237,12 +242,12 @@ namespace BackendExample.Adapter.Driven
             IList<string> sqls = new List<string>();
             if (!ValueUtility.IsEmptyString(criteria.Keyword))
             {
-                sqls.Add("u_username like @Keyword or u_nickname like @keyword");
+                sqls.Add("u_username LIKE @Keyword OR u_nickname LIKE @keyword");
                 @params.keyword = criteria.Keyword;
             }
 
             if (sqls.Count > 0)
-                return " where " + string.Join(" and ", sqls);
+                return " WHERE " + string.Join(" AND ", sqls);
 
             return string.Empty;
         }
@@ -255,24 +260,24 @@ namespace BackendExample.Adapter.Driven
                 switch (sort)
                 {
                     case UserQuerySort.CREATED_AT_ASC:
-                        sqls.Add("u_created_at asc");
+                        sqls.Add("u_created_at ASC");
                         break;
                     case UserQuerySort.CREATED_AT_DESC:
-                        sqls.Add("u_created_at desc");
+                        sqls.Add("u_created_at DESC");
                         break;
                     case UserQuerySort.USERNAME_ASC:
-                        sqls.Add("u_username asc");
+                        sqls.Add("u_username ASC");
                         break;
                     case UserQuerySort.USERNAME_DESC:
-                        sqls.Add("u_username desc");
+                        sqls.Add("u_username DESC");
                         break;
                 }
             }
 
             if (sqls.Count == 0)
-                sqls.Add("u_created_at desc");
+                sqls.Add("u_created_at DESC");
 
-            return " order by " + string.Join(", ", sqls);
+            return " ORDER BY " + string.Join(", ", sqls);
         }
 
         public async Task<UserDto?> QueryById(string id)
@@ -281,7 +286,9 @@ namespace BackendExample.Adapter.Driven
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            dynamic? result = await conn.QuerySingleOrDefaultAsync($"select * from {this.tableName} where u_id = @id", new { id });
+            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+                $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
+                );
             if (result == null)
                 return null;
             return ToUserDto(result);
@@ -301,7 +308,9 @@ namespace BackendExample.Adapter.Driven
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            return await conn.ExecuteScalarAsync<int>($"select count(*) from {this.tableName}{crieriaSql}", (object)@params);
+            return await conn.ExecuteScalarAsync<int>(
+                $"SELECT COUNT(*) FROM {this.tableName} {crieriaSql}", (object)@params
+                );
         }
 
         public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts)
@@ -311,7 +320,9 @@ namespace BackendExample.Adapter.Driven
             string sortSql = BuildQuerySort(sorts);
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
-            IEnumerable<dynamic> result = await conn.QueryAsync($"select * from {this.tableName}{crieriaSql}{sortSql}", (object)@params);
+            IEnumerable<dynamic> result = await conn.QueryAsync(
+                $"SELECT * FROM {this.tableName} {crieriaSql} {sortSql}", (object)@params
+                );
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic item in result)
             {
@@ -333,8 +344,7 @@ namespace BackendExample.Adapter.Driven
             using var conn = new SqliteConnection(this.connectionString);
             conn.Open();
             IEnumerable<dynamic> result = await conn.QueryAsync(
-                $"select * from {this.tableName}{crieriaSql}{sortSql} limit @limitCount offset @limitOffset",
-                (object)@params
+                $"SELECT * FROM {this.tableName}{crieriaSql}{sortSql} LIMIT @limitCount OFFSET @limitOffset", (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic item in result)
