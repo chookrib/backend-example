@@ -25,7 +25,6 @@ namespace BackendExample.Adapter.Driven
                 throw new PersistenceException("ConnectionString:SQLite 配置错误");
             this.tableName = "t_user" + DateTime.Now.ToString("yyyyMMddHHmmss");
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             conn.Execute($"""
                 CREATE TABLE IF NOT EXISTS {this.tableName}
                 (
@@ -66,7 +65,6 @@ namespace BackendExample.Adapter.Driven
         public async Task Insert(User entity)
         {
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             await conn.ExecuteAsync($"""
                 INSERT INTO {this.tableName} (
                     u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
@@ -89,7 +87,6 @@ namespace BackendExample.Adapter.Driven
         public async Task Update(User entity)
         {
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             await conn.ExecuteAsync($"""
                 UPDATE {this.tableName}
                     SET
@@ -120,7 +117,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(id))
                 return;
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             await conn.ExecuteAsync($"DELETE FROM {this.tableName} WHERE u_id = @id", new { id });
         }
 
@@ -129,7 +125,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             dynamic? result = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
                 );
@@ -153,7 +148,6 @@ namespace BackendExample.Adapter.Driven
                 return list;
 
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             IEnumerable<dynamic> result = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id IN @ids", new { ids }
                 );
@@ -170,7 +164,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(username))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             dynamic? result = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_username = @username", new { username }
                 );
@@ -187,7 +180,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(username))
                 throw new PersistenceException("参数 username 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
             ) == 0;
@@ -198,7 +190,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(nickname))
                 throw new PersistenceException("参数 nickname 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_nickname) = LOWER(@nickname)", new { nickname }
                 ) == 0;
@@ -209,7 +200,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(mobile))
                 throw new PersistenceException("参数 mobile 不能为空");
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_mobile) = LOWER(@mobile)", new { mobile }
             ) == 0;
@@ -285,7 +275,6 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             dynamic? result = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
                 );
@@ -307,7 +296,6 @@ namespace BackendExample.Adapter.Driven
             dynamic @params;
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {this.tableName} {crieriaSql}", (object)@params
                 );
@@ -319,7 +307,6 @@ namespace BackendExample.Adapter.Driven
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             string sortSql = BuildQuerySort(sorts);
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             IEnumerable<dynamic> result = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName} {crieriaSql} {sortSql}", (object)@params
                 );
@@ -342,7 +329,6 @@ namespace BackendExample.Adapter.Driven
             @params.limitOffset = (pageNum - 1) * pageSize;
 
             using var conn = new SqliteConnection(this.connectionString);
-            conn.Open();
             IEnumerable<dynamic> result = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName}{crieriaSql}{sortSql} LIMIT @limitCount OFFSET @limitOffset", (object)@params
                 );
