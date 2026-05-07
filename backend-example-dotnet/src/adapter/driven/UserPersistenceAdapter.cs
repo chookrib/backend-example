@@ -1,12 +1,15 @@
 ﻿using System.Dynamic;
 
-using Dapper;
-
 using BackendExample.Application;
 using BackendExample.Domain;
 using BackendExample.Utility;
 
+using Dapper;
+
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Data.Sqlite;
+
+using SQLitePCL;
 
 namespace BackendExample.Adapter.Driven
 {
@@ -48,17 +51,17 @@ namespace BackendExample.Adapter.Driven
                 """);
         }
 
-        private User ToUser(dynamic result)
+        private User ToEntity(dynamic row)
         {
             return User.Restore(
-                result.u_id,
-                result.u_username,
-                result.u_password,
-                result.u_nickname,
-                result.u_mobile,
-                ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrDefault(result.u_updated_at.ToString(), DateTime.MinValue)
+                row.u_id,
+                row.u_username,
+                row.u_password,
+                row.u_nickname,
+                row.u_mobile,
+                ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
+                ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
+                ValueUtility.ToDateTimeOrDefault(row.u_updated_at.ToString(), DateTime.MinValue)
                 );
         }
 
@@ -125,12 +128,12 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+            dynamic? row = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
                 );
-            if (result == null)
+            if (row == null)
                 return null;
-            return ToUser(result);
+            return ToEntity(row);
         }
 
         public async Task<User> SelectByIdReq(string id)
@@ -148,12 +151,12 @@ namespace BackendExample.Adapter.Driven
                 return list;
 
             using var conn = new SqliteConnection(this.connectionString);
-            IEnumerable<dynamic> result = await conn.QueryAsync(
+            IEnumerable<dynamic> rows = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id IN @ids", new { ids }
                 );
-            foreach (dynamic item in result)
+            foreach (dynamic row in rows)
             {
-                User entity = ToUser(item);
+                User entity = ToEntity(row);
                 list.Add(entity);
             }
             return list;
@@ -164,12 +167,12 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(username))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+            dynamic? row = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_username = @username", new { username }
                 );
-            if (result == null)
+            if (row == null)
                 return null;
-            return ToUser(result);
+            return ToEntity(row);
         }
 
         //==============================================================================================================
@@ -208,17 +211,17 @@ namespace BackendExample.Adapter.Driven
         //==============================================================================================================
         // UserQueryHandler
 
-        private UserDto ToUserDto(dynamic result)
+        private UserDto ToDto(dynamic row)
         {
             return new UserDto(
-                result.u_id,
-                result.u_username,
-                //result.u_password,
-                result.u_nickname,
-                result.u_mobile,
-                ValueUtility.ToBoolOrDefault(result.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(result.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrDefault(result.u_updated_at.ToString(), DateTime.MinValue)
+                row.u_id,
+                row.u_username,
+                //row.u_password,
+                row.u_nickname,
+                row.u_mobile,
+                ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
+                ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
+                ValueUtility.ToDateTimeOrDefault(row.u_updated_at.ToString(), DateTime.MinValue)
                 );
         }
 
@@ -275,12 +278,12 @@ namespace BackendExample.Adapter.Driven
             if (ValueUtility.IsEmptyString(id))
                 return null;
             using var conn = new SqliteConnection(this.connectionString);
-            dynamic? result = await conn.QuerySingleOrDefaultAsync(
+            dynamic? row = await conn.QuerySingleOrDefaultAsync(
                 $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
                 );
-            if (result == null)
+            if (row == null)
                 return null;
-            return ToUserDto(result);
+            return ToDto(row);
         }
 
         public async Task<UserDto> QueryByIdReq(string id)
@@ -307,13 +310,13 @@ namespace BackendExample.Adapter.Driven
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             string sortSql = BuildQuerySort(sorts);
             using var conn = new SqliteConnection(this.connectionString);
-            IEnumerable<dynamic> result = await conn.QueryAsync(
+            IEnumerable<dynamic> rows = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName} {crieriaSql} {sortSql}", (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
-            foreach (dynamic item in result)
+            foreach (dynamic row in rows)
             {
-                UserDto dto = ToUserDto(item);
+                UserDto dto = ToDto(row);
                 list.Add(dto);
             }
             return list;
@@ -329,13 +332,13 @@ namespace BackendExample.Adapter.Driven
             @params.limitOffset = (pageNum - 1) * pageSize;
 
             using var conn = new SqliteConnection(this.connectionString);
-            IEnumerable<dynamic> result = await conn.QueryAsync(
+            IEnumerable<dynamic> rows = await conn.QueryAsync(
                 $"SELECT * FROM {this.tableName}{crieriaSql}{sortSql} LIMIT @limitCount OFFSET @limitOffset", (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
-            foreach (dynamic item in result)
+            foreach (dynamic row in rows)
             {
-                UserDto dto = ToUserDto(item);
+                UserDto dto = ToDto(row);
                 list.Add(dto);
             }
             return list;
