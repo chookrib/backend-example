@@ -53,7 +53,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     # ==================================================================================================================
     # UserRepository
 
-    def to_user(self, row: aiosqlite.Row) -> User:
+    def to_entity(self, row: aiosqlite.Row) -> User:
         """转换成 Entity"""
         row_dict = dict(row)
         return User.restore(
@@ -127,14 +127,14 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    return self.to_user(row)
+                    return self.to_entity(row)
                 return None
 
     async def select_by_id_req(self, id: str) -> User:
-        user = await self.select_by_id(id)
-        if not user:
+        entity = await self.select_by_id(id)
+        if not entity:
             raise PersistenceException(f"用户 {id} 不存在")
-        return user
+        return entity
 
     async def select_by_ids(self, ids: list[str]) -> list[User]:
         if not ids or len(ids) == 0:
@@ -144,7 +144,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             db.row_factory = aiosqlite.Row
             async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id IN ({placeholders})", ids) as cursor:
                 rows = await cursor.fetchall()
-                return [self.to_user(row) for row in rows]
+                return [self.to_entity(row) for row in rows]
 
     async def select_by_username(self, username: str) -> User | None:
         if value_utility.is_empty_string(username):
@@ -154,7 +154,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    return self.to_user(row)
+                    return self.to_entity(row)
                 return None
 
     # ==================================================================================================================
@@ -193,18 +193,18 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     # ==================================================================================================================
     # UserQueryHandler
 
-    def to_user_dto(self, row: aiosqlite.Row) -> UserDto:
+    def to_dto(self, row: aiosqlite.Row) -> UserDto:
         """转换成DTO"""
-        user = self.to_user(row)
+        row_dict = dict(row)
         return UserDto(
-            id=user.id,
-            username=user.username,
-            # password=user.password,
-            nickname=user.nickname,
-            mobile=user.mobile,
-            is_admin=user.is_admin,
-            created_at=user.created_at,
-            updated_at=user.updated_at
+            id=row_dict.get("u_id", ""),
+            username=row_dict.get("u_username", ""),
+            # password=row_dict.get("u_password", ""),
+            nickname=row_dict.get("u_nickname", ""),
+            mobile=row_dict.get("u_mobile", ""),
+            is_admin=bool(row_dict.get("u_is_admin", False)),
+            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min),
+            updated_at=value_utility.to_datetime_or_default(row_dict.get("u_updated_at"), datetime.min)
         )
 
     def build_query_criteria(self, criteria: UserQueryCriteria) -> tuple[str, list]:
@@ -248,14 +248,14 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    return self.to_user_dto(row)
+                    return self.to_dto(row)
                 return None
 
     async def query_by_id_req(self, id: str) -> UserDto:
-        user = await self.query_by_id(id)
-        if not user:
+        dto = await self.query_by_id(id)
+        if not dto:
             raise PersistenceException(f"用户 {id} 不存在")
-        return user
+        return dto
 
     async def query_count(self, criteria: UserQueryCriteria) -> int:
         criteria_sql, params = self.build_query_criteria(criteria)
@@ -272,7 +272,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             db.row_factory = aiosqlite.Row
             async with db.execute(f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql}", params) as cursor:
                 rows = await cursor.fetchall()
-                return [self.to_user_dto(row) for row in rows]
+                return [self.to_dto(row) for row in rows]
 
     async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) \
             -> list[UserDto]:
@@ -286,4 +286,4 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                     params + [page_size, offset]
             ) as cursor:
                 rows = await cursor.fetchall()
-                return [self.to_user_dto(row) for row in rows]
+                return [self.to_dto(row) for row in rows]
