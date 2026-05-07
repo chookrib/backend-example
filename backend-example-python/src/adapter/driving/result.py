@@ -16,14 +16,26 @@ class Result:
         """转换为dict"""
         return self.__dict__
 
-    @classmethod
-    def ok(cls, message: str = "", data: Any = None) -> "Result":
+    @staticmethod
+    def ok(message: str = "", data: Any = None) -> "Result":
         """成功"""
-        return cls(code=result_codes.SUCCESS, message=message, data=data)
+        return Result(code=result_codes.SUCCESS, message=message, data=data)
 
-    @classmethod
-    def error(cls, code: int = result_codes.ERROR_DEFAULT, message: str = "", data: Any = None) -> "Result":
+    @staticmethod
+    def error(code: int = result_codes.ERROR_DEFAULT, message: str = "", data: Any = None) -> "Result":
         """失败"""
         if code == result_codes.SUCCESS:
             code = result_codes.ERROR_DEFAULT
-        return cls(code=code, message=message, data=data)
+        return Result(code=code, message=message, data=data)
+
+    # @classmethod
+    # def ok(cls, message: str = "", data: Any = None) -> "Result":
+    #     """成功"""
+    #     return cls(code=result_codes.SUCCESS, message=message, data=data)
+    #
+    # @classmethod
+    # def error(cls, code: int = result_codes.ERROR_DEFAULT, message: str = "", data: Any = None) -> "Result":
+    #     """失败"""
+    #     if code == result_codes.SUCCESS:
+    #         code = result_codes.ERROR_DEFAULT
+    #     return cls(code=code, message=message, data=data)

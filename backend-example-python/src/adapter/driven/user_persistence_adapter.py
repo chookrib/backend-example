@@ -28,24 +28,25 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def init(self) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(f"""
-                create table if not exists {self.table_name}
+                CREATE TABLE IF NOT EXISTS {self.table_name}
                 (
-                    u_id text primary key,
-                    u_username text,
-                    u_password text,
-                    u_nickname text,
-                    u_mobile text,
-                    u_is_admin integer,
-                    u_created_at text,
-                    u_updated_at text
+                    u_id TEXT PRIMARY KEY,
+                    u_username TEXT,
+                    u_password TEXT,
+                    u_nickname TEXT,
+                    u_mobile TEXT,
+                    u_is_admin INTEGER,
+                    u_created_at TEXT,
+                    u_updated_at TEXT
                 )
                 """)
-            await db.execute(f"delete from {self.table_name} where lower(u_username) = 'admin'")
+            await db.execute(f"DELETE FROM {self.table_name} WHERE LOWER(u_username) = 'admin'")
             await db.execute(f"""
-                insert into {self.table_name}
-                    (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
-                values
-                    ('0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, datetime('now', 'localtime'), datetime('now', 'localtime'))
+                INSERT INTO {self.table_name} (
+                    u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                ) VALUES (
+                    '0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, DATETIME('now', 'localtime'), DATETIME('now', 'localtime')
+                )
                 """)
             await db.commit()
 
@@ -69,11 +70,12 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def insert(self, entity: User) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(f"""
-                             insert into {self.table_name}
-                                 (u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at)
-                             values
-                                 (?, ?, ?, ?, ?, ?, ?, ?)
-                             """, (
+                INSERT INTO {self.table_name} (
+                    u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?
+                )
+                """, (
                 entity.id,
                 entity.username,
                 entity.password,
@@ -88,16 +90,16 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def update(self, entity: User) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(f"""
-                             update {self.table_name}
-                             set u_username   = ?,
-                                 u_password   = ?,
-                                 u_nickname   = ?,
-                                 u_mobile     = ?,
-                                 u_is_admin   = ?,
-                                 u_created_at = ?,
-                                 u_updated_at = ?
-                             where u_id = ?
-                             """, (
+                UPDATE {self.table_name}
+                    SET u_username   = ?,
+                        u_password   = ?,
+                        u_nickname   = ?,
+                        u_mobile     = ?,
+                        u_is_admin   = ?,
+                        u_created_at = ?,
+                        u_updated_at = ?
+                    WHERE u_id = ?
+                    """, (
                 entity.username,
                 entity.password,
                 entity.nickname,
@@ -113,8 +115,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         if value_utility.is_empty_string(id):
             return None
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"delete from {self.table_name} where u_id = ?", (id,))
-            # await db.execute(f"delete from {self.table_name} where u_id = ?", [id])
+            await db.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", (id,))
+            # await db.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", [id])
             await db.commit()
 
     async def select_by_id(self, id: str) -> User | None:
@@ -122,7 +124,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_id = ?", (id,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_user(row)
@@ -140,7 +142,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         placeholders = ",".join("?" for _ in ids)
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_id in ({placeholders})", ids) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id IN ({placeholders})", ids) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_user(row) for row in rows]
 
@@ -149,7 +151,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_username = ?", (username,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_user(row)
@@ -163,7 +165,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 username 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_username = ?", (username,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -173,7 +175,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 nickname 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_nickname = ?", (nickname,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_nickname = ?", (nickname,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -183,7 +185,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 mobile 不能为空")
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_mobile = ?", (mobile,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_mobile = ?", (mobile,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -210,13 +212,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         sqls = []
         params = []
         if not value_utility.is_empty_string(criteria.keyword):
-            sqls.append(" u_username like ? and u_nickname like ? ")
+            sqls.append(" u_username LIKE ? AND u_nickname LIKE ? ")
             params.append(f"%{criteria.keyword}%")
             params.append(f"%{criteria.keyword}%")
         if not sqls:
             return "", []
         else:
-            return " where " + " and ".join(sqls), params
+            return " WHERE " + " AND ".join(sqls), params
 
     def build_query_sort(self, *sorts: UserQuerySort) -> str:
         """构造排序SQL"""
@@ -224,26 +226,26 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         for s in sorts:
             match s:
                 case UserQuerySort.CREATED_AT_ASC:
-                    sqls.append("u_created_at asc")
+                    sqls.append("u_created_at ASC")
                 case UserQuerySort.CREATED_AT_DESC:
-                    sqls.append("u_created_at desc")
+                    sqls.append("u_created_at DESC")
                 case UserQuerySort.USERNAME_ASC:
-                    sqls.append("u_username asc")
+                    sqls.append("u_username ASC")
                 case UserQuerySort.USERNAME_DESC:
-                    sqls.append("u_username desc")
+                    sqls.append("u_username DESC")
 
         if not sqls:
-            sqls.append("u_created_at desc")
+            sqls.append("u_created_at DESC")
 
-        sqls.append("u_id desc")
-        return " order by " + ", ".join(sqls)
+        sqls.append("u_id DESC")
+        return " ORDER BY " + ", ".join(sqls)
 
     async def query_by_id(self, id: str) -> UserDto | None:
         if value_utility.is_empty_string(id):
             return None
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name} where u_id = ?", (id,)) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_user_dto(row)
@@ -259,7 +261,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         criteria_sql, params = self.build_query_criteria(criteria)
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select count(*) from {self.table_name}{criteria_sql}", params) as cursor:
+            async with db.execute(f"SELECT COUNT(*) FROM {self.table_name} {criteria_sql}", params) as cursor:
                 row = await cursor.fetchone()
                 return row[0] if row else 0
 
@@ -268,7 +270,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         sort_sql = self.build_query_sort(*sorts)
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
-            async with db.execute(f"select * from {self.table_name}{criteria_sql}{sort_sql}", params) as cursor:
+            async with db.execute(f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql}", params) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_user_dto(row) for row in rows]
 
@@ -280,7 +282,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute(
-                    f"select * from {self.table_name}{criteria_sql}{sort_sql} limit ? offset ?",
+                    f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql} LIMIT ? OFFSET ?",
                     params + [page_size, offset]
             ) as cursor:
                 rows = await cursor.fetchall()

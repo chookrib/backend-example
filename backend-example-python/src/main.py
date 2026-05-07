@@ -63,7 +63,6 @@ async def lifespan(app: FastAPI):
             + "\n".join(f"    {key} = {value}" for key, value in application_config.__dict__.items())
             # + "\033[0m"
         )
-
         # 打印 os.environ
         print(
             # "\033[31m" +
