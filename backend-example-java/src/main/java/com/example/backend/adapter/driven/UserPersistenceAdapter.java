@@ -75,7 +75,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 转换成 Entity
      */
-    private User toUser(SqlRowSet sqlRowSet) {
+    private User toEntity(SqlRowSet sqlRowSet) {
         return User.restore(
                 sqlRowSet.getString("u_id"),
                 sqlRowSet.getString("u_username"),
@@ -151,7 +151,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 "SELECT * FROM %s WHERE u_id = ?".formatted(this.tableName), id
         );
         if (sqlRowSet.next()) {
-            return toUser(sqlRowSet);
+            return toEntity(sqlRowSet);
         }
         return null;
     }
@@ -176,7 +176,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(this.tableName), params
         );
         while (sqlRowSet.next()) {
-            User entity = toUser(sqlRowSet);
+            User entity = toEntity(sqlRowSet);
             list.add(entity);
         }
         return list;
@@ -190,7 +190,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(this.tableName), username
         );
         if (sqlRowSet.next()) {
-            return toUser(sqlRowSet);
+            return toEntity(sqlRowSet);
         }
         return null;
     }
@@ -234,17 +234,16 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 转换成 DTO
      */
-    private UserDto toUserDto(SqlRowSet sqlRowSet) {
-        User user = toUser(sqlRowSet);
+    private UserDto toDto(SqlRowSet sqlRowSet) {
         return new UserDto(
-                user.getId(),
-                user.getUsername(),
-                // user.getPassword(),
-                user.getNickname(),
-                user.getMobile(),
-                user.isAdmin(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+                sqlRowSet.getString("u_id"),
+                sqlRowSet.getString("u_username"),
+                // sqlRowSet.getString("u_password"),
+                sqlRowSet.getString("u_nickname"),
+                sqlRowSet.getString("u_mobile"),
+                sqlRowSet.getBoolean("u_is_admin"),
+                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
+                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
         );
     }
 
@@ -295,7 +294,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 "SELECT * FROM %s WHERE u_id = ?".formatted(this.tableName), id
         );
         if (sqlRowSet.next()) {
-            return toUserDto(sqlRowSet);
+            return toDto(sqlRowSet);
         }
         return null;
     }
@@ -329,7 +328,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         );
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
-            list.add(toUserDto(sqlRowSet));
+            list.add(toDto(sqlRowSet));
         }
         return list;
     }
@@ -349,7 +348,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         );
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
-            list.add(toUserDto(sqlRowSet));
+            list.add(toDto(sqlRowSet));
         }
         return list;
     }
