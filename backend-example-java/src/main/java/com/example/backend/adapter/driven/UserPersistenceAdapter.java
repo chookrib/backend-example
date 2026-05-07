@@ -61,9 +61,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         this.jdbcTemplate.update("""
                         INSERT INTO %s (
                             u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
-                            ) VALUES (
+                        ) VALUES (
                             '0', 'admin', ?, '管理员', '', 1, DATETIME('now', 'localtime'), DATETIME('now', 'localtime')
-                            )
+                        )
                         """.formatted(this.tableName),
                 CryptoUtility.md5Encode("password")
         );
@@ -92,9 +92,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public void insert(User entity) {
         this.jdbcTemplate.update("""
                         INSERT INTO %s (
-                        u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                            u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                         ) VALUES (
-                        ?, ?, ?, ?, ?, ?, ?, ?
+                            ?, ?, ?, ?, ?, ?, ?, ?
                         )
                         """.formatted(this.tableName),
                 entity.getId(),
@@ -344,7 +344,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         params.put("limitOffset", (pageNum - 1) * pageSize);
 
         SqlRowSet sqlRowSet = this.namedParameterJdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset".formatted(this.tableName, criteriaSql, sortSql), params
+                "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset"
+                        .formatted(this.tableName, criteriaSql, sortSql), params
         );
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
