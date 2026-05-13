@@ -17,6 +17,10 @@ namespace BackendExample.Utility
 
         //==============================================================================================================
 
+        // 定义 bool 值范围
+        private static readonly string[] BOOL_TRUE = { "true", "1", "t", "y", "yes", "on" };
+        private static readonly string[] BOOL_FALSE = { "false", "0", "f", "n", "no", "off" };
+
         /// <summary>
         /// 转 bool，失败返回 null
         /// </summary>
@@ -24,9 +28,10 @@ namespace BackendExample.Utility
         {
             if (IsEmptyString(value))
                 return null;
-            if (new List<string>() { "true", "1", "t", "y", "yes", "on" }.Contains(value!.Trim().ToLower()))
+            string b = value!.Trim().ToLower();
+            if (BOOL_TRUE.Contains(b))
                 return true;
-            else if (new List<string>() { "false", "0", "f", "n", "no", "off" }.Contains(value!.Trim().ToLower()))
+            else if (BOOL_FALSE.Contains(b))
                 return false;
             return null;
         }
