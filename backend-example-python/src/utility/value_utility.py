@@ -69,9 +69,9 @@ def to_int_or_none(value) -> int | None:
         else:
             return None
     try:
-        value_int = int(value)
-        if value_int >= -2147483648 or value_int <= 2147483647:
-            return value_int
+        i = int(value)
+        if i >= -2147483648 or i <= 2147483647:
+            return i
         else:
             return None
     except Exception as ex:
@@ -148,7 +148,7 @@ def to_decimal_or_none(value) -> Decimal | None:
         # 检查是否超出边界
         if d < DECIMAL_MIN_VALUE or d > DECIMAL_MAX_VALUE:
             return None
-        return value
+        return d
     except Exception as ex:
         return None
 
