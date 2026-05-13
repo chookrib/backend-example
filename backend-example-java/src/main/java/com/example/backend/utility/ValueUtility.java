@@ -365,7 +365,7 @@ public class ValueUtility {
         LocalTime t = toTimeOrNull(value);
         if (t != null)
             return t;
-        if(defaultValue == null)
+        if (defaultValue == null)
             return null;
         return defaultValue.truncatedTo(ChronoUnit.SECONDS);
     }
