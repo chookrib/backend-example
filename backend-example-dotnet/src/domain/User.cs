@@ -21,13 +21,13 @@ namespace BackendExample.Domain
 
         public DateTime CreatedAt { get; private set; }
 
-        public DateTime UpdatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
 
         /// <summary>
         /// 还原用户
         /// </summary>
         public static User Restore(string id, string username, string password, string nickname, string mobile,
-            bool isAdmin, DateTime createdAt, DateTime updatedAt)
+            bool isAdmin, DateTime createdAt, DateTime? updatedAt)
         {
             return new User
             {
@@ -74,8 +74,8 @@ namespace BackendExample.Domain
                 Nickname = nickname,
                 Mobile = "",
                 IsAdmin = false,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = ValueUtility.GetDateTimeNow(),
+                UpdatedAt = null
             };
         }
 
@@ -93,7 +93,7 @@ namespace BackendExample.Domain
         public void SetAdmin(bool isAdmin)
         {
             this.IsAdmin = isAdmin;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = ValueUtility.GetDateTimeNow();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace BackendExample.Domain
                 throw new DomainException("密码错误");
 
             this.Password = CryptoUtility.Md5Encode(newPassword);
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = ValueUtility.GetDateTimeNow();
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace BackendExample.Domain
             }
 
             this.Nickname = nickname;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = ValueUtility.GetDateTimeNow();
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace BackendExample.Domain
             }
 
             this.Mobile = mobile;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = ValueUtility.GetDateTimeNow();
         }
 
         /// <summary>
@@ -182,8 +182,8 @@ namespace BackendExample.Domain
                 Nickname = nickname,
                 Mobile = mobile,
                 IsAdmin = false,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = ValueUtility.GetDateTimeNow(),
+                UpdatedAt = null
             };
         }
 
@@ -217,7 +217,7 @@ namespace BackendExample.Domain
             this.Username = username;
             this.Nickname = nickname;
             this.Mobile = mobile;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = ValueUtility.GetDateTimeNow();
         }
     }
 }

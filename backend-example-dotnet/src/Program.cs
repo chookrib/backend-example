@@ -61,6 +61,7 @@ namespace BackendExample
             // 注册 Driven Adapter - Gateway
             builder.Services.AddSingleton<SmsGateway, SmsGatewayAdapter>();
             // 注册 Driven Adapter - Persistence
+            builder.Services.AddSingleton<SQLiteAdapter>();
             builder.Services.AddSingleton<UserPersistenceAdapter>();
             builder.Services.AddSingleton<UserRepository>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             builder.Services.AddSingleton<UserUniqueSpecification>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
