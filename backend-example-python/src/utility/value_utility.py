@@ -31,6 +31,10 @@ def to_string_or_empty(value) -> str:
 
 # ======================================================================================================================
 
+# 定义 bool 值范围
+BOOL_TRUE = ('true', '1', 't', 'y', 'yes', 'on')
+BOOL_FALSE = ('false', '0', 'f', 'n', 'no', 'off')
+
 def to_bool_or_none(value) -> bool | None:
     """转 bool，失败返回 None"""
     if value is None:
@@ -38,9 +42,9 @@ def to_bool_or_none(value) -> bool | None:
     if isinstance(value, bool):
         return value
     b = str(value).strip().lower()
-    if b in ('true', '1', 't', 'y', 'yes', 'on'):
+    if b in BOOL_TRUE:
         return True
-    elif b in ('false', '0', 'f', 'n', 'no', 'off'):
+    elif b in BOOL_FALSE:
         return False
     return None
 
