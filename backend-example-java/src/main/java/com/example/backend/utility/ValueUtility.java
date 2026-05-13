@@ -37,10 +37,10 @@ public class ValueUtility {
     public static Boolean toBoolOrNull(String value) {
         if (isEmptyString(value))
             return null;
-        String valueNormalize = value.trim().toLowerCase();
-        if (BOOL_TRUE.contains(valueNormalize))
+        String b = value.trim().toLowerCase();
+        if (BOOL_TRUE.contains(b))
             return true;
-        else if (BOOL_FALSE.contains(valueNormalize))
+        else if (BOOL_FALSE.contains(b))
             return false;
         return null;
     }
