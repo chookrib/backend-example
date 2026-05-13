@@ -117,6 +117,29 @@ def get_request_json_int_req(json, *keys: str) -> int:
 
 # ======================================================================================================================
 
+def get_request_json_long_or_none(json, *keys: str) -> int | None:
+    """获取请求 json 数据中 long 值，失败返回 None"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_long_or_none(value)
+
+
+def get_request_json_long_or_default(json, default: int, *keys: str) -> int:
+    """获取请求 json 数据中 long 值，失败返回默认值"""
+    value = get_request_json_value(json, *keys)
+    return value_utility.to_long_or_default(value, default)
+
+
+def get_request_json_long_req(json, *keys: str) -> int:
+    """获取请求 json 数据中 long 值，失败抛出异常"""
+    value = get_request_json_value_req(json, *keys)
+    i = value_utility.to_long_or_none(value)
+    if i is not None:
+        return i
+    raise ControllerException(f"请求体 {'.'.join(keys)} 值不是合法 long")
+
+
+# ======================================================================================================================
+
 def get_request_json_decimal_or_none(json, *keys: str) -> Decimal | None:
     """获取请求 json 数据中 decimal 值，失败返回 None"""
     value = get_request_json_value(json, *keys)
@@ -231,6 +254,7 @@ def get_request_param_string_req(request: Request, key: str) -> str:
     if value_utility.is_empty_string(s):
         raise ControllerException(f"请求参数 {key} 值不能为空")
     return s
+
 
 def get_request_param_string_trim_or_default(request: Request, default: str, key: str) -> str:
     """获取请求参数中 string 值，失败返回默认值"""

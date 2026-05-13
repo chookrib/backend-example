@@ -17,7 +17,7 @@ class User(BaseModel):
     mobile: str
     is_admin: bool
     created_at: datetime
-    updated_at: datetime
+    updated_at: datetime | None
 
     @staticmethod
     def restore(
@@ -28,7 +28,7 @@ class User(BaseModel):
             mobile: str,
             is_admin: bool,
             created_at: datetime,
-            updated_at: datetime
+            updated_at: datetime | None
     ) -> "User":
         """还原用户"""
         return User(
@@ -73,8 +73,8 @@ class User(BaseModel):
             nickname=nickname,
             mobile="",
             is_admin=False,
-            created_at=datetime.now(),
-            updated_at=datetime.now()
+            created_at=value_utility.get_datetime_now(),
+            updated_at=None
         )
 
     def is_password_match(self, password: str) -> bool:
@@ -84,7 +84,7 @@ class User(BaseModel):
     def set_admin(self, is_admin: bool) -> None:
         """设置是否为管理员"""
         self.is_admin = is_admin
-        self.updated_at = datetime.now()
+        self.updated_at = value_utility.get_datetime_now()
 
     def modify_password(self, old_password: str, new_password: str) -> None:
         """修改密码"""
@@ -95,7 +95,7 @@ class User(BaseModel):
             raise DomainException("密码错误")
 
         self.password = crypto_utility.md5_encode(new_password)
-        self.updated_at = datetime.now()
+        self.updated_at = value_utility.get_datetime_now()
 
     async def modify_nickname(self, nickname: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改昵称"""
@@ -107,7 +107,7 @@ class User(BaseModel):
                 raise DomainException("昵称已存在")
 
         self.nickname = nickname
-        self.updated_at = datetime.now()
+        self.updated_at = value_utility.get_datetime_now()
 
     async def modify_mobile(self, mobile: str, user_unique_specification: UserUniqueSpecification | None) -> None:
         """修改手机"""
@@ -119,7 +119,7 @@ class User(BaseModel):
                 raise DomainException("手机已存在")
 
         self.mobile = mobile
-        self.updated_at = datetime.now()
+        self.updated_at = value_utility.get_datetime_now()
 
     @staticmethod
     async def create(
@@ -157,8 +157,8 @@ class User(BaseModel):
             nickname=nickname,
             mobile=mobile,
             is_admin=False,
-            created_at=datetime.now(),
-            updated_at=datetime.now()
+            created_at=value_utility.get_datetime_now(),
+            updated_at=None
         )
 
     async def modify(self, username: str,
@@ -188,4 +188,4 @@ class User(BaseModel):
         self.username = username
         self.nickname = nickname
         self.mobile = mobile
-        self.updated_at = datetime.now()
+        self.updated_at = value_utility.get_datetime_now()

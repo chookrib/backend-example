@@ -3,8 +3,9 @@ from datetime import datetime
 
 import aiosqlite
 
+from src.adapter.driven.sqlite_adapter import SQLiteAdapter
 from src.adapter.driven.persistence_exception import PersistenceException
-from src.application.application_config import application_config
+
 from src.application.user_dto import UserDto
 from src.application.user_query_criteria import UserQueryCriteria
 from src.application.user_query_handler import UserQueryHandler
@@ -18,16 +19,13 @@ from src.utility import value_utility, crypto_utility
 class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryHandler):
     """用户持久化Adapter"""
 
-    def __init__(self):
-        if value_utility.is_empty_string(application_config.APP_SQLITE_PATH):
-            raise PersistenceException("APP_SQLITE_PATH 配置错误")
-        # self.db_path = str(Path(__file__).resolve().parents[4] / settings.APP_SQLITE_PATH)
-        self.db_path = os.path.join(os.getcwd(), application_config.APP_SQLITE_PATH)
+    def __init__(self, sqlite_adapter: SQLiteAdapter):
+        self.sqlite_adapter = sqlite_adapter
         self.table_name = "t_user" + datetime.now().strftime("%Y%m%d%H%M%S")
 
     async def init(self) -> None:
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"""
+        async with self.sqlite_adapter.get_connection() as conn:
+            await conn.execute(f"""
                 CREATE TABLE IF NOT EXISTS {self.table_name}
                 (
                     u_id TEXT PRIMARY KEY,
@@ -40,15 +38,15 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                     u_updated_at TEXT
                 )
                 """)
-            await db.execute(f"DELETE FROM {self.table_name} WHERE LOWER(u_username) = 'admin'")
-            await db.execute(f"""
+            await conn.execute(f"DELETE FROM {self.table_name} WHERE LOWER(u_username) = 'admin'")
+            await conn.execute(f"""
                 INSERT INTO {self.table_name} (
                     u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                 ) VALUES (
                     '0', 'admin', '{crypto_utility.md5_encode("password")}', '管理员', '', 1, DATETIME('now', 'localtime'), DATETIME('now', 'localtime')
                 )
                 """)
-            await db.commit()
+            await conn.commit()
 
     # ==================================================================================================================
     # UserRepository
@@ -68,8 +66,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         )
 
     async def insert(self, entity: User) -> None:
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"""
+        async with self.sqlite_adapter.get_connection() as conn:
+            await conn.execute(f"""
                 INSERT INTO {self.table_name} (
                     u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                 ) VALUES (
@@ -83,13 +81,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 entity.mobile,
                 int(entity.is_admin),
                 value_utility.format_datetime(entity.created_at),
-                value_utility.format_datetime(entity.updated_at)
+                value_utility.format_datetime(entity.updated_at) if entity.updated_at is not None else ""
             ))
-            await db.commit()
+            await conn.commit()
 
     async def update(self, entity: User) -> None:
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"""
+        async with self.sqlite_adapter.get_connection() as conn:
+            await conn.execute(f"""
                 UPDATE {self.table_name}
                     SET u_username   = ?,
                         u_password   = ?,
@@ -106,25 +104,25 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 entity.mobile,
                 int(entity.is_admin),
                 value_utility.format_datetime(entity.created_at),
-                value_utility.format_datetime(entity.updated_at),
+                value_utility.format_datetime(entity.updated_at) if entity.updated_at is not None else "",
                 entity.id
             ))
-            await db.commit()
+            await conn.commit()
 
     async def delete_by_id(self, id: str) -> None:
         if value_utility.is_empty_string(id):
             return None
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", (id,))
-            # await db.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", [id])
-            await db.commit()
+        async with self.sqlite_adapter.get_connection() as conn:
+            await conn.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", (id,))
+            # await conn.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", [id])
+            await conn.commit()
 
     async def select_by_id(self, id: str) -> User | None:
         if value_utility.is_empty_string(id):
             return None
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_entity(row)
@@ -140,18 +138,18 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         if not ids or len(ids) == 0:
             return []
         placeholders = ",".join("?" for _ in ids)
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id IN ({placeholders})", ids) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE u_id IN ({placeholders})", ids) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_entity(row) for row in rows]
 
     async def select_by_username(self, username: str) -> User | None:
         if value_utility.is_empty_string(username):
             return None
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_entity(row)
@@ -163,9 +161,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def is_username_unique(self, username: str) -> bool:
         if value_utility.is_empty_string(username):
             raise PersistenceException("参数 username 不能为空")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)", (username,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)", (username,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -173,9 +171,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def is_nickname_unique(self, nickname: str) -> bool:
         if value_utility.is_empty_string(nickname):
             raise PersistenceException("参数 nickname 不能为空")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_nickname) = LOWER(?)", (nickname,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_nickname) = LOWER(?)", (nickname,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -183,9 +181,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def is_mobile_unique(self, mobile: str) -> bool:
         if value_utility.is_empty_string(mobile):
             raise PersistenceException("参数 mobile 不能为空")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_mobile) = LOWER(?)", (mobile,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_mobile) = LOWER(?)", (mobile,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -212,9 +210,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         sqls = []
         params = []
         if not value_utility.is_empty_string(criteria.keyword):
-            sqls.append(" u_username LIKE ? AND u_nickname LIKE ? ")
-            params.append(f"%{criteria.keyword}%")
-            params.append(f"%{criteria.keyword}%")
+            sqls.append(" u_username LIKE ? ESCAPE '\\' AND u_nickname LIKE ? ESCAPE '\\' ")
+            params.append(self.sqlite_adapter.escape_like_pattern(criteria.keyword))
+            params.append(self.sqlite_adapter.escape_like_pattern(criteria.keyword))
         if not sqls:
             return "", []
         else:
@@ -243,9 +241,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     async def query_by_id(self, id: str) -> UserDto | None:
         if value_utility.is_empty_string(id):
             return None
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE u_id = ?", (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_dto(row)
@@ -259,18 +257,18 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
 
     async def query_count(self, criteria: UserQueryCriteria) -> int:
         criteria_sql, params = self.build_query_criteria(criteria)
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT COUNT(*) FROM {self.table_name} {criteria_sql}", params) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT COUNT(*) FROM {self.table_name} {criteria_sql}", params) as cursor:
                 row = await cursor.fetchone()
                 return row[0] if row else 0
 
     async def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql}", params) as cursor:
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql}", params) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_dto(row) for row in rows]
 
@@ -279,9 +277,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         criteria_sql, params = self.build_query_criteria(criteria)
         sort_sql = self.build_query_sort(*sorts)
         offset = (page_num - 1) * page_size
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(
+        async with self.sqlite_adapter.get_connection() as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(
                     f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql} LIMIT ? OFFSET ?",
                     params + [page_size, offset]
             ) as cursor:

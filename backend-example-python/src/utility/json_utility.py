@@ -50,11 +50,11 @@ def custom_jsonable_encoder(obj, **kwargs):
 
     # datetime 继承于 date，故需先处理 datetime
     if isinstance(obj, datetime):
-        return obj.strftime("%Y-%m-%d %H:%M:%S")  # 不处理默认为 yyyy-MM-dd hh:mm:ss.SSSSSS
+        return obj.strftime("%Y-%m-%d %H:%M:%S")  # 不处理默认为 yyyy-MM-dd hh:mm:ss.ffffff
     if isinstance(obj, date):
         return obj.strftime("%Y-%m-%d")  # 不处理默认为 yyyy-MM-dd
     if isinstance(obj, time):
-        return obj.strftime("%H:%M:%S")  # 不处理默认为 hh:mm:ss.SSSSSS
+        return obj.strftime("%H:%M:%S")  # 不处理默认为 hh:mm:ss.ffffff
 
     if isinstance(obj, Enum):  # 枚举需处理，否则未定义枚举类型的枚举进入 hasattr(obj, "__dict__") 会死循环
         return obj.value
