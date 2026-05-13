@@ -9,7 +9,6 @@ import com.example.backend.domain.UserRepository;
 import com.example.backend.domain.UserUniqueSpecification;
 import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.ValueUtility;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -28,16 +27,15 @@ import java.util.Map;
 @Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecification, UserQueryHandler {
 
+    private final SQLiteAdapter sqliteAdapter;
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String tableName;
 
-    public UserPersistenceAdapter(
-            @Qualifier("sqliteJdbcTemplate") JdbcTemplate jdbcTemplate,
-            @Qualifier("sqliteNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate
-    ) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public UserPersistenceAdapter(SQLiteAdapter sqLiteAdapter) {
+        this.sqliteAdapter = sqLiteAdapter;
+        this.jdbcTemplate = sqLiteAdapter.getJdbcTemplate();
+        this.namedParameterJdbcTemplate = sqLiteAdapter.getNamedParameterJdbcTemplate();
         // 每次启动生成唯一表名
         this.tableName = "t_user_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         // 创建表及默认管理员
@@ -256,8 +254,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
         List<String> sqls = new ArrayList<>();
         if (!ValueUtility.isEmptyString(criteria.getKeyword())) {
-            sqls.add("u_username LIKE :keyword OR u_nickname LIKE :keyword");
-            params.put("keyword", "%" + criteria.getKeyword() + "%");
+            sqls.add("u_username LIKE :keyword ESCAPE '\\' OR u_nickname LIKE :keyword ESCAPE '\\'");
+            params.put("keyword", this.sqliteAdapter.EscapeLikePattern(criteria.getKeyword()));
         }
 
         if (!sqls.isEmpty())

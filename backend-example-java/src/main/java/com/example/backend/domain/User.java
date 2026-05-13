@@ -99,8 +99,8 @@ public class User {
         user.nickname = nickname;
         user.mobile = "";
         user.isAdmin = false;
-        user.createdAt = LocalDateTime.now();
-        user.updatedAt = LocalDateTime.now();
+        user.createdAt = ValueUtility.getDateTimeNow();
+        user.updatedAt = null;
         return user;
     }
 
@@ -116,7 +116,7 @@ public class User {
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ValueUtility.getDateTimeNow();
     }
 
     /**
@@ -131,7 +131,7 @@ public class User {
         }
 
         this.password = CryptoUtility.md5Encode(newPassword);
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ValueUtility.getDateTimeNow();
     }
 
     /**
@@ -147,7 +147,7 @@ public class User {
         }
 
         this.nickname = nickname;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ValueUtility.getDateTimeNow();
     }
 
     /**
@@ -163,7 +163,7 @@ public class User {
         }
 
         this.mobile = mobile;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ValueUtility.getDateTimeNow();
     }
 
     /**
@@ -198,8 +198,8 @@ public class User {
         user.nickname = nickname;
         user.mobile = mobile;
         user.isAdmin = false;
-        user.createdAt = LocalDateTime.now();
-        user.updatedAt = LocalDateTime.now();
+        user.createdAt = ValueUtility.getDateTimeNow();
+        user.updatedAt = null;
         return user;
     }
 
@@ -227,6 +227,6 @@ public class User {
         this.username = username;
         this.nickname = nickname;
         this.mobile = mobile;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ValueUtility.getDateTimeNow();
     }
 }
