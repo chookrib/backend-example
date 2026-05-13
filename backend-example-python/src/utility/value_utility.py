@@ -101,9 +101,9 @@ def to_long_or_none(value) -> int | None:
         else:
             return None
     try:
-        value_long = int(value)
-        if value_long >= -9223372036854775808 or value_long <= 9223372036854775807:
-            return value_long
+        l = int(value)
+        if l >= -9223372036854775808 or l <= 9223372036854775807:
+            return l
         else:
             return None
     except Exception as ex:
