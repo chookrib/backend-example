@@ -46,7 +46,10 @@ def custom_jsonable_encoder(obj, **kwargs):
             return obj
 
     if isinstance(obj, Decimal):
-        return str(obj)
+        # return str(obj)
+        # return format(obj, ".2f")
+        s = format(obj, "f").rstrip("0").rstrip(".")
+        return "0" if s in ("", "-0", "+0") else s
 
     # datetime 继承于 date，故需先处理 datetime
     if isinstance(obj, datetime):
