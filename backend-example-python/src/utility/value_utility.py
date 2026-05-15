@@ -135,10 +135,11 @@ def to_decimal_or_none(value) -> Decimal | None:
     if value is None:
         return None
     if isinstance(value, Decimal):
-        if (value < DECIMAL_MIN_VALUE or value > DECIMAL_MAX_VALUE):
+        d = value.quantize(DECIMAL_QUANTIZE_EXP, rounding=ROUND_HALF_UP)
+        if (d < DECIMAL_MIN_VALUE or d > DECIMAL_MAX_VALUE):
             return None
         else:
-            return value
+            return d
     try:
         # return Decimal(str(value).strip())  # 需要 str()，否则 Decimal 解析有偏差
 
