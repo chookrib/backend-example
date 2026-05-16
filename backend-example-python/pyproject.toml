@@ -3,7 +3,7 @@ name = "backend-example-python"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "aiosqlite>=0.21.0",
     "fastapi>=0.123.9",
@@ -14,5 +14,10 @@ dependencies = [
     "types-python-jose>=3.5.0.20250531",
     "uuid-utils>=0.12.0",
     "uvicorn>=0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.1.0",
 ]
 # last dependency upgrade 20251205
