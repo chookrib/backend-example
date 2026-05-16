@@ -21,3 +21,6 @@ dev = [
     "mypy>=2.1.0",
 ]
 # last dependency upgrade 20251205
+
+[tool.uv]
+index-url = "https://mirrors.aliyun.com/pypi/simple/"
