@@ -28,9 +28,9 @@ public class RedissonLockService implements LockService {
         this.enableLog = enableLog;
         try {
             Config config = new Config();
-            config.useSingleServer()
+            config.setPassword(password)
+                    .useSingleServer()
                     .setAddress(address)
-                    .setPassword(password)
                     .setDatabase(database);
             this.redissonClient = org.redisson.Redisson.create(config);
         } catch (Exception ex) {
