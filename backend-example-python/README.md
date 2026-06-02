@@ -1,10 +1,5 @@
 # backend-example-python
 
-## 代码检查
-```shell
-mypy --python-executable .\.venv\Scripts\python.exe --package src
-```
-
 ## 运行项目
 ```shell
 uv sync
