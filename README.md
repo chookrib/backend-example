@@ -4,8 +4,8 @@
 
 ## 架构设计
 
-- **DDD (领域驱动设计)**：以领域模型为核心，划分领域层、应用层、基础设施层
-- **CQRS (命令查询职责分离)**：写操作由 Service 处理，读操作由 QueryHandler 处理
+- **DDD (领域驱动设计)**：以领域模型为核心，划分领域层、应用层、适配器层（主动、被动）
+- **CQRS (命令查询职责分离)**：应用服务由 Service 处理，查询由 QueryHandler、QueryCriteria、QuerySort 处理
 - **整洁架构 / 六边形架构**：通过 Adapters 实现内外适配器的解耦
 
 详细架构图见 [arch.drawio](./arch.drawio)
