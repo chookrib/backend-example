@@ -119,7 +119,7 @@ namespace BackendExample.Adapter.Driving
         {
             dynamic d = new ExpandoObject();
             d.code = Code;
-            d.meessage = Message;
+            d.message = Message;
             d.data = Data;
             d.success = Success;
             return d;

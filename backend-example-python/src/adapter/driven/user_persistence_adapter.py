@@ -210,7 +210,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         sqls = []
         params = []
         if not value_utility.is_empty_string(criteria.keyword):
-            sqls.append(" u_username LIKE ? ESCAPE '\\' AND u_nickname LIKE ? ESCAPE '\\' ")
+            sqls.append("(u_username LIKE ? ESCAPE '\\' OR u_nickname LIKE ? ESCAPE '\\')")
             params.append(self.sqlite_adapter.escape_like_pattern(criteria.keyword))
             params.append(self.sqlite_adapter.escape_like_pattern(criteria.keyword))
         if not sqls:

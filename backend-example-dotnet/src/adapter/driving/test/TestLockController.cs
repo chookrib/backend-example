@@ -117,8 +117,8 @@ namespace BackendExample.Adapter.Driving.Test
         /// <summary>
         /// 异步 Task.Delay，加异步锁
         /// </summary>
-        [HttpGet("/api/test/lock/task-delay-with-lock-async")]
-        public async Task<Result> TestLockTaskDelayWithLockAsync()
+        [HttpGet("/api/test/lock/async-task-delay-with-async-lock")]
+        public async Task<Result> TestLockAsyncTaskDelayWithAsyncLock()
         {
             await this.testLockService.AsyncTaskDelayWithAsyncLock();
             return Result.Ok();

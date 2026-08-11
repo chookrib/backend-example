@@ -230,7 +230,7 @@ namespace BackendExample.Adapter.Driven
             IList<string> sqls = new List<string>();
             if (!ValueUtility.IsEmptyString(criteria.Keyword))
             {
-                sqls.Add("u_username LIKE @Keyword ESCAPE '\\' OR u_nickname LIKE @keyword ESCAPE '\\'");
+                sqls.Add("(u_username LIKE @keyword ESCAPE '\\' OR u_nickname LIKE @keyword ESCAPE '\\')");
                 @params.keyword = this.sqliteAdapter.EscapeLikePattern(criteria.Keyword);
             }
 

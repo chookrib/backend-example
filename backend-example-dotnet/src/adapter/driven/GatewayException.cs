@@ -3,13 +3,13 @@
     /// <summary>
     /// Gateway Exception
     /// </summary>
-    public class ControllerException : Exception
+    public class GatewayException : Exception
     {
-        public ControllerException() { }
+        public GatewayException() { }
 
-        public ControllerException(string message) : base(message) { }
+        public GatewayException(string message) : base(message) { }
 
-        public ControllerException(string message, Exception innerException)
+        public GatewayException(string message, Exception innerException)
             : base(message, innerException) { }
     }
 }

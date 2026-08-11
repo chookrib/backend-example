@@ -254,7 +254,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
         List<String> sqls = new ArrayList<>();
         if (!ValueUtility.isEmptyString(criteria.getKeyword())) {
-            sqls.add("u_username LIKE :keyword ESCAPE '\\' OR u_nickname LIKE :keyword ESCAPE '\\'");
+            sqls.add("(u_username LIKE :keyword ESCAPE '\\' OR u_nickname LIKE :keyword ESCAPE '\\')");
             params.put("keyword", this.sqliteAdapter.EscapeLikePattern(criteria.getKeyword()));
         }
 

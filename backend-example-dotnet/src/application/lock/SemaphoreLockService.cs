@@ -19,7 +19,7 @@ namespace BackendExample.Application.Lock
             this.enableLog = applicationConfig.IsAppEnvDev();
         }
 
-        public IDisposable Lock(string key, int timeout = 30)
+        public IDisposable Lock(string key, int timeout = 10)
         {
             SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
             bool acquired = semaphore.Wait(TimeSpan.FromSeconds(timeout));
