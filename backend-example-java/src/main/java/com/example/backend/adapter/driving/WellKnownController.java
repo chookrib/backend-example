@@ -4,12 +4,15 @@ import com.example.backend.Application;
 import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -25,9 +28,9 @@ public class WellKnownController {
     /**
      * 应用信息，显示非涉密信息
      */
-    @RequestMapping(value = "/api/.well-known", method = RequestMethod.GET, produces = "text/plain")
+    @RequestMapping(value = "/.well-known/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public String wellKnown() {
+    public String metadata() {
         Properties props = Application.getManifestProperties();
         return "File-Name: " + Application.getFileName() +
                System.lineSeparator() +
@@ -37,6 +40,21 @@ public class WellKnownController {
                System.lineSeparator() +
                "Start-Time: " + ValueUtility.formatDateTime(startTime) +
                System.lineSeparator();
+    }
+
+    /**
+     * 应用信息，显示非涉密信息，JSON格式
+     */
+    @RequestMapping(value = "/.well-known/metadata.json", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> metadataJson() {
+        Properties props = Application.getManifestProperties();
+        Map<String, Object> response = new HashMap<>();
+        response.put("fileName", Application.getFileName());
+        response.put("buildTime", props.getProperty("Build-Time", ""));
+        response.put("gitCommitIdAbbrev", props.getProperty("Git-Commit-Id-Abbrev", ""));
+        response.put("startTime", ValueUtility.formatDateTime(startTime));
+        return response;
     }
 }
 
