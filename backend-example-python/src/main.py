@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 
     # 服务初始化
     from src.ioc_container import ioc_container
-    from src.domain.user_repository import UserRepository
+    from src.domain.user.user_repository import UserRepository
     user_repository = ioc_container.resolve(UserRepository)
     await user_repository.init()
 
@@ -194,8 +194,8 @@ from src.adapter.driving.test import test_request_controller
 from src.adapter.driving.test import test_response_code_controller
 from src.adapter.driving.test import test_response_json_controller
 from src.adapter.driving.test import test_value_controller
-from src.adapter.driving import user_controller
-from src.adapter.driving import user_manage_controller
+from src.adapter.driving.user import user_controller
+from src.adapter.driving.user import user_manage_controller
 
 app.include_router(well_known_controller.router)
 app.include_router(test_crypto_controller.router)

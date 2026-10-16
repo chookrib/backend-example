@@ -7,7 +7,11 @@ using BackendExample.Adapter.Driving;
 using BackendExample.Application;
 using BackendExample.Application.Lock;
 using BackendExample.Application.Test;
-using BackendExample.Domain;
+using BackendExample.src.adapter.driven.ext;
+using BackendExample.src.adapter.driven.user;
+using BackendExample.src.application.user;
+using BackendExample.src.domain.ext;
+using BackendExample.src.domain.user;
 using BackendExample.Utility;
 
 using log4net;

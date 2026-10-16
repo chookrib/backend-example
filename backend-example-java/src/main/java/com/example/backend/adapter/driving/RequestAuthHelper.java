@@ -1,7 +1,7 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.application.UserAuthService;
-import com.example.backend.domain.User;
+import com.example.backend.application.user.UserAuthService;
+import com.example.backend.domain.user.User;
 import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
 

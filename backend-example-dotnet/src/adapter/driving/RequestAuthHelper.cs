@@ -1,5 +1,5 @@
-﻿using BackendExample.Application;
-using BackendExample.Domain;
+﻿using BackendExample.src.application.user;
+using BackendExample.src.domain.user;
 using BackendExample.Utility;
 
 namespace BackendExample.Adapter.Driving

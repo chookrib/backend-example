@@ -158,18 +158,18 @@ ioc_container.register(cls=TestLockService)
 
 # ======================================================================================================================
 # 注册 Driven Adapter - Gateway
-from src.domain.sms_gateway import SmsGateway
-from src.adapter.driven.sms_gateway_adapter import SmsGatewayAdapter
+from src.domain.ext.sms_gateway import SmsGateway
+from src.adapter.driven.ext.sms_gateway_adapter import SmsGatewayAdapter
 
 ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)
 
 # ======================================================================================================================
 # 注册 Driven Adapter - Persistence
 from src.adapter.driven.sqlite_adapter import SQLiteAdapter
-from src.domain.user_repository import UserRepository
-from src.domain.user_unique_specification import UserUniqueSpecification
-from src.application.user_query_handler import UserQueryHandler
-from src.adapter.driven.user_persistence_adapter import UserPersistenceAdapter
+from src.domain.user.user_repository import UserRepository
+from src.domain.user.user_unique_specification import UserUniqueSpecification
+from src.application.user.user_query_handler import UserQueryHandler
+from src.adapter.driven.user.user_persistence_adapter import UserPersistenceAdapter
 
 ioc_container.register(cls=SQLiteAdapter)
 ioc_container.register(cls=UserRepository, provider_cls=UserPersistenceAdapter)
@@ -178,9 +178,9 @@ ioc_container.register(cls=UserQueryHandler, provider_cls=UserPersistenceAdapter
 
 # ======================================================================================================================
 # 注册 Application Service
-from src.application.user_auth_service import UserAuthService
-from src.application.user_profile_service import UserProfileService
-from src.application.user_manage_service import UserManageService
+from src.application.user.user_auth_service import UserAuthService
+from src.application.user.user_profile_service import UserProfileService
+from src.application.user.user_manage_service import UserManageService
 
 ioc_container.register(cls=UserAuthService)
 ioc_container.register(cls=UserProfileService)
