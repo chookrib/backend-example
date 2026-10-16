@@ -1,0 +1,23 @@
+﻿namespace BackendExample.src.domain.user
+{
+    /// <summary>
+    /// 用户唯一性 Specification 接口
+    /// </summary>
+    public interface UserUniqueSpecification
+    {
+        /// <summary>
+        /// 用户名是否唯一
+        /// </summary>
+        Task<bool> IsUsernameUnique(string username);
+
+        /// <summary>
+        /// 昵称是否唯一
+        /// </summary>
+        Task<bool> IsNicknameUnique(string nickname);
+
+        /// <summary>
+        /// 手机号是否唯一
+        /// </summary>
+        Task<bool> IsMobileUnique(string mobile);
+    }
+}

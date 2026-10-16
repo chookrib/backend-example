@@ -1,0 +1,13 @@
+﻿namespace BackendExample.src.domain.ext
+{
+    /// <summary>
+    /// 短信 Gateway 接口
+    /// </summary>
+    public interface SmsGateway
+    {
+        /// <summary>
+        /// 发送验证码
+        /// </summary>
+        Task SendCode(string mobile, string code);
+    }
+}
