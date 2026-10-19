@@ -1,7 +1,6 @@
-﻿using BackendExample.Domain;
-using BackendExample.Utility;
+﻿using src.utility;
 
-namespace BackendExample.src.domain.user
+namespace src.domain.user
 {
     /// <summary>
     /// 用户 Entity

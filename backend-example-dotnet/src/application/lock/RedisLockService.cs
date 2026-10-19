@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 
-using BackendExample.Utility;
+using src.utility;
 
 using log4net;
 
 using StackExchange.Redis;
 
-namespace BackendExample.Application.Lock
+namespace src.application.@lock
 {
     /// <summary>
     /// 基于 Redis 实现的锁 Service

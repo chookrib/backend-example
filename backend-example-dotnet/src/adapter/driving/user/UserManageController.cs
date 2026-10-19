@@ -1,8 +1,7 @@
-﻿using BackendExample.Adapter.Driving;
-using BackendExample.src.application.user;
+﻿using src.application.user;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.src.adapter.driving.user
+namespace src.adapter.driving.user
 {
     /// <summary>
     /// 用户管理 Controller

@@ -1,7 +1,7 @@
 package com.example.backend.adapter.driven.user;
 
 import com.example.backend.adapter.driven.PersistenceException;
-import com.example.backend.adapter.driven.SQLiteAdapter;
+import com.example.backend.adapter.driven.DatabaseAdapter;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserQueryCriteria;
 import com.example.backend.application.user.UserQueryHandler;
@@ -29,15 +29,15 @@ import java.util.Map;
 @Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecification, UserQueryHandler {
 
-    private final SQLiteAdapter sqliteAdapter;
+    private final DatabaseAdapter sqliteAdapter;
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String tableName;
 
-    public UserPersistenceAdapter(SQLiteAdapter sqLiteAdapter) {
-        this.sqliteAdapter = sqLiteAdapter;
-        this.jdbcTemplate = sqLiteAdapter.getJdbcTemplate();
-        this.namedParameterJdbcTemplate = sqLiteAdapter.getNamedParameterJdbcTemplate();
+    public UserPersistenceAdapter(DatabaseAdapter databaseAdapter) {
+        this.sqliteAdapter = databaseAdapter;
+        this.jdbcTemplate = databaseAdapter.getJdbcTemplate();
+        this.namedParameterJdbcTemplate = databaseAdapter.getNamedParameterJdbcTemplate();
         // 每次启动生成唯一表名
         this.tableName = "t_user_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         // 创建表及默认管理员

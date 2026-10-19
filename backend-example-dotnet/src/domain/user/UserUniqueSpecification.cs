@@ -1,4 +1,4 @@
-﻿namespace BackendExample.src.domain.user
+﻿namespace src.domain.user
 {
     /// <summary>
     /// 用户唯一性 Specification 接口

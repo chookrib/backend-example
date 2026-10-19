@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application.Test
+﻿namespace src.application.test
 {
     /// <summary>
     /// IoC测试类2

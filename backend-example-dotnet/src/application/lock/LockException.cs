@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application.Lock
+﻿namespace src.application.@lock
 {
     /// <summary>
     /// Lock Exception

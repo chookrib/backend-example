@@ -6,15 +6,15 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * SQLite 数据库 Adapter
+ * 数据库 Adapter
  */
 @Component
-public class SQLiteAdapter {
+public class DatabaseAdapter {
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public SQLiteAdapter(
+    public DatabaseAdapter(
             @Qualifier("sqliteJdbcTemplate") JdbcTemplate jdbcTemplate,
             @Qualifier("sqliteNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {

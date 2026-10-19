@@ -9,8 +9,8 @@ from src.application.application_config import application_config
 from src.utility import value_utility
 
 
-class SQLiteAdapter:
-    """SQLite 数据库 Adapter"""
+class DatabaseAdapter:
+    """数据库 Adapter"""
 
     def __init__(self):
         if value_utility.is_empty_string(application_config.APP_SQLITE_PATH):

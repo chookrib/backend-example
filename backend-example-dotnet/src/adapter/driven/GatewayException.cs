@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Adapter.Driven
+﻿namespace src.adapter.driven
 {
     /// <summary>
     /// Gateway Exception

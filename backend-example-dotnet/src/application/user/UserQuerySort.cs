@@ -1,4 +1,4 @@
-﻿namespace BackendExample.src.application.user
+﻿namespace src.application.user
 {
     /// <summary>
     /// 用户 Query Sort

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
-using BackendExample.Application;
-using BackendExample.Application.Lock;
-using BackendExample.src.domain.ext;
-using BackendExample.src.domain.user;
-using BackendExample.Utility;
+﻿using System.Collections.Concurrent;
+using src.application.@lock;
+using src.domain.ext;
+using src.domain.user;
+using src.utility;
 
-using ApplicationException = BackendExample.Application.ApplicationException;
-
-namespace BackendExample.src.application.user
+namespace src.application.user
 {
     /// <summary>
     /// 用户资料 Service

@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Text;
-using BackendExample.Utility;
+using src.utility;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving
+namespace src.adapter.driving
 {
     /// <summary>
     /// Well Known Controller

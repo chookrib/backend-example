@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Utility
+﻿namespace src.utility
 {
     /// <summary>
     /// Utility Exception

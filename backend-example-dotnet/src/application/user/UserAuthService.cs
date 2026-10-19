@@ -1,10 +1,7 @@
-﻿using BackendExample.Application;
-using BackendExample.src.domain.user;
-using BackendExample.Utility;
+﻿using src.domain.user;
+using src.utility;
 
-using ApplicationException = BackendExample.Application.ApplicationException;
-
-namespace BackendExample.src.application.user
+namespace src.application.user
 {
     /// <summary>
     /// 用户认证 Service

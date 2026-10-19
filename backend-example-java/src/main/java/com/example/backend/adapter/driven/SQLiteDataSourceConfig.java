@@ -5,7 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -15,7 +14,7 @@ import javax.sql.DataSource;
  * 数据源配置
  */
 @Configuration
-public class DataSourceConfig {
+public class SQLiteDataSourceConfig {
 
     /**
      * Sqlite DataSource

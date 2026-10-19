@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application
+﻿namespace src.application
 {
     /// <summary>
     /// 应用配置

@@ -1,10 +1,10 @@
-﻿using BackendExample.Utility;
+﻿using src.utility;
 
 using log4net;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving.Test
+namespace src.adapter.driving.test
 {
     /// <summary>
     /// 测试加解密 Controller

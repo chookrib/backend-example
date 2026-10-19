@@ -1,8 +1,8 @@
-﻿using BackendExample.Application.Lock;
+﻿using src.application.@lock;
 
 using log4net;
 
-namespace BackendExample.Application.Test
+namespace src.application.test
 {
     /// <summary>
     /// 测试锁 Service

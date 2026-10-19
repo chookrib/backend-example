@@ -1,7 +1,8 @@
-﻿using BackendExample.src.domain.ext;
-using log4net;
+﻿using log4net;
 
-namespace BackendExample.src.adapter.driven.ext
+using src.domain.ext;
+
+namespace src.adapter.driven.ext
 {
     /// <summary>
     /// 短信 Gateway 接口 Adapter

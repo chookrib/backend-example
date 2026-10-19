@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace BackendExample.Utility
+namespace src.utility
 {
     /// <summary>
     /// 值 Utility
@@ -321,7 +321,7 @@ namespace BackendExample.Utility
             //    return TimeOnly.FromDateTime(datetime);
             //return null;
 
-            string t = value.Trim();
+            string t = value!.Trim();
 
             // 防御性处理：C# 最大支持7位，截断超出的部分
             int dotIndex = t.IndexOf('.');

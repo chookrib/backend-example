@@ -1,8 +1,8 @@
 ﻿using System.Dynamic;
-using BackendExample.Utility;
+using src.utility;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving.Test
+namespace src.adapter.driving.test
 {
     /// <summary>
     /// 测试响应输出 JSON 数据 Controller

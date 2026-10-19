@@ -1,11 +1,11 @@
-﻿using BackendExample.Application.Lock;
-using BackendExample.Application.Test;
+﻿using src.application.@lock;
+using src.application.test;
 
 using log4net;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving.Test
+namespace src.adapter.driving.test
 {
     /// <summary>
     /// 测试锁 Controller

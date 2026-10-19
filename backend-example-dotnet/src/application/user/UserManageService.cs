@@ -1,8 +1,7 @@
-﻿using BackendExample.Application;
-using BackendExample.Application.Lock;
-using BackendExample.src.domain.user;
+﻿using src.application.@lock;
+using src.domain.user;
 
-namespace BackendExample.src.application.user
+namespace src.application.user
 {
     /// <summary>
     /// 用户管理 Service

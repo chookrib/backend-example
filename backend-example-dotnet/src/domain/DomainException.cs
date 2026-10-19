@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Domain
+﻿namespace src.domain
 {
     /// <summary>
     /// Domain Exception

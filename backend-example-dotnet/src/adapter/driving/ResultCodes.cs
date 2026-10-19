@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Adapter.Driving
+﻿namespace src.adapter.driving
 {
     /// <summary>
     /// Result 返回码定义

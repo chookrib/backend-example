@@ -1,4 +1,4 @@
-﻿namespace BackendExample.src.domain.ext
+﻿namespace src.domain.ext
 {
     /// <summary>
     /// 短信 Gateway 接口

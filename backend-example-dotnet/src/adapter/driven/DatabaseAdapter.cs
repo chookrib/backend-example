@@ -1,27 +1,36 @@
-﻿using BackendExample.Utility;
+﻿using src.utility;
 
 using Microsoft.Data.Sqlite;
+using System.Data;
 
-namespace BackendExample.Adapter.Driven
+namespace src.adapter.driven
 {
     /// <summary>
-    /// SQLite 数据库 Adapter
+    /// 数据库 Adapter
     /// </summary>
-    public class SQLiteAdapter
+    public class DatabaseAdapter
     {
         private readonly string connectionString;
 
-        public SQLiteAdapter(IConfiguration configuration)
+        public DatabaseAdapter(IConfiguration configuration)
         {
             this.connectionString = configuration.GetConnectionString("SQLite") ?? string.Empty;
             if (ValueUtility.IsEmptyString(this.connectionString))
                 throw new PersistenceException("ConnectionString:SQLite 配置错误");
         }
 
+        ///// <summary>
+        ///// 获取数据库连接
+        ///// </summary>
+        //public SqliteConnection GetConnection()
+        //{
+        //    return new SqliteConnection(this.connectionString);
+        //}
+
         /// <summary>
         /// 获取数据库连接
         /// </summary>
-        public SqliteConnection GetConnection()
+        public IDbConnection GetConnection()
         {
             return new SqliteConnection(this.connectionString);
         }

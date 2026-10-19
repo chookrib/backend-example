@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application.Lock
+﻿namespace src.application.@lock
 {
     /// <summary>
     /// 锁 Key 定义

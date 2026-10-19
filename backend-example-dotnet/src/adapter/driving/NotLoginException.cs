@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Adapter.Driving
+﻿namespace src.adapter.driving
 {
     /// <summary>
     /// 未登录 Exception

@@ -1,4 +1,4 @@
-﻿namespace BackendExample.src.domain.user
+﻿namespace src.domain.user
 {
     /// <summary>
     /// 用户 Repository 接口

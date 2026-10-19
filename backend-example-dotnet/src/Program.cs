@@ -2,24 +2,24 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using BackendExample.Adapter.Driven;
-using BackendExample.Adapter.Driving;
-using BackendExample.Application;
-using BackendExample.Application.Lock;
-using BackendExample.Application.Test;
-using BackendExample.src.adapter.driven.ext;
-using BackendExample.src.adapter.driven.user;
-using BackendExample.src.application.user;
-using BackendExample.src.domain.ext;
-using BackendExample.src.domain.user;
-using BackendExample.Utility;
+using src.adapter.driven;
+using src.adapter.driving;
+using src.application;
+using src.application.@lock;
+using src.application.test;
+using src.adapter.driven.ext;
+using src.adapter.driven.user;
+using src.application.user;
+using src.domain.ext;
+using src.domain.user;
+using src.utility;
 
 using log4net;
 using log4net.Config;
 
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace BackendExample
+namespace src
 {
     public class Program
     {
@@ -65,7 +65,7 @@ namespace BackendExample
             // 注册 Driven Adapter - Gateway
             builder.Services.AddSingleton<SmsGateway, SmsGatewayAdapter>();
             // 注册 Driven Adapter - Persistence
-            builder.Services.AddSingleton<SQLiteAdapter>();
+            builder.Services.AddSingleton<DatabaseAdapter>();
             builder.Services.AddSingleton<UserPersistenceAdapter>();
             builder.Services.AddSingleton<UserRepository>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             builder.Services.AddSingleton<UserUniqueSpecification>(sp => sp.GetRequiredService<UserPersistenceAdapter>());

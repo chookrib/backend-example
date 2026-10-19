@@ -1,8 +1,6 @@
-﻿using System.Dynamic;
-using BackendExample.Utility;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace BackendExample.Adapter.Driving.Test
+namespace src.adapter.driving.test
 {
     /// <summary>
     /// 测试响应状态码 Controller

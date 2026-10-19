@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text.Json;
-using BackendExample.Adapter.Driving;
-using BackendExample.src.application.user;
+using src.adapter.driving;
+using src.application.user;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace BackendExample.src.adapter.driving.user
+namespace src.adapter.driving.user
 {
     /// <summary>
     /// 用户 Controller

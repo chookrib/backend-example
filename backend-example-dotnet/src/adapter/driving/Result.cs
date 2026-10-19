@@ -1,7 +1,7 @@
 ﻿using System.Dynamic;
-using BackendExample.Utility;
+using src.utility;
 
-namespace BackendExample.Adapter.Driving
+namespace src.adapter.driving
 {
     /// <summary>
     /// Controller 返回结果

@@ -1,4 +1,4 @@
-﻿namespace BackendExample.Application
+﻿namespace src.application
 {
     /// <summary>
     /// Id 生成器

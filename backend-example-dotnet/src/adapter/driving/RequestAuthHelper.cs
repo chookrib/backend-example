@@ -1,8 +1,8 @@
-﻿using BackendExample.src.application.user;
-using BackendExample.src.domain.user;
-using BackendExample.Utility;
+﻿using src.application.user;
+using src.domain.user;
+using src.utility;
 
-namespace BackendExample.Adapter.Driving
+namespace src.adapter.driving
 {
     /// <summary>
     /// 请求 Auth Helper
