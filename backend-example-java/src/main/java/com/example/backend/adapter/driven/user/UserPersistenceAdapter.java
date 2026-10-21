@@ -1,7 +1,7 @@
 package com.example.backend.adapter.driven.user;
 
-import com.example.backend.adapter.driven.PersistenceException;
 import com.example.backend.adapter.driven.DatabaseAdapter;
+import com.example.backend.adapter.driven.PersistenceException;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserQueryCriteria;
 import com.example.backend.application.user.UserQueryHandler;
@@ -29,13 +29,13 @@ import java.util.Map;
 @Component
 public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecification, UserQueryHandler {
 
-    private final DatabaseAdapter sqliteAdapter;
+    private final DatabaseAdapter databaseAdapter;
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String tableName;
 
     public UserPersistenceAdapter(DatabaseAdapter databaseAdapter) {
-        this.sqliteAdapter = databaseAdapter;
+        this.databaseAdapter = databaseAdapter;
         this.jdbcTemplate = databaseAdapter.getJdbcTemplate();
         this.namedParameterJdbcTemplate = databaseAdapter.getNamedParameterJdbcTemplate();
         // 每次启动生成唯一表名
@@ -90,13 +90,13 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public void insert(User entity) {
-        this.jdbcTemplate.update("""
+        jdbcTemplate.update("""
                         INSERT INTO %s (
                             u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                         ) VALUES (
                             ?, ?, ?, ?, ?, ?, ?, ?
                         )
-                        """.formatted(this.tableName),
+                        """.formatted(tableName),
                 entity.getId(),
                 entity.getUsername(),
                 entity.getPassword(),
@@ -110,7 +110,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public void update(User entity) {
-        this.jdbcTemplate.update("""
+        jdbcTemplate.update("""
                         UPDATE %s
                             SET
                                 u_username = ?,
@@ -122,7 +122,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                                 u_updated_at = ?
                             WHERE
                                 u_id = ?
-                        """.formatted(this.tableName),
+                        """.formatted(tableName),
                 entity.getUsername(),
                 entity.getPassword(),
                 entity.getNickname(),
@@ -138,8 +138,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public void deleteById(String id) {
         if (ValueUtility.isEmptyString(id))
             return;
-        this.jdbcTemplate.update(
-                "DELETE FROM %s WHERE u_id = ?".formatted(this.tableName), id
+        jdbcTemplate.update(
+                "DELETE FROM %s WHERE u_id = ?".formatted(tableName), id
         );
     }
 
@@ -147,8 +147,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public User selectById(String id) {
         if (ValueUtility.isEmptyString(id))
             return null;
-        SqlRowSet sqlRowSet = this.jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id = ?".formatted(this.tableName), id
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
+                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
         );
         if (sqlRowSet.next()) {
             return toEntity(sqlRowSet);
@@ -172,8 +172,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", ids);
-        SqlRowSet sqlRowSet = this.namedParameterJdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(this.tableName), params
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
+                "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(tableName), params
         );
         while (sqlRowSet.next()) {
             User entity = toEntity(sqlRowSet);
@@ -186,8 +186,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public User selectByUsername(String username) {
         if (ValueUtility.isEmptyString(username))
             return null;
-        SqlRowSet sqlRowSet = this.jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(this.tableName), username
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
+                "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), username
         );
         if (sqlRowSet.next()) {
             return toEntity(sqlRowSet);
@@ -202,8 +202,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public boolean isUsernameUnique(String username) {
         if (ValueUtility.isEmptyString(username))
             throw new PersistenceException("参数 username 不能为空");
-        Integer count = this.jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(this.tableName), int.class, username
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), int.class, username
         );
         return Integer.valueOf(0).equals(count);
     }
@@ -212,8 +212,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public boolean isNicknameUnique(String nickname) {
         if (ValueUtility.isEmptyString(nickname))
             throw new PersistenceException("参数 nickname 不能为空");
-        Integer count = this.jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(this.tableName), int.class, nickname
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName), int.class, nickname
         );
         return Integer.valueOf(0).equals(count);
     }
@@ -222,8 +222,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public boolean isMobileUnique(String mobile) {
         if (ValueUtility.isEmptyString(mobile))
             throw new PersistenceException("参数 mobile 不能为空");
-        Integer count = this.jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(this.tableName), int.class, mobile
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName), int.class, mobile
         );
         return Integer.valueOf(0).equals(count);
     }
@@ -257,7 +257,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         List<String> sqls = new ArrayList<>();
         if (!ValueUtility.isEmptyString(criteria.getKeyword())) {
             sqls.add("(u_username LIKE :keyword ESCAPE '\\' OR u_nickname LIKE :keyword ESCAPE '\\')");
-            params.put("keyword", this.sqliteAdapter.EscapeLikePattern(criteria.getKeyword()));
+            params.put("keyword", databaseAdapter.escapeLikePattern(criteria.getKeyword()));
         }
 
         if (!sqls.isEmpty())
@@ -290,8 +290,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public UserDto queryById(String id) {
         if (ValueUtility.isEmptyString(id))
             return null;
-        SqlRowSet sqlRowSet = this.jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id = ?".formatted(this.tableName), id
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
+                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
         );
         if (sqlRowSet.next()) {
             return toDto(sqlRowSet);
@@ -311,8 +311,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public int queryCount(UserQueryCriteria criteria) {
         Map<String, Object> params = new HashMap<>();
         String criteriaSql = buildQueryCriteria(criteria, params);
-        Integer count = this.namedParameterJdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s %s".formatted(this.tableName, criteriaSql), params, int.class
+        Integer count = namedParameterJdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM %s %s".formatted(tableName, criteriaSql), params, int.class
         );
         return count == null ? 0 : count;
     }
@@ -323,8 +323,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         String criteriaSql = buildQueryCriteria(criteria, params);
         String sortSql = buildQuerySort(sorts);
 
-        SqlRowSet sqlRowSet = this.namedParameterJdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s %s %s".formatted(this.tableName, criteriaSql, sortSql), params
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
+                "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params
         );
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {
@@ -342,9 +342,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         params.put("limitCount", pageSize);
         params.put("limitOffset", (pageNum - 1) * pageSize);
 
-        SqlRowSet sqlRowSet = this.namedParameterJdbcTemplate.queryForRowSet(
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
                 "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset"
-                        .formatted(this.tableName, criteriaSql, sortSql), params
+                        .formatted(tableName, criteriaSql, sortSql), params
         );
         List<UserDto> list = new ArrayList<>();
         while (sqlRowSet.next()) {

@@ -46,7 +46,7 @@ public class Result {
     /**
      * 是否成功
      */
-    //@JsonProperty("isSuccess")
+    // @JsonProperty("isSuccess")
     public boolean isSuccess() {
         return code == ResultCodes.SUCCESS;
     }

@@ -59,9 +59,9 @@ namespace src.adapter.driven.user
 
         public async Task Insert(User entity)
         {
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             await conn.ExecuteAsync($"""
-                INSERT INTO {this.tableName} (
+                INSERT INTO {tableName} (
                     u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                 ) VALUES (
                     @id, @username, @password, @nickname, @mobile, @isAdmin, @createdAt, @updatedAt
@@ -81,9 +81,9 @@ namespace src.adapter.driven.user
 
         public async Task Update(User entity)
         {
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             await conn.ExecuteAsync($"""
-                UPDATE {this.tableName}
+                UPDATE {tableName}
                     SET
                         u_username = @username,
                         u_password = @password,
@@ -111,7 +111,7 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(id))
                 return;
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             await conn.ExecuteAsync($"DELETE FROM {this.tableName} WHERE u_id = @id", new { id });
         }
 
@@ -119,9 +119,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(id))
                 return null;
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
-                $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
+                $"SELECT * FROM {tableName} WHERE u_id = @id", new { id }
                 );
             if (row == null)
                 return null;
@@ -142,9 +142,9 @@ namespace src.adapter.driven.user
             if (ids == null || ids.Count == 0)
                 return list;
 
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             IEnumerable<dynamic> rows = await conn.QueryAsync(
-                $"SELECT * FROM {this.tableName} WHERE u_id IN @ids", new { ids }
+                $"SELECT * FROM {tableName} WHERE u_id IN @ids", new { ids }
                 );
             foreach (dynamic row in rows)
             {
@@ -158,9 +158,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(username))
                 return null;
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
-                $"SELECT * FROM {this.tableName} WHERE u_username = @username", new { username }
+                $"SELECT * FROM {tableName} WHERE u_username = @username", new { username }
                 );
             if (row == null)
                 return null;
@@ -174,9 +174,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(username))
                 throw new PersistenceException("参数 username 不能为空");
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
-                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
+                $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
             ) == 0;
         }
 
@@ -184,9 +184,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(nickname))
                 throw new PersistenceException("参数 nickname 不能为空");
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
-                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_nickname) = LOWER(@nickname)", new { nickname }
+                $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_nickname) = LOWER(@nickname)", new { nickname }
                 ) == 0;
         }
 
@@ -194,9 +194,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(mobile))
                 throw new PersistenceException("参数 mobile 不能为空");
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
-                $"SELECT COUNT(*) FROM {this.tableName} WHERE LOWER(u_mobile) = LOWER(@mobile)", new { mobile }
+                $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_mobile) = LOWER(@mobile)", new { mobile }
             ) == 0;
         }
 
@@ -228,7 +228,7 @@ namespace src.adapter.driven.user
             if (!ValueUtility.IsEmptyString(criteria.Keyword))
             {
                 sqls.Add("(u_username LIKE @keyword ESCAPE '\\' OR u_nickname LIKE @keyword ESCAPE '\\')");
-                @params.keyword = this.databaseAdapter.EscapeLikePattern(criteria.Keyword);
+                @params.keyword = databaseAdapter.EscapeLikePattern(criteria.Keyword);
             }
 
             if (sqls.Count > 0)
@@ -269,9 +269,9 @@ namespace src.adapter.driven.user
         {
             if (ValueUtility.IsEmptyString(id))
                 return null;
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
-                $"SELECT * FROM {this.tableName} WHERE u_id = @id", new { id }
+                $"SELECT * FROM {tableName} WHERE u_id = @id", new { id }
                 );
             if (row == null)
                 return null;
@@ -290,9 +290,9 @@ namespace src.adapter.driven.user
         {
             dynamic @params;
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
-                $"SELECT COUNT(*) FROM {this.tableName} {crieriaSql}", (object)@params
+                $"SELECT COUNT(*) FROM {tableName} {crieriaSql}", (object)@params
                 );
         }
 
@@ -301,9 +301,9 @@ namespace src.adapter.driven.user
             dynamic @params;
             string crieriaSql = BuildQueryCriteria(criteria, out @params);
             string sortSql = BuildQuerySort(sorts);
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             IEnumerable<dynamic> rows = await conn.QueryAsync(
-                $"SELECT * FROM {this.tableName} {crieriaSql} {sortSql}", (object)@params
+                $"SELECT * FROM {tableName} {crieriaSql} {sortSql}", (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic row in rows)
@@ -323,9 +323,9 @@ namespace src.adapter.driven.user
             @params.limitCount = pageSize;
             @params.limitOffset = (pageNum - 1) * pageSize;
 
-            using var conn = this.databaseAdapter.GetConnection();
+            using var conn = databaseAdapter.GetConnection();
             IEnumerable<dynamic> rows = await conn.QueryAsync(
-                $"SELECT * FROM {this.tableName}{crieriaSql}{sortSql} LIMIT @limitCount OFFSET @limitOffset", (object)@params
+                $"SELECT * FROM {tableName}{crieriaSql}{sortSql} LIMIT @limitCount OFFSET @limitOffset", (object)@params
                 );
             IList<UserDto> list = new List<UserDto>();
             foreach (dynamic row in rows)

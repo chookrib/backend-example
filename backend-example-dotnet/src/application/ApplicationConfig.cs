@@ -1,7 +1,7 @@
 ﻿namespace src.application
 {
     /// <summary>
-    /// 应用配置
+    /// Application Config
     /// </summary>
     public class ApplicationConfig
     {
@@ -24,7 +24,7 @@
         /// </summary>
         public string GetAppName()
         {
-            return this.appName;
+            return appName;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@
         /// </summary>
         public string GetAppEnv()
         {
-            return this.appEnv;
+            return appEnv;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@
         /// <returns></returns>
         public bool IsAppEnvDev()
         {
-            return this.appEnv.ToLower() == "dev";
+            return appEnv.ToLower() == "dev";
             //configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development";
             //Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
         }
@@ -51,9 +51,9 @@
         ///// </summary>
         //public T GetService<T>()
         //{
-        //    if (this.serviceProvider == null)
+        //    if (serviceProvider == null)
         //        throw new Exception($"没有提供 IServiceProvider");
-        //    T? t = this.serviceProvider.GetService<T>();
+        //    T? t = serviceProvider.GetService<T>();
         //    if (t == null)
         //        throw new Exception($"IServiceProvider 中没有注册 {typeof(T)}");
         //    return t;

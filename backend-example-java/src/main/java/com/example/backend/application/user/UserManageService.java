@@ -32,20 +32,20 @@ public class UserManageService {
      * 设置用户管理员状态
      */
     public void setAdmin(String id, boolean isAdmin) {
-        User user = this.userRepository.selectByIdReq(id);
+        User user = userRepository.selectByIdReq(id);
         user.setAdmin(isAdmin);
-        this.userRepository.update(user);
+        userRepository.update(user);
     }
 
     /**
      * 创建用户
      */
     public String createUser(String username, String password, String nickname, String mobile) {
-        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
+        try(AutoCloseable lock = lockService.lock(LockKeys.USER)){
             User user = User.create(
                     IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
             );
-            this.userRepository.insert(user);
+            userRepository.insert(user);
             return user.getId();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -56,10 +56,10 @@ public class UserManageService {
      * 修改用户
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
-        try(AutoCloseable lock = this.lockService.lock(LockKeys.USER)){
-            User user = this.userRepository.selectByIdReq(id);
-            user.modify(username, nickname, mobile, this.userUniqueSpecification);
-            this.userRepository.update(user);
+        try(AutoCloseable lock = lockService.lock(LockKeys.USER)){
+            User user = userRepository.selectByIdReq(id);
+            user.modify(username, nickname, mobile, userUniqueSpecification);
+            userRepository.update(user);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -69,6 +69,6 @@ public class UserManageService {
      * 删除用户
      */
     public void removeUser(String id) {
-        this.userRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 }

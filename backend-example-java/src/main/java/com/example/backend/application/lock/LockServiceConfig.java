@@ -41,9 +41,9 @@ public class LockServiceConfig {
         return new RedissonLockService(
                 applicationConfig.getAppName(),
                 applicationConfig.isAppEnvDev(),
-                this.redissonAddress,
-                this.redissonPassword,
-                this.redissonDatabase
+                redissonAddress,
+                redissonPassword,
+                redissonDatabase
         );
     }
 }

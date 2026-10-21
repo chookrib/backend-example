@@ -18,34 +18,35 @@ import java.util.Map;
 @Component
 public class UserAuthService {
 
-    private int jwtExpiresMinute;
-
-    private String jwtSecret;
-
     private final UserRepository userRepository;
+    private final String jwtSecret;
+    private final int jwtTtlMinute;
 
     public UserAuthService(
-            @Value("${app.jwt-secret:}") String jwtSecret,
-            @Value("${app.jwt-expires:}") String jwtExpires,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            @Value("${app.jwt-secret}") String jwtSecret,
+            @Value("${app.jwt-ttl}") String jwtTtl) {
+        this.userRepository = userRepository;
+
         if (!ValueUtility.isEmptyString(jwtSecret)) {
             this.jwtSecret = jwtSecret;
         } else {
             throw new ApplicationException("app.jwt-secret 配置错误");
         }
+
         try {
-            this.jwtExpiresMinute = CryptoUtility.jwtExpiresMinute(jwtExpires);
+            this.jwtTtlMinute = CryptoUtility.jwtTtlToMinute(jwtTtl);
         } catch (Exception ex) {
-            throw new ApplicationException("app.jwt-expires 配置错误");
+            throw new ApplicationException("app.jwt-ttl 配置错误");
         }
-        this.userRepository = userRepository;
+
     }
 
     /**
      * 登录，返回 AccessToken
      */
     public String login(String username, String password) {
-        User user = this.userRepository.selectByUsername(username);
+        User user = userRepository.selectByUsername(username);
         if (user == null || !user.isPasswordMatch(password)) {
             throw new ApplicationException("密码错误");
         }
@@ -53,8 +54,8 @@ public class UserAuthService {
         payload.put("id", user.getId());
         return CryptoUtility.jwtEncode(
                 payload,
-                this.jwtSecret,
-                LocalDateTime.now().plusMinutes(this.jwtExpiresMinute)
+                jwtSecret,
+                LocalDateTime.now().plusMinutes(jwtTtlMinute)
         );
     }
 
@@ -67,7 +68,7 @@ public class UserAuthService {
         }
 
         try {
-            Map<String, ?> payload = CryptoUtility.jwtDecode(accessToken, this.jwtSecret);
+            Map<String, ?> payload = CryptoUtility.jwtDecode(accessToken, jwtSecret);
             return String.valueOf(payload.get("id"));
         } catch (Exception ex) {
             return "";

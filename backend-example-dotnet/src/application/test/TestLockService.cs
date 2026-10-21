@@ -25,7 +25,7 @@ namespace src.application.test
         /// </summary>
         public void SetCount(int value)
         {
-            this.count = value;
+            count = value;
             logger.Info($"设置 count = {value}");
         }
 
@@ -37,8 +37,8 @@ namespace src.application.test
             int c = count;
             if (c > 0)
             {
-                this.count--;
-                logger.Info($"减少 count 成功: {c} - 1 = {this.count}");
+                count--;
+                logger.Info($"减少 count 成功: {c} - 1 = {count}");
                 return true;
             }
             else
@@ -60,8 +60,8 @@ namespace src.application.test
 
             if (c > 0)
             {
-                this.count--;
-                logger.Info($"减少 count 成功: {c} - 1 = {this.count}");
+                count--;
+                logger.Info($"减少 count 成功: {c} - 1 = {count}");
                 return true;
             }
             else
@@ -77,9 +77,9 @@ namespace src.application.test
         /// </summary>
         public void SyncDecreaseCountWithSyncLock()
         {
-            using (this.lockService.Lock(LockKeys.TEST))
+            using (lockService.Lock(LockKeys.TEST))
             {
-                this.SyncDecreaseCount();
+                SyncDecreaseCount();
             }
         }
 
@@ -88,9 +88,9 @@ namespace src.application.test
         /// </summary>
         public async Task SyncDecreaseCountWithAsyncLock()
         {
-            await using (await this.lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeys.TEST))
             {
-                this.SyncDecreaseCount();
+                SyncDecreaseCount();
             }
         }
 
@@ -99,9 +99,9 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncDecreaseCountWithSyncLock()
         {
-            using (this.lockService.Lock(LockKeys.TEST))
+            using (lockService.Lock(LockKeys.TEST))
             {
-                await this.AsyncDecreaseCount();
+                await AsyncDecreaseCount();
             }
         }
 
@@ -110,11 +110,11 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncDecreaseCountWithAsyncLock()
         {
-            await using (await this.lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeys.TEST))
             {
                 //await Task.Delay(new Random().Next(1000, 5000));
                 await Task.Delay(0);
-                await this.AsyncDecreaseCount();
+                await AsyncDecreaseCount();
             }
         }
 
@@ -141,7 +141,7 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncTaskDelayWithAsyncLock()
         {
-            await using (await this.lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeys.TEST))
             {
                 await Task.Delay(10 * 1000);
             }

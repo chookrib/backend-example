@@ -42,9 +42,9 @@ public class UserProfileService {
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        try (AutoCloseable lock = this.lockService.lock(LockKeys.USER)) {
-            User user = User.register(IdGenerator.generateId(), username, password, nickname, this.userUniqueSpecification);
-            this.userRepository.insert(user);
+        try (AutoCloseable lock = lockService.lock(LockKeys.USER)) {
+            User user = User.register(IdGenerator.generateId(), username, password, nickname, userUniqueSpecification);
+            userRepository.insert(user);
             return user.getId();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -55,19 +55,19 @@ public class UserProfileService {
      * 修改密码
      */
     public void modifyPassword(String userId, String oldPassword, String newPassword) {
-        User user = this.userRepository.selectByIdReq(userId);
+        User user = userRepository.selectByIdReq(userId);
         user.modifyPassword(oldPassword, newPassword);
-        this.userRepository.update(user);
+        userRepository.update(user);
     }
 
     /**
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        try (AutoCloseable lock = this.lockService.lock(LockKeys.USER)) {
-            User user = this.userRepository.selectByIdReq(userId);
-            user.modifyNickname(nickname, this.userUniqueSpecification);
-            this.userRepository.update(user);
+        try (AutoCloseable lock = lockService.lock(LockKeys.USER)) {
+            User user = userRepository.selectByIdReq(userId);
+            user.modifyNickname(nickname, userUniqueSpecification);
+            userRepository.update(user);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -80,10 +80,10 @@ public class UserProfileService {
         if (ValueUtility.isEmptyString(mobile))
             throw new ApplicationException("手机号不能为空");
 
-        User user = this.userRepository.selectByIdReq(userId);
+        User user = userRepository.selectByIdReq(userId);
         String code = String.format("%06d", (int) (Math.random() * 1000000));
-        this.mobileCodeMap.put(user.getId() + "_" + mobile, code);
-        this.smsGateway.sendCode(mobile, code);
+        mobileCodeMap.put(user.getId() + "_" + mobile, code);
+        smsGateway.sendCode(mobile, code);
     }
 
     /**
@@ -93,13 +93,13 @@ public class UserProfileService {
         if (ValueUtility.isEmptyString(code))
             throw new ApplicationException("验证码不能为空");
 
-        User user = this.userRepository.selectByIdReq(userId);
+        User user = userRepository.selectByIdReq(userId);
         String key = user.getId() + "_" + mobile;
-        if (!this.mobileCodeMap.getOrDefault(key, "").equals(code))
+        if (!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("验证码错误");
 
-        user.modifyMobile(mobile, this.userUniqueSpecification);
-        this.userRepository.update(user);
-        this.mobileCodeMap.remove(key);
+        user.modifyMobile(mobile, userUniqueSpecification);
+        userRepository.update(user);
+        mobileCodeMap.remove(key);
     }
 }

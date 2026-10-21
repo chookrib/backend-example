@@ -28,7 +28,10 @@ public class WellKnownController {
     /**
      * 应用信息，显示非涉密信息
      */
-    @RequestMapping(value = "/.well-known/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/.well-known/metadata", method = RequestMethod.GET,
+            // produces = MediaType.TEXT_PLAIN_VALUE   // text/plain;charset=ISO-8859-1
+            produces = "text/plain;charset=UTF-8"
+    )
     @ResponseBody
     public String metadata() {
         Properties props = Application.getManifestProperties();

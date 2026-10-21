@@ -27,9 +27,9 @@ namespace src.application.user
         /// </summary>
         public async Task SetAdmin(string id, bool isAdmin)
         {
-            User user = await this.userRepository.SelectByIdReq(id);
+            User user = await userRepository.SelectByIdReq(id);
             user.SetAdmin(isAdmin);
-            await this.userRepository.Update(user);
+            await userRepository.Update(user);
         }
 
         /// <summary>
@@ -37,11 +37,11 @@ namespace src.application.user
         /// </summary>
         public async Task<string> CreateUser(string username, string password, string nickname, string mobile)
         {
-            await using(await this.lockService.LockAsync(LockKeys.USER))
+            await using(await lockService.LockAsync(LockKeys.USER))
             {
                 User user = await User.Create(IdGenerator.GenerateId(), username, password, nickname, mobile,
-                    this.userUniqueSpecification);
-                await this.userRepository.Insert(user);
+                    userUniqueSpecification);
+                await userRepository.Insert(user);
                 return user.Id;
             }
         }
@@ -51,11 +51,11 @@ namespace src.application.user
         /// </summary>
         public async Task ModifyUser(string id, string username, string nickname, string mobile)
         {
-            await using (await this.lockService.LockAsync(LockKeys.USER))
+            await using (await lockService.LockAsync(LockKeys.USER))
             {
-                User user = await this.userRepository.SelectByIdReq(id);
-                await user.Modify(username, nickname, mobile, this.userUniqueSpecification);
-                await this.userRepository.Update(user);
+                User user = await userRepository.SelectByIdReq(id);
+                await user.Modify(username, nickname, mobile, userUniqueSpecification);
+                await userRepository.Update(user);
             }
         }
 
@@ -64,7 +64,7 @@ namespace src.application.user
         /// </summary>
         public async Task RemoveUser(string id)
         {
-            await this.userRepository.DeleteById(id);
+            await userRepository.DeleteById(id);
         }
     }
 }

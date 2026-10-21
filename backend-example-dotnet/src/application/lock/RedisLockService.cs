@@ -34,7 +34,7 @@ namespace src.application.@lock
 
         public IDisposable Lock(string key, int timeout = 10)
         {
-            string lockKey = this.lockKeyPrefix + ":lock:" + key;
+            string lockKey = lockKeyPrefix + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;
@@ -42,13 +42,13 @@ namespace src.application.@lock
             var sw = Stopwatch.StartNew();
             while (sw.Elapsed.TotalSeconds < timeout)
             {
-                if (this.redisDatabase.StringSet(lockKey, token, expiry, When.NotExists))
+                if (redisDatabase.StringSet(lockKey, token, expiry, When.NotExists))
                 {
-                    if (this.enableLog)
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 同步锁 {key} 成功");
                     }
-                    return new RedisLockHandle(this.enableLog, this.redisDatabase, lockKey, token);
+                    return new RedisLockHandle(enableLog, redisDatabase, lockKey, token);
                 }
                 Thread.Sleep(200);
             }
@@ -58,7 +58,7 @@ namespace src.application.@lock
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 10)
         {
-            string lockKey = this.lockKeyPrefix + ":lock:" + key;
+            string lockKey = lockKeyPrefix + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;
@@ -66,17 +66,17 @@ namespace src.application.@lock
             var sw = Stopwatch.StartNew();
             while (sw.Elapsed.TotalSeconds < timeout)
             {
-                if (await this.redisDatabase.StringSetAsync(lockKey, token, expiry, When.NotExists))
+                if (await redisDatabase.StringSetAsync(lockKey, token, expiry, When.NotExists))
                 {
-                    if (this.enableLog)
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Redis 异步锁 {key} 成功");
                     }
-                    return new AsyncRedisLockHandle(this.enableLog, this.redisDatabase, lockKey, token);
+                    return new AsyncRedisLockHandle(enableLog, redisDatabase, lockKey, token);
                 }
                 await Task.Delay(200);
             }
-
+            
             throw new LockException(
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Redis 异步锁 {key} 失败"
                         );
@@ -103,16 +103,16 @@ namespace src.application.@lock
 
             public void Dispose()
             {
-                if (!this.isDisposed)
+                if (!isDisposed)
                 {
-                    this.redisDatabase.ScriptEvaluate(@"
+                    redisDatabase.ScriptEvaluate(@"
 if redis.call('get', KEYS[1]) == ARGV[1] then
     return redis.call('del', KEYS[1])
 else
     return 0
-end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
-                    this.isDisposed = true;
-                    if (this.enableLog)
+end", new RedisKey[] { lockKey }, new RedisValue[] { token });
+                    isDisposed = true;
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 同步锁 {lockKey} 成功");
                     }
@@ -141,16 +141,16 @@ end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
 
             public async ValueTask DisposeAsync()
             {
-                if (!this.isDisposed)
+                if (!isDisposed)
                 {
-                    await this.redisDatabase.ScriptEvaluateAsync(@"
+                    await redisDatabase.ScriptEvaluateAsync(@"
 if redis.call('get', KEYS[1]) == ARGV[1] then
     return redis.call('del', KEYS[1])
 else
     return 0
-end", new RedisKey[] { this.lockKey }, new RedisValue[] { this.token });
-                    this.isDisposed = true;
-                    if (this.enableLog)
+end", new RedisKey[] { lockKey }, new RedisValue[] { token });
+                    isDisposed = true;
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Redis 异步锁 {lockKey} 成功");
                     }

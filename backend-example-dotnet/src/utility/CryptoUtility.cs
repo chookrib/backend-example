@@ -70,19 +70,19 @@ namespace src.utility
         }
 
         /// <summary>
-        /// JWT 计算过期时长（分钟）
+        /// JWT TTL 换算成分钟
         /// </summary>
-        public static int JwtExpiresMinute(string expires)
+        public static int JwtTtlToMinute(string expires)
         {
             var match = System.Text.RegularExpressions.Regex.Match(expires.ToLower(), @"^(\d+)([dhm])$");
             if (!match.Success)
             {
-                throw new UtilityException("JWT EXPIRES 配置错误，值应为时长（正整数）加时长单位（d/h/m）");
+                throw new UtilityException("JWT TTL 配置错误，值应为时长（正整数）加时长单位（d/h/m）");
             }
             int num;
             if (!int.TryParse(match.Groups[1].Value, out num))
             {
-                throw new UtilityException("JWT EXPIRES 配置错误，时长应为正整数");
+                throw new UtilityException("JWT TTL 配置错误，时长应为正整数");
             }
             string unit = match.Groups[2].Value;
             if (unit == "d")

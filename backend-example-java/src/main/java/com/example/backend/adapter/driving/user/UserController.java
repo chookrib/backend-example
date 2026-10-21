@@ -9,6 +9,8 @@ import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserProfileService;
 import com.example.backend.application.user.UserQueryHandler;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 @RestController
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserAuthService userAuthService;
     private final UserProfileService userProfileService;
@@ -50,7 +54,7 @@ public class UserController {
         if (!confirmPassword.equals(password))
             throw new ControllerException("两次输入的密码不一致");
 
-        String userId = this.userProfileService.register(username, password, nickname);
+        String userId = userProfileService.register(username, password, nickname);
         return Result.okData(Map.of(
                 "id", userId
         ));
@@ -65,7 +69,7 @@ public class UserController {
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
         String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
 
-        String accessToken = this.userAuthService.login(username, password);
+        String accessToken = userAuthService.login(username, password);
         return Result.okData(Map.of(
                 "accessToken", accessToken
         ));
@@ -76,9 +80,9 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
     public Result profile(HttpServletRequest request) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, this.userAuthService);
+        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
 
-        UserDto userDto = this.userQueryHandler.queryById(userId);
+        UserDto userDto = userQueryHandler.queryById(userId);
         return Result.okData(Map.of(
                 "profile", userDto
         ));
@@ -89,7 +93,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/modify-password", method = RequestMethod.POST)
     public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, this.userAuthService);
+        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String oldPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -99,7 +103,7 @@ public class UserController {
         if (!confirmPassword.equals(newPassword))
             throw new ControllerException("两次输入的密码不一致");
 
-        this.userProfileService.modifyPassword(userId, oldPassword, newPassword);
+        userProfileService.modifyPassword(userId, oldPassword, newPassword);
         return Result.ok();
     }
 
@@ -108,11 +112,11 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/modify-nickname", method = RequestMethod.POST)
     public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, this.userAuthService);
+        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
-        this.userProfileService.modifyNickname(userId, nickname);
+        userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
     }
 
@@ -121,12 +125,12 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/send-mobile-code", method = RequestMethod.POST)
     public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, this.userAuthService);
+        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
 
-        this.userProfileService.sendMobileCode(userId, mobile);
+        userProfileService.sendMobileCode(userId, mobile);
         return Result.ok();
     }
 
@@ -135,12 +139,12 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/bind-mobile", method = RequestMethod.POST)
     public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, this.userAuthService);
+        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
         String code = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "code");
-        this.userProfileService.bindMobile(userId, mobile, code);
+        userProfileService.bindMobile(userId, mobile, code);
         return Result.ok();
     }
 }

@@ -5,6 +5,8 @@ import com.example.backend.adapter.driving.RequestValueHelper;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.user.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,11 +19,16 @@ import java.util.Map;
 @RestController
 public class UserManageController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserManageController.class);
+
     private final UserQueryHandler userQueryHandler;
     private final UserManageService userManageService;
     private final UserAuthService userAuthService;
 
-    public UserManageController(UserQueryHandler userQueryHandler, UserManageService userManageService, UserAuthService userAuthService) {
+    public UserManageController(
+            UserQueryHandler userQueryHandler,
+            UserManageService userManageService,
+            UserAuthService userAuthService) {
         this.userQueryHandler = userQueryHandler;
         this.userManageService = userManageService;
         this.userAuthService = userAuthService;
@@ -32,7 +39,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/list", method = RequestMethod.POST)
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
+        RequestAuthHelper.requireLoginUserAdmin(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         int pageNum = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -46,9 +53,9 @@ public class UserManageController {
             criteria.setKeyword(keyword);
         //}
 
-        int totalCount = this.userQueryHandler.queryCount(criteria);
+        int totalCount = userQueryHandler.queryCount(criteria);
         RequestValueHelper.Paging paging = RequestValueHelper.fixPaging(pageNum, pageSize, totalCount);
-        List<UserDto> list = this.userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria);
+        List<UserDto> list = userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("paging", Map.of(
@@ -65,10 +72,10 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/get", method = RequestMethod.GET)
     public Result userGet(HttpServletRequest request) {
-        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
+        RequestAuthHelper.requireLoginUserAdmin(request, userAuthService);
 
         String id = RequestValueHelper.getRequestParamStringTrimReq(request, "id");
-        UserDto userDto = this.userQueryHandler.queryByIdReq(id);
+        UserDto userDto = userQueryHandler.queryByIdReq(id);
         return Result.okData(Map.of(
                 "detail", userDto
         ));
@@ -79,7 +86,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/create", method = RequestMethod.POST)
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
+        RequestAuthHelper.requireLoginUserAdmin(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
@@ -87,7 +94,7 @@ public class UserManageController {
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
         String mobile = RequestValueHelper.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
-        String userId = this.userManageService.createUser(username, password, nickname, mobile);
+        String userId = userManageService.createUser(username, password, nickname, mobile);
         return Result.okData(Map.of(
                 "id", userId
         ));
@@ -98,7 +105,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/modify", method = RequestMethod.POST)
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
+        RequestAuthHelper.requireLoginUserAdmin(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
@@ -106,7 +113,7 @@ public class UserManageController {
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
         String mobile = RequestValueHelper.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
-        this.userManageService.modifyUser(id, username, nickname, mobile);
+        userManageService.modifyUser(id, username, nickname, mobile);
         return Result.ok();
     }
 
@@ -116,12 +123,12 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/remove", method = RequestMethod.POST)
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginUserAdmin(request, this.userAuthService);
+        RequestAuthHelper.requireLoginUserAdmin(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
 
-        this.userManageService.removeUser(id);
+        userManageService.removeUser(id);
         return Result.ok();
     }
 }

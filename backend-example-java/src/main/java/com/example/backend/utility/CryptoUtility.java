@@ -25,10 +25,10 @@ public class CryptoUtility {
         if(payload == null) {
             payload = new HashMap<>();
         }
-        Date expiresAtDate = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant());
+        Date expiresAtParam = Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant());
         return JWT.create()
                 .withPayload(payload)
-                .withExpiresAt(expiresAtDate)
+                .withExpiresAt(expiresAtParam)
                 .sign(Algorithm.HMAC256(secret));
     }
 
@@ -54,19 +54,19 @@ public class CryptoUtility {
     }
 
     /**
-     * JWT 计算过期时长（分钟）
+     * JWT TTL 换算成分钟
      */
-    public static int jwtExpiresMinute(String expires) {
+    public static int jwtTtlToMinute(String ttl) {
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^(\\d+)([dhm])$")
-                .matcher(expires.toLowerCase());
+                .matcher(ttl.toLowerCase());
         if (!matcher.matches()) {
-            throw new UtilityException("JWT EXPIRES 配置错误，值应为时长（正整数）加时长单位（d/h/m）");
+            throw new UtilityException("JWT TTL 配置错误，值应为时长（正整数）加时长单位（d/h/m）");
         }
         int num;
         try {
             num = Integer.parseInt(matcher.group(1));
         } catch (Exception ex) {
-            throw new UtilityException("JWT EXPIRES 配置错误，时长应为正整数", ex);
+            throw new UtilityException("JWT TTL 配置错误，时长应为正整数", ex);
         }
         String unit = matcher.group(2);
         if ("d".equals(unit)) {

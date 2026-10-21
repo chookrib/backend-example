@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class ApplicationConfig(BaseSettings):
-    """应用配置"""
+    """Application Config"""
 
     model_config = {
         "env_file": ".env",
@@ -16,7 +16,7 @@ class ApplicationConfig(BaseSettings):
     APP_LOCK_REDIS_URL: str = ""
 
     APP_JWT_SECRET: str = ""
-    APP_JWT_EXPIRES: str = ""
+    APP_JWT_TTL: str = ""
 
     APP_SQLITE_PATH: str = ""
 

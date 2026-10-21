@@ -21,7 +21,7 @@ namespace src.application.@lock
 
         public IDisposable Lock(string key, int timeout = 10)
         {
-            SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+            SemaphoreSlim semaphore = locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
             bool acquired = semaphore.Wait(TimeSpan.FromSeconds(timeout));
             if (!acquired)
             {
@@ -29,16 +29,16 @@ namespace src.application.@lock
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (this.enableLog)
+            if (enableLog)
             {
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 成功");
             }
-            return new SemaphoreLockHandler(this.enableLog, semaphore, key);
+            return new SemaphoreLockHandler(enableLog, semaphore, key);
         }
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 30)
         {
-            SemaphoreSlim semaphore = this.locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+            SemaphoreSlim semaphore = locks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
             bool acquired = await semaphore.WaitAsync(TimeSpan.FromSeconds(timeout));
             if (!acquired)
             {
@@ -46,11 +46,11 @@ namespace src.application.@lock
                         $"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 同步锁 {key} 失败"
                         );
             }
-            if (this.enableLog)
+            if (enableLog)
             {
                 logger.Info($"线程 {Environment.CurrentManagedThreadId} 获取 Semaphore 异步锁 {key} 成功");
             }
-            return new AsyncSemaphoreLockHandler(this.enableLog, semaphore, key);
+            return new AsyncSemaphoreLockHandler(enableLog, semaphore, key);
         }
 
         /// <summary>
@@ -72,11 +72,11 @@ namespace src.application.@lock
 
             public void Dispose()
             {
-                if (!this.isDisposed)
+                if (!isDisposed)
                 {
-                    this.semaphore.Release();
-                    this.isDisposed = true;
-                    if (this.enableLog)
+                    semaphore.Release();
+                    isDisposed = true;
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 同步锁 {key} 成功");
                     }
@@ -103,11 +103,11 @@ namespace src.application.@lock
 
             public ValueTask DisposeAsync()
             {
-                if (!this.isDisposed)
+                if (!isDisposed)
                 {
-                    this.semaphore.Release();
-                    this.isDisposed = true;
-                    if (this.enableLog)
+                    semaphore.Release();
+                    isDisposed = true;
+                    if (enableLog)
                     {
                         logger.Info($"线程 {Environment.CurrentManagedThreadId} 释放 Semaphore 异步锁 {key} 成功");
                     }

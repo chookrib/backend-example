@@ -20,37 +20,32 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public String getId() {
-        return this.id;
-    }
+    public String getId() { return id; }
 
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     public String getNickname() {
-        return this.nickname;
+        return nickname;
     }
 
     public String getMobile() {
-        return this.mobile;
+        return mobile;
     }
 
-    public boolean isAdmin() { return this.isAdmin; }
+    public boolean isAdmin() { return isAdmin; }
 
     public LocalDateTime getCreatedAt() {
-        return this.createdAt;
+        return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    private User() {
+        return updatedAt;
     }
 
     /**

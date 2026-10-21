@@ -17,11 +17,11 @@ public class UserDto {
     private LocalDateTime updatedAt;
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     //public String getPassword() {
@@ -29,23 +29,23 @@ public class UserDto {
     //}
 
     public String getNickname() {
-        return this.nickname;
+        return nickname;
     }
 
     public String getMobile() {
-        return this.mobile;
+        return mobile;
     }
 
     public boolean isAdmin() {
-        return this.isAdmin;
+        return isAdmin;
     }
 
     public LocalDateTime getCreatedAt() {
-        return this.createdAt;
+        return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
+        return updatedAt;
     }
 
     public UserDto(

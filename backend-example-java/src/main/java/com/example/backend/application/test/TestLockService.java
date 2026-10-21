@@ -27,7 +27,7 @@ public class TestLockService {
      * 设置 count
      */
     public void setCount(int value) {
-        this.count = value;
+        count = value;
         logger.info("设置 count = {}", value);
     }
 
@@ -35,10 +35,10 @@ public class TestLockService {
      * 减少 count，不加锁
      */
     public boolean decreaseCount() {
-        int c = this.count;
+        int c = count;
         if (c > 0) {
-            this.count--;
-            logger.info("减少 count 成功: {} - 1 = {}", c, this.count);
+            count--;
+            logger.info("减少 count 成功: {} - 1 = {}", c, count);
             return true;
         } else {
             logger.info("减少 count 失败: {}", c);
@@ -50,8 +50,8 @@ public class TestLockService {
      * 减少 count，加锁
      */
     public void decreaseCountWithLock() {
-        try (AutoCloseable lock = this.lockService.lock(LockKeys.TEST)) {
-            this.decreaseCount();
+        try (AutoCloseable lock = lockService.lock(LockKeys.TEST)) {
+            decreaseCount();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

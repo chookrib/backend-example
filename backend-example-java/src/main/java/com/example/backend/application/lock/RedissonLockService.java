@@ -41,7 +41,7 @@ public class RedissonLockService implements LockService {
     @Override
     public AutoCloseable lock(String key) {
         String lockKey = lockKeyPrefix + ":lock:" + key;
-        RLock lock = this.redissonClient.getLock(lockKey);
+        RLock lock = redissonClient.getLock(lockKey);
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (enableLog) {
@@ -73,8 +73,8 @@ public class RedissonLockService implements LockService {
 
         @Override
         public void close() {
-            if (this.lock.isLocked() && this.lock.isHeldByCurrentThread()) {
-                this.lock.unlock();
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
                 if (enableLog) {
                     logger.info("线程 {} 释放 Redisson 锁 {} 成功", Thread.currentThread().getName(), lockKey);
                 }

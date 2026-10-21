@@ -15,9 +15,9 @@ class UserAuthService:
         else:
             raise ApplicationException(f"APP_JWT_SECRET 配置错误")
         try:
-            self.jwt_expires_minute = crypto_utility.jwt_expires_minute(application_config.APP_JWT_EXPIRES)
+            self.jwt_ttl_minute = crypto_utility.jwt_ttl_to_minute(application_config.APP_JWT_TTL)
         except Exception as ex:
-            raise ApplicationException(f"APP_JWT_EXPIRES 配置错误") from ex
+            raise ApplicationException(f"APP_JWT_TTL 配置错误") from ex
         self.user_repository = user_repository
 
     async def login(self, username, password) -> str:
@@ -29,7 +29,7 @@ class UserAuthService:
         return crypto_utility.jwt_encode(
             {"id": user.id},
             self.jwt_secret,
-            datetime.now() + timedelta(minutes=self.jwt_expires_minute),
+            datetime.now() + timedelta(minutes=self.jwt_ttl_minute),
         )
 
     def get_login_user_id(self, access_token: str) -> str:

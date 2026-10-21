@@ -33,7 +33,7 @@ public class TestLockController {
     @RequestMapping(value = "/api/test/lock/set-count", method = RequestMethod.GET)
     public Result testLockSetCount(HttpServletRequest request) {
         int value = RequestValueHelper.getRequestParamIntOrDefault(request, 1, "value");
-        this.testLockService.setCount(value);
+        testLockService.setCount(value);
         return Result.okData(Map.of("count", value));
     }
 
@@ -42,7 +42,7 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/decrease-count", method = RequestMethod.GET)
     public Result testLockDecreaseCount() {
-        this.testLockService.decreaseCount();
+        testLockService.decreaseCount();
         return Result.ok();
     }
 
@@ -51,7 +51,7 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/decrease-count-with-lock", method = RequestMethod.GET)
     public Result testLockDecreaseCountWithLock() {
-        this.testLockService.decreaseCountWithLock();
+        testLockService.decreaseCountWithLock();
         return Result.ok();
     }
 
@@ -62,7 +62,7 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/thread-sleep", method = RequestMethod.GET)
     public Result testLockThreadSleep() {
-        this.testLockService.threadSleep();
+        testLockService.threadSleep();
         return Result.ok();
     }
 

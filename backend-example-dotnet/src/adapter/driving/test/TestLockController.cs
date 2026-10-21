@@ -28,7 +28,7 @@ namespace src.adapter.driving.test
         public Result TestLockSetCount()
         {
             int value = RequestValueHelper.GetRequestParamIntOrDefault(Request, 1, "value");
-            this.testLockService.SetCount(value);
+            testLockService.SetCount(value);
             return Result.OkData(new { count = value });
         }
 
@@ -38,7 +38,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/sync-decrease-count")]
         public Result TestLockSyncDecreaseCount()
         {
-            this.testLockService.SyncDecreaseCount();
+            testLockService.SyncDecreaseCount();
             return Result.Ok();
         }
 
@@ -48,7 +48,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/async-decrease-count")]
         public async Task<Result> TestLockAsyncDecreaseCount()
         {
-            await this.testLockService.AsyncDecreaseCount();
+            await testLockService.AsyncDecreaseCount();
             return Result.Ok();
         }
 
@@ -58,7 +58,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/sync-decrease-count-with-sync-lock")]
         public Result TestLockSyncDecreaseCountWithSyncLock()
         {
-            this.testLockService.SyncDecreaseCountWithSyncLock();
+            testLockService.SyncDecreaseCountWithSyncLock();
             return Result.Ok();
         }
 
@@ -68,7 +68,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/sync-decrease-count-with-async-lock")]
         public async Task<Result> TestLockSyncDecreaseCountWithAsyncLock()
         {
-            await this.testLockService.SyncDecreaseCountWithAsyncLock();
+            await testLockService.SyncDecreaseCountWithAsyncLock();
             return Result.Ok();
         }
 
@@ -78,7 +78,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/async-decrease-count-with-sync-lock")]
         public async Task<Result> TestLockAsyncDecreaseCountWithSyncLock()
         {
-            await this.testLockService.AsyncDecreaseCountWithSyncLock();
+            await testLockService.AsyncDecreaseCountWithSyncLock();
             return Result.Ok();
         }
 
@@ -88,7 +88,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/async-decrease-count-with-async-lock")]
         public async Task<Result> TestLockAsyncDecreaseCountWithAsyncLock()
         {
-            await this.testLockService.AsyncDecreaseCountWithAsyncLock();
+            await testLockService.AsyncDecreaseCountWithAsyncLock();
             return Result.Ok();
         }
 
@@ -100,7 +100,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/thread-sleep")]
         public Result TestLockThreadSleep()
         {
-            this.testLockService.ThreadSleep();
+            testLockService.ThreadSleep();
             return Result.Ok();
         }
 
@@ -110,7 +110,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/async-task-delay")]
         public async Task<Result> TestLockAsyncTaskDelay()
         {
-            await this.testLockService.AsyncTaskDelay();
+            await testLockService.AsyncTaskDelay();
             return Result.Ok();
         }
 
@@ -120,7 +120,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/async-task-delay-with-async-lock")]
         public async Task<Result> TestLockAsyncTaskDelayWithAsyncLock()
         {
-            await this.testLockService.AsyncTaskDelayWithAsyncLock();
+            await testLockService.AsyncTaskDelayWithAsyncLock();
             return Result.Ok();
         }
 

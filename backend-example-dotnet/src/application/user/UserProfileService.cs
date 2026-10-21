@@ -36,11 +36,11 @@ namespace src.application.user
         /// </summary>
         public async Task<string> Register(string username, string password, string nickname)
         {
-            await using (await this.lockService.LockAsync(LockKeys.USER))
+            await using (await lockService.LockAsync(LockKeys.USER))
             {
                 User user = await User.Register(IdGenerator.GenerateId(), username, password, nickname,
-                    this.userUniqueSpecification);
-                await this.userRepository.Insert(user);
+                    userUniqueSpecification);
+                await userRepository.Insert(user);
                 return user.Id;
             }
         }
@@ -50,9 +50,9 @@ namespace src.application.user
         /// </summary>
         public async Task ModifyPassword(string userId, string oldPassword, string newPassword)
         {
-            User user = await this.userRepository.SelectByIdReq(userId);
+            User user = await userRepository.SelectByIdReq(userId);
             user.ModifyPassword(oldPassword, newPassword);
-            await this.userRepository.Update(user);
+            await userRepository.Update(user);
         }
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace src.application.user
         /// </summary>
         public async Task ModifyNickname(string userId, string nickname)
         {
-            await using (await this.lockService.LockAsync(LockKeys.USER))
+            await using (await lockService.LockAsync(LockKeys.USER))
             {
-                User user = await this.userRepository.SelectByIdReq(userId);
-                await user.ModifyNickname(nickname, this.userUniqueSpecification);
-                await this.userRepository.Update(user);
+                User user = await userRepository.SelectByIdReq(userId);
+                await user.ModifyNickname(nickname, userUniqueSpecification);
+                await userRepository.Update(user);
             }
         }
 
@@ -76,10 +76,10 @@ namespace src.application.user
             if (ValueUtility.IsEmptyString(mobile))
                 throw new ApplicationException("手机号不能为空");
 
-            User user = await this.userRepository.SelectByIdReq(userId);
+            User user = await userRepository.SelectByIdReq(userId);
             string code = new Random().Next(100000, 1000000).ToString();
-            this.mobileCodeDict.AddOrUpdate(user.Id + "_" + mobile, code, (k, v) => code);
-            await this.smsGateway.SendCode(mobile, code);
+            mobileCodeDict.AddOrUpdate(user.Id + "_" + mobile, code, (k, v) => code);
+            await smsGateway.SendCode(mobile, code);
         }
 
         /// <summary>
@@ -90,14 +90,14 @@ namespace src.application.user
             if (ValueUtility.IsEmptyString(code))
                 throw new ApplicationException("验证码不能为空");
 
-            User user = await this.userRepository.SelectByIdReq(userId);
+            User user = await userRepository.SelectByIdReq(userId);
             string key = user.Id + "_" + mobile;
-            if (!this.mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
+            if (!mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
                 throw new ApplicationException("验证码错误");
 
-            await user.ModifyMobile(mobile, this.userUniqueSpecification);
-            await this.userRepository.Update(user);
-            this.mobileCodeDict.TryRemove(key, out _);
+            await user.ModifyMobile(mobile, userUniqueSpecification);
+            await userRepository.Update(user);
+            mobileCodeDict.TryRemove(key, out _);
         }
     }
 }

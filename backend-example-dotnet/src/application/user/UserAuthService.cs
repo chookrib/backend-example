@@ -9,7 +9,7 @@ namespace src.application.user
     public class UserAuthService
     {
         private readonly UserRepository userRepository;
-        private readonly int jwtExpiresMinute;
+        private readonly int jwtTtlMinute;
         private readonly string jwtSecret;
 
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
@@ -24,13 +24,13 @@ namespace src.application.user
             }
             try
             {
-                this.jwtExpiresMinute = CryptoUtility.JwtExpiresMinute(
-                    configuration.GetValue<string>("App:JwtExpires", string.Empty)
+                this.jwtTtlMinute = CryptoUtility.JwtTtlToMinute(
+                    configuration.GetValue<string>("App:JwtTtl", string.Empty)
                     );
             }
             catch
             {
-                throw new ApplicationException("App:JwtExpires 配置错误");
+                throw new ApplicationException("App:JwtTtl 配置错误");
             }
             this.userRepository = userRepository;
         }
@@ -40,13 +40,13 @@ namespace src.application.user
         /// </summary>
         public async Task<string> Login(string username, string password)
         {
-            User? user = await this.userRepository.SelectByUsername(username);
+            User? user = await userRepository.SelectByUsername(username);
             if (user == null || !user.IsPasswordMatch(password))
                 throw new ApplicationException("密码错误");
             return CryptoUtility.JwtEncode(new Dictionary<string, object>()
             {
                 { "id", user.Id }
-            }, this.jwtSecret, DateTime.Now.AddMinutes(this.jwtExpiresMinute));
+            }, jwtSecret, DateTime.Now.AddMinutes(jwtTtlMinute));
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace src.application.user
 
             try
             {
-                IDictionary<string, object> payload = CryptoUtility.JwtDecode(accessToken, this.jwtSecret);
+                IDictionary<string, object> payload = CryptoUtility.JwtDecode(accessToken, jwtSecret);
                 //return payload["id"];
                 if (payload.TryGetValue("id", out object? id) && id != null)
                     return id.ToString()!;
@@ -84,7 +84,7 @@ namespace src.application.user
                 return null;
             }
 
-            return await this.userRepository.SelectById(loginUserId);
+            return await userRepository.SelectById(loginUserId);
         }
     }
 }

@@ -26,7 +26,7 @@ public class ReentrantLockService implements LockService {
 
     @Override
     public AutoCloseable lock(String key) {
-        ReentrantLock lock = this.lockMap.computeIfAbsent(key, k -> new ReentrantLock());
+        ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (enableLog) {
@@ -58,8 +58,8 @@ public class ReentrantLockService implements LockService {
 
         @Override
         public void close() {
-            if(this.reentrantLock.isLocked() && this.reentrantLock.isHeldByCurrentThread()) {
-                this.reentrantLock.unlock();
+            if(reentrantLock.isLocked() && reentrantLock.isHeldByCurrentThread()) {
+                reentrantLock.unlock();
                 if (enableLog) {
                     logger.info("线程 {} 释放 Reentrant 锁 {} 成功", Thread.currentThread().getName(), key);
                 }

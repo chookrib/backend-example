@@ -1,8 +1,6 @@
-﻿using System;
-using System.Text.Json;
-using src.adapter.driving;
-using src.application.user;
+﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
+using src.application.user;
 
 
 namespace src.adapter.driving.user
@@ -12,6 +10,8 @@ namespace src.adapter.driving.user
     /// </summary>
     public class UserController : ControllerBase
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(UserController));
+
         private readonly UserAuthService userAuthService;
         private readonly UserProfileService userProfileService;
         private readonly UserQueryHandler userQueryHandler;
@@ -42,7 +42,7 @@ namespace src.adapter.driving.user
             if (confirmPassword != password)
                 throw new ControllerException("两次输入的密码不一致");
 
-            string userId = await this.userProfileService.Register(username, password, nickname);
+            string userId = await userProfileService.Register(username, password, nickname);
             return Result.OkData(new { id = userId });
         }
 
@@ -56,7 +56,7 @@ namespace src.adapter.driving.user
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
             string password = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "password");
 
-            string accessToken = await this.userAuthService.Login(username, password);
+            string accessToken = await userAuthService.Login(username, password);
             return Result.OkData(new { accessToken = accessToken });
         }
 
@@ -66,9 +66,9 @@ namespace src.adapter.driving.user
         [HttpGet("/api/user/profile")]
         public async Task<Result> Profile()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, this.userAuthService);
+            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
 
-            UserDto userDto = await this.userQueryHandler.QueryByIdReq(userId);
+            UserDto userDto = await userQueryHandler.QueryByIdReq(userId);
             return Result.OkData(new { profile = userDto});
         }
 
@@ -78,7 +78,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-password")]
         public async Task<Result> ModifyPassword()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, this.userAuthService);
+            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string oldPassword = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -88,7 +88,7 @@ namespace src.adapter.driving.user
             if (confirmPassword != newPassword)
                 throw new ControllerException("两次输入的密码不一致");
 
-            await this.userProfileService.ModifyPassword(userId, oldPassword, newPassword);
+            await userProfileService.ModifyPassword(userId, oldPassword, newPassword);
             return Result.Ok();
         }
 
@@ -98,11 +98,11 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-nickname")]
         public async Task<Result> ModifyNickname()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, this.userAuthService);
+            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
-            await this.userProfileService.ModifyNickname(userId, nickname);
+            await userProfileService.ModifyNickname(userId, nickname);
             return Result.Ok();
         }
 
@@ -112,12 +112,12 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/send-mobile-code")]
         public async Task<Result> SendMobileCode()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, this.userAuthService);
+            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");
 
-            await this.userProfileService.SendMobileCode(userId, mobile);
+            await userProfileService.SendMobileCode(userId, mobile);
             return Result.Ok();
         }
 
@@ -127,12 +127,12 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/bind-mobile")]
         public async Task<Result> BindMobile()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, this.userAuthService);
+            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");
             string code = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "code");
-            await this.userProfileService.BindMobile(userId, mobile, code);
+            await userProfileService.BindMobile(userId, mobile, code);
             return Result.Ok();
         }
     }

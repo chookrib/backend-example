@@ -34,7 +34,7 @@ public class DatabaseAdapter {
      * 将 % 和 _ 转义为 \% 和 \_
      * LIKE 查询指定 ESCAPE '\'  \ 本身也需要转义
      */
-    public String EscapeLikePattern(String pattern) {
+    public String escapeLikePattern(String pattern) {
         pattern = pattern.replace("\\", "\\\\");
         pattern = pattern.replace("%", "\\%");
         pattern = pattern.replace("_", "\\_");

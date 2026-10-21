@@ -29,16 +29,16 @@ def jwt_decode(token: str, secret: str) -> dict[str, Any]:
     return payload
 
 
-def jwt_expires_minute(expires: str) -> int:
-    """JWT 计算过期时长（分钟）"""
-    match = re.match(r'^(\d+)([dhm])$', expires.lower())
+def jwt_ttl_to_minute(ttl: str) -> int:
+    """JWT TTL 换算成分钟"""
+    match = re.match(r'^(\d+)([dhm])$', ttl.lower())
     if not match:
-        raise UtilityException("JWT EXPIRES 配置错误，值应为 时长（正整数）加时长单位（d/h/m）")
+        raise UtilityException("JWT TTL 配置错误，值应为 时长（正整数）加时长单位（d/h/m）")
 
     try:
         num = int(match.group(1))
     except Exception as ex:
-        raise UtilityException("JWT EXPIRES 配置错误，时长应为正整数") from ex
+        raise UtilityException("JWT TTL 配置错误，时长应为正整数") from ex
 
     unit = match.group(2)
     if unit == "d":

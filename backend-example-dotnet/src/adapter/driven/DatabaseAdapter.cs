@@ -32,7 +32,7 @@ namespace src.adapter.driven
         /// </summary>
         public IDbConnection GetConnection()
         {
-            return new SqliteConnection(this.connectionString);
+            return new SqliteConnection(connectionString);
         }
 
         /// <summary>

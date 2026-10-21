@@ -208,7 +208,7 @@ namespace src
                 => DateTime.Parse(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value.ToString(this.format));
+                => writer.WriteStringValue(value.ToString(format));
         }
 
         private class DateTimeNullableConverter : JsonConverter<DateTime?>
@@ -221,7 +221,7 @@ namespace src
                 => ValueUtility.ToDateTimeOrNull(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value?.ToString(this.format) ?? string.Empty);
+                => writer.WriteStringValue(value?.ToString(format) ?? string.Empty);
         }
 
         private class DateOnlyConverter : JsonConverter<DateOnly>
@@ -234,7 +234,7 @@ namespace src
                 => DateOnly.Parse(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value.ToString(this.format));
+                => writer.WriteStringValue(value.ToString(format));
         }
 
         private class DateOnlyNullableConverter : JsonConverter<DateOnly?>
@@ -247,7 +247,7 @@ namespace src
                 => ValueUtility.ToDateOrNull(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, DateOnly? value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value?.ToString(this.format) ?? string.Empty);
+                => writer.WriteStringValue(value?.ToString(format) ?? string.Empty);
         }
 
         private class TimeOnlyConverter : JsonConverter<TimeOnly>
@@ -260,7 +260,7 @@ namespace src
                 => TimeOnly.Parse(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value.ToString(this.format));
+                => writer.WriteStringValue(value.ToString(format));
         }
 
         private class TimeOnlyNullableConverter : JsonConverter<TimeOnly?>
@@ -273,7 +273,7 @@ namespace src
                 => ValueUtility.ToTimeOrNull(reader.GetString()!);
 
             public override void Write(Utf8JsonWriter writer, TimeOnly? value, JsonSerializerOptions options)
-                => writer.WriteStringValue(value?.ToString(this.format) ?? string.Empty);
+                => writer.WriteStringValue(value?.ToString(format) ?? string.Empty);
         }
 
         #endregion

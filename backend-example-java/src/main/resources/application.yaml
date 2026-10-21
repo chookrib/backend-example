@@ -29,5 +29,5 @@ app:
   #  lock-redisson-password:
   #  lock-redisson-database: 0
 
-  jwt-expires: 30d
   jwt-secret: jwt-secret-string
+  jwt-ttl: 30d
