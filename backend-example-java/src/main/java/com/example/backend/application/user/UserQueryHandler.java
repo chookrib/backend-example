@@ -1,5 +1,8 @@
 package com.example.backend.application.user;
 
+import com.example.backend.application.QuerySortBuilder;
+import com.example.backend.application.QuerySortOption;
+
 import java.util.List;
 
 /**
@@ -25,10 +28,10 @@ public interface UserQueryHandler {
     /**
      * 查询
      */
-    List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sorts);
+    List<UserDto> query(UserQueryCriteria criteria, List<QuerySortOption> sortOptions);
 
     /**
      * 分页查询
      */
-    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sorts);
+    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, List<QuerySortOption> sortOptions);
 }

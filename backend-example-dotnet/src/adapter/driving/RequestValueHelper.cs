@@ -1,7 +1,8 @@
-﻿using System.Text;
-using System.Text.Json.Nodes;
-
+﻿using src.application;
 using src.utility;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace src.adapter.driving
 {
@@ -797,6 +798,30 @@ namespace src.adapter.driving
                 pageNum = 1;
 
             return (pageNum, pageSize, totalCount);
+        }
+
+        /// <summary>
+        /// 取排序参数
+        /// </summary>
+        public static IList<QuerySortOption> GetRequestJsonSortOptions(JsonNode json, params string[] keys)
+        {
+            IList<QuerySortOption> sortOptions = new List<QuerySortOption>();
+            JsonNode? node = GetRequestJsonNode(json, keys);
+            if (node != null && node is JsonArray a)
+            {
+
+                foreach (JsonNode? n in a)
+                {
+                    if (n != null && n is JsonObject o)
+                    {
+                        string field = o["field"]?.GetValue<string>() ?? string.Empty;
+                        string order = o["order"]?.GetValue<string>() ?? string.Empty;
+
+                        sortOptions.Add(new QuerySortOption(field, order));
+                    }
+                }
+            }
+            return sortOptions;
         }
 
     }

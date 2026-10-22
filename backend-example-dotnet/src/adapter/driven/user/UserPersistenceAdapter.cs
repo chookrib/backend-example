@@ -1,9 +1,9 @@
-﻿using System.Dynamic;
+﻿using Dapper;
+using src.application;
 using src.application.user;
 using src.domain.user;
 using src.utility;
-
-using Dapper;
+using System.Dynamic;
 
 namespace src.adapter.driven.user
 {
@@ -217,7 +217,7 @@ namespace src.adapter.driven.user
                 );
         }
 
-        private string BuildQueryCriteria(UserQueryCriteria? criteria, out dynamic @params)
+        private string BuildQueryCriteriaSql(UserQueryCriteria? criteria, out dynamic @params)
         {
             @params = new ExpandoObject();
 
@@ -237,25 +237,23 @@ namespace src.adapter.driven.user
             return string.Empty;
         }
 
-        private string BuildQuerySort(params UserQuerySort[] sorts)
+        private static readonly Dictionary<string, string> SORT_FIELD_MAP = new Dictionary<string, string>
+        {
+            { UserQuerySortFields.CREATED_AT, "u_created_at" },
+            { UserQuerySortFields.USERNAME, "u_username" }
+        };
+
+        private string BuildQuerySortSql(IList<QuerySortOption>? sortOptions = null)
         {
             IList<string> sqls = new List<string>();
-            foreach (UserQuerySort sort in sorts)
+            if (sortOptions != null)
             {
-                switch (sort)
+                foreach (QuerySortOption sortOption in sortOptions)
                 {
-                    case UserQuerySort.CREATED_AT_ASC:
-                        sqls.Add("u_created_at ASC");
-                        break;
-                    case UserQuerySort.CREATED_AT_DESC:
-                        sqls.Add("u_created_at DESC");
-                        break;
-                    case UserQuerySort.USERNAME_ASC:
-                        sqls.Add("u_username ASC");
-                        break;
-                    case UserQuerySort.USERNAME_DESC:
-                        sqls.Add("u_username DESC");
-                        break;
+                    if (SORT_FIELD_MAP.TryGetValue(sortOption.Field, out string? mappedField))
+                    {
+                        sqls.Add($"{mappedField} {sortOption.Order}");
+                    }
                 }
             }
 
@@ -289,18 +287,18 @@ namespace src.adapter.driven.user
         public async Task<int> QueryCount(UserQueryCriteria? criteria)
         {
             dynamic @params;
-            string crieriaSql = BuildQueryCriteria(criteria, out @params);
+            string crieriaSql = BuildQueryCriteriaSql(criteria, out @params);
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {tableName} {crieriaSql}", (object)@params
                 );
         }
 
-        public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts)
+        public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null)
         {
             dynamic @params;
-            string crieriaSql = BuildQueryCriteria(criteria, out @params);
-            string sortSql = BuildQuerySort(sorts);
+            string crieriaSql = BuildQueryCriteriaSql(criteria, out @params);
+            string sortSql = BuildQuerySortSql(sortOptions);
             using var conn = databaseAdapter.GetConnection();
             IEnumerable<dynamic> rows = await conn.QueryAsync(
                 $"SELECT * FROM {tableName} {crieriaSql} {sortSql}", (object)@params
@@ -315,11 +313,11 @@ namespace src.adapter.driven.user
         }
 
         public async Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
-            params UserQuerySort[] sorts)
+            IList<QuerySortOption>? sortOptions = null)
         {
             dynamic @params;
-            string crieriaSql = BuildQueryCriteria(criteria, out @params);
-            string sortSql = BuildQuerySort(sorts);
+            string crieriaSql = BuildQueryCriteriaSql(criteria, out @params);
+            string sortSql = BuildQuerySortSql(sortOptions);
             @params.limitCount = pageSize;
             @params.limitOffset = (pageNum - 1) * pageSize;
 

@@ -23,11 +23,11 @@
         /// <summary>
         /// 查询
         /// </summary>
-        Task<IList<UserDto>> Query(UserQueryCriteria? criteria, params UserQuerySort[] sorts);
+        Task<IList<UserDto>> Query(UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null);
 
         /// <summary>
         /// 分页查询
         /// </summary>
-        Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria, params UserQuerySort[] sorts);
+        Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null);
     }
 }

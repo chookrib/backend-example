@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from starlette.requests import Request
 
+from src.application.query_sort_option import QuerySortOption
 from src.adapter.driving.controller_exception import ControllerException
 from src.utility import value_utility
 
@@ -438,3 +439,19 @@ def fix_paging(page_num: int, page_size: int, total_count: int) -> tuple[int, in
         page_num = 1
 
     return page_num, page_size, total_count  # 与入参顺序一致
+
+def get_request_json_sort_options(json, *keys: str) -> list[QuerySortOption]:
+    """取排序参数"""
+    node = get_request_json_value(json, *keys)
+    sort_options: list[QuerySortOption] = []
+
+    # 检查节点是否为空或不是数组
+    if node is None or not isinstance(node, list):
+        return sort_options
+
+    for item in node:
+        if not isinstance(item, dict):
+            continue
+        sort_options.append(QuerySortOption(item.get("field", ""), item.get("order", "")))
+
+    return sort_options

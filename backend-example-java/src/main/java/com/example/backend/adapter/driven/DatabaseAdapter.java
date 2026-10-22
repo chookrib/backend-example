@@ -1,9 +1,14 @@
 package com.example.backend.adapter.driven;
 
+import com.example.backend.application.QuerySortBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库 Adapter
@@ -41,3 +46,4 @@ public class DatabaseAdapter {
         return String.format("%%%s%%", pattern);
     }
 }
+

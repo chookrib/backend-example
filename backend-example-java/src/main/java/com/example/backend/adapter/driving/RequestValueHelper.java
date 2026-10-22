@@ -1,5 +1,7 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.application.QuerySortBuilder;
+import com.example.backend.application.QuerySortOption;
 import com.example.backend.utility.JsonUtility;
 import com.example.backend.utility.ValueUtility;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,7 +13,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 请求 Value Helper
@@ -570,5 +574,20 @@ public class RequestValueHelper {
             pageNum = 1;
 
         return new Paging(pageNum, pageSize, totalCount);
+    }
+
+    /**
+     * 取排序参数
+     */
+    public static List<QuerySortOption> getRequestJsonSortOptions(JsonNode json, String... keys)
+    {
+        JsonNode node = getRequestJsonValue(json, keys);
+        List<QuerySortOption> sortOptions = new ArrayList<>();
+        if (node.isMissingNode() || !node.isArray())
+            return sortOptions;
+        for (JsonNode n : node) {
+            sortOptions.add(new QuerySortOption(n.get("field").asText(), n.get("order").asText()));
+        }
+        return sortOptions;
     }
 }

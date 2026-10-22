@@ -1,15 +1,14 @@
-import os
 from datetime import datetime
 
 import aiosqlite
 
+from src.application.query_sort_option import QuerySortOption
+from src.application.user import user_query_sort_fields
 from src.adapter.driven.database_adapter import DatabaseAdapter
 from src.adapter.driven.persistence_exception import PersistenceException
-
 from src.application.user.user_dto import UserDto
 from src.application.user.user_query_criteria import UserQueryCriteria
 from src.application.user.user_query_handler import UserQueryHandler
-from src.application.user.user_query_sort import UserQuerySort
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
 from src.domain.user.user_unique_specification import UserUniqueSpecification
@@ -163,7 +162,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 username 不能为空")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
-            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)", (username,)) as cursor:
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)",
+                                    (username,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -173,7 +173,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 nickname 不能为空")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
-            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_nickname) = LOWER(?)", (nickname,)) as cursor:
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_nickname) = LOWER(?)",
+                                    (nickname,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -183,7 +184,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             raise PersistenceException("参数 mobile 不能为空")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
-            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_mobile) = LOWER(?)", (mobile,)) as cursor:
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_mobile) = LOWER(?)",
+                                    (mobile,)) as cursor:
                 row = await cursor.fetchone()
                 # print(row)
                 return row is None
@@ -205,8 +207,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             updated_at=value_utility.to_datetime_or_default(row_dict.get("u_updated_at"), datetime.min)
         )
 
-    def build_query_criteria(self, criteria: UserQueryCriteria) -> tuple[str, list]:
-        """构造查询SQL"""
+    def build_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:
+        """构造查询 SQL"""
         sqls = []
         params = []
         if not value_utility.is_empty_string(criteria.keyword):
@@ -218,19 +220,18 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         else:
             return " WHERE " + " AND ".join(sqls), params
 
-    def build_query_sort(self, *sorts: UserQuerySort) -> str:
-        """构造排序SQL"""
+    SORT_FIELD_MAP = {
+        user_query_sort_fields.CREATED_AT: "u_created_at",
+        user_query_sort_fields.USERNAME: "u_username"
+    }
+
+    def build_query_sort_sql(self, sort_options: list[QuerySortOption] | None = None) -> str:
+        """构造排序 SQL"""
         sqls = []
-        for s in sorts:
-            match s:
-                case UserQuerySort.CREATED_AT_ASC:
-                    sqls.append("u_created_at ASC")
-                case UserQuerySort.CREATED_AT_DESC:
-                    sqls.append("u_created_at DESC")
-                case UserQuerySort.USERNAME_ASC:
-                    sqls.append("u_username ASC")
-                case UserQuerySort.USERNAME_DESC:
-                    sqls.append("u_username DESC")
+        if sort_options is not None:
+            for sort_option in sort_options:
+                if sort_option.field in self.SORT_FIELD_MAP:
+                    sqls.append(f"{self.SORT_FIELD_MAP[sort_option.field]} {sort_option.order}")
 
         if not sqls:
             sqls.append("u_created_at DESC")
@@ -256,26 +257,27 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         return dto
 
     async def query_count(self, criteria: UserQueryCriteria) -> int:
-        criteria_sql, params = self.build_query_criteria(criteria)
+        criteria_sql, params = self.build_query_criteria_sql(criteria)
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
             async with conn.execute(f"SELECT COUNT(*) FROM {self.table_name} {criteria_sql}", params) as cursor:
                 row = await cursor.fetchone()
                 return row[0] if row else 0
 
-    async def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
-        criteria_sql, params = self.build_query_criteria(criteria)
-        sort_sql = self.build_query_sort(*sorts)
+    async def query(self, criteria: UserQueryCriteria, sort_options: list[QuerySortOption] | None = None) -> list[UserDto]:
+        criteria_sql, params = self.build_query_criteria_sql(criteria)
+        sort_sql = self.build_query_sort_sql(sort_options)
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
             async with conn.execute(f"SELECT * FROM {self.table_name} {criteria_sql} {sort_sql}", params) as cursor:
                 rows = await cursor.fetchall()
                 return [self.to_dto(row) for row in rows]
 
-    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort) \
+    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria,
+                            sort_options: list[QuerySortOption] | None = None) \
             -> list[UserDto]:
-        criteria_sql, params = self.build_query_criteria(criteria)
-        sort_sql = self.build_query_sort(*sorts)
+        criteria_sql, params = self.build_query_criteria_sql(criteria)
+        sort_sql = self.build_query_sort_sql(sort_options)
         offset = (page_num - 1) * page_size
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row

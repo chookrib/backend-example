@@ -2,10 +2,11 @@ package com.example.backend.adapter.driven.user;
 
 import com.example.backend.adapter.driven.DatabaseAdapter;
 import com.example.backend.adapter.driven.PersistenceException;
+import com.example.backend.application.QuerySortOption;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserQueryCriteria;
 import com.example.backend.application.user.UserQueryHandler;
-import com.example.backend.application.user.UserQuerySort;
+import com.example.backend.application.user.UserQuerySortFields;
 import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.UserRepository;
 import com.example.backend.domain.user.UserUniqueSpecification;
@@ -250,7 +251,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 构造查询 SQL
      */
-    private String buildQueryCriteria(UserQueryCriteria criteria, Map<String, Object> params) {
+    private String buildQueryCriteriaSql(UserQueryCriteria criteria, Map<String, Object> params) {
         if (criteria == null)
             return "";
 
@@ -265,17 +266,22 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         return "";
     }
 
+    private final static Map<String, String> SORT_FIELD_MAP = Map.of(
+            UserQuerySortFields.CREATED_AT, "u_created_at",
+            UserQuerySortFields.USERNAME, "u_username"
+    );
+
     /**
      * 构造排序 SQL
      */
-    private String buildQuerySort(UserQuerySort... sorts) {
+    private String buildQuerySortSql(List<QuerySortOption> sortOptions) {
         List<String> sqls = new ArrayList<>();
-        for (UserQuerySort s : sorts) {
-            switch (s) {
-                case CREATED_AT_ASC -> sqls.add("u_created_at ASC");
-                case CREATED_AT_DESC -> sqls.add("u_created_at DESC");
-                case USERNAME_ASC -> sqls.add("u_username ASC");
-                case USERNAME_DESC -> sqls.add("u_username DESC");
+
+        if(sortOptions != null) {
+            for (QuerySortOption sortOption : sortOptions) {
+                if (SORT_FIELD_MAP.containsKey(sortOption.getField())) {
+                    sqls.add(String.format("%s %s", SORT_FIELD_MAP.get(sortOption.getField()), sortOption.getOrder()));
+                }
             }
         }
 
@@ -310,7 +316,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     @Override
     public int queryCount(UserQueryCriteria criteria) {
         Map<String, Object> params = new HashMap<>();
-        String criteriaSql = buildQueryCriteria(criteria, params);
+        String criteriaSql = buildQueryCriteriaSql(criteria, params);
         Integer count = namedParameterJdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM %s %s".formatted(tableName, criteriaSql), params, int.class
         );
@@ -318,10 +324,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public List<UserDto> query(UserQueryCriteria criteria, UserQuerySort... sorts) {
+    public List<UserDto> query(UserQueryCriteria criteria, List<QuerySortOption> sortOptions) {
         Map<String, Object> params = new HashMap<>();
-        String criteriaSql = buildQueryCriteria(criteria, params);
-        String sortSql = buildQuerySort(sorts);
+        String criteriaSql = buildQueryCriteriaSql(criteria, params);
+        String sortSql = buildQuerySortSql(sortOptions);
 
         SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
                 "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params
@@ -334,10 +340,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, UserQuerySort... sorts) {
+    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, List<QuerySortOption> sortOptions) {
         Map<String, Object> params = new HashMap<>();
-        String criteriaSql = buildQueryCriteria(criteria, params);
-        String sortSql = buildQuerySort(sorts);
+        String criteriaSql = buildQueryCriteriaSql(criteria, params);
+        String sortSql = buildQuerySortSql(sortOptions);
 
         params.put("limitCount", pageSize);
         params.put("limitOffset", (pageNum - 1) * pageSize);

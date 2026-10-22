@@ -31,9 +31,11 @@ async def user_list(request: Request):
     # criteria.keyword = request_value_helper.get_request_json_string_trim(criteria_json, "", "keyword")
     criteria.keyword = request_value_helper.get_request_json_string_trim_or_empty(request_json, "criteria", "keyword")
 
+    sort_options = request_value_helper.get_request_json_sort_options(request_json, "sort")
+
     total_count = await user_query_handler.query_count(criteria)
     page_num, page_size, total_count = request_value_helper.fix_paging(page_num, page_size, total_count)
-    list = await user_query_handler.query_by_page(page_num, page_size, criteria)
+    list = await user_query_handler.query_by_page(page_num, page_size, criteria, sort_options)
     return Result.ok(data={
         # "list": [user.to_json() for user in list],
         "list": list,

@@ -3,6 +3,8 @@ package com.example.backend.adapter.driving.user;
 import com.example.backend.adapter.driving.RequestAuthHelper;
 import com.example.backend.adapter.driving.RequestValueHelper;
 import com.example.backend.adapter.driving.Result;
+import com.example.backend.application.QuerySortBuilder;
+import com.example.backend.application.QuerySortOption;
 import com.example.backend.application.user.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -53,9 +55,11 @@ public class UserManageController {
             criteria.setKeyword(keyword);
         //}
 
+        List<QuerySortOption> sortOptions = RequestValueHelper.getRequestJsonSortOptions(requestJson, "sort");
+
         int totalCount = userQueryHandler.queryCount(criteria);
         RequestValueHelper.Paging paging = RequestValueHelper.fixPaging(pageNum, pageSize, totalCount);
-        List<UserDto> list = userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria);
+        List<UserDto> list = userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria, sortOptions);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("paging", Map.of(

@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
+using src.application;
 using src.application.user;
 
 namespace src.adapter.driving.user
@@ -42,9 +43,11 @@ namespace src.adapter.driving.user
             criteria.Keyword = keyword;
             //}
 
+            IList<QuerySortOption> sortOptions = RequestValueHelper.GetRequestJsonSortOptions(requestJson, "sort");
+
             int totalCount = await userQueryHandler.QueryCount(criteria);
             var paging = RequestValueHelper.FixPaging(pageNum, pageSize, totalCount);
-            IList<UserDto> list = await userQueryHandler.QueryByPage(paging.pageNum, paging.pageSize, criteria);
+            IList<UserDto> list = await userQueryHandler.QueryByPage(paging.pageNum, paging.pageSize, criteria, sortOptions);
             return Result.OkData(new
             {
                 list = list,

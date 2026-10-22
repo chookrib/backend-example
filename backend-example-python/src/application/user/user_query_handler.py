@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
+from src.application.query_sort_option import QuerySortOption
 from src.application.user.user_dto import UserDto
 from src.application.user.user_query_criteria import UserQueryCriteria
-from src.application.user.user_query_sort import UserQuerySort
 
 
 class UserQueryHandler(ABC):
@@ -24,12 +24,13 @@ class UserQueryHandler(ABC):
         pass
 
     @abstractmethod
-    async def query(self, criteria: UserQueryCriteria, *sorts: UserQuerySort) -> list[UserDto]:
+    async def query(self, criteria: UserQueryCriteria, sort_options: list[QuerySortOption] | None = None) -> list[UserDto]:
         """查询"""
         pass
 
     @abstractmethod
-    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria, *sorts: UserQuerySort)\
+    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria,
+                            sort_options: list[QuerySortOption] | None = None) \
             -> list[UserDto]:
         """分页查询"""
         pass
