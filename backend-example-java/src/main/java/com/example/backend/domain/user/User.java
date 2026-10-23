@@ -13,7 +13,7 @@ public class User {
 
     private String id;
     private String username;
-    private String password;
+    private String password;                    // 加密后的密码
     private String nickname;
     private String mobile;
     private boolean isAdmin;
@@ -22,31 +22,19 @@ public class User {
 
     public String getId() { return id; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() { return password; }
 
-    public String getNickname() {
-        return nickname;
-    }
+    public String getNickname() { return nickname; }
 
-    public String getMobile() {
-        return mobile;
-    }
+    public String getMobile() { return mobile; }
 
     public boolean isAdmin() { return isAdmin; }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     /**
      * 还原用户

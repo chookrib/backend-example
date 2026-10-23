@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class RequestAuthHelper {
 
     /**
-     * 获取登录用户Id，未登录返回空字符串
+     * 获取登录用户 Id，未登录返回空字符串
      */
     public static String getLoginUserId(HttpServletRequest request, UserAuthService userAuthService) {
         String accessToken = request.getHeader("Access-Token");
@@ -19,7 +19,7 @@ public class RequestAuthHelper {
     }
 
     /**
-     * 获取登录用户Id，未登录抛异常
+     * 获取登录用户 Id，未登录抛异常
      */
     public static String requireLoginUserId(HttpServletRequest request, UserAuthService userAuthService) {
         String accessToken = request.getHeader("Access-Token");
@@ -30,13 +30,13 @@ public class RequestAuthHelper {
     }
 
     /**
-     * 获取登录用户（管理员），失败抛异常
+     * 获取登录管理员用户 Id，失败抛异常
      */
-    public static User requireLoginUserAdmin(HttpServletRequest request, UserAuthService userAuthService) {
+    public static String requireLoginAdminUserId(HttpServletRequest request, UserAuthService userAuthService) {
         String accessToken = request.getHeader("Access-Token");
         User user = userAuthService.getLoginUser(accessToken);
         if (user == null || !user.isAdmin())
             throw new NotLoginException();
-        return user;
+        return user.getId();
     }
 }

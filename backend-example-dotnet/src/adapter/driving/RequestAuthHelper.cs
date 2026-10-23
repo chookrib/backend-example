@@ -10,7 +10,7 @@ namespace src.adapter.driving
     public class RequestAuthHelper
     {
         /// <summary>
-        /// 获取登录用户Id，未登录返回空字符串
+        /// 获取登录用户 Id，未登录返回空字符串
         /// </summary>
         public static string GetLoginUserId(HttpRequest request, UserAuthService userAuthService)
         {
@@ -23,7 +23,7 @@ namespace src.adapter.driving
         }
 
         /// <summary>
-        /// 获取登录用户Id，未登录抛异常
+        /// 获取登录用户 Id，未登录抛异常
         /// </summary>
         public static string RequireLoginUserId(HttpRequest request, UserAuthService userAuthService)
         {
@@ -35,15 +35,15 @@ namespace src.adapter.driving
         }
 
         /// <summary>
-        /// 获取登录用户（管理员），失败抛异常
+        /// 获取登录管理员用户 Id，失败抛异常
         /// </summary>
-        public static async Task<User> RequireLoginUserAdmin(HttpRequest request, UserAuthService userAuthService)
+        public static async Task<string> RequireLoginAdminUserId(HttpRequest request, UserAuthService userAuthService)
         {
             string accessToken = request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
             User? user = await userAuthService.GetLoginUser(accessToken);
             if (user == null || !user.IsAdmin)
                 throw new NotLoginException();
-            return user;
+            return user.Id;
         }
     }
 }

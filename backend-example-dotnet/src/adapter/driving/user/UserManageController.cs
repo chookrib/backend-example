@@ -28,7 +28,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/list")]
         public async Task<Result> UserList()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request, userAuthService);
+            await RequestAuthHelper.RequireLoginAdminUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             int pageNum = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -66,7 +66,7 @@ namespace src.adapter.driving.user
         [HttpGet("/api/admin/user/get")]
         public async Task<Result> UserGet()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request, userAuthService);
+            await RequestAuthHelper.RequireLoginAdminUserId(Request, userAuthService);
 
             string id = RequestValueHelper.GetRequestParamStringTrimReq(Request, "id");
             UserDto userDto = await userQueryHandler.QueryByIdReq(id);
@@ -82,7 +82,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/create")]
         public async Task<Result> UserCreate()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request, userAuthService);
+            await RequestAuthHelper.RequireLoginAdminUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
@@ -103,7 +103,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/modify")]
         public async Task<Result> UserModify()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request, userAuthService);
+            await RequestAuthHelper.RequireLoginAdminUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
@@ -122,7 +122,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/remove")]
         public async Task<Result> UserRemove()
         {
-            await RequestAuthHelper.RequireLoginUserAdmin(Request, userAuthService);
+            await RequestAuthHelper.RequireLoginAdminUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");

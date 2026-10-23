@@ -8,11 +8,11 @@ from src.utility import crypto_utility, value_utility
 
 
 class User(BaseModel):
-    """用户Entity"""
+    """用户 Entity"""
 
     id: str
     username: str
-    password: str
+    password: str       # 加密后的密码
     nickname: str
     mobile: str
     is_admin: bool

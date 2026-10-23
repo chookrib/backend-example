@@ -9,7 +9,7 @@ public class UserDto {
 
     private String id;
     private String username;
-    //private String password;
+    // private String password;
     private String nickname;
     private String mobile;
     private boolean isAdmin;
@@ -24,9 +24,7 @@ public class UserDto {
         return username;
     }
 
-    //public String getPassword() {
-    //    return password;
-    //}
+    // public String getPassword() { return password; }
 
     public String getNickname() {
         return nickname;
@@ -60,11 +58,4 @@ public class UserDto {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
-    ///**
-    // * 将用户对象转换为Map
-    // */
-    //public Map<String, ?> fromUser(User user) {
-    //    return JsonUtility.convertValue(user);
-    //}
 }

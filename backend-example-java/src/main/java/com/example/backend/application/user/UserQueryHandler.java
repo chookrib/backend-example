@@ -1,6 +1,5 @@
 package com.example.backend.application.user;
 
-import com.example.backend.application.QuerySortBuilder;
 import com.example.backend.application.QuerySortOption;
 
 import java.util.List;

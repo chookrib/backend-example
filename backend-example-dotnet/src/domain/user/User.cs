@@ -11,6 +11,9 @@ namespace src.domain.user
 
         public string Username { get; private set; } = string.Empty;
 
+        /// <summary>
+        /// 加密后的密码
+        /// </summary>
         public string Password { get; private set; } = string.Empty;
 
         public string Nickname { get; private set; } = string.Empty;
@@ -59,10 +62,10 @@ namespace src.domain.user
 
             if (userUniqueSpecification != null)
             {
-                if (! await userUniqueSpecification.IsUsernameUnique(username))
+                if (!await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -121,7 +124,7 @@ namespace src.domain.user
 
             if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueSpecification != null)
             {
-                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -139,7 +142,7 @@ namespace src.domain.user
 
             if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueSpecification != null)
             {
-                if (! await userUniqueSpecification.IsMobileUnique(mobile))
+                if (!await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -164,13 +167,13 @@ namespace src.domain.user
 
             if (userUniqueSpecification != null)
             {
-                if (! await userUniqueSpecification.IsUsernameUnique(username))
+                if (!await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
-                if (! await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsEmptyString(mobile) && ! await userUniqueSpecification.IsMobileUnique(mobile))
+                if (!ValueUtility.IsEmptyString(mobile) && !await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -201,16 +204,16 @@ namespace src.domain.user
             if (userUniqueSpecification != null)
             {
                 if (username.ToLower() != this.Username.ToLower() &&
-                    ! await userUniqueSpecification.IsUsernameUnique(username))
+                    !await userUniqueSpecification.IsUsernameUnique(username))
                     throw new DomainException("用户名已存在");
 
                 if (nickname.ToLower() != this.Nickname.ToLower() &&
-                    ! await userUniqueSpecification.IsNicknameUnique(nickname))
+                    !await userUniqueSpecification.IsNicknameUnique(nickname))
                     throw new DomainException("昵称已存在");
 
                 if (!ValueUtility.IsEmptyString(mobile) &&
                     mobile.ToLower() != this.Mobile.ToLower() &&
-                    ! await userUniqueSpecification.IsMobileUnique(mobile))
+                    !await userUniqueSpecification.IsMobileUnique(mobile))
                     throw new DomainException("手机已存在");
             }
 

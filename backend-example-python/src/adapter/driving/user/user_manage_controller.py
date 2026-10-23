@@ -20,7 +20,7 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)
 @router.post("/api/admin/user/list")
 async def user_list(request: Request):
     """用户列表"""
-    await request_auth_helper.require_login_user_admin(request)
+    await request_auth_helper.require_login_admin_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     page_num = request_value_helper.get_request_json_int_or_default(request_json, 1, "pageNum")
@@ -50,7 +50,7 @@ async def user_list(request: Request):
 @router.get("/api/admin/user/get")
 async def user_get(request: Request):
     """用户详情"""
-    await request_auth_helper.require_login_user_admin(request)
+    await request_auth_helper.require_login_admin_user_id(request)
 
     id = request_value_helper.get_request_param_string_trim_req(request, "id")
 
@@ -62,7 +62,7 @@ async def user_get(request: Request):
 @router.post("/api/admin/user/create")
 async def user_create(request: Request):
     """创建用户"""
-    await request_auth_helper.require_login_user_admin(request)
+    await request_auth_helper.require_login_admin_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     username = request_value_helper.get_request_json_string_trim_req(request_json, "username")
@@ -77,7 +77,7 @@ async def user_create(request: Request):
 @router.post("/api/admin/user/modify")
 async def user_modify(request: Request):
     """修改用户"""
-    await request_auth_helper.require_login_user_admin(request)
+    await request_auth_helper.require_login_admin_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     id = request_value_helper.get_request_json_string_trim_req(request_json, "id")
@@ -92,7 +92,7 @@ async def user_modify(request: Request):
 @router.post("/api/admin/user/remove")
 async def user_remove(request: Request):
     """删除用户"""
-    await request_auth_helper.require_login_user_admin(request)
+    await request_auth_helper.require_login_admin_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     id = request_value_helper.get_request_json_string_trim_req(request_json, "id")

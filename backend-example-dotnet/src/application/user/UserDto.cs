@@ -9,6 +9,8 @@
 
         public string Username { get; private set; }
 
+        //public string Password { get; private set; } = string.Empty;
+
         public string Nickname { get; private set; }
 
         public string Mobile { get; private set; }
