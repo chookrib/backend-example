@@ -2,6 +2,7 @@ package com.example.backend.application.user;
 
 import com.example.backend.application.ApplicationException;
 import com.example.backend.application.IdGenerator;
+import com.example.backend.application.lock.LockHandler;
 import com.example.backend.application.lock.LockKeys;
 import com.example.backend.application.lock.LockService;
 import com.example.backend.domain.ext.SmsGateway;
@@ -24,7 +25,7 @@ public class UserProfileService {
     private final SmsGateway smsGateway;
     private final LockService lockService;
 
-    private ConcurrentHashMap<String, String> mobileCodeMap = new ConcurrentHashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
+    private final ConcurrentHashMap<String, String> mobileCodeMap = new ConcurrentHashMap<>();    // 手机验证码缓存，无过期策略，仅供演示使用
 
     public UserProfileService(
             UserRepository userRepository,
@@ -42,12 +43,10 @@ public class UserProfileService {
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        try (AutoCloseable lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
             User user = User.register(IdGenerator.generateId(), username, password, nickname, userUniqueSpecification);
             userRepository.insert(user);
             return user.getId();
-        } catch (Exception ex) {
-            throw new ApplicationException(ex);
         }
     }
 
@@ -64,12 +63,10 @@ public class UserProfileService {
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        try (AutoCloseable lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
             User user = userRepository.selectByIdReq(userId);
             user.modifyNickname(nickname, userUniqueSpecification);
             userRepository.update(user);
-        } catch (Exception ex) {
-            throw new ApplicationException(ex);
         }
     }
 

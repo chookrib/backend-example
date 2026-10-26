@@ -24,7 +24,7 @@ public class ReentrantLockService implements LockService {
     }
 
     @Override
-    public AutoCloseable lock(String key) {
+    public LockHandler lock(String key) {
         ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
@@ -43,7 +43,7 @@ public class ReentrantLockService implements LockService {
     /**
      * ReentrantLock 锁处理器
      */
-    private static class ReentrantLockHandler implements AutoCloseable {
+    private static class ReentrantLockHandler implements LockHandler {
 
         private final boolean enableLog;
         private final ReentrantLock reentrantLock;

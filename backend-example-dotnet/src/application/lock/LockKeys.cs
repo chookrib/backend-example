@@ -8,11 +8,11 @@
         /// <summary>
         /// 测试锁
         /// </summary>
-        public static string TEST = "TEST";
+        public static string TEST = "test";
 
         /// <summary>
         /// 用户锁
         /// </summary>
-        public static string USER = "USER";
+        public static string USER = "user";
     }
 }

@@ -1,6 +1,7 @@
 package com.example.backend.application.test;
 
 import com.example.backend.application.ApplicationException;
+import com.example.backend.application.lock.LockHandler;
 import com.example.backend.application.lock.LockKeys;
 import com.example.backend.application.lock.LockService;
 import org.slf4j.Logger;
@@ -50,10 +51,8 @@ public class TestLockService {
      * 减少 count，加锁
      */
     public void decreaseCountWithLock() {
-        try (AutoCloseable lock = lockService.lock(LockKeys.TEST)) {
+        try (LockHandler lock = lockService.lock(LockKeys.TEST)) {
             decreaseCount();
-        } catch (Exception ex) {
-            throw new ApplicationException(ex);
         }
     }
 

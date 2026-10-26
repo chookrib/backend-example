@@ -1,6 +1,5 @@
 package com.example.backend.application.lock;
 
-import com.example.backend.application.ApplicationConfig;
 import com.example.backend.application.ApplicationException;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -21,9 +20,9 @@ public class RedissonLockService implements LockService {
     private final boolean enableLog;
     private final RedissonClient redissonClient;
 
-    //public RedissonLockService(RedissonClient redissonClient) {
+    // public RedissonLockService(RedissonClient redissonClient) {
     public RedissonLockService(String lockKeyPrefix, boolean enableLog, String address, String password, int database) {
-        //this.redissonClient = redissonClient;
+        // this.redissonClient = redissonClient;
         this.lockKeyPrefix = lockKeyPrefix;
         this.enableLog = enableLog;
         try {
@@ -39,7 +38,7 @@ public class RedissonLockService implements LockService {
     }
 
     @Override
-    public AutoCloseable lock(String key) {
+    public LockHandler lock(String key) {
         String lockKey = lockKeyPrefix + ":lock:" + key;
         RLock lock = redissonClient.getLock(lockKey);
         try {
@@ -59,7 +58,7 @@ public class RedissonLockService implements LockService {
     /**
      * RedissonLock 锁处理器
      */
-    private static class RedissonLockHandler implements AutoCloseable {
+    private static class RedissonLockHandler implements LockHandler {
 
         private final boolean enableLog;
         private final RLock lock;
