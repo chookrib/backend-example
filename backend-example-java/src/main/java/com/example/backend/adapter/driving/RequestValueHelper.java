@@ -1,6 +1,5 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.application.QuerySortBuilder;
 import com.example.backend.application.QuerySortOption;
 import com.example.backend.utility.JsonUtility;
 import com.example.backend.utility.ValueUtility;
@@ -8,14 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.naming.ldap.Control;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 请求 Value Helper
@@ -85,8 +81,8 @@ public class RequestValueHelper {
      */
     public static String getRequestJsonStringTrimReq(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValueReq(json, keys);
-        String s =  node.asText().trim();
-        if(ValueUtility.isEmptyString(s))
+        String s = node.asText().trim();
+        if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
         return s.trim();
     }
@@ -124,7 +120,7 @@ public class RequestValueHelper {
      */
     public static boolean getRequestJsonBoolOrDefault(JsonNode json, boolean defaultValue, String... keys) {
         Boolean b = getRequestJsonBoolOrNull(json, keys);
-        if(b != null)
+        if (b != null)
             return b;
         return defaultValue;
     }
@@ -161,7 +157,7 @@ public class RequestValueHelper {
      */
     public static int getRequestJsonIntOrDefault(JsonNode json, int defaultValue, String... keys) {
         Integer i = getRequestJsonIntOrNull(json, keys);
-        if(i != null)
+        if (i != null)
             return i;
         return defaultValue;
     }
@@ -198,7 +194,7 @@ public class RequestValueHelper {
      */
     public static long getRequestJsonLongOrDefault(JsonNode json, long defaultValue, String... keys) {
         Long l = getRequestJsonLongOrNull(json, keys);
-        if(l != null)
+        if (l != null)
             return l;
         return defaultValue;
     }
@@ -233,7 +229,7 @@ public class RequestValueHelper {
      */
     public static LocalDateTime getRequestJsonDateTimeOrDefault(JsonNode json, LocalDateTime defaultValue, String... keys) {
         LocalDateTime dt = getRequestJsonDateTimeOrNull(json, keys);
-        if(dt != null)
+        if (dt != null)
             return dt;
         return defaultValue;
     }
@@ -266,7 +262,7 @@ public class RequestValueHelper {
      */
     public static LocalDate getRequestJsonDateOrDefault(JsonNode json, LocalDate defaultValue, String... keys) {
         LocalDate d = getRequestJsonDateOrNull(json, keys);
-        if(d != null)
+        if (d != null)
             return d;
         return defaultValue;
     }
@@ -299,7 +295,7 @@ public class RequestValueHelper {
      */
     public static LocalTime getRequestJsonTimeOrDefault(JsonNode json, LocalTime defaultValue, String... keys) {
         LocalTime t = getRequestJsonTimeOrNull(json, keys);
-        if(t != null)
+        if (t != null)
             return t;
         return defaultValue;
     }
@@ -339,8 +335,8 @@ public class RequestValueHelper {
      */
     public static String getRequestJsonStringReq(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValueReq(json, keys);
-        String s =  node.asText();
-        if(ValueUtility.isEmptyString(s))
+        String s = node.asText();
+        if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
         return s;
     }
@@ -369,7 +365,7 @@ public class RequestValueHelper {
         String value = request.getParameter(key);
         if (value == null)
             throw new ControllerException(String.format("请求参数缺少 %s", key));
-        if(ValueUtility.isEmptyString(value))
+        if (ValueUtility.isEmptyString(value))
             throw new ControllerException(String.format("请求参数 %s 值不能为空", key));
         return value;
     }
@@ -579,8 +575,7 @@ public class RequestValueHelper {
     /**
      * 取排序参数
      */
-    public static List<QuerySortOption> getRequestJsonSortOptions(JsonNode json, String... keys)
-    {
+    public static List<QuerySortOption> getRequestJsonSortOptions(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValue(json, keys);
         List<QuerySortOption> sortOptions = new ArrayList<>();
         if (node.isMissingNode() || !node.isArray())

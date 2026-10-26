@@ -1,8 +1,8 @@
 """锁 Key 定义"""
 
 # 测试
-TEST = "TEST"
+TEST = "test"
 
 # 用户锁
-USER = "USER"
+USER = "user"
 

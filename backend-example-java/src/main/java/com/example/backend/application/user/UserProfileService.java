@@ -47,7 +47,7 @@ public class UserProfileService {
             userRepository.insert(user);
             return user.getId();
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ApplicationException(ex);
         }
     }
 
@@ -69,7 +69,7 @@ public class UserProfileService {
             user.modifyNickname(nickname, userUniqueSpecification);
             userRepository.update(user);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ApplicationException(ex);
         }
     }
 

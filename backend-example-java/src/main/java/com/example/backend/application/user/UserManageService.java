@@ -1,5 +1,6 @@
 package com.example.backend.application.user;
 
+import com.example.backend.application.ApplicationException;
 import com.example.backend.application.IdGenerator;
 import com.example.backend.application.lock.LockKeys;
 import com.example.backend.application.lock.LockService;
@@ -48,7 +49,7 @@ public class UserManageService {
             userRepository.insert(user);
             return user.getId();
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ApplicationException(ex);
         }
     }
 
@@ -61,7 +62,7 @@ public class UserManageService {
             user.modify(username, nickname, mobile, userUniqueSpecification);
             userRepository.update(user);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ApplicationException(ex);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.example.backend.application.lock;
 
-import com.example.backend.application.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

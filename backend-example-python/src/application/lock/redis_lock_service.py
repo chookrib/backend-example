@@ -32,11 +32,14 @@ class RedisLockService(LockService):
     # def __init__(self, redis_client: redis.Redis):
     def __init__(self):
         if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_URL):
-            raise ApplicationException("APP_LOCK_REDIS_URL 配置错误")
+            raise ApplicationException("未配置 APP_LOCK_REDIS_URL")
+        if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_KEY_PREFIX):
+            raise ApplicationException("未配置 APP_LOCK_REDIS_KEY_PREFIX")
+
         self.redis = redis.from_url(application_config.APP_LOCK_REDIS_URL)
         # 注册 Lua 脚本以提高效率
         self.release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
-        self.lock_key_prefix = application_config.APP_NAME
+        self.lock_key_prefix = application_config.APP_LOCK_REDIS_KEY_PREFIX
         self.enable_log = application_config.is_app_env_dev()
 
     @asynccontextmanager

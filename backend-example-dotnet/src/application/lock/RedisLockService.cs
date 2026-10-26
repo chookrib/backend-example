@@ -23,12 +23,15 @@ namespace src.application.@lock
         {
             string redisUrl = configuration.GetValue<string>("App:LockRedisUrl") ?? string.Empty;
             if (ValueUtility.IsEmptyString(redisUrl))
-                throw new ApplicationException("App:LockRedisUrl 配置错误");
+                throw new ApplicationException("未配置 App:LockRedisUrl");
+            string redisKeyPrefix = configuration.GetValue<string>("App:LockRedisKeyPrefix") ?? string.Empty;
+            if (ValueUtility.IsEmptyString(redisKeyPrefix))
+                throw new ApplicationException("未配置 App:LockRedisKeyPrefix");
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisUrl);
             this.redisDatabase = redis.GetDatabase();     // 根据 redisUrl 中指定的数据库取数据库
 
-            this.lockKeyPrefix = applicationConfig.GetAppName();
+            this.lockKeyPrefix = redisKeyPrefix;
             this.enableLog = applicationConfig.IsAppEnvDev();
         }
 

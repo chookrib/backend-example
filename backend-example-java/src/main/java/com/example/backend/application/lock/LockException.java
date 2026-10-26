@@ -4,6 +4,7 @@ package com.example.backend.application.lock;
  * Lock Exception
  */
 public class LockException extends RuntimeException {
+
     public LockException() {
         super();
     }

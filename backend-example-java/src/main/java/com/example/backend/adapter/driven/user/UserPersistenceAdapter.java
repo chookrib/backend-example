@@ -12,11 +12,11 @@ import com.example.backend.domain.user.UserRepository;
 import com.example.backend.domain.user.UserUniqueSpecification;
 import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.ValueUtility;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Component;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,18 +31,14 @@ import java.util.Map;
 public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecification, UserQueryHandler {
 
     private final DatabaseAdapter databaseAdapter;
-    private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String tableName;
 
     public UserPersistenceAdapter(DatabaseAdapter databaseAdapter) {
         this.databaseAdapter = databaseAdapter;
-        this.jdbcTemplate = databaseAdapter.getJdbcTemplate();
-        this.namedParameterJdbcTemplate = databaseAdapter.getNamedParameterJdbcTemplate();
         // 每次启动生成唯一表名
         this.tableName = "t_user_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         // 创建表及默认管理员
-        this.jdbcTemplate.execute("""
+        this.databaseAdapter.getJdbcTemplate().execute("""
                 CREATE TABLE IF NOT EXISTS %s
                 (
                     u_id TEXT PRIMARY KEY,
@@ -56,10 +52,10 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 )
                 """.formatted(this.tableName)
         );
-        this.jdbcTemplate.execute(
+        this.databaseAdapter.getJdbcTemplate().execute(
                 "DELETE FROM %s WHERE LOWER(u_username) = 'admin'".formatted(this.tableName)
         );
-        this.jdbcTemplate.update("""
+        this.databaseAdapter.getJdbcTemplate().update("""
                         INSERT INTO %s (
                             u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                         ) VALUES (
@@ -73,25 +69,46 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     //==================================================================================================================
     // UserRepository
 
+    // /**
+    //  * 转换成 Entity
+    //  */
+    // private User toEntity(SqlRowSet sqlRowSet) {
+    //     return User.restore(
+    //             sqlRowSet.getString("u_id"),
+    //             sqlRowSet.getString("u_username"),
+    //             sqlRowSet.getString("u_password"),
+    //             sqlRowSet.getString("u_nickname"),
+    //             sqlRowSet.getString("u_mobile"),
+    //             sqlRowSet.getBoolean("u_is_admin"),
+    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
+    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
+    //     );
+    // }
+
     /**
      * 转换成 Entity
      */
-    private User toEntity(SqlRowSet sqlRowSet) {
-        return User.restore(
-                sqlRowSet.getString("u_id"),
-                sqlRowSet.getString("u_username"),
-                sqlRowSet.getString("u_password"),
-                sqlRowSet.getString("u_nickname"),
-                sqlRowSet.getString("u_mobile"),
-                sqlRowSet.getBoolean("u_is_admin"),
-                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
-                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
-        );
+    private User toEntity(ResultSet resultSet) {
+        try {
+            return User.restore(
+                    resultSet.getString("u_id"),
+                    resultSet.getString("u_username"),
+                    resultSet.getString("u_password"),
+                    resultSet.getString("u_nickname"),
+                    resultSet.getString("u_mobile"),
+                    resultSet.getBoolean("u_is_admin"),
+                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_created_at"), LocalDateTime.MIN),
+                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_updated_at"), LocalDateTime.MIN)
+            );
+        } catch (SQLException e) {
+            throw new PersistenceException(e);
+        }
     }
+
 
     @Override
     public void insert(User entity) {
-        jdbcTemplate.update("""
+        databaseAdapter.getJdbcTemplate().update("""
                         INSERT INTO %s (
                             u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
                         ) VALUES (
@@ -111,7 +128,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public void update(User entity) {
-        jdbcTemplate.update("""
+        databaseAdapter.getJdbcTemplate().update("""
                         UPDATE %s
                             SET
                                 u_username = ?,
@@ -139,7 +156,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public void deleteById(String id) {
         if (ValueUtility.isEmptyString(id))
             return;
-        jdbcTemplate.update(
+        databaseAdapter.getJdbcTemplate().update(
                 "DELETE FROM %s WHERE u_id = ?".formatted(tableName), id
         );
     }
@@ -148,13 +165,21 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public User selectById(String id) {
         if (ValueUtility.isEmptyString(id))
             return null;
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
+        // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
+        // );
+        // if (sqlRowSet.next()) {
+        //     return toEntity(sqlRowSet);
+        // }
+        // return null;
+        List<User> list = databaseAdapter.getJdbcTemplate().query(
+                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName),
+                (rs, rowNum) -> {
+                    return toEntity(rs);
+                },
+                id
         );
-        if (sqlRowSet.next()) {
-            return toEntity(sqlRowSet);
-        }
-        return null;
+        return DataAccessUtils.singleResult(list);
     }
 
     @Override
@@ -173,13 +198,19 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", ids);
-        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(tableName), params
+        // SqlRowSet sqlRowSet = databaseAdapter.getNamedParameterJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(tableName), params
+        // );
+        // while (sqlRowSet.next()) {
+        //     User entity = toEntity(sqlRowSet);
+        //     list.add(entity);
+        // }
+        list = databaseAdapter.getNamedParameterJdbcTemplate().query(
+                "SELECT * FROM %s WHERE u_id IN (:ids)".formatted(tableName), params,
+                (rs, rowNum) -> {
+                    return toEntity(rs);
+                }
         );
-        while (sqlRowSet.next()) {
-            User entity = toEntity(sqlRowSet);
-            list.add(entity);
-        }
         return list;
     }
 
@@ -187,13 +218,20 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public User selectByUsername(String username) {
         if (ValueUtility.isEmptyString(username))
             return null;
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), username
+        // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), username
+        // );
+        // if (sqlRowSet.next()) {
+        //     return toEntity(sqlRowSet);
+        // }
+        List<User> list = databaseAdapter.getJdbcTemplate().query(
+                "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName),
+                (rs, rowNum) -> {
+                    return toEntity(rs);
+                },
+                username
         );
-        if (sqlRowSet.next()) {
-            return toEntity(sqlRowSet);
-        }
-        return null;
+        return DataAccessUtils.singleResult(list);
     }
 
     //==================================================================================================================
@@ -203,49 +241,68 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public boolean isUsernameUnique(String username) {
         if (ValueUtility.isEmptyString(username))
             throw new PersistenceException("参数 username 不能为空");
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), int.class, username
+        Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), Integer.class, username
         );
-        return Integer.valueOf(0).equals(count);
+        return count == null || count == 0;
     }
 
     @Override
     public boolean isNicknameUnique(String nickname) {
         if (ValueUtility.isEmptyString(nickname))
             throw new PersistenceException("参数 nickname 不能为空");
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName), int.class, nickname
+        Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName), Integer.class, nickname
         );
-        return Integer.valueOf(0).equals(count);
+        return count == null || count == 0;
     }
 
     @Override
     public boolean isMobileUnique(String mobile) {
         if (ValueUtility.isEmptyString(mobile))
             throw new PersistenceException("参数 mobile 不能为空");
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName), int.class, mobile
+        Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName), Integer.class, mobile
         );
-        return Integer.valueOf(0).equals(count);
+        return count == null || count == 0;
     }
 
     //==================================================================================================================
     // UserQueryHandler
 
+    // /**
+    //  * 转换成 DTO
+    //  */
+    // private UserDto toDto(SqlRowSet sqlRowSet) {
+    //     return new UserDto(
+    //             sqlRowSet.getString("u_id"),
+    //             sqlRowSet.getString("u_username"),
+    //             // sqlRowSet.getString("u_password"),
+    //             sqlRowSet.getString("u_nickname"),
+    //             sqlRowSet.getString("u_mobile"),
+    //             sqlRowSet.getBoolean("u_is_admin"),
+    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
+    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
+    //     );
+    // }
+
     /**
      * 转换成 DTO
      */
-    private UserDto toDto(SqlRowSet sqlRowSet) {
-        return new UserDto(
-                sqlRowSet.getString("u_id"),
-                sqlRowSet.getString("u_username"),
-                // sqlRowSet.getString("u_password"),
-                sqlRowSet.getString("u_nickname"),
-                sqlRowSet.getString("u_mobile"),
-                sqlRowSet.getBoolean("u_is_admin"),
-                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
-                ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
-        );
+    private UserDto toDto(ResultSet resultSet) {
+        try {
+            return new UserDto(
+                    resultSet.getString("u_id"),
+                    resultSet.getString("u_username"),
+                    resultSet.getString("u_nickname"),
+                    resultSet.getString("u_mobile"),
+                    resultSet.getBoolean("u_is_admin"),
+                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_created_at"), LocalDateTime.MIN),
+                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_updated_at"), LocalDateTime.MIN)
+            );
+        } catch (SQLException e) {
+            throw new PersistenceException(e);
+        }
     }
 
     /**
@@ -277,7 +334,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     private String buildQuerySortSql(List<QuerySortOption> sortOptions) {
         List<String> sqls = new ArrayList<>();
 
-        if(sortOptions != null) {
+        if (sortOptions != null) {
             for (QuerySortOption sortOption : sortOptions) {
                 if (SORT_FIELD_MAP.containsKey(sortOption.getField())) {
                     sqls.add(String.format("%s %s", SORT_FIELD_MAP.get(sortOption.getField()), sortOption.getOrder()));
@@ -296,13 +353,21 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public UserDto queryById(String id) {
         if (ValueUtility.isEmptyString(id))
             return null;
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
+        // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
+        // );
+        // if (sqlRowSet.next()) {
+        //     return toDto(sqlRowSet);
+        // }
+        // return null;
+        List<UserDto> list = databaseAdapter.getJdbcTemplate().query(
+                "SELECT * FROM %s WHERE u_id = ?".formatted(tableName),
+                (rs, rowNum) -> {
+                    return toDto(rs);
+                },
+                id
         );
-        if (sqlRowSet.next()) {
-            return toDto(sqlRowSet);
-        }
-        return null;
+        return DataAccessUtils.singleResult(list);
     }
 
     @Override
@@ -317,8 +382,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     public int queryCount(UserQueryCriteria criteria) {
         Map<String, Object> params = new HashMap<>();
         String criteriaSql = buildQueryCriteriaSql(criteria, params);
-        Integer count = namedParameterJdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM %s %s".formatted(tableName, criteriaSql), params, int.class
+        Integer count = databaseAdapter.getNamedParameterJdbcTemplate().queryForObject(
+                "SELECT COUNT(*) FROM %s %s".formatted(tableName, criteriaSql), params, Integer.class
         );
         return count == null ? 0 : count;
     }
@@ -329,13 +394,20 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         String criteriaSql = buildQueryCriteriaSql(criteria, params);
         String sortSql = buildQuerySortSql(sortOptions);
 
-        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
-                "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params
+        // SqlRowSet sqlRowSet = databaseAdapter.getNamedParameterJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params
+        // );
+        // List<UserDto> list = new ArrayList<>();
+        // while (sqlRowSet.next()) {
+        //     list.add(toDto(sqlRowSet));
+        // }
+        // return list;
+        List<UserDto> list = databaseAdapter.getNamedParameterJdbcTemplate().query(
+                "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params,
+                (rs, rowNum) ->{
+                    return toDto(rs);
+                }
         );
-        List<UserDto> list = new ArrayList<>();
-        while (sqlRowSet.next()) {
-            list.add(toDto(sqlRowSet));
-        }
         return list;
     }
 
@@ -348,14 +420,23 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         params.put("limitCount", pageSize);
         params.put("limitOffset", (pageNum - 1) * pageSize);
 
-        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(
+        // SqlRowSet sqlRowSet = databaseAdapter.getNamedParameterJdbcTemplate().queryForRowSet(
+        //         "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset"
+        //                 .formatted(tableName, criteriaSql, sortSql), params
+        // );
+        // List<UserDto> list = new ArrayList<>();
+        // while (sqlRowSet.next()) {
+        //     list.add(toDto(sqlRowSet));
+        // }
+        // return list;
+
+        List<UserDto> list = databaseAdapter.getNamedParameterJdbcTemplate().query(
                 "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset"
-                        .formatted(tableName, criteriaSql, sortSql), params
+                        .formatted(tableName, criteriaSql, sortSql), params,
+                (rs, rowNum) ->{
+                    return toDto(rs);
+                }
         );
-        List<UserDto> list = new ArrayList<>();
-        while (sqlRowSet.next()) {
-            list.add(toDto(sqlRowSet));
-        }
         return list;
     }
 }

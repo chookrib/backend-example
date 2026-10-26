@@ -7,10 +7,10 @@ public class LockKeys {
     /**
      * 测试锁
      */
-    public static String TEST = "TEST";
+    public static String TEST = "test";
 
     /**
      * 用户锁
      */
-    public static String USER = "USER";
+    public static String USER = "user";
 }

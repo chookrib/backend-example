@@ -53,7 +53,7 @@ public class TestLockService {
         try (AutoCloseable lock = lockService.lock(LockKeys.TEST)) {
             decreaseCount();
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ApplicationException(ex);
         }
     }
 

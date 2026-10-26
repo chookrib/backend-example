@@ -3,13 +3,15 @@ package com.example.backend.adapter.driving.user;
 import com.example.backend.adapter.driving.RequestAuthHelper;
 import com.example.backend.adapter.driving.RequestValueHelper;
 import com.example.backend.adapter.driving.Result;
-import com.example.backend.application.QuerySortBuilder;
 import com.example.backend.application.QuerySortOption;
 import com.example.backend.application.user.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,12 +49,12 @@ public class UserManageController {
         int pageNum = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
         int pageSize = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageSize");
 
-        //JsonNode criteriaJson = requestJson.path("criteria");
+        // JsonNode criteriaJson = requestJson.path("criteria");
         UserQueryCriteria criteria = new UserQueryCriteria();
-        //if (!criteriaJson.isMissingNode()) {
-            //String keyword = criteriaJson.path("keyword").asText().trim();
-            String keyword = RequestValueHelper.getRequestJsonStringTrimOrEmpty(requestJson,"criteria", "keyword");
-            criteria.setKeyword(keyword);
+        // if (!criteriaJson.isMissingNode()) {
+        // String keyword = criteriaJson.path("keyword").asText().trim();
+        String keyword = RequestValueHelper.getRequestJsonStringTrimOrEmpty(requestJson, "criteria", "keyword");
+        criteria.setKeyword(keyword);
         //}
 
         List<QuerySortOption> sortOptions = RequestValueHelper.getRequestJsonSortOptions(requestJson, "sort");

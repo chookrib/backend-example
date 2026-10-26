@@ -10,8 +10,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 值 Utility
@@ -28,8 +27,8 @@ public class ValueUtility {
     //==================================================================================================================
 
     // 定义 bool 值范围
-    private static final List<String> BOOL_TRUE = Arrays.asList("true", "1", "t", "y", "yes", "on");
-    private static final List<String> BOOL_FALSE = Arrays.asList("false", "0", "f", "n", "no", "off");
+    private static final List<String> BOOL_TRUE = List.of("true", "1", "t", "y", "yes", "on");
+    private static final List<String> BOOL_FALSE = List.of("false", "0", "f", "n", "no", "off");
 
     /**
      * 转 bool，失败返回 null
@@ -368,5 +367,24 @@ public class ValueUtility {
         if (defaultValue == null)
             return null;
         return defaultValue.truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    //==================================================================================================================
+
+    /**
+     * LinkedHashMap 构造器
+     */
+    public static class LinkedHashMapBuilder<K, V> {
+
+        private final LinkedHashMap<K, V> map = new LinkedHashMap<>();
+
+        public LinkedHashMapBuilder<K, V> put(K key, V value) {
+            map.put(key, value);
+            return this;
+        }
+
+        public Map<K, V> build() {
+            return Collections.unmodifiableMap(map);
+        }
     }
 }
