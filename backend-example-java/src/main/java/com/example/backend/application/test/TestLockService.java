@@ -22,7 +22,7 @@ public class TestLockService {
         this.lockService = lockService;
     }
 
-    private int count = 10;
+    private int count = 0;
 
     /**
      * 设置 count

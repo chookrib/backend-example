@@ -1,8 +1,9 @@
-﻿using System.Collections.Concurrent;
-using src.application.@lock;
+﻿using src.application.@lock;
 using src.domain.ext;
 using src.domain.user;
 using src.utility;
+using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace src.application.user
 {
@@ -77,7 +78,7 @@ namespace src.application.user
                 throw new ApplicationException("手机号不能为空");
 
             User user = await userRepository.SelectByIdReq(userId);
-            string code = new Random().Next(100000, 1000000).ToString();
+            string code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
             mobileCodeDict.AddOrUpdate(user.Id + "_" + mobile, code, (k, v) => code);
             await smsGateway.SendCode(mobile, code);
         }

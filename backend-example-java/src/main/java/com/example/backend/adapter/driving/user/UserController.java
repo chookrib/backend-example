@@ -82,7 +82,7 @@ public class UserController {
     public Result profile(HttpServletRequest request) {
         String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
-        UserDto userDto = userQueryHandler.queryById(userId);
+        UserDto userDto = userQueryHandler.queryByIdReq(userId);
         return Result.okData(Map.of(
                 "profile", userDto
         ));

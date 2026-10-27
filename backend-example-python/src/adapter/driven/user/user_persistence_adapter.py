@@ -148,7 +148,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             return None
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
-            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE u_username = ?", (username,)) as cursor:
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)", (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_entity(row)

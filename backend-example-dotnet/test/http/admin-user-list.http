@@ -20,7 +20,7 @@ Access-Token: {{login.response.body.$.data.accessToken}}
     "keyword": ""
   },
   "sort": [
-    { "field": "createAt", "order": "asc" }
+    { "field": "createdAt", "order": "asc" }
   ]
 }
 

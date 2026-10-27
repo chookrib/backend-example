@@ -4,7 +4,6 @@ import com.example.backend.Application;
 import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,13 +35,13 @@ public class WellKnownController {
     public String metadata() {
         Properties props = Application.getManifestProperties();
         return "File-Name: " + Application.getFileName() +
-               System.lineSeparator() +
-               "Build-Time: " + props.getProperty("Build-Time", "") +
-               System.lineSeparator() +
-               "Git-Commit-Id-Abbrev: " + props.getProperty("Git-Commit-Id-Abbrev", "") +
-               System.lineSeparator() +
-               "Start-Time: " + ValueUtility.formatDateTime(startTime) +
-               System.lineSeparator();
+                System.lineSeparator() +
+                "Build-Time: " + props.getProperty("Build-Time", "") +
+                System.lineSeparator() +
+                "Git-Commit-Id-Abbrev: " + props.getProperty("Git-Commit-Id-Abbrev", "") +
+                System.lineSeparator() +
+                "Start-Time: " + ValueUtility.formatDateTime(startTime) +
+                System.lineSeparator();
     }
 
     /**

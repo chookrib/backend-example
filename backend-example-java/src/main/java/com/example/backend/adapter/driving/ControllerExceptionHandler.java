@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = NotLoginException.class)
     @ResponseBody
     public Result notLoginExceptionHandler(HttpServletResponse response, NotLoginException ex) {
-        return Result.error(ResultCodes.ERROR_NOT_LOGIN, ex.getMessage());
+        return Result.error(ResultCodes.ERROR_NOT_LOGIN, "未登录");
     }
 
     /**

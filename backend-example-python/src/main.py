@@ -98,7 +98,7 @@ async def not_login_exception_handler(request: Request, ex: NotLoginException):
     return JSONResponse(
         content=Result.error(
             code=result_codes.ERROR_NOT_LOGIN,
-            message=f"未登录异常: {str(ex)}",
+            message=f"未登录",
         ).to_dict()
     )
 

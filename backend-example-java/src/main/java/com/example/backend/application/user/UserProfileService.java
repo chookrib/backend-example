@@ -12,6 +12,7 @@ import com.example.backend.domain.user.UserUniqueSpecification;
 import com.example.backend.utility.ValueUtility;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -70,6 +71,8 @@ public class UserProfileService {
         }
     }
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     /**
      * 发送手机验证码
      */
@@ -78,7 +81,7 @@ public class UserProfileService {
             throw new ApplicationException("手机号不能为空");
 
         User user = userRepository.selectByIdReq(userId);
-        String code = String.format("%06d", (int) (Math.random() * 1000000));
+        String code =  String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
         mobileCodeMap.put(user.getId() + "_" + mobile, code);
         smsGateway.sendCode(mobile, code);
     }

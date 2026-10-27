@@ -11,7 +11,7 @@ Access-Token: {{accessToken}}
   },
   "sort": [
     {
-      "field": "createAt",
+      "field": "createdAt",
       "order": "asc"
     }
   ]

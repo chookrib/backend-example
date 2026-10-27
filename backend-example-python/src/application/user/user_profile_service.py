@@ -52,7 +52,7 @@ class UserProfileService:
         if value_utility.is_empty_string(mobile):
             raise ApplicationException("手机号不能为空")
         user = await self.user_repository.select_by_id_req(user_id)
-        code = str(random.randint(100000, 999999))
+        code = f"{random.randint(0, 999999):06d}"
         self.mobile_code[user.id + "_" + mobile] = code
         await self.sms_gateway.send_code(mobile, code)
 

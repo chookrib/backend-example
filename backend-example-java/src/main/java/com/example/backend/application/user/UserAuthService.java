@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 用户认证 Service
@@ -69,7 +70,8 @@ public class UserAuthService {
 
         try {
             Map<String, ?> payload = CryptoUtility.jwtDecode(accessToken, jwtSecret);
-            return String.valueOf(payload.get("id"));
+            // return String.valueOf(payload.get("id"));    // 不存在时返回字符串 "null"
+            return Objects.toString(payload.get("id"), "");
         } catch (Exception ex) {
             return "";
         }

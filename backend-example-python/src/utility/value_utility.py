@@ -35,6 +35,7 @@ def to_string_or_empty(value) -> str:
 BOOL_TRUE = ('true', '1', 't', 'y', 'yes', 'on')
 BOOL_FALSE = ('false', '0', 'f', 'n', 'no', 'off')
 
+
 def to_bool_or_none(value) -> bool | None:
     """转 bool，失败返回 None"""
     if value is None:
@@ -60,17 +61,20 @@ def to_bool_or_default(value, default: bool) -> bool:
 # ======================================================================================================================
 
 def to_int_or_none(value) -> int | None:
-    """转 int，失败返回 None，注意此方法限制范围与主流语言一致，超出范围的值返回 None"""
+    """
+    转 int，失败返回 None，注意此方法限制范围与主流语言一致，超出范围的值返回 None
+    Python 的 int 可以表示任意大的正整数或负整数，只要内存允许
+    """
     if value is None:
         return None
     if isinstance(value, int):
-        if value >= -2147483648 or value <= 2147483647:
+        if -2147483648 <= value <= 2147483647:
             return value
         else:
             return None
     try:
         i = int(value)
-        if i >= -2147483648 or i <= 2147483647:
+        if -2147483648 <= i <= 2147483647:
             return i
         else:
             return None

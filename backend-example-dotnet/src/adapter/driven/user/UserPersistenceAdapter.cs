@@ -160,7 +160,7 @@ namespace src.adapter.driven.user
                 return null;
             using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
-                $"SELECT * FROM {tableName} WHERE u_username = @username", new { username }
+                $"SELECT * FROM {tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
                 );
             if (row == null)
                 return null;
@@ -260,6 +260,7 @@ namespace src.adapter.driven.user
             if (sqls.Count == 0)
                 sqls.Add("u_created_at DESC");
 
+            sqls.Add("u_id DESC");
             return " ORDER BY " + string.Join(", ", sqls);
         }
 

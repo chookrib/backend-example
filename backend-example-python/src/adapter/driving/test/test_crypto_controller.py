@@ -44,21 +44,21 @@ async def test_crypto_jwt_decode(request: Request):
 @router.get("/api/test/crypto/base64-encode")
 def test_crypto_base64_encode(request: Request):
     """BASE64 编码"""
-    text = request_value_helper.get_request_param_string_trim_or_empty(request, "text")
+    text = request_value_helper.get_request_param_string_trim_req(request, "text")
     base64 = crypto_utility.base64_encode(text)
     return Result.ok(data={"base64": base64})
 
 @router.get("/api/test/crypto/base64-decode")
 def test_crypto_base64_decode(request: Request):
     """BASE64 解码"""
-    base64 = request_value_helper.get_request_param_string_trim_or_empty(request, "base64")
+    base64 = request_value_helper.get_request_param_string_trim_req(request, "base64")
     text = crypto_utility.base64_decode(base64)
     return Result.ok(data={"text": text})
 
 @router.get("/api/test/crypto/md5-encode")
 def test_crypto_md5_encode(request: Request):
     """MD5 编码"""
-    text = request_value_helper.get_request_param_string_trim_or_empty(request, "text")
+    text = request_value_helper.get_request_param_string_trim_req(request, "text")
     md5 = crypto_utility.md5_encode(text)
     return Result.ok(data={"md5": md5})
 
