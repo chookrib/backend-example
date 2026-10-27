@@ -60,6 +60,9 @@ def to_bool_or_default(value, default: bool) -> bool:
 
 # ======================================================================================================================
 
+INT_MIN_VALUE = -2147483648
+INT_MAX_VALUE = 2147483647
+
 def to_int_or_none(value) -> int | None:
     """
     转 int，失败返回 None，注意此方法限制范围与主流语言一致，超出范围的值返回 None
@@ -67,14 +70,18 @@ def to_int_or_none(value) -> int | None:
     """
     if value is None:
         return None
+    if isinstance(value, bool):     # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
+        return None
+    if isinstance(value, float):    # python 会截断 float，此处返回 None 保持与其他语言一致
+        return None
     if isinstance(value, int):
-        if -2147483648 <= value <= 2147483647:
+        if INT_MIN_VALUE <= value <= INT_MAX_VALUE:
             return value
         else:
             return None
     try:
         i = int(value)
-        if -2147483648 <= i <= 2147483647:
+        if INT_MIN_VALUE <= i <= INT_MAX_VALUE:
             return i
         else:
             return None
@@ -87,7 +94,7 @@ def to_int_or_default(value, default: int) -> int:
     i = to_int_or_none(value)
     if i is not None:
         return i
-    if -2147483648 <= default <= 2147483647:
+    if INT_MIN_VALUE <= default <= INT_MAX_VALUE:
         return default
     else:
         raise UtilityException("默认值超出 int 范围")
@@ -95,18 +102,25 @@ def to_int_or_default(value, default: int) -> int:
 
 # ======================================================================================================================
 
+LONG_MIN_VALUE = -9223372036854775808
+LONG_MAX_VALUE = 9223372036854775807
+
 def to_long_or_none(value) -> int | None:
     """转 long，失败返回 None，注意此方法限制范围与主流语言一致，超出范围的值返回 None"""
     if value is None:
         return None
+    if isinstance(value, bool):     # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
+        return None
+    if isinstance(value, float):    # python 会截断 float，此处返回 None 保持与其他语言一致
+        return None
     if isinstance(value, int):
-        if -9223372036854775808 <= value <= 9223372036854775807:
+        if LONG_MIN_VALUE <= value <= LONG_MAX_VALUE:
             return value
         else:
             return None
     try:
         l = int(value)
-        if -9223372036854775808 <= l <= 9223372036854775807:
+        if LONG_MIN_VALUE <= l <= LONG_MAX_VALUE:
             return l
         else:
             return None
@@ -119,7 +133,7 @@ def to_long_or_default(value, default: int) -> int:
     l = to_long_or_none(value)
     if l is not None:
         return l
-    if -9223372036854775808 <= default <= 9223372036854775807:
+    if LONG_MIN_VALUE <= default <= LONG_MAX_VALUE:
         return default
     else:
         raise UtilityException("默认值超出 long 范围")

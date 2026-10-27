@@ -4,6 +4,8 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any
 
+from utility import value_utility
+
 
 def deserialize(data):
     """反序列化 JSON 字符串"""
@@ -40,7 +42,7 @@ def custom_jsonable_encoder(obj, **kwargs):
         return obj
 
     if isinstance(obj, int):
-        if -2147483648 <= obj <= 2147483647:
+        if value_utility.INT_MIN_VALUE <= obj <= value_utility.INT_MAX_VALUE:
             return obj
         else:
             return str(obj)         # long 转字符串
