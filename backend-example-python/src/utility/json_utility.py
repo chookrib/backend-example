@@ -25,7 +25,7 @@ def to_camel_case(value: Any) -> str:
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
 
 
-# 可通过 /.well-known/test/response/json/dict 查看输出结果
+# 可通过 /api/test/response/json/dict 查看输出结果
 def custom_jsonable_encoder(obj, **kwargs):
     """自定义 JSON 序列化转换器"""
     # print(type(obj))

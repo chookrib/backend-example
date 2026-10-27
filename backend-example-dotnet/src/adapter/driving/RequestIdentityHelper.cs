@@ -5,9 +5,9 @@ using src.utility;
 namespace src.adapter.driving
 {
     /// <summary>
-    /// 请求 Auth Helper
+    /// 请求身份 Helper
     /// </summary>
-    public class RequestAuthHelper
+    public class RequestIdentityHelper
     {
         /// <summary>
         /// 获取登录用户 Id，未登录返回空字符串

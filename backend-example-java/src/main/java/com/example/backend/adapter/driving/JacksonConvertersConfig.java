@@ -14,18 +14,18 @@ import java.math.BigDecimal;
  * Jackson Web 转换配置
  */
 @Configuration
-public class JacksonWebConverterConfig {
+public class JacksonConvertersConfig {
 
     /**
      * 配置 Spring MVC JSON 转换器
      */
     @Bean
-    public HttpMessageConverters jacksonWebConverters() {
+    public HttpMessageConverters jacksonConverters() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
                 //.indentOutput(true)
-                .serializerByType(Long.TYPE, new ToStringSerializer())              // long转String
-                .serializerByType(Long.class, new ToStringSerializer())             // Long转String
-                .serializerByType(BigDecimal.class, new ToStringSerializer())       // BigDecimal转String
+                .serializerByType(Long.TYPE, ToStringSerializer.instance)              // long转String
+                .serializerByType(Long.class, ToStringSerializer.instance)             // Long转String
+                .serializerByType(BigDecimal.class, ToStringSerializer.instance)       // BigDecimal转String
                 .simpleDateFormat("yyyy-MM-dd HH:mm:ss")                            // Date转String，默认为timestamp
                 .serializerByType(java.time.LocalDateTime.class,                    // LocalDateTime转String
                         new com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer(

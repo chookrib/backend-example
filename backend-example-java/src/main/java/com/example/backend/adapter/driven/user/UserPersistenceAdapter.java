@@ -88,17 +88,17 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 转换成 Entity
      */
-    private User toEntity(ResultSet resultSet) {
+    private User toEntity(ResultSet rs) {
         try {
             return User.restore(
-                    resultSet.getString("u_id"),
-                    resultSet.getString("u_username"),
-                    resultSet.getString("u_password"),
-                    resultSet.getString("u_nickname"),
-                    resultSet.getString("u_mobile"),
-                    resultSet.getBoolean("u_is_admin"),
-                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_created_at"), LocalDateTime.MIN),
-                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_updated_at"), LocalDateTime.MIN)
+                    rs.getString("u_id"),
+                    rs.getString("u_username"),
+                    rs.getString("u_password"),
+                    rs.getString("u_nickname"),
+                    rs.getString("u_mobile"),
+                    rs.getBoolean("u_is_admin"),
+                    ValueUtility.toDateTimeOrDefault(rs.getString("u_created_at"), LocalDateTime.MIN),
+                    ValueUtility.toDateTimeOrDefault(rs.getString("u_updated_at"), LocalDateTime.MIN)
             );
         } catch (SQLException e) {
             throw new PersistenceException(e);
@@ -239,8 +239,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isUsernameUnique(String username) {
-        if (ValueUtility.isEmptyString(username))
+        if (ValueUtility.isEmptyString(username)) {
             throw new PersistenceException("参数 username 不能为空");
+        }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
                 "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), Integer.class, username
         );
@@ -249,8 +250,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isNicknameUnique(String nickname) {
-        if (ValueUtility.isEmptyString(nickname))
+        if (ValueUtility.isEmptyString(nickname)) {
             throw new PersistenceException("参数 nickname 不能为空");
+        }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
                 "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName), Integer.class, nickname
         );
@@ -259,8 +261,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
 
     @Override
     public boolean isMobileUnique(String mobile) {
-        if (ValueUtility.isEmptyString(mobile))
+        if (ValueUtility.isEmptyString(mobile)) {
             throw new PersistenceException("参数 mobile 不能为空");
+        }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
                 "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName), Integer.class, mobile
         );
@@ -289,16 +292,16 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 转换成 DTO
      */
-    private UserDto toDto(ResultSet resultSet) {
+    private UserDto toDto(ResultSet rs) {
         try {
             return new UserDto(
-                    resultSet.getString("u_id"),
-                    resultSet.getString("u_username"),
-                    resultSet.getString("u_nickname"),
-                    resultSet.getString("u_mobile"),
-                    resultSet.getBoolean("u_is_admin"),
-                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_created_at"), LocalDateTime.MIN),
-                    ValueUtility.toDateTimeOrDefault(resultSet.getString("u_updated_at"), LocalDateTime.MIN)
+                    rs.getString("u_id"),
+                    rs.getString("u_username"),
+                    rs.getString("u_nickname"),
+                    rs.getString("u_mobile"),
+                    rs.getBoolean("u_is_admin"),
+                    ValueUtility.toDateTimeOrDefault(rs.getString("u_created_at"), LocalDateTime.MIN),
+                    ValueUtility.toDateTimeOrDefault(rs.getString("u_updated_at"), LocalDateTime.MIN)
             );
         } catch (SQLException e) {
             throw new PersistenceException(e);
@@ -404,7 +407,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         // return list;
         List<UserDto> list = databaseAdapter.getNamedParameterJdbcTemplate().query(
                 "SELECT * FROM %s %s %s".formatted(tableName, criteriaSql, sortSql), params,
-                (rs, rowNum) ->{
+                (rs, rowNum) -> {
                     return toDto(rs);
                 }
         );
@@ -433,7 +436,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
         List<UserDto> list = databaseAdapter.getNamedParameterJdbcTemplate().query(
                 "SELECT * FROM %s %s %s LIMIT :limitCount OFFSET :limitOffset"
                         .formatted(tableName, criteriaSql, sortSql), params,
-                (rs, rowNum) ->{
+                (rs, rowNum) -> {
                     return toDto(rs);
                 }
         );

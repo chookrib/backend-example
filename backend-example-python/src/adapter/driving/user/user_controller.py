@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from src.adapter.driving import request_auth_helper, request_value_helper
+from src.adapter.driving import request_identity_helper, request_value_helper
 from src.adapter.driving.controller_exception import ControllerException
 from src.adapter.driving.result import Result
 from src.application.user.user_auth_service import UserAuthService
@@ -48,7 +48,7 @@ async def login(request: Request):
 @router.get("/api/user/profile")
 async def profile(request: Request):
     """取用户资料"""
-    user_id = request_auth_helper.require_login_user_id(request)
+    user_id = request_identity_helper.require_login_user_id(request)
     user_dto = await user_query_handler.query_by_id_req(user_id)
     # return Result.ok(data=user_dto.to_json())
     return Result.ok(data={"profile": user_dto})
@@ -57,7 +57,7 @@ async def profile(request: Request):
 @router.post("/api/user/modify-password")
 async def modify_password(request: Request):
     """修改密码"""
-    user_id = request_auth_helper.require_login_user_id(request)
+    user_id = request_identity_helper.require_login_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     old_password = request_value_helper.get_request_json_string_trim_req(request_json, "oldPassword")
@@ -74,7 +74,7 @@ async def modify_password(request: Request):
 @router.post("/api/user/modify-nickname")
 async def modify_nickname(request: Request):
     """修改昵称"""
-    user_id = request_auth_helper.require_login_user_id(request)
+    user_id = request_identity_helper.require_login_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     nickname = request_value_helper.get_request_json_string_trim_req(request_json, "nickname")
@@ -85,7 +85,7 @@ async def modify_nickname(request: Request):
 @router.post("/api/user/send-mobile-code")
 async def send_mobile_code(request: Request):
     """发送手机验证码"""
-    user_id = request_auth_helper.require_login_user_id(request)
+    user_id = request_identity_helper.require_login_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     mobile = request_value_helper.get_request_json_string_trim_req(request_json, "mobile")
@@ -96,7 +96,7 @@ async def send_mobile_code(request: Request):
 @router.post("/api/user/bind-mobile")
 async def bind_mobile(request: Request):
     """绑定手机"""
-    user_id = request_auth_helper.require_login_user_id(request)
+    user_id = request_identity_helper.require_login_user_id(request)
 
     request_json = await request_value_helper.get_request_json(request)
     mobile = request_value_helper.get_request_json_string_trim_req(request_json, "mobile")

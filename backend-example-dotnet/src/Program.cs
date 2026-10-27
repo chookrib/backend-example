@@ -1,23 +1,21 @@
-using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
+using log4net;
+using log4net.Config;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Filters;
 using src.adapter.driven;
+using src.adapter.driven.ext;
+using src.adapter.driven.user;
 using src.adapter.driving;
 using src.application;
 using src.application.@lock;
 using src.application.test;
-using src.adapter.driven.ext;
-using src.adapter.driven.user;
 using src.application.user;
 using src.domain.ext;
 using src.domain.user;
 using src.utility;
-
-using log4net;
-using log4net.Config;
-
-using Microsoft.AspNetCore.Diagnostics;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace src
 {
@@ -47,6 +45,15 @@ namespace src
             LogManager.GetLogger(typeof(Program)).Info("log4net 配置成功");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+            // 跨域配置
+            // builder.Services.AddCors(options =>
+            // {
+            //     options.AddDefaultPolicy(policy =>
+            //         policy.AllowAnyOrigin()      // 允许所有来源
+            //               .AllowAnyMethod()      // 允许所有方法
+            //               .AllowAnyHeader());    // 允许所有头
+            // });
 
             // =========================================================================================================
             // 注册 ApplicationConfig
@@ -81,25 +88,27 @@ namespace src
             builder.Services.AddSingleton<TestIocClass1>();
 
             // 注册 Controller
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new LongToStringConverter());
-                options.JsonSerializerOptions.Converters.Add(new LongNullableToStringConverter());
-                options.JsonSerializerOptions.Converters.Add(new DecimalToStringConverter());
-                options.JsonSerializerOptions.Converters.Add(new DecimalNullableToStringConverter());
-                options.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-dd HH:mm:ss"));
-                options.JsonSerializerOptions.Converters.Add(new DateTimeNullableConverter("yyyy-MM-dd HH:mm:ss"));
-                options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter("yyyy-MM-dd"));
-                options.JsonSerializerOptions.Converters.Add(new DateOnlyNullableConverter("yyyy-MM-dd"));
-                options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter("HH:mm:ss"));
-                options.JsonSerializerOptions.Converters.Add(new TimeOnlyNullableConverter("HH:mm:ss"));
+            builder.Services.AddControllers()
+                // .AddMvcOptions(options => options.Filters.Add<AccessTokenFilter>())     // 拦截器
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new LongToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new LongNullableToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DecimalToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DecimalNullableToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-dd HH:mm:ss"));
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeNullableConverter("yyyy-MM-dd HH:mm:ss"));
+                    options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter("yyyy-MM-dd"));
+                    options.JsonSerializerOptions.Converters.Add(new DateOnlyNullableConverter("yyyy-MM-dd"));
+                    options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter("HH:mm:ss"));
+                    options.JsonSerializerOptions.Converters.Add(new TimeOnlyNullableConverter("HH:mm:ss"));
 
-                //options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());  // 枚举转换为字符串
+                    // options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());                 // 枚举转换为字符串
 
-                //options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // 忽略 null 值
-                //options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;            // 属性命名策略
-                //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;             // 忽略循环引用
-            });
+                    // options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;  // 忽略 null 值
+                    // options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;             // 属性命名策略
+                    // options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;              // 忽略循环引用
+                });
 
             // 允许同步 IO 可能会带来性能问题，不推荐在生产环境使用
             // Kestrel 允许同步 IO 
@@ -111,8 +120,10 @@ namespace src
 
             WebApplication app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // 启用跨域，UseAuthorization 前，MapControllers 前
+            // app.UseCors();
 
+            // Configure the HTTP request pipeline.
             // app.UseAuthorization();
 
             // 全局异常处理
@@ -276,6 +287,44 @@ namespace src
                 => writer.WriteStringValue(value?.ToString(format) ?? string.Empty);
         }
 
+        #endregion
+
+        #region 拦截器
+        // public class AccessTokenFilter : IAsyncActionFilter
+        // {
+        //     private readonly UserAuthService userAuthService;
+           
+        //     public AccessTokenFilter(UserAuthService userAuthService)
+        //         => this.userAuthService = userAuthService;
+           
+        //     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        //     {
+        //         HttpContext http = context.HttpContext;
+        //         PathString path = http.Request.Path;
+           
+        //         if (!path.StartsWithSegments("/api/"))
+        //         {
+        //             await next();
+        //             return;
+        //         }
+           
+        //         if (path.StartsWithSegments("/api/user/login") || path.StartsWithSegments("/api/user/register"))
+        //         {
+        //             await next();
+        //             return;
+        //         }
+           
+        //         // var userAuthService = http.RequestServices.GetRequiredService<UserAuthService>();
+        //         string token = http.Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
+        //         string userId = userAuthService.GetLoginUserId(token);
+        //         if (ValueUtility.IsEmptyString(userId))
+        //         {
+        //             throw new NotLoginException();
+        //         }
+           
+        //         await next();
+        //     }
+        // }
         #endregion
     }
 }

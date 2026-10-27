@@ -1,7 +1,7 @@
 package com.example.backend.adapter.driving.user;
 
 import com.example.backend.adapter.driving.ControllerException;
-import com.example.backend.adapter.driving.RequestAuthHelper;
+import com.example.backend.adapter.driving.RequestIdentityHelper;
 import com.example.backend.adapter.driving.RequestValueHelper;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.user.UserAuthService;
@@ -80,7 +80,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
     public Result profile(HttpServletRequest request) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
+        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
         UserDto userDto = userQueryHandler.queryById(userId);
         return Result.okData(Map.of(
@@ -93,7 +93,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/modify-password", method = RequestMethod.POST)
     public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
+        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String oldPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -112,7 +112,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/modify-nickname", method = RequestMethod.POST)
     public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
+        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
@@ -125,7 +125,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/send-mobile-code", method = RequestMethod.POST)
     public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
+        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
@@ -139,7 +139,7 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/bind-mobile", method = RequestMethod.POST)
     public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestAuthHelper.requireLoginUserId(request, userAuthService);
+        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");

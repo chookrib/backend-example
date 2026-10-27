@@ -66,7 +66,7 @@ namespace src.adapter.driving.user
         [HttpGet("/api/user/profile")]
         public async Task<Result> Profile()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
 
             UserDto userDto = await userQueryHandler.QueryByIdReq(userId);
             return Result.OkData(new { profile = userDto});
@@ -78,7 +78,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-password")]
         public async Task<Result> ModifyPassword()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string oldPassword = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -98,7 +98,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-nickname")]
         public async Task<Result> ModifyNickname()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
@@ -112,7 +112,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/send-mobile-code")]
         public async Task<Result> SendMobileCode()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");
@@ -127,7 +127,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/bind-mobile")]
         public async Task<Result> BindMobile()
         {
-            string userId = RequestAuthHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");

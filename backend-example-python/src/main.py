@@ -89,16 +89,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# 配置 FastAPI CORS
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-
 # 未登录异常处理
 from src.adapter.driving.not_login_exception import NotLoginException
 
@@ -146,7 +136,48 @@ async def lock_exception_handler(request: Request, ex: LockException):
 #         ).to_dict()
 #     )
 
-# 全局异常处理
+# 配置 FastAPI CORS
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# 中间件里的异常不会被 @app.exception_handler 处理，但是会被最后的 catch_all_exceptions_middleware 处理
+# @app.middleware("http")
+# async def access_token_middleware(request: Request, call_next):
+#     path = request.url.path
+#
+#     if not path.startswith("/api/"):
+#         return await call_next(request)
+#
+#     if path in ("/api/user/login", "/api/user/register"):
+#         return await call_next(request)
+#
+#     access_token = request.headers.get("Access-Token", "")
+#
+#     from src.ioc_container import ioc_container
+#     from src.application.user.user_auth_service import UserAuthService
+#     user_auth_service = ioc_container.resolve(UserAuthService)
+#
+#     user_id = user_auth_service.get_login_user_id(access_token)
+#     if value_utility.is_empty_string(user_id):
+#         raise NotLoginException()
+#         return JSONResponse(
+#             content=Result.error(
+#                 code=result_codes.ERROR_NOT_LOGIN,
+#                 message="未登录1",
+#             ).to_dict()
+#         )
+#
+#     # request.state.user_id = user_id
+#     response = await call_next(request)
+#     return response
+
+
+# 全局异常处理，最后注册的中间件在最外层，请求先经过它，响应最后经过它，会捕捉前面 middleware 抛出的异常
 @app.middleware("http")
 async def catch_all_exceptions_middleware(request: Request, call_next):
     try:

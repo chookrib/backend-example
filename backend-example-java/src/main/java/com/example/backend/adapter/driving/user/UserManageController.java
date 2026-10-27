@@ -1,6 +1,6 @@
 package com.example.backend.adapter.driving.user;
 
-import com.example.backend.adapter.driving.RequestAuthHelper;
+import com.example.backend.adapter.driving.RequestIdentityHelper;
 import com.example.backend.adapter.driving.RequestValueHelper;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.QuerySortOption;
@@ -43,7 +43,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/list", method = RequestMethod.POST)
     public Result userList(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginAdminUserId(request, userAuthService);
+        RequestIdentityHelper.requireLoginAdminUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         int pageNum = RequestValueHelper.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -78,7 +78,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/get", method = RequestMethod.GET)
     public Result userGet(HttpServletRequest request) {
-        RequestAuthHelper.requireLoginAdminUserId(request, userAuthService);
+        RequestIdentityHelper.requireLoginAdminUserId(request, userAuthService);
 
         String id = RequestValueHelper.getRequestParamStringTrimReq(request, "id");
         UserDto userDto = userQueryHandler.queryByIdReq(id);
@@ -92,7 +92,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/create", method = RequestMethod.POST)
     public Result userCreate(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginAdminUserId(request, userAuthService);
+        RequestIdentityHelper.requireLoginAdminUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
@@ -111,7 +111,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/modify", method = RequestMethod.POST)
     public Result userModify(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginAdminUserId(request, userAuthService);
+        RequestIdentityHelper.requireLoginAdminUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");
@@ -123,13 +123,12 @@ public class UserManageController {
         return Result.ok();
     }
 
-
     /**
      * 删除用户
      */
     @RequestMapping(value = "/api/admin/user/remove", method = RequestMethod.POST)
     public Result userRemove(HttpServletRequest request, @RequestBody String requestBody) {
-        RequestAuthHelper.requireLoginAdminUserId(request, userAuthService);
+        RequestIdentityHelper.requireLoginAdminUserId(request, userAuthService);
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String id = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "id");

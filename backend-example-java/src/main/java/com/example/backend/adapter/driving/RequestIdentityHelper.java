@@ -6,9 +6,9 @@ import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * 请求 Auth Helper
+ * 请求身份 Helper
  */
-public class RequestAuthHelper {
+public class RequestIdentityHelper {
 
     /**
      * 获取登录用户 Id，未登录返回空字符串
