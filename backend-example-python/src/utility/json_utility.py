@@ -40,10 +40,10 @@ def custom_jsonable_encoder(obj, **kwargs):
         return obj
 
     if isinstance(obj, int):
-        if -2147483648 <= obj <= 2147483647:  # long 转字符串
-            return str(obj)
-        else:
+        if -2147483648 <= obj <= 2147483647:
             return obj
+        else:
+            return str(obj)         # long 转字符串
 
     if isinstance(obj, Decimal):
         # return str(obj)

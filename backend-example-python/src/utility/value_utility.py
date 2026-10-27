@@ -87,7 +87,7 @@ def to_int_or_default(value, default: int) -> int:
     i = to_int_or_none(value)
     if i is not None:
         return i
-    if default >= -2147483648 or default <= 2147483647:
+    if -2147483648 <= default <= 2147483647:
         return default
     else:
         raise UtilityException("默认值超出 int 范围")
@@ -100,13 +100,13 @@ def to_long_or_none(value) -> int | None:
     if value is None:
         return None
     if isinstance(value, int):
-        if value >= -9223372036854775808 or value <= 9223372036854775807:
+        if -9223372036854775808 <= value <= 9223372036854775807:
             return value
         else:
             return None
     try:
         l = int(value)
-        if l >= -9223372036854775808 or l <= 9223372036854775807:
+        if -9223372036854775808 <= l <= 9223372036854775807:
             return l
         else:
             return None
@@ -119,7 +119,7 @@ def to_long_or_default(value, default: int) -> int:
     l = to_long_or_none(value)
     if l is not None:
         return l
-    if default >= -9223372036854775808 or default <= 9223372036854775807:
+    if -9223372036854775808 <= default <= 9223372036854775807:
         return default
     else:
         raise UtilityException("默认值超出 long 范围")
@@ -140,10 +140,10 @@ def to_decimal_or_none(value) -> Decimal | None:
         return None
     if isinstance(value, Decimal):
         d = value.quantize(DECIMAL_QUANTIZE_EXP, rounding=ROUND_HALF_UP)
-        if (d < DECIMAL_MIN_VALUE or d > DECIMAL_MAX_VALUE):
-            return None
-        else:
+        if DECIMAL_MIN_VALUE <= d <= DECIMAL_MAX_VALUE:
             return d
+        else:
+            return None
     try:
         # return Decimal(str(value).strip())  # 需要 str()，否则 Decimal 解析有偏差
 
@@ -151,9 +151,10 @@ def to_decimal_or_none(value) -> Decimal | None:
         # 规范化小数位（四舍五入）
         d = d.quantize(DECIMAL_QUANTIZE_EXP, rounding=ROUND_HALF_UP)
         # 检查是否超出边界
-        if d < DECIMAL_MIN_VALUE or d > DECIMAL_MAX_VALUE:
+        if DECIMAL_MIN_VALUE <= d <= DECIMAL_MAX_VALUE:
+            return d
+        else:
             return None
-        return d
     except Exception as ex:
         return None
 

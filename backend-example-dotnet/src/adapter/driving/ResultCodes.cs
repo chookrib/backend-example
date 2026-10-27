@@ -8,16 +8,16 @@
         /// <summary>
         /// 成功
         /// </summary>
-        public static int SUCCESS = 0;
+        public static readonly int SUCCESS = 0;
 
         /// <summary>
         /// 默认错误
         /// </summary>
-        public static int ERROR_DEFAULT = 1;
+        public static readonly int ERROR_DEFAULT = 1;
 
         /// <summary>
         /// 未登录
         /// </summary>
-        public static int ERROR_NOT_LOGIN = -1;
+        public static readonly int ERROR_NOT_LOGIN = -1;
     }
 }
