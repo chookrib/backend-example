@@ -49,7 +49,7 @@ public class WellKnownController {
      */
     @RequestMapping(value = "/.well-known/metadata.json", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> metadataJson() {
+    public Map<String, ?> metadataJson() {
         Properties props = Application.getManifestProperties();
         Map<String, Object> response = new HashMap<>();
         response.put("fileName", Application.getFileName());

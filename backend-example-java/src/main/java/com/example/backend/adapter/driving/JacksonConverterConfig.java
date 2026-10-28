@@ -35,13 +35,13 @@ public class JacksonConverterConfig {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         ObjectMapper objectMapper = builder
                 //.indentOutput(true)
-                .serializerByType(Long.TYPE, ToStringSerializer.instance)                                   // long转String
-                .serializerByType(Long.class, ToStringSerializer.instance)                                  // Long转String
-                .serializerByType(BigDecimal.class, ToStringSerializer.instance)                            // BigDecimal转String
-                .simpleDateFormat("yyyy-MM-dd HH:mm:ss")                                                    // Date转String，默认为timestamp
-                .serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter))      // LocalDateTime转String
-                .serializerByType(LocalDate.class, new LocalDateSerializer(dateFormatter))                  // LocalDate转String
-                .serializerByType(LocalTime.class, new LocalTimeSerializer(timeFormatter))                  // LocalTime转String
+                .serializerByType(Long.TYPE, ToStringSerializer.instance)                                   // long 转 String
+                .serializerByType(Long.class, ToStringSerializer.instance)                                  // Long 转 String
+                .serializerByType(BigDecimal.class, ToStringSerializer.instance)                            // BigDecimal 转 String
+                .simpleDateFormat("yyyy-MM-dd HH:mm:ss")                                                    // Date 转 String，默认为 timestamp
+                .serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter))      // LocalDateTime 转 String
+                .serializerByType(LocalDate.class, new LocalDateSerializer(dateFormatter))                  // LocalDate 转 String
+                .serializerByType(LocalTime.class, new LocalTimeSerializer(timeFormatter))                  // LocalTime 转 String
                 .build();
 
         return new MappingJackson2HttpMessageConverter(objectMapper);
