@@ -1,9 +1,11 @@
 package com.example.backend.adapter.driven;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Persistence Exception
  */
-public class PersistenceException extends RuntimeException {
+public class PersistenceException extends AppException {
 
     public PersistenceException() {
         super();

@@ -32,6 +32,7 @@ namespace src.adapter.driven
         /// </summary>
         public IDbConnection GetConnection()
         {
+            // Microsoft.Data.Sqlite 自带连接池（默认开）
             return new SqliteConnection(connectionString);
         }
 

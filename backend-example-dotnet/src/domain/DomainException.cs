@@ -1,9 +1,11 @@
-﻿namespace src.domain
+﻿using src.utility;
+
+namespace src.domain
 {
     /// <summary>
     /// Domain Exception
     /// </summary>
-    public class DomainException : Exception
+    public class DomainException : AppException
     {
         public DomainException() { }
 

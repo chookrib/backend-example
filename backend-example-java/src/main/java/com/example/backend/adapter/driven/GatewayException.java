@@ -1,9 +1,11 @@
 package com.example.backend.adapter.driven;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Gateway Exception
  */
-public class GatewayException extends RuntimeException {
+public class GatewayException extends AppException {
 
     public GatewayException() {
         super();

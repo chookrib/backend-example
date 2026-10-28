@@ -3,7 +3,7 @@ package com.example.backend.utility;
 /**
  * Utility Exception
  */
-public class UtilityException extends RuntimeException {
+public class UtilityException extends AppException {
 
     public UtilityException() { super(); }
 

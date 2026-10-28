@@ -3,7 +3,7 @@
     /// <summary>
     /// Utility Exception
     /// </summary>
-    public class UtilityException : Exception
+    public class UtilityException : AppException
     {
         public UtilityException() { }
 

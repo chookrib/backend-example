@@ -1,9 +1,11 @@
-﻿namespace src.adapter.driving
+﻿using src.utility;
+
+namespace src.adapter.driving
 {
     /// <summary>
     /// 未登录 Exception
     /// </summary>
-    public class NotLoginException : Exception
+    public class NotLoginException : AppException
     {
         public NotLoginException() { }
 

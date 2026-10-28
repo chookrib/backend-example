@@ -1,9 +1,11 @@
 package com.example.backend.application;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Application Exception
  */
-public class ApplicationException extends RuntimeException {
+public class ApplicationException extends AppException {
 
     public ApplicationException() { super(); }
 

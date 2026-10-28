@@ -150,12 +150,7 @@ namespace src
                             Result.Error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试")
                         );
                     }
-                    else if (error is UtilityException
-                        || error is DomainException
-                        || error is src.application.ApplicationException
-                        || error is PersistenceException
-                        || error is GatewayException
-                        || error is ControllerException)
+                    else if (error is AppException)
                     {
                         // 自定义异常返回异常信息
                         await context.Response.WriteAsJsonAsync(

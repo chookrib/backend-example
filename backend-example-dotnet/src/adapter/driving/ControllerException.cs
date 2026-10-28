@@ -1,9 +1,11 @@
-﻿namespace src.adapter.driving
+﻿using src.utility;
+
+namespace src.adapter.driving
 {
     /// <summary>
     /// Controller Exception
     /// </summary>
-    public class ControllerException : Exception
+    public class ControllerException : AppException
     {
         public ControllerException() { }
 

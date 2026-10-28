@@ -1,9 +1,11 @@
-﻿namespace src.application
+﻿using src.utility;
+
+namespace src.application
 {
     /// <summary>
     /// Application Exception
     /// </summary>
-    public class ApplicationException : Exception
+    public class ApplicationException : AppException
     {
         public ApplicationException() { }
 

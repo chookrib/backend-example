@@ -1,12 +1,8 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.adapter.driven.GatewayException;
-import com.example.backend.adapter.driven.PersistenceException;
 import com.example.backend.application.ApplicationConfig;
-import com.example.backend.application.ApplicationException;
 import com.example.backend.application.lock.LockException;
-import com.example.backend.domain.DomainException;
-import com.example.backend.utility.UtilityException;
+import com.example.backend.utility.AppException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,13 +46,13 @@ public class ControllerExceptionHandler {
         return Result.error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试");
     }
 
-    /**
-     * NoResourceFoundException 异常处理器
-     */
-    @ExceptionHandler(value = NoResourceFoundException.class)
-    public ResponseEntity<Void> noResourceFoundExceptionHandler(NoResourceFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+    // /**
+    //  * NoResourceFoundException 异常处理器
+    //  */
+    // @ExceptionHandler(value = NoResourceFoundException.class)
+    // public ResponseEntity<Void> noResourceFoundExceptionHandler(NoResourceFoundException ex) {
+    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    // }
 
     /**
      * 兜底异常处理器
@@ -74,13 +70,7 @@ public class ControllerExceptionHandler {
         //    message = errors.toString();
         // }
 
-        if (ex instanceof UtilityException
-                || ex instanceof DomainException
-                || ex instanceof ApplicationException
-                || ex instanceof PersistenceException
-                || ex instanceof GatewayException
-                || ex instanceof ControllerException
-        ) {
+        if (ex instanceof AppException) {
             // 自定义异常返回异常信息
             // response.setStatus(HttpServletResponse.SC_OK);
             return Result.error(ResultCodes.ERROR_DEFAULT, message);

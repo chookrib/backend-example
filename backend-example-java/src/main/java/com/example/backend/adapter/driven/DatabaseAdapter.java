@@ -23,11 +23,11 @@ public class DatabaseAdapter {
     }
 
     public JdbcTemplate getJdbcTemplate() {
-        return this.jdbcTemplate;
+        return jdbcTemplate;
     }
 
     public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
-        return this.namedParameterJdbcTemplate;
+        return namedParameterJdbcTemplate;
     }
 
     /**

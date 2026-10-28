@@ -1,9 +1,11 @@
-﻿namespace src.application.@lock
+﻿using src.utility;
+
+namespace src.application.@lock
 {
     /// <summary>
     /// Lock Exception
     /// </summary>
-    public class LockException : Exception
+    public class LockException : AppException
     {
         public LockException() { }
 

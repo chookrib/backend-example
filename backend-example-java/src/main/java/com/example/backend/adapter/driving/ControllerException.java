@@ -1,9 +1,11 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Controller Exception
  */
-public class ControllerException extends RuntimeException {
+public class ControllerException extends AppException {
 
     public ControllerException() { super(); }
 

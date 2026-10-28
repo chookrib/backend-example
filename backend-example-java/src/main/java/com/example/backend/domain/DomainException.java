@@ -1,9 +1,11 @@
 package com.example.backend.domain;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Domain Exception
  */
-public class DomainException extends RuntimeException {
+public class DomainException extends AppException {
 
     public DomainException() { super(); }
 

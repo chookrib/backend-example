@@ -1,9 +1,11 @@
 package com.example.backend.application.lock;
 
+import com.example.backend.utility.AppException;
+
 /**
  * Lock Exception
  */
-public class LockException extends RuntimeException {
+public class LockException extends AppException {
 
     public LockException() {
         super();

@@ -1,9 +1,11 @@
 package com.example.backend.adapter.driving;
 
+import com.example.backend.utility.AppException;
+
 /**
  * 未登录 Exception
  */
-public class NotLoginException extends RuntimeException {
+public class NotLoginException extends AppException {
 
     public NotLoginException() { super(); }
 

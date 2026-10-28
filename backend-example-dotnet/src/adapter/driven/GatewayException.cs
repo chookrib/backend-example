@@ -1,9 +1,11 @@
-﻿namespace src.adapter.driven
+﻿using src.utility;
+
+namespace src.adapter.driven
 {
     /// <summary>
     /// Gateway Exception
     /// </summary>
-    public class GatewayException : Exception
+    public class GatewayException : AppException
     {
         public GatewayException() { }
 

@@ -1,9 +1,11 @@
-﻿namespace src.adapter.driven
+﻿using src.utility;
+
+namespace src.adapter.driven
 {
     /// <summary>
     /// Persistence Exception
     /// </summary>
-    public class PersistenceException : Exception
+    public class PersistenceException : AppException
     {
         public PersistenceException() { }
 

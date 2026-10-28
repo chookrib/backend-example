@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Json Utility
+ * JSON Utility
  */
 public class JsonUtility {
 
@@ -52,9 +52,9 @@ public class JsonUtility {
         // try {
         // return OBJECT_MAPPER.readValue(data, type);
         return OBJECT_MAPPER.convertValue(data, type);
-        //} catch (JsonProcessingException ex) {
-        //    throw new UtilityException("反序列化 JSON 异常", ex);
-        //}
+        // } catch (JsonProcessingException ex) {
+        //     throw new UtilityException("反序列化 JSON 异常", ex);
+        // }
     }
 
     /**
