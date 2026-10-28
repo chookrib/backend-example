@@ -75,7 +75,7 @@ namespace src.adapter.driven.user
                 mobile = entity.Mobile,
                 isAdmin = entity.IsAdmin ? 1 : 0,
                 createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
-                updatedAt = entity.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")
+                updatedAt = entity.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty
             });
         }
 
@@ -103,7 +103,7 @@ namespace src.adapter.driven.user
                 mobile = entity.Mobile,
                 isAdmin = entity.IsAdmin ? 1 : 0,
                 createdAt = entity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
-                updatedAt = entity.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")
+                updatedAt = entity.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty
             });
         }
 

@@ -8,15 +8,10 @@ from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 
-from adapter.driven.gateway_exception import GatewayException
-from adapter.driven.persistence_exception import PersistenceException
-from application.application_exception import ApplicationException
-from domain.domain_exception import DomainException
 from src.adapter.driving import result_codes
 from src.adapter.driving.result import Result
 from src.application.application_config import application_config
 from src.utility import json_utility, value_utility
-from utility.utility_exception import UtilityException
 
 # 设置日志格式
 logging.basicConfig(
@@ -208,11 +203,18 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         #     )
         return response
     except Exception as ex:
+        from src.adapter.driven.gateway_exception import GatewayException
+        from src.adapter.driven.persistence_exception import PersistenceException
+        from src.adapter.driving.controller_exception import ControllerException
+        from src.application.application_exception import ApplicationException
+        from src.domain.domain_exception import DomainException
+        from src.utility.utility_exception import UtilityException
         if isinstance(ex, UtilityException) \
                 or isinstance(ex, DomainException) \
                 or isinstance(ex, ApplicationException) \
                 or isinstance(ex, PersistenceException) \
-                or isinstance(ex, GatewayException):
+                or isinstance(ex, GatewayException) \
+                or isinstance(ex, ControllerException):
             # 自定义异常返回异常信息
             return JSONResponse(
                 content=Result.error(

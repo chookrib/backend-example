@@ -18,7 +18,7 @@ def test_value_bounds():
         "date.min": date.min,
         "date.max": date.max,
         "time.min": time.min,
-        "time.max": time.min,
+        "time.max": time.max,
         "datetime.min": datetime.min,
         "datetime.max": datetime.max
     })

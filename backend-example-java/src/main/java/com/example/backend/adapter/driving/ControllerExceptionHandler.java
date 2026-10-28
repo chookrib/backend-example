@@ -79,6 +79,7 @@ public class ControllerExceptionHandler {
                 || ex instanceof ApplicationException
                 || ex instanceof PersistenceException
                 || ex instanceof GatewayException
+                || ex instanceof ControllerException
         ) {
             // 自定义异常返回异常信息
             // response.setStatus(HttpServletResponse.SC_OK);

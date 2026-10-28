@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -80,26 +81,29 @@ public class CryptoUtility {
 
     /**
      * BASE64 编码
+     * 指定 UTF-8 编码，与其他语言一致
      */
     public static String base64Encode(String text) {
-        return java.util.Base64.getEncoder().encodeToString(text.getBytes());
+        return java.util.Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * BASE64 解码
+     * 指定 UTF-8 编码，与其他语言一致
      */
     public static String base64Decode(String base64Text) {
         byte[] decodedBytes = java.util.Base64.getDecoder().decode(base64Text);
-        return new String(decodedBytes);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 
     /**
      * MD5 编码
+     * 指定 UTF-8 编码，与其他语言一致
      */
     public static String md5Encode(String text) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(text.getBytes());
+            byte[] array = md.digest(text.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             for (byte b : array) {
                 sb.append(String.format("%02x", b));

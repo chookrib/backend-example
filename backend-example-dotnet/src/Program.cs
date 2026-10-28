@@ -154,7 +154,8 @@ namespace src
                         || error is DomainException
                         || error is src.application.ApplicationException
                         || error is PersistenceException
-                        || error is GatewayException)
+                        || error is GatewayException
+                        || error is ControllerException)
                     {
                         // 自定义异常返回异常信息
                         await context.Response.WriteAsJsonAsync(
