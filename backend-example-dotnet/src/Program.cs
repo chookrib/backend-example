@@ -10,6 +10,7 @@ using src.application;
 using src.application.@lock;
 using src.application.test;
 using src.application.user;
+using src.domain;
 using src.domain.ext;
 using src.domain.user;
 using src.utility;
@@ -126,6 +127,8 @@ namespace src
             // Configure the HTTP request pipeline.
             // app.UseAuthorization();
 
+            ApplicationConfig applicationConfig = app.Services.GetRequiredService<ApplicationConfig>();
+
             // 全局异常处理
             app.UseExceptionHandler(configure =>
             {
@@ -135,25 +138,55 @@ namespace src
                     context.Response.ContentType = "application/json";
                     Exception? error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
                     if (error is NotLoginException)
+                    {
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_NOT_LOGIN, "未登录")
                         );
+                    }
                     else if (error is LockException)
+                    {
+                        logger.Error("捕捉到 LockException 异常: ", error);
                         await context.Response.WriteAsJsonAsync(
                             Result.Error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试")
                         );
-                    else
+                    }
+                    else if (error is UtilityException
+                        || error is DomainException
+                        || error is src.application.ApplicationException
+                        || error is PersistenceException
+                        || error is GatewayException)
+                    {
+                        // 自定义异常返回异常信息
                         await context.Response.WriteAsJsonAsync(
-                            Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? "未知异常")
+                            Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? string.Empty)
                         );
+                    }
+                    else
+                    {
+                        // 非自定义异常记录日志
+                        logger.Error("捕捉到非自定义异常", error);
+
+                        if (applicationConfig.IsAppEnvDev())
+                        {
+                            // 开发环境非自定义异常显示具体信息
+                            await context.Response.WriteAsJsonAsync(
+                                Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? string.Empty)
+                            );
+                        }
+                        else
+                        {
+                            // 生产环境非自定义异常显示统一出错信息
+                            await context.Response.WriteAsJsonAsync(
+                                Result.Error(ResultCodes.ERROR_DEFAULT, "系统发生错误")
+                            );
+                        }
+                    }
                 });
             });
 
             app.MapControllers();
 
             //==========================================================================================================
-
-            ApplicationConfig applicationConfig = app.Services.GetRequiredService<ApplicationConfig>();
 
             // 仅在开发环境打印配置，不记录日志
             if (applicationConfig.IsAppEnvDev())
@@ -293,27 +326,27 @@ namespace src
         // public class AccessTokenFilter : IAsyncActionFilter
         // {
         //     private readonly UserAuthService userAuthService;
-           
+
         //     public AccessTokenFilter(UserAuthService userAuthService)
         //         => this.userAuthService = userAuthService;
-           
+
         //     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         //     {
         //         HttpContext http = context.HttpContext;
         //         PathString path = http.Request.Path;
-           
+
         //         if (!path.StartsWithSegments("/api/"))
         //         {
         //             await next();
         //             return;
         //         }
-           
+
         //         if (path.StartsWithSegments("/api/user/login") || path.StartsWithSegments("/api/user/register"))
         //         {
         //             await next();
         //             return;
         //         }
-           
+
         //         // var userAuthService = http.RequestServices.GetRequiredService<UserAuthService>();
         //         string token = http.Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
         //         string userId = userAuthService.GetLoginUserId(token);
@@ -321,7 +354,7 @@ namespace src
         //         {
         //             throw new NotLoginException();
         //         }
-           
+
         //         await next();
         //     }
         // }

@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime, time
+import sys
+from datetime import datetime, time, date
 
 from fastapi import APIRouter
 
@@ -8,6 +9,19 @@ from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+@router.get("/api/test/value/bounds")
+def test_value_bounds():
+    return Result.ok(data={
+        "sys.float_info.min": sys.float_info.min,
+        "sys.float_info.max": sys.float_info.max,
+        "date.min": date.min,
+        "date.max": date.max,
+        "time.min": time.min,
+        "time.max": time.min,
+        "datetime.min": datetime.min,
+        "datetime.max": datetime.max
+    })
 
 
 def format_datetime(value: datetime | None) -> str | None:

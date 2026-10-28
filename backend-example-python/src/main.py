@@ -8,10 +8,15 @@ from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 
+from adapter.driven.gateway_exception import GatewayException
+from adapter.driven.persistence_exception import PersistenceException
+from application.application_exception import ApplicationException
+from domain.domain_exception import DomainException
 from src.adapter.driving import result_codes
 from src.adapter.driving.result import Result
 from src.application.application_config import application_config
 from src.utility import json_utility, value_utility
+from utility.utility_exception import UtilityException
 
 # 设置日志格式
 logging.basicConfig(
@@ -177,7 +182,7 @@ async def lock_exception_handler(request: Request, ex: LockException):
 #     return response
 
 
-# 全局异常处理，最后注册的中间件在最外层，请求先经过它，响应最后经过它，会捕捉前面 middleware 抛出的异常
+# 兜底异常处理，最后注册的中间件在最外层，请求先经过它，响应最后经过它，会捕捉前面 middleware 抛出的异常
 @app.middleware("http")
 async def catch_all_exceptions_middleware(request: Request, call_next):
     try:
@@ -203,13 +208,38 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         #     )
         return response
     except Exception as ex:
-        logger.error(f"捕捉到未处理的异常: {str(ex)}", exc_info=True)
-        return JSONResponse(
-            content=Result.error(
-                code=result_codes.ERROR_DEFAULT,
-                message=f"{str(ex)}"
-            ).to_dict()
-        )
+        if isinstance(ex, UtilityException) \
+                or isinstance(ex, DomainException) \
+                or isinstance(ex, ApplicationException) \
+                or isinstance(ex, PersistenceException) \
+                or isinstance(ex, GatewayException):
+            # 自定义异常返回异常信息
+            return JSONResponse(
+                content=Result.error(
+                    code=result_codes.ERROR_DEFAULT,
+                    message=f"{str(ex)}"
+                ).to_dict()
+            )
+        else:
+            # 非自定义异常记录日志
+            logger.error(f"捕捉到非自定义异常: {str(ex)}", exc_info=True)
+
+            if application_config.is_app_env_dev():
+                # 开发环境非自定义异常显示具体信息
+                return JSONResponse(
+                    content=Result.error(
+                        code=result_codes.ERROR_DEFAULT,
+                        message=f"{str(ex)}"
+                    ).to_dict()
+                )
+            else:
+                # 生产环境非自定义异常显示统一出错信息
+                return JSONResponse(
+                    content=Result.error(
+                        code=result_codes.ERROR_DEFAULT,
+                        message=f"系统发生错误"
+                    ).to_dict()
+                )
 
 
 # 替换 FastAPI 默认 jsonable_encoder

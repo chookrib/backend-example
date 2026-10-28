@@ -1,4 +1,4 @@
-import random
+import secrets
 
 from src.application import id_generator
 from src.application.application_exception import ApplicationException
@@ -52,7 +52,7 @@ class UserProfileService:
         if value_utility.is_empty_string(mobile):
             raise ApplicationException("手机号不能为空")
         user = await self.user_repository.select_by_id_req(user_id)
-        code = f"{random.randint(0, 999999):06d}"
+        code = f"{secrets.randbelow(1_000_000):06d}"
         self.mobile_code[user.id + "_" + mobile] = code
         await self.sms_gateway.send_code(mobile, code)
 

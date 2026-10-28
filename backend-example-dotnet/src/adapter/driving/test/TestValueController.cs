@@ -14,6 +14,56 @@ namespace src.adapter.driving.test
         /// <summary>
         /// 测试日期时间转换
         /// </summary>
+        [HttpGet("/api/test/value/bounds")]
+        public Result TestValueBounds()
+        {
+            return Result.OkData(
+                new Dictionary<string, object>
+                {
+                    // 字符
+                    { "char.MinValue", char.MinValue },
+                    { "char.MaxValue", char.MaxValue },
+                    // 整数
+                    { "sbyte.MinValue", sbyte.MinValue },
+                    { "sbyte.MaxValue", sbyte.MaxValue },
+                    { "byte.MinValue", byte.MinValue },
+                    { "byte.MaxValue", byte.MaxValue },
+                    { "short.MinValue", short.MinValue },
+                    { "short.MaxValue", short.MaxValue },
+                    { "ushort.MinValue", ushort.MinValue },
+                    { "ushort.MaxValue", ushort.MaxValue },
+                    { "int.MinValue", int.MinValue },
+                    { "int.MaxValue", int.MaxValue },
+                    { "uint.MinValue", uint.MinValue },
+                    { "uint.MaxValue", uint.MaxValue },
+                    { "long.MinValue", long.MinValue },
+                    { "long.MaxValue", long.MaxValue },
+                    { "ulong.MinValue", ulong.MinValue },
+                    { "ulong.MaxValue", ulong.MaxValue },
+                    // 浮点
+                    { "float.MinValue", float.MinValue },
+                    { "float.MaxValue", float.MaxValue },
+                    { "double.MinValue", double.MinValue },
+                    { "double.MaxValue", double.MaxValue },
+                    // 小数
+                    { "decimal.MinValue", decimal.MinValue },
+                    { "decimal.MaxValue", decimal.MaxValue },
+                    // 日期时间
+                    { "DateTime.MinValue", DateTime.MinValue },
+                    { "DateTime.MaxValue", DateTime.MaxValue },
+                    { "DateTimeOffset.MinValue", DateTimeOffset.MinValue },
+                    { "DateTimeOffset.MaxValue", DateTimeOffset.MaxValue },
+                    { "DateOnly.MinValue", DateOnly.MinValue },
+                    { "DateOnly.MaxValue", DateOnly.MaxValue },
+                    { "TimeOnly.MinValue", TimeOnly.MinValue },
+                    { "TimeOnly.MaxValue", TimeOnly.MaxValue },
+                }
+            );
+        }
+
+        /// <summary>
+        /// 测试日期时间转换
+        /// </summary>
         [HttpGet("/api/test/value/to-datetime")]
         public Result TestValueToDateTime()
         {

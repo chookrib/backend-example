@@ -25,7 +25,7 @@ public class RequestValueHelper {
         try {
             return JsonUtility.deserialize(requestBody);
         } catch (Exception ex) {
-            throw new ControllerException("请求体不是合法的JSON格式", ex);
+            throw new ControllerException("请求体不是合法的 JSON 格式", ex);
         }
     }
 
@@ -367,7 +367,7 @@ public class RequestValueHelper {
             throw new ControllerException(String.format("请求参数缺少 %s", key));
         if (ValueUtility.isEmptyString(value))
             throw new ControllerException(String.format("请求参数 %s 值不能为空", key));
-        return value;
+        return value.trim();
     }
 
     //==================================================================================================================

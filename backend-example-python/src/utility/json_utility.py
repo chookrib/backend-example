@@ -4,7 +4,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any
 
-from utility import value_utility
+from src.utility import value_utility
 
 
 def deserialize(data):
@@ -45,7 +45,7 @@ def custom_jsonable_encoder(obj, **kwargs):
         if value_utility.INT_MIN_VALUE <= obj <= value_utility.INT_MAX_VALUE:
             return obj
         else:
-            return str(obj)         # long 转字符串
+            return str(obj)         # long 转字符串，python 中没有 long 类型，这里效果与 java/c# 有区别
 
     if isinstance(obj, Decimal):
         # return str(obj)

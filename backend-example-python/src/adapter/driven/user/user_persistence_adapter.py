@@ -204,7 +204,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             mobile=row_dict.get("u_mobile", ""),
             is_admin=bool(row_dict.get("u_is_admin", False)),
             created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min),
-            updated_at=value_utility.to_datetime_or_default(row_dict.get("u_updated_at"), datetime.min)
+            updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
         )
 
     def build_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:

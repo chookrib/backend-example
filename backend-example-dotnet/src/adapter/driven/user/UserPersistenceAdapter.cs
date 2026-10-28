@@ -53,7 +53,7 @@ namespace src.adapter.driven.user
                 row.u_mobile,
                 ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
                 ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrDefault(row.u_updated_at.ToString(), DateTime.MinValue)
+                ValueUtility.ToDateTimeOrNull(row.u_updated_at.ToString())
                 );
         }
 
@@ -213,7 +213,7 @@ namespace src.adapter.driven.user
                 row.u_mobile,
                 ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
                 ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrDefault(row.u_updated_at.ToString(), DateTime.MinValue)
+                ValueUtility.ToDateTimeOrNull(row.u_updated_at.ToString())
                 );
         }
 

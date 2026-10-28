@@ -80,8 +80,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     //             sqlRowSet.getString("u_nickname"),
     //             sqlRowSet.getString("u_mobile"),
     //             sqlRowSet.getBoolean("u_is_admin"),
-    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
-    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
+    //             ValueUtility.toDateTimeOrNull(sqlRowSet.getString("u_created_at")),
+    //             ValueUtility.toDateTimeOrNull(sqlRowSet.getString("u_updated_at"))
     //     );
     // }
 
@@ -97,11 +97,11 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     rs.getString("u_nickname"),
                     rs.getString("u_mobile"),
                     rs.getBoolean("u_is_admin"),
-                    ValueUtility.toDateTimeOrDefault(rs.getString("u_created_at"), LocalDateTime.MIN),
-                    ValueUtility.toDateTimeOrDefault(rs.getString("u_updated_at"), LocalDateTime.MIN)
+                    ValueUtility.toDateTimeOrNull(rs.getString("u_created_at")),
+                    ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
-        } catch (SQLException e) {
-            throw new PersistenceException(e);
+        } catch (SQLException ex) {
+            throw new PersistenceException("转换数据库记录为实体时发生错误", ex);
         }
     }
 
@@ -284,8 +284,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     //             sqlRowSet.getString("u_nickname"),
     //             sqlRowSet.getString("u_mobile"),
     //             sqlRowSet.getBoolean("u_is_admin"),
-    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_created_at"), LocalDateTime.MIN),
-    //             ValueUtility.toDateTimeOrDefault(sqlRowSet.getString("u_updated_at"), LocalDateTime.MIN)
+    //             ValueUtility.toDateTimeOrNull(sqlRowSet.getString("u_created_at")),
+    //             ValueUtility.toDateTimeOrNull(sqlRowSet.getString("u_updated_at"))
     //     );
     // }
 
@@ -300,11 +300,11 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     rs.getString("u_nickname"),
                     rs.getString("u_mobile"),
                     rs.getBoolean("u_is_admin"),
-                    ValueUtility.toDateTimeOrDefault(rs.getString("u_created_at"), LocalDateTime.MIN),
-                    ValueUtility.toDateTimeOrDefault(rs.getString("u_updated_at"), LocalDateTime.MIN)
+                    ValueUtility.toDateTimeOrNull(rs.getString("u_created_at")),
+                    ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
-        } catch (SQLException e) {
-            throw new PersistenceException(e);
+        } catch (SQLException ex) {
+            throw new PersistenceException("转换数据库记录为 DTO 时发生错误", ex);
         }
     }
 

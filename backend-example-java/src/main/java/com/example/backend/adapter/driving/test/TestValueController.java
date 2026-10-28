@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,6 +21,44 @@ import java.util.Optional;
 public class TestValueController {
 
     private static final Logger logger = LoggerFactory.getLogger(TestValueController.class);
+
+    /**
+     * 测试值范围
+     */
+    @RequestMapping(value = "/api/test/value/bounds", method = RequestMethod.GET)
+    public Result testValueBounds() {
+        Map<String, Object> bounds = new LinkedHashMap<>();
+        // 字符
+        bounds.put("Character.MIN_VALUE", Character.MIN_VALUE);
+        bounds.put("Character.MAX_VALUE", Character.MAX_VALUE);
+        // 整数类型
+        bounds.put("Byte.MIN_VALUE", Byte.MIN_VALUE);
+        bounds.put("Byte.MAX_VALUE", Byte.MAX_VALUE);
+        bounds.put("Short.MIN_VALUE", Short.MIN_VALUE);
+        bounds.put("Short.MAX_VALUE", Short.MAX_VALUE);
+        bounds.put("Integer.MIN_VALUE", Integer.MIN_VALUE);
+        bounds.put("Integer.MAX_VALUE", Integer.MAX_VALUE);
+        bounds.put("Long.MIN_VALUE", Long.MIN_VALUE);
+        bounds.put("Long.MAX_VALUE", Long.MAX_VALUE);
+        // 浮点类型
+        bounds.put("Float.MIN_VALUE", Float.MIN_VALUE);
+        bounds.put("Float.MAX_VALUE", Float.MAX_VALUE);
+        bounds.put("Double.MIN_VALUE", Double.MIN_VALUE);
+        bounds.put("Double.MAX_VALUE", Double.MAX_VALUE);
+        // 日期时间
+        bounds.put("LocalDate.MIN", LocalDate.MIN);
+        bounds.put("LocalDate.MAX", LocalDate.MAX);
+        bounds.put("LocalTime.MIN", LocalTime.MIN);
+        bounds.put("LocalTime.MAX", LocalTime.MAX);
+        bounds.put("LocalDateTime.MIN", LocalDateTime.MIN);
+        bounds.put("LocalDateTime.MAX", LocalDateTime.MAX);
+        bounds.put("Year.MIN_VALUE", Year.MIN_VALUE);
+        bounds.put("Year.MAX_VALUE", Year.MAX_VALUE);
+        bounds.put("Instant.MIN", Instant.MIN);
+        bounds.put("Instant.MAX", Instant.MAX);
+        return Result.okData(bounds);
+    }
+
 
     /**
      * 测试日期时间转换
