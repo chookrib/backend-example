@@ -34,15 +34,32 @@ class AsyncioLockService(LockService):
         async with self.internal_lock:
             resource_lock = self.locks[key]
 
+        # 尝试获取锁，失败则抛出异常退出，不能 release，否则会将已持有此锁的协程的锁释放掉
         try:
             await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
-            if self.enable_log:
-                logger.info(f"获取 asyncio 锁 {key} 成功")
-            yield
         except asyncio.TimeoutError as ex:
-            # raise TimeoutError(f"获取 asyncio 锁 {key} 超时")
             raise LockException(f"获取 asyncio 锁 {key} 超时") from ex
+
+        if self.enable_log:
+            logger.info(f"获取 asyncio 锁 {key} 成功")
+
+        # 获取锁成功后，才进入 try...finally 保证释放
+        try:
+            yield
         finally:
             resource_lock.release()
             if self.enable_log:
                 logger.info(f"释放 asyncio 锁 {key} 成功")
+
+        # try:
+        #     await asyncio.wait_for(resource_lock.acquire(), timeout=timeout)
+        #     if self.enable_log:
+        #         logger.info(f"获取 asyncio 锁 {key} 成功")
+        #     yield
+        # except asyncio.TimeoutError as ex:
+        #     # raise TimeoutError(f"获取 asyncio 锁 {key} 超时")
+        #     raise LockException(f"获取 asyncio 锁 {key} 超时") from ex
+        # finally:
+        #     resource_lock.release()
+        #     if self.enable_log:
+        #         logger.info(f"释放 asyncio 锁 {key} 成功")
