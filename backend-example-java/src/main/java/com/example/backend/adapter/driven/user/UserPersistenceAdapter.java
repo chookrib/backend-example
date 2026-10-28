@@ -120,7 +120,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getMobile(),
-                entity.isAdmin(),
+                entity.getIsAdmin(),
                 ValueUtility.formatDateTime(entity.getCreatedAt()),
                 ValueUtility.formatDateTime(entity.getUpdatedAt())
         );
@@ -145,7 +145,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getMobile(),
-                entity.isAdmin(),
+                entity.getIsAdmin(),
                 ValueUtility.formatDateTime(entity.getCreatedAt()),
                 ValueUtility.formatDateTime(entity.getUpdatedAt()),
                 entity.getId()

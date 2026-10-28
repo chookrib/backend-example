@@ -34,7 +34,7 @@ public class UserDto {
         return mobile;
     }
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 

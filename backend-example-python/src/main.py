@@ -180,6 +180,13 @@ async def lock_exception_handler(request: Request, ex: LockException):
 # 兜底异常处理，最后注册的中间件在最外层，请求先经过它，响应最后经过它，会捕捉前面 middleware 抛出的异常
 @app.middleware("http")
 async def catch_all_exceptions_middleware(request: Request, call_next):
+    from src.adapter.driven.gateway_exception import GatewayException
+    from src.adapter.driven.persistence_exception import PersistenceException
+    from src.adapter.driving.controller_exception import ControllerException
+    from src.application.application_exception import ApplicationException
+    from src.domain.domain_exception import DomainException
+    from src.utility.utility_exception import UtilityException
+
     try:
         response = await call_next(request)
         # if response.status_code == 404:
@@ -203,12 +210,6 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
         #     )
         return response
     except Exception as ex:
-        from src.adapter.driven.gateway_exception import GatewayException
-        from src.adapter.driven.persistence_exception import PersistenceException
-        from src.adapter.driving.controller_exception import ControllerException
-        from src.application.application_exception import ApplicationException
-        from src.domain.domain_exception import DomainException
-        from src.utility.utility_exception import UtilityException
         if isinstance(ex, UtilityException) \
                 or isinstance(ex, DomainException) \
                 or isinstance(ex, ApplicationException) \

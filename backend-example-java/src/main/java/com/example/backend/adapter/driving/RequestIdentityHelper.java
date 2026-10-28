@@ -35,7 +35,7 @@ public class RequestIdentityHelper {
     public static String requireLoginAdminUserId(HttpServletRequest request, UserAuthService userAuthService) {
         String accessToken = request.getHeader("Access-Token");
         User user = userAuthService.getLoginUser(accessToken);
-        if (user == null || !user.isAdmin())
+        if (user == null || !user.getIsAdmin())
             throw new NotLoginException();
         return user.getId();
     }

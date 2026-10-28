@@ -39,7 +39,7 @@ class IocContainer:
             # 需注册的类有可能在构造函数参数实例化时已经构造，故不能判断重复
             # raise TypeError(f"注册 {cls_text} 异常: {cls.__name__} 不能重复注册")
             if application_config.is_app_env_dev():
-                logger.info(f"注册 {cls_text}: IoC容器已存在 {cls.__name__} 实例，跳过注册")
+                logger.info(f"注册 {cls_text}: IoC 容器已存在 {cls.__name__} 实例，跳过注册")
             return self._instances[cls]
         else:
             if application_config.is_app_env_dev():
@@ -49,7 +49,7 @@ class IocContainer:
             provider_cls_instance = self._instances[provider_cls]
             self._instances[cls] = provider_cls_instance
             if application_config.is_app_env_dev():
-                logger.info(f"<<< IoC容器已存在 {provider_cls.__name__} 实例，完成注册")
+                logger.info(f"<<< IoC 容器已存在 {provider_cls.__name__} 实例，完成注册")
             return provider_cls_instance
 
         target_cls = provider_cls or cls
@@ -86,7 +86,7 @@ class IocContainer:
         param_text = f"{param_text_prefix}参数 {param_name} 类型 {param_cls.__name__}"
         if param_cls in self._instances:
             if application_config.is_app_env_dev():
-                logger.info(f"{param_text} 在IoC容器中已存在实例，直接使用")
+                logger.info(f"{param_text} 在 IoC 容器中已存在实例，直接使用")
             return self._instances[param_cls]
         elif inspect.isabstract(param_cls):
             raise TypeError(f"{param_text} 是抽象类，无法实例化")

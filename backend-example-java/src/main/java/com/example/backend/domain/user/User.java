@@ -30,7 +30,7 @@ public class User {
 
     public String getMobile() { return mobile; }
 
-    public boolean isAdmin() { return isAdmin; }
+    public boolean getIsAdmin() { return isAdmin; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 
