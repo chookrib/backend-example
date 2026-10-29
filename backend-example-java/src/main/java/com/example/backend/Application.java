@@ -111,11 +111,11 @@ public class Application {
             props.load(inputStream);
             return props;
 
-            //for (String key : props.stringPropertyNames()) {
-            //    if (key.equals("Build-Time")) {
-            //        return props.getProperty(key);
-            //    }
-            //}
+            // for (String key : props.stringPropertyNames()) {
+            //     if (key.equals("Build-Time")) {
+            //         return props.getProperty(key);
+            //     }
+            // }
         } catch (Exception ex) {
             logger.warn("读取 META-INF/MANIFEST.MF 失败: {}", ex.getMessage());
         }

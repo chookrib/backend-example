@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,15 +61,14 @@ public class UserManageController {
         int totalCount = userQueryHandler.queryCount(criteria);
         RequestValueHelper.Paging paging = RequestValueHelper.fixPaging(pageNum, pageSize, totalCount);
         List<UserDto> list = userQueryHandler.queryByPage(paging.pageNum(), paging.pageSize(), criteria, sortOptions);
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", list);
-        map.put("paging", Map.of(
+        return Result.okData(Map.of(
+                "list", list,
+                "paging", Map.of(
                         "pageNum", paging.pageNum(),
                         "pageSize", paging.pageSize(),
                         "totalCount", paging.totalCount()
                 )
-        );
-        return Result.okData(map);
+        ));
     }
 
     /**
