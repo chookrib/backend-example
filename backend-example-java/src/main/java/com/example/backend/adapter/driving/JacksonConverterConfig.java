@@ -34,7 +34,7 @@ public class JacksonConverterConfig {
 
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         ObjectMapper objectMapper = builder
-                //.indentOutput(true)
+                // .indentOutput(true)
                 .serializerByType(Long.TYPE, ToStringSerializer.instance)                                   // long 转 String
                 .serializerByType(Long.class, ToStringSerializer.instance)                                  // Long 转 String
                 .serializerByType(BigDecimal.class, ToStringSerializer.instance)                            // BigDecimal 转 String
@@ -42,6 +42,7 @@ public class JacksonConverterConfig {
                 .serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter))      // LocalDateTime 转 String
                 .serializerByType(LocalDate.class, new LocalDateSerializer(dateFormatter))                  // LocalDate 转 String
                 .serializerByType(LocalTime.class, new LocalTimeSerializer(timeFormatter))                  // LocalTime 转 String
+
                 .build();
 
         return new MappingJackson2HttpMessageConverter(objectMapper);

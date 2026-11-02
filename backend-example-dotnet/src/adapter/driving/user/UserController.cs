@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
+using src.application.query;
 using src.application.user;
 
 
@@ -12,16 +13,19 @@ namespace src.adapter.driving.user
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(UserController));
 
+        private readonly RequestIdentityResolver requestIdentityResolver;
         private readonly UserAuthService userAuthService;
         private readonly UserProfileService userProfileService;
         private readonly UserQueryHandler userQueryHandler;
 
         public UserController(
+            RequestIdentityResolver requestIdentityResolver,
             UserAuthService userAuthService,
             UserProfileService userProfileService,
             UserQueryHandler userQueryHandler
             )
         {
+            this.requestIdentityResolver = requestIdentityResolver;
             this.userAuthService = userAuthService;
             this.userProfileService = userProfileService;
             this.userQueryHandler = userQueryHandler;
@@ -66,7 +70,7 @@ namespace src.adapter.driving.user
         [HttpGet("/api/user/profile")]
         public async Task<Result> Profile()
         {
-            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = requestIdentityResolver.RequireLoginUserId();
 
             UserDto userDto = await userQueryHandler.QueryByIdReq(userId);
             return Result.OkData(new { profile = userDto});
@@ -78,7 +82,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-password")]
         public async Task<Result> ModifyPassword()
         {
-            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string oldPassword = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -98,7 +102,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/modify-nickname")]
         public async Task<Result> ModifyNickname()
         {
-            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
@@ -112,7 +116,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/send-mobile-code")]
         public async Task<Result> SendMobileCode()
         {
-            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");
@@ -127,7 +131,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/bind-mobile")]
         public async Task<Result> BindMobile()
         {
-            string userId = RequestIdentityHelper.RequireLoginUserId(Request, userAuthService);
+            string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string mobile = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "mobile");

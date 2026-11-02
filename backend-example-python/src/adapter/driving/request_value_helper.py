@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from starlette.requests import Request
 
-from src.application.query_sort_option import QuerySortOption
+from src.application.query.query_sort_option import QuerySortOption
 from src.adapter.driving.controller_exception import ControllerException
 from src.utility import value_utility
 
@@ -13,7 +13,7 @@ async def get_request_json(request: Request):
     try:
         return await request.json()
     except Exception as ex:
-        raise ControllerException("请求体不是合法的JSON格式") from ex
+        raise ControllerException("请求体不是合法的 JSON 格式") from ex
 
 
 # ======================================================================================================================

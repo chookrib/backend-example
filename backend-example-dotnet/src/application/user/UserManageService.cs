@@ -1,5 +1,6 @@
 ﻿using src.application.@lock;
 using src.domain.user;
+using src.utility;
 
 namespace src.application.user
 {
@@ -39,7 +40,7 @@ namespace src.application.user
         {
             await using(await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await User.Create(IdGenerator.GenerateId(), username, password, nickname, mobile,
+                User user = await User.Create(IdUtility.GenerateUUIDv7(), username, password, nickname, mobile,
                     userUniqueSpecification);
                 await userRepository.Insert(user);
                 return user.Id;

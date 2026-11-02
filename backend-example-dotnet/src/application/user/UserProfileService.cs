@@ -39,7 +39,7 @@ namespace src.application.user
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await User.Register(IdGenerator.GenerateId(), username, password, nickname,
+                User user = await User.Register(IdUtility.GenerateUUIDv7(), username, password, nickname,
                     userUniqueSpecification);
                 await userRepository.Insert(user);
                 return user.Id;

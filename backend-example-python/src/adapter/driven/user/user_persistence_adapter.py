@@ -2,13 +2,13 @@ from datetime import datetime
 
 import aiosqlite
 
-from src.application.query_sort_option import QuerySortOption
-from src.application.user import user_query_sort_fields
 from src.adapter.driven.database_adapter import DatabaseAdapter
 from src.adapter.driven.persistence_exception import PersistenceException
-from src.application.user.user_dto import UserDto
-from src.application.user.user_query_criteria import UserQueryCriteria
-from src.application.user.user_query_handler import UserQueryHandler
+from src.application.query import user_query_sort_fields
+from src.application.query.query_sort_option import QuerySortOption
+from src.application.query.user_dto import UserDto
+from src.application.query.user_query_criteria import UserQueryCriteria
+from src.application.query.user_query_handler import UserQueryHandler
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
 from src.domain.user.user_unique_specification import UserUniqueSpecification
@@ -148,7 +148,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             return None
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
-            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)", (username,)) as cursor:
+            async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)",
+                                    (username,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return self.to_entity(row)
@@ -264,7 +265,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 row = await cursor.fetchone()
                 return row[0] if row else 0
 
-    async def query(self, criteria: UserQueryCriteria, sort_options: list[QuerySortOption] | None = None) -> list[UserDto]:
+    async def query(self, criteria: UserQueryCriteria, sort_options: list[QuerySortOption] | None = None) -> list[
+        UserDto]:
         criteria_sql, params = self.build_query_criteria_sql(criteria)
         sort_sql = self.build_query_sort_sql(sort_options)
         async with self.database_adapter.get_connection() as conn:

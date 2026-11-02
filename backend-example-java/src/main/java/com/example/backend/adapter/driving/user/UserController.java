@@ -1,14 +1,10 @@
 package com.example.backend.adapter.driving.user;
 
-import com.example.backend.adapter.driving.ControllerException;
-import com.example.backend.adapter.driving.RequestIdentityHelper;
-import com.example.backend.adapter.driving.RequestValueHelper;
-import com.example.backend.adapter.driving.Result;
+import com.example.backend.adapter.driving.*;
 import com.example.backend.application.user.UserAuthService;
-import com.example.backend.application.user.UserDto;
+import com.example.backend.application.query.UserDto;
 import com.example.backend.application.user.UserProfileService;
-import com.example.backend.application.user.UserQueryHandler;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.backend.application.query.UserQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,15 +22,18 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    private final RequestIdentityResolver requestIdentityResolver;
     private final UserAuthService userAuthService;
     private final UserProfileService userProfileService;
     private final UserQueryHandler userQueryHandler;
 
     public UserController(
+            RequestIdentityResolver requestIdentityResolver,
             UserAuthService userAuthService,
             UserProfileService userProfileService,
             UserQueryHandler userQueryHandler
     ) {
+        this.requestIdentityResolver = requestIdentityResolver;
         this.userAuthService = userAuthService;
         this.userProfileService = userProfileService;
         this.userQueryHandler = userQueryHandler;
@@ -79,8 +78,8 @@ public class UserController {
      * 取用户资料
      */
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
-    public Result profile(HttpServletRequest request) {
-        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
+    public Result profile() {
+        String userId = requestIdentityResolver.requireLoginUserId();
 
         UserDto userDto = userQueryHandler.queryByIdReq(userId);
         return Result.okData(Map.of(
@@ -92,8 +91,8 @@ public class UserController {
      * 修改密码
      */
     @RequestMapping(value = "/api/user/modify-password", method = RequestMethod.POST)
-    public Result modifyPassword(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
+    public Result modifyPassword(@RequestBody String requestBody) {
+        String userId = requestIdentityResolver.requireLoginUserId();
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String oldPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "oldPassword");
@@ -111,8 +110,8 @@ public class UserController {
      * 修改昵称
      */
     @RequestMapping(value = "/api/user/modify-nickname", method = RequestMethod.POST)
-    public Result modifyNickname(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
+    public Result modifyNickname(@RequestBody String requestBody) {
+        String userId = requestIdentityResolver.requireLoginUserId();
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
@@ -124,8 +123,8 @@ public class UserController {
      * 发送手机验证码
      */
     @RequestMapping(value = "/api/user/send-mobile-code", method = RequestMethod.POST)
-    public Result sendMobileCode(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
+    public Result sendMobileCode(@RequestBody String requestBody) {
+        String userId = requestIdentityResolver.requireLoginUserId();
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
@@ -138,8 +137,8 @@ public class UserController {
      * 绑定手机
      */
     @RequestMapping(value = "/api/user/bind-mobile", method = RequestMethod.POST)
-    public Result bindMobile(HttpServletRequest request, @RequestBody String requestBody) {
-        String userId = RequestIdentityHelper.requireLoginUserId(request, userAuthService);
+    public Result bindMobile(@RequestBody String requestBody) {
+        String userId = requestIdentityResolver.requireLoginUserId();
 
         var requestJson = RequestValueHelper.getRequestJson(requestBody);
         String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");

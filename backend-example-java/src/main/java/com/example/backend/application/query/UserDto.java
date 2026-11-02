@@ -1,4 +1,4 @@
-package com.example.backend.application.user;
+package com.example.backend.application.query;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

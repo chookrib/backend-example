@@ -11,6 +11,12 @@ namespace src.adapter.driving.test
     /// </summary>
     public class TestRequestController: ControllerBase
     {
+        [HttpGet("/api/test/request")]
+        async public Task<Result> TestRequest()
+        {
+            return Result.OkData(Request.Headers);
+        }
+
         [HttpPost("/api/test/request/string")]
         async public Task<Result> TestRequestString()
         {

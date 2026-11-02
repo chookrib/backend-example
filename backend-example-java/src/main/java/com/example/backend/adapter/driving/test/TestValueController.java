@@ -1,7 +1,7 @@
 package com.example.backend.adapter.driving.test;
 
 import com.example.backend.adapter.driving.Result;
-import com.example.backend.application.IdGenerator;
+import com.example.backend.utility.IdUtility;
 import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,22 +25,22 @@ public class TestValueController {
         return Result.okData(
                 Map.of(
                         "join", Map.of(
-                                "e0", IdGenerator.joinWithDelimiter(List.of()),
-                                "e1", IdGenerator.joinWithDelimiter(List.of("")),
-                                "e2", IdGenerator.joinWithDelimiter(List.of("", "")),
-                                "e3", IdGenerator.joinWithDelimiter(List.of("", "", "")),
-                                "v1", IdGenerator.joinWithDelimiter(List.of("a")),
-                                "v2", IdGenerator.joinWithDelimiter(List.of("a", "b")),
-                                "v3", IdGenerator.joinWithDelimiter(List.of("a", "b", "c"))
+                                "e0", IdUtility.wrapJoin(List.of()),
+                                "e1", IdUtility.wrapJoin(List.of("")),
+                                "e2", IdUtility.wrapJoin(List.of("", "")),
+                                "e3", IdUtility.wrapJoin(List.of("", "", "")),
+                                "v1", IdUtility.wrapJoin(List.of("a")),
+                                "v2", IdUtility.wrapJoin(List.of("a", "b")),
+                                "v3", IdUtility.wrapJoin(List.of("a", "b", "c"))
                         ),
                         "split", Map.of(
-                                "e0", IdGenerator.splitWithDelimiter(""),
-                                "e1", IdGenerator.splitWithDelimiter(",,"),
-                                "e2", IdGenerator.splitWithDelimiter(",,,"),
-                                "e3", IdGenerator.splitWithDelimiter(",,,,"),
-                                "v1", IdGenerator.splitWithDelimiter(",a,"),
-                                "v2", IdGenerator.splitWithDelimiter(",a,b,"),
-                                "v3", IdGenerator.splitWithDelimiter(",a,b,c,")
+                                "e0", IdUtility.split(""),
+                                "e1", IdUtility.split(",,"),
+                                "e2", IdUtility.split(",,,"),
+                                "e3", IdUtility.split(",,,,"),
+                                "v1", IdUtility.split(",a,"),
+                                "v2", IdUtility.split(",a,b,"),
+                                "v3", IdUtility.split(",a,b,c,")
                         )
                 )
         );

@@ -8,6 +8,7 @@ using src.adapter.driven.user;
 using src.adapter.driving;
 using src.application;
 using src.application.@lock;
+using src.application.query;
 using src.application.test;
 using src.application.user;
 using src.domain;
@@ -83,10 +84,14 @@ namespace src
             builder.Services.AddSingleton<UserProfileService>();
             builder.Services.AddSingleton<UserManageService>();
 
-            // 测试IoC注册，循环依赖会报错
+            // 测试 IoC 注册，循环依赖会报错
             builder.Services.AddSingleton<TestIocClass3>();
             builder.Services.AddSingleton<TestIocClass2>();
             builder.Services.AddSingleton<TestIocClass1>();
+
+            // 注册 Driving Adapter
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<RequestIdentityResolver>();  // 注意需注册为 Scoped
 
             // 注册 Controller
             builder.Services.AddControllers()

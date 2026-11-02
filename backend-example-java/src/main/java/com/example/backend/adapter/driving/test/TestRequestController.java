@@ -2,9 +2,15 @@ package com.example.backend.adapter.driving.test;
 
 import com.example.backend.adapter.driving.Result;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 测试请求 Controller
@@ -13,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class TestRequestController {
 
     private static final Logger logger = LoggerFactory.getLogger(TestRequestController.class);
+
+    /**
+     * 测试请求
+     */
+    @RequestMapping(value = "/api/test/request", method = RequestMethod.POST)
+    public Result testRequest(HttpServletRequest request, @RequestBody String requestBody) {
+        return Result.okData(Map.of(
+                "requestHeaders", new ArrayList<>(Collections.list(request.getHeaderNames())),
+                 "requestBody", requestBody
+        ));
+    }
 
     /**
      * 测试请求
@@ -68,7 +85,7 @@ public class TestRequestController {
      * 测试请求
      */
     @RequestMapping(value = "/api/test/request/param", method = RequestMethod.GET)
-    public Result testRequestParam(@RequestParam(value = "id", defaultValue = "0") String id) {
+    public Result testRequestParam(@RequestParam(required = false, name = "id", defaultValue = "0") String id) {
         return Result.okData(id);
     }
 

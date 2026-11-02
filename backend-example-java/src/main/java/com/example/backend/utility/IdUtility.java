@@ -1,6 +1,5 @@
-package com.example.backend.application;
+package com.example.backend.utility;
 
-import com.example.backend.utility.ValueUtility;
 import com.fasterxml.uuid.Generators;
 
 import java.util.ArrayList;
@@ -9,17 +8,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Id 生成器
+ * Id Utility
  */
-public class IdGenerator {
+public class IdUtility {
 
     /**
-     * 生成唯一Id
+     * 生成 UUID v4
      */
-    public static String generateId() {
+    public static String generateUUIDv4(){
+        return java.util.UUID.randomUUID().toString();
+    }
+
+    /**
+     * 生成 UUID v7
+     */
+    public static String generateUUIDv7() {
         return Generators.timeBasedEpochGenerator().generate().toString();   // UUID v7
 
-        // return java.util.UUID.randomUUID().toString();   // UUID v4
         // return Generators.timeBasedGenerator().generate().toString();    // UUID v1
         // return Generators.timeBasedReorderedGenerator().generate().toString();   // UUID v6
     }
@@ -32,7 +37,7 @@ public class IdGenerator {
     /**
      * 拼接 Id 字符串
      */
-    public static String joinWithDelimiter(List<String> ids) {
+    public static String wrapJoin(List<String> ids) {
         if(ids == null || ids.isEmpty())
             return "";
         StringBuilder sb = new StringBuilder();
@@ -50,21 +55,21 @@ public class IdGenerator {
     /**
      * 包裹 Id 字符串
      */
-    public static String wrapWithDelimiter(String id) {
+    public static String wrap(String id) {
         if(ValueUtility.isEmptyString(id))
-            throw new ApplicationException("不能包裹一个空的 Id");
+            throw new UtilityException("不能包裹一个空的 Id");
         return DELIMITER + id + DELIMITER;
     }
 
     /**
      * 拆分 Id 字符串
      */
-    public static List<String> splitWithDelimiter(String ids) {
+    public static List<String> split(String ids) {
         if(ValueUtility.isEmptyString(ids))
             return new ArrayList<>();
         return Arrays.stream(ids.split(DELIMITER))
-                .map(String::trim)                      // 去除每个元素的首尾空白
-                .filter(s -> !s.isEmpty())      // 过滤空字符串
+                // .map(String::trim)
+                .filter(s -> !ValueUtility.isEmptyString(s))
                 .collect(Collectors.toList());
     }
 }

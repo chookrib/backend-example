@@ -1,6 +1,6 @@
 ﻿using src.utility;
 
-namespace src.application
+namespace src.application.query
 {
     /**
      * 排序项

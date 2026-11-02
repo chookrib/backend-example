@@ -5,29 +5,43 @@ using src.utility;
 namespace src.adapter.driving
 {
     /// <summary>
-    /// 请求身份 Helper
+    /// 请求身份 Resolver
     /// </summary>
-    public class RequestIdentityHelper
+    public class RequestIdentityResolver
     {
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly UserAuthService userAuthService;
+
+        public RequestIdentityResolver(
+            IHttpContextAccessor httpContextAccessor,
+            UserAuthService userAuthService
+            )
+        {
+            this.httpContextAccessor = httpContextAccessor;
+            this.userAuthService = userAuthService;
+        }
+
+        private HttpRequest Request => httpContextAccessor.HttpContext!.Request;
+
         /// <summary>
         /// 获取登录用户 Id，未登录返回空字符串
         /// </summary>
-        public static string GetLoginUserId(HttpRequest request, UserAuthService userAuthService)
+        public string GetLoginUserId()
         {
             //string accessToken = string.Empty;
-            //if (request.Headers.TryGetValue("Access-Token", out StringValues values))
+            //if (Request.Headers.TryGetValue("Access-Token", out StringValues values))
             //    accessToken = values.FirstOrDefault() ?? string.Empty;
 
-            string accessToken = request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
+            string accessToken = Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
             return userAuthService.GetLoginUserId(accessToken);
         }
 
         /// <summary>
         /// 获取登录用户 Id，未登录抛异常
         /// </summary>
-        public static string RequireLoginUserId(HttpRequest request, UserAuthService userAuthService)
+        public string RequireLoginUserId()
         {
-            string accessToken = request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
+            string accessToken = Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
             string userId = userAuthService.GetLoginUserId(accessToken);
             if (ValueUtility.IsEmptyString(userId))
                 throw new NotLoginException();
@@ -37,13 +51,14 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取登录管理员用户 Id，失败抛异常
         /// </summary>
-        public static async Task<string> RequireLoginAdminUserId(HttpRequest request, UserAuthService userAuthService)
+        public async Task<string> RequireLoginAdminUserId()
         {
-            string accessToken = request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
+            string accessToken = Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
             User? user = await userAuthService.GetLoginUser(accessToken);
             if (user == null || !user.IsAdmin)
                 throw new NotLoginException();
             return user.Id;
         }
+
     }
 }

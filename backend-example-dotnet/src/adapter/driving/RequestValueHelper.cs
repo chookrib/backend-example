@@ -1,4 +1,4 @@
-﻿using src.application;
+﻿using src.application.query;
 using src.utility;
 using System.Text;
 using System.Text.Json;
@@ -42,7 +42,7 @@ namespace src.adapter.driving
         //    }
         //    catch (Exception ex)
         //    {
-        //        throw new ControllerException("请求体不是合法的JSON格式", ex);
+        //        throw new ControllerException("请求体不是合法的 JSON 格式", ex);
         //    }
         //}
 
@@ -57,7 +57,7 @@ namespace src.adapter.driving
             }
             catch(Exception ex)
             {
-                throw new ControllerException("请求体不是合法的JSON格式", ex);
+                throw new ControllerException("请求体不是合法的 JSON 格式", ex);
             }
         }
 

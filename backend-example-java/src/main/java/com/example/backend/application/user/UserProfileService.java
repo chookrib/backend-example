@@ -1,7 +1,7 @@
 package com.example.backend.application.user;
 
 import com.example.backend.application.ApplicationException;
-import com.example.backend.application.IdGenerator;
+import com.example.backend.utility.IdUtility;
 import com.example.backend.application.lock.LockHandle;
 import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
@@ -45,7 +45,7 @@ public class UserProfileService {
      */
     public String register(String username, String password, String nickname) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = User.register(IdGenerator.generateId(), username, password, nickname, userUniqueSpecification);
+            User user = User.register(IdUtility.generateUUIDv7(), username, password, nickname, userUniqueSpecification);
             userRepository.insert(user);
             return user.getId();
         }

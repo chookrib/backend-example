@@ -1,6 +1,6 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.application.QuerySortOption;
+import com.example.backend.application.query.QuerySortOption;
 import com.example.backend.utility.JsonUtility;
 import com.example.backend.utility.ValueUtility;
 import com.fasterxml.jackson.databind.JsonNode;

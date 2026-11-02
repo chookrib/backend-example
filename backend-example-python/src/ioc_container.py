@@ -168,7 +168,7 @@ ioc_container.register(cls=SmsGateway, provider_cls=SmsGatewayAdapter)
 from src.adapter.driven.database_adapter import DatabaseAdapter
 from src.domain.user.user_repository import UserRepository
 from src.domain.user.user_unique_specification import UserUniqueSpecification
-from src.application.user.user_query_handler import UserQueryHandler
+from src.application.query.user_query_handler import UserQueryHandler
 from src.adapter.driven.user.user_persistence_adapter import UserPersistenceAdapter
 
 ioc_container.register(cls=DatabaseAdapter)

@@ -1,4 +1,4 @@
-from src.application import id_generator
+from src.utility import id_utility
 from src.application.lock import lock_key_constants
 from src.application.lock.lock_service import LockService
 from src.domain.user.user import User
@@ -25,7 +25,7 @@ class UserManageService:
         """创建用户"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await User.create(
-                id=id_generator.generate_id(),
+                id=id_utility.generate_uuid_v7(),
                 username=username,
                 password=password,
                 nickname=nickname,

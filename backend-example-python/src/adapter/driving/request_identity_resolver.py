@@ -2,7 +2,7 @@ from starlette.requests import Request
 
 from src.adapter.driving.not_login_exception import NotLoginException
 from src.application.user.user_auth_service import UserAuthService
-from src.application.user.user_query_handler import UserQueryHandler
+from src.application.query.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
 from src.utility import value_utility
 

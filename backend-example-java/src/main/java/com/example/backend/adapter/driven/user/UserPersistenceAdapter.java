@@ -2,11 +2,11 @@ package com.example.backend.adapter.driven.user;
 
 import com.example.backend.adapter.driven.DatabaseAdapter;
 import com.example.backend.adapter.driven.PersistenceException;
-import com.example.backend.application.QuerySortOption;
-import com.example.backend.application.user.UserDto;
-import com.example.backend.application.user.UserQueryCriteria;
-import com.example.backend.application.user.UserQueryHandler;
-import com.example.backend.application.user.UserQuerySortFields;
+import com.example.backend.application.query.QuerySortOption;
+import com.example.backend.application.query.UserDto;
+import com.example.backend.application.query.UserQueryCriteria;
+import com.example.backend.application.query.UserQueryHandler;
+import com.example.backend.application.query.UserQuerySortFields;
 import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.UserRepository;
 import com.example.backend.domain.user.UserUniqueSpecification;
@@ -16,7 +16,6 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

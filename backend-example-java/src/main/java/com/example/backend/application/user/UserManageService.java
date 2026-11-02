@@ -1,6 +1,6 @@
 package com.example.backend.application.user;
 
-import com.example.backend.application.IdGenerator;
+import com.example.backend.utility.IdUtility;
 import com.example.backend.application.lock.LockHandle;
 import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
@@ -44,7 +44,7 @@ public class UserManageService {
     public String createUser(String username, String password, String nickname, String mobile) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = User.create(
-                    IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
+                    IdUtility.generateUUIDv7(), username, password, nickname, mobile, this.userUniqueSpecification
             );
             userRepository.insert(user);
             return user.getId();

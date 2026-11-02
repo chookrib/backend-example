@@ -1,3 +1,8 @@
+### 测试请求
+POST http://{{host}}/api/test/request
+
+test
+
 ### 测试请求，获取请求体字符串，无请求体
 POST http://{{host}}/api/test/request/string-required
 

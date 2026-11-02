@@ -1,4 +1,4 @@
-﻿namespace src.application.user
+﻿namespace src.application.query
 {
     /// <summary>
     /// 用户 Query Handler 接口

@@ -1,6 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
-using src.application;
+using src.application.query;
 using src.application.user;
 
 namespace src.adapter.driving.user
@@ -11,12 +11,20 @@ namespace src.adapter.driving.user
     public class UserManageController : ControllerBase
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(UserManageController));
+
+        private readonly RequestIdentityResolver requestIdentityResolver;
         private readonly UserAuthService userAuthService;
         private readonly UserQueryHandler userQueryHandler;
         private readonly UserManageService userManageService;
 
-        public UserManageController(UserAuthService userAuthService, UserQueryHandler userQueryHandler, UserManageService userManageService)
+        public UserManageController(
+            RequestIdentityResolver requestIdentityResolver,
+            UserAuthService userAuthService,
+            UserQueryHandler userQueryHandler,
+            UserManageService userManageService
+            )
         {
+            this.requestIdentityResolver = requestIdentityResolver;
             this.userAuthService = userAuthService;
             this.userQueryHandler = userQueryHandler;
             this.userManageService = userManageService;
@@ -28,7 +36,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/list")]
         public async Task<Result> UserList()
         {
-            await RequestIdentityHelper.RequireLoginAdminUserId(Request, userAuthService);
+            await requestIdentityResolver.RequireLoginAdminUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             int pageNum = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -66,7 +74,7 @@ namespace src.adapter.driving.user
         [HttpGet("/api/admin/user/get")]
         public async Task<Result> UserGet()
         {
-            await RequestIdentityHelper.RequireLoginAdminUserId(Request, userAuthService);
+            await requestIdentityResolver.RequireLoginAdminUserId();
 
             string id = RequestValueHelper.GetRequestParamStringTrimReq(Request, "id");
             UserDto userDto = await userQueryHandler.QueryByIdReq(id);
@@ -82,7 +90,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/create")]
         public async Task<Result> UserCreate()
         {
-            await RequestIdentityHelper.RequireLoginAdminUserId(Request, userAuthService);
+            await requestIdentityResolver.RequireLoginAdminUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
@@ -103,7 +111,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/modify")]
         public async Task<Result> UserModify()
         {
-            await RequestIdentityHelper.RequireLoginAdminUserId(Request, userAuthService);
+            await requestIdentityResolver.RequireLoginAdminUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
@@ -122,7 +130,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/remove")]
         public async Task<Result> UserRemove()
         {
-            await RequestIdentityHelper.RequireLoginAdminUserId(Request, userAuthService);
+            await requestIdentityResolver.RequireLoginAdminUserId();
 
             var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
             string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");

@@ -1,6 +1,5 @@
 import secrets
 
-from src.application import id_generator
 from src.application.application_exception import ApplicationException
 from src.application.lock import lock_key_constants
 from src.application.lock.lock_service import LockService
@@ -8,7 +7,7 @@ from src.domain.ext.sms_gateway import SmsGateway
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
 from src.domain.user.user_unique_specification import UserUniqueSpecification
-from src.utility import value_utility
+from src.utility import value_utility, id_utility
 
 
 class UserProfileService:
@@ -26,7 +25,7 @@ class UserProfileService:
         """注册，仅演示使用，未防止恶意注册"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await User.register(
-                id=id_generator.generate_id(),
+                id=id_utility.generate_uuid_v7(),
                 username=username,
                 password=password,
                 nickname=nickname,

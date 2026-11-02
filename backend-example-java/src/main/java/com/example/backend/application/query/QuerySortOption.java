@@ -1,5 +1,6 @@
-package com.example.backend.application;
+package com.example.backend.application.query;
 
+import com.example.backend.application.ApplicationException;
 import com.example.backend.utility.ValueUtility;
 
 /**

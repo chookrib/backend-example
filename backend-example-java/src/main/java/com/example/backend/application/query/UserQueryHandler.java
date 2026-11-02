@@ -1,6 +1,4 @@
-package com.example.backend.application.user;
-
-import com.example.backend.application.QuerySortOption;
+package com.example.backend.application.query;
 
 import java.util.List;
 
