@@ -33,13 +33,11 @@ class RedisLockService(LockService):
     def __init__(self):
         if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_URL):
             raise ApplicationException("未配置 APP_LOCK_REDIS_URL")
-        if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_KEY_PREFIX):
-            raise ApplicationException("未配置 APP_LOCK_REDIS_KEY_PREFIX")
 
         self.redis = redis.from_url(application_config.APP_LOCK_REDIS_URL)
         # 注册 Lua 脚本以提高效率
         self.release_script = self.redis.register_script(RELEASE_LOCK_SCRIPT)
-        self.lock_key_prefix = application_config.APP_LOCK_REDIS_KEY_PREFIX
+        self.app_name = application_config.APP_NAME
         self.enable_log = application_config.is_app_env_dev()
 
     @asynccontextmanager
@@ -57,7 +55,7 @@ class RedisLockService(LockService):
         # lease_time: int = 30  # 锁的租约时间（秒）。锁会自动在这个时间后释放，防止死锁
         poll_interval: float = 0.2  # 尝试获取锁的轮询间隔（秒）
 
-        lock_key = f"{self.lock_key_prefix}:lock:{key}"
+        lock_key = f"{self.app_name}:lock:{key}"
         lock_value = str(uuid.uuid4())
 
         start_time = time.monotonic()

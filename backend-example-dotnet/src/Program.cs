@@ -140,21 +140,21 @@ namespace src
                     if (error is NotLoginException)
                     {
                         await context.Response.WriteAsJsonAsync(
-                            Result.Error(ResultCodes.ERROR_NOT_LOGIN, "未登录")
+                            Result.Error(ResultCodeConstants.ERROR_NOT_LOGIN, "未登录")
                         );
                     }
                     else if (error is LockException)
                     {
                         logger.Error("捕捉到 LockException 异常: ", error);
                         await context.Response.WriteAsJsonAsync(
-                            Result.Error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试")
+                            Result.Error(ResultCodeConstants.ERROR_DEFAULT, "系统繁忙，请稍后再试")
                         );
                     }
                     else if (error is AppException)
                     {
                         // 自定义异常返回异常信息
                         await context.Response.WriteAsJsonAsync(
-                            Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? string.Empty)
+                            Result.Error(ResultCodeConstants.ERROR_DEFAULT, error?.Message ?? string.Empty)
                         );
                     }
                     else
@@ -166,14 +166,14 @@ namespace src
                         {
                             // 开发环境非自定义异常显示具体信息
                             await context.Response.WriteAsJsonAsync(
-                                Result.Error(ResultCodes.ERROR_DEFAULT, error?.Message ?? string.Empty)
+                                Result.Error(ResultCodeConstants.ERROR_DEFAULT, error?.Message ?? string.Empty)
                             );
                         }
                         else
                         {
                             // 生产环境非自定义异常显示统一出错信息
                             await context.Response.WriteAsJsonAsync(
-                                Result.Error(ResultCodes.ERROR_DEFAULT, "系统发生错误")
+                                Result.Error(ResultCodeConstants.ERROR_DEFAULT, "系统发生错误")
                             );
                         }
                     }

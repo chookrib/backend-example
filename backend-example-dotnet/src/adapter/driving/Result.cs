@@ -47,7 +47,7 @@ namespace src.adapter.driving
         /// </summary>
         public bool Success
         {
-            get { return Code == ResultCodes.SUCCESS; }
+            get { return Code == ResultCodeConstants.SUCCESS; }
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Ok()
         {
-            return new Result(ResultCodes.SUCCESS, string.Empty);
+            return new Result(ResultCodeConstants.SUCCESS, string.Empty);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Ok(string message)
         {
-            return new Result(ResultCodes.SUCCESS, message);
+            return new Result(ResultCodeConstants.SUCCESS, message);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Ok(string message, object data)
         {
-            return new Result(ResultCodes.SUCCESS, message, data);
+            return new Result(ResultCodeConstants.SUCCESS, message, data);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace src.adapter.driving
         /// </summary>
         public static Result OkData(object data)
         {
-            return new Result(ResultCodes.SUCCESS, string.Empty, data);
+            return new Result(ResultCodeConstants.SUCCESS, string.Empty, data);
         }
 
         /// <summary>
@@ -87,8 +87,8 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Error(int code)
         {
-            if (code == ResultCodes.SUCCESS)
-                code = ResultCodes.ERROR_DEFAULT;
+            if (code == ResultCodeConstants.SUCCESS)
+                code = ResultCodeConstants.ERROR_DEFAULT;
             return new Result(code, string.Empty);
         }
 
@@ -97,8 +97,8 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Error(int code, string message)
         {
-            if (code == ResultCodes.SUCCESS)
-                code = ResultCodes.ERROR_DEFAULT;
+            if (code == ResultCodeConstants.SUCCESS)
+                code = ResultCodeConstants.ERROR_DEFAULT;
             return new Result(code, message);
         }
 
@@ -107,8 +107,8 @@ namespace src.adapter.driving
         /// </summary>
         public static Result Error(int code, string message, object data)
         {
-            if (code == ResultCodes.SUCCESS)
-                code = ResultCodes.ERROR_DEFAULT;
+            if (code == ResultCodeConstants.SUCCESS)
+                code = ResultCodeConstants.ERROR_DEFAULT;
             return new Result(code, message, data);
         }
 

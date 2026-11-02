@@ -16,7 +16,7 @@ namespace src.application.@lock
         private static readonly ILog logger = LogManager.GetLogger(typeof(RedisLockService));
 
         private readonly IDatabase redisDatabase;
-        private readonly string lockKeyPrefix;
+        private readonly string appName;
         private readonly bool enableLog;
 
         public RedisLockService(ApplicationConfig applicationConfig, IConfiguration configuration)
@@ -24,20 +24,17 @@ namespace src.application.@lock
             string redisUrl = configuration.GetValue<string>("App:LockRedisUrl") ?? string.Empty;
             if (ValueUtility.IsEmptyString(redisUrl))
                 throw new ApplicationException("未配置 App:LockRedisUrl");
-            string redisKeyPrefix = configuration.GetValue<string>("App:LockRedisKeyPrefix") ?? string.Empty;
-            if (ValueUtility.IsEmptyString(redisKeyPrefix))
-                throw new ApplicationException("未配置 App:LockRedisKeyPrefix");
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisUrl);
             this.redisDatabase = redis.GetDatabase();     // 根据 redisUrl 中指定的数据库取数据库
 
-            this.lockKeyPrefix = redisKeyPrefix;
+            this.appName = applicationConfig.GetAppName();
             this.enableLog = applicationConfig.IsAppEnvDev();
         }
 
         public IDisposable Lock(string key, int timeout = 10)
         {
-            string lockKey = lockKeyPrefix + ":lock:" + key;
+            string lockKey = appName + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;
@@ -61,7 +58,7 @@ namespace src.application.@lock
 
         public async ValueTask<IAsyncDisposable> LockAsync(string key, int timeout = 10)
         {
-            string lockKey = lockKeyPrefix + ":lock:" + key;
+            string lockKey = appName + ":lock:" + key;
             string token = Guid.NewGuid().ToString();
             //TimeSpan? expiry = TimeSpan.FromSeconds(timeout);
             TimeSpan? expiry = null;

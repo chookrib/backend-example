@@ -48,7 +48,7 @@ public class LockServiceConfig {
         if(ValueUtility.isEmptyString(redissonKeyPrefix))
             throw new ApplicationException("未配置 app.lock-redisson-key-prefix");
         return new RedissonLockService(
-                redissonKeyPrefix,
+                applicationConfig.getAppName(),
                 applicationConfig.isAppEnvDev(),
                 redissonAddress,
                 redissonPassword,

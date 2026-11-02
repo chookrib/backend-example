@@ -48,6 +48,19 @@ public class JsonUtility {
     /**
      * 反序列化 JSON 字符串为为指定类型对象
      */
+    public static <T> T deserialize(String data, TypeReference<T> type) {
+        JsonNode json = deserialize(data);
+        // try {
+        // return OBJECT_MAPPER.readValue(data, type);
+        return OBJECT_MAPPER.convertValue(json, type);
+        // } catch (JsonProcessingException ex) {
+        //     throw new UtilityException("反序列化 JSON 异常", ex);
+        // }
+    }
+
+    /**
+     * 反序列化 JsonNode 为为指定类型对象
+     */
     public static <T> T deserialize(JsonNode data, TypeReference<T> type) {
         // try {
         // return OBJECT_MAPPER.readValue(data, type);

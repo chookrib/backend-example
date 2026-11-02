@@ -100,8 +100,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     ValueUtility.toDateTimeOrNull(rs.getString("u_created_at")),
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
-        } catch (SQLException ex) {
-            throw new PersistenceException("转换数据库记录为实体时发生错误", ex);
+        } catch (Exception ex) {
+            throw new PersistenceException("从数据库获取 User 时发生异常", ex);
         }
     }
 
@@ -303,8 +303,8 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
                     ValueUtility.toDateTimeOrNull(rs.getString("u_created_at")),
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
-        } catch (SQLException ex) {
-            throw new PersistenceException("转换数据库记录为 DTO 时发生错误", ex);
+        } catch (Exception ex) {
+            throw new PersistenceException("从数据库获取 UserDto 时发生异常", ex);
         }
     }
 

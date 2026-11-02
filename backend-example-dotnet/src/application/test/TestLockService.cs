@@ -77,7 +77,7 @@ namespace src.application.test
         /// </summary>
         public void SyncDecreaseCountWithSyncLock()
         {
-            using (lockService.Lock(LockKeys.TEST))
+            using (lockService.Lock(LockKeyConstants.TEST))
             {
                 SyncDecreaseCount();
             }
@@ -88,7 +88,7 @@ namespace src.application.test
         /// </summary>
         public async Task SyncDecreaseCountWithAsyncLock()
         {
-            await using (await lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeyConstants.TEST))
             {
                 SyncDecreaseCount();
             }
@@ -99,7 +99,7 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncDecreaseCountWithSyncLock()
         {
-            using (lockService.Lock(LockKeys.TEST))
+            using (lockService.Lock(LockKeyConstants.TEST))
             {
                 await AsyncDecreaseCount();
             }
@@ -110,7 +110,7 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncDecreaseCountWithAsyncLock()
         {
-            await using (await lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeyConstants.TEST))
             {
                 //await Task.Delay(new Random().Next(1000, 5000));
                 await Task.Delay(0);
@@ -141,7 +141,7 @@ namespace src.application.test
         /// </summary>
         public async Task AsyncTaskDelayWithAsyncLock()
         {
-            await using (await lockService.LockAsync(LockKeys.TEST))
+            await using (await lockService.LockAsync(LockKeyConstants.TEST))
             {
                 await Task.Delay(10 * 1000);
             }

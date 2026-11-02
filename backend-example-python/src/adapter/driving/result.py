@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.adapter.driving import result_codes
+from src.adapter.driving import result_code_constants
 
 
 class Result:
@@ -10,7 +10,7 @@ class Result:
         self.code = code
         self.message = message
         self.data = data  # data if data is not None else {}
-        self.success = code == result_codes.SUCCESS
+        self.success = code == result_code_constants.SUCCESS
 
     def to_dict(self):
         """转换为dict"""
@@ -19,13 +19,13 @@ class Result:
     @staticmethod
     def ok(message: str = "", data: Any = None) -> "Result":
         """成功"""
-        return Result(code=result_codes.SUCCESS, message=message, data=data)
+        return Result(code=result_code_constants.SUCCESS, message=message, data=data)
 
     @staticmethod
-    def error(code: int = result_codes.ERROR_DEFAULT, message: str = "", data: Any = None) -> "Result":
+    def error(code: int = result_code_constants.ERROR_DEFAULT, message: str = "", data: Any = None) -> "Result":
         """失败"""
-        if code == result_codes.SUCCESS:
-            code = result_codes.ERROR_DEFAULT
+        if code == result_code_constants.SUCCESS:
+            code = result_code_constants.ERROR_DEFAULT
         return Result(code=code, message=message, data=data)
 
     # @classmethod

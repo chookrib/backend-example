@@ -1,5 +1,5 @@
 from src.application import id_generator
-from src.application.lock import lock_keys
+from src.application.lock import lock_key_constants
 from src.application.lock.lock_service import LockService
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
@@ -23,7 +23,7 @@ class UserManageService:
 
     async def create_user(self, username: str, password: str, nickname: str, mobile: str = "") -> str:
         """创建用户"""
-        async with self.lock_service.lock_async(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await User.create(
                 id=id_generator.generate_id(),
                 username=username,
@@ -36,7 +36,7 @@ class UserManageService:
 
     async def modify_user(self, id: str, username: str, nickname: str, mobile: str) -> None:
         """修改用户"""
-        async with self.lock_service.lock_async(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await self.user_repository.select_by_id_req(id)
             await user.modify(
                 username=username,

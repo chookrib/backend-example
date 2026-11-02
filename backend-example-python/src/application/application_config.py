@@ -14,7 +14,6 @@ class ApplicationConfig(BaseSettings):
 
     APP_LOCK_SERVICE: str = "asyncio"
     APP_LOCK_REDIS_URL: str = ""
-    APP_LOCK_REDIS_KEY_PREFIX: str = ""
 
     APP_JWT_SECRET: str = ""
     APP_JWT_TTL: str = ""

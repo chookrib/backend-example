@@ -5,6 +5,7 @@ import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.ValueUtility;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 用户 Entity
@@ -43,13 +44,13 @@ public class User {
             String id, String username, String password, String nickname, String mobile, boolean isAdmin,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         User user = new User();
-        user.id = id;
-        user.username = username;
-        user.password = password;
-        user.nickname = nickname;
-        user.mobile = mobile;
+        user.id = Objects.requireNonNull(id);
+        user.username = Objects.requireNonNull(username);
+        user.password = Objects.requireNonNull(password);
+        user.nickname = Objects.requireNonNull(nickname);
+        user.mobile = Objects.requireNonNull(mobile);
         user.isAdmin = isAdmin;
-        user.createdAt = createdAt;
+        user.createdAt = Objects.requireNonNull(createdAt);
         user.updatedAt = updatedAt;
         return user;
     }

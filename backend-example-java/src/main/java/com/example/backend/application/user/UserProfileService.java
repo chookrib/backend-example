@@ -2,8 +2,8 @@ package com.example.backend.application.user;
 
 import com.example.backend.application.ApplicationException;
 import com.example.backend.application.IdGenerator;
-import com.example.backend.application.lock.LockHandler;
-import com.example.backend.application.lock.LockKeys;
+import com.example.backend.application.lock.LockHandle;
+import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
 import com.example.backend.domain.ext.SmsGateway;
 import com.example.backend.domain.user.User;
@@ -44,7 +44,7 @@ public class UserProfileService {
      * 注册，仅演示使用，未防止恶意注册功能
      */
     public String register(String username, String password, String nickname) {
-        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = User.register(IdGenerator.generateId(), username, password, nickname, userUniqueSpecification);
             userRepository.insert(user);
             return user.getId();
@@ -64,7 +64,7 @@ public class UserProfileService {
      * 修改昵称
      */
     public void modifyNickname(String userId, String nickname) {
-        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = userRepository.selectByIdReq(userId);
             user.modifyNickname(nickname, userUniqueSpecification);
             userRepository.update(user);

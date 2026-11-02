@@ -1,6 +1,7 @@
 package com.example.backend.application.user;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 用户 DTO
@@ -9,7 +10,6 @@ public class UserDto {
 
     private String id;
     private String username;
-    // private String password;
     private String nickname;
     private String mobile;
     private boolean isAdmin;
@@ -24,8 +24,6 @@ public class UserDto {
         return username;
     }
 
-    // public String getPassword() { return password; }
-
     public String getNickname() {
         return nickname;
     }
@@ -34,9 +32,7 @@ public class UserDto {
         return mobile;
     }
 
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
+    public boolean getIsAdmin() { return isAdmin; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -47,15 +43,14 @@ public class UserDto {
     }
 
     public UserDto(
-            String id, String username, /*String password,*/ String nickname, String mobile, boolean isAdmin,
+            String id, String username, String nickname, String mobile, boolean isAdmin,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.username = username;
-        //this.password = password;
-        this.nickname = nickname;
-        this.mobile = mobile;
+        this.id = Objects.requireNonNull(id);
+        this.username = Objects.requireNonNull(username);
+        this.nickname = Objects.requireNonNull(nickname);
+        this.mobile = Objects.requireNonNull(mobile);
         this.isAdmin = isAdmin;
-        this.createdAt = createdAt;
+        this.createdAt = Objects.requireNonNull(createdAt);
         this.updatedAt = updatedAt;
     }
 }

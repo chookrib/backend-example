@@ -8,7 +8,7 @@ from fastapi import encoders
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 
-from src.adapter.driving import result_codes
+from src.adapter.driving import result_code_constants
 from src.adapter.driving.result import Result
 from src.application.application_config import application_config
 from src.utility import json_utility, value_utility
@@ -101,7 +101,7 @@ from src.adapter.driving.not_login_exception import NotLoginException
 async def not_login_exception_handler(request: Request, ex: NotLoginException):
     return JSONResponse(
         content=Result.error(
-            code=result_codes.ERROR_NOT_LOGIN,
+            code=result_code_constants.ERROR_NOT_LOGIN,
             message=f"未登录",
         ).to_dict()
     )
@@ -115,7 +115,7 @@ async def lock_exception_handler(request: Request, ex: LockException):
     logger.error(f"捕捉到 LockException 异常: {str(ex)}", exc_info=True)
     return JSONResponse(
         content=Result.error(
-            code=result_codes.ERROR_DEFAULT,
+            code=result_code_constants.ERROR_DEFAULT,
             message=f"系统繁忙，请稍后再试"
         ).to_dict()
     )
@@ -213,7 +213,7 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
             # 自定义异常返回异常信息
             return JSONResponse(
                 content=Result.error(
-                    code=result_codes.ERROR_DEFAULT,
+                    code=result_code_constants.ERROR_DEFAULT,
                     message=f"{str(ex)}"
                 ).to_dict()
             )
@@ -225,7 +225,7 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
                 # 开发环境非自定义异常显示具体信息
                 return JSONResponse(
                     content=Result.error(
-                        code=result_codes.ERROR_DEFAULT,
+                        code=result_code_constants.ERROR_DEFAULT,
                         message=f"{str(ex)}"
                     ).to_dict()
                 )
@@ -233,7 +233,7 @@ async def catch_all_exceptions_middleware(request: Request, call_next):
                 # 生产环境非自定义异常显示统一出错信息
                 return JSONResponse(
                     content=Result.error(
-                        code=result_codes.ERROR_DEFAULT,
+                        code=result_code_constants.ERROR_DEFAULT,
                         message=f"系统发生错误"
                     ).to_dict()
                 )

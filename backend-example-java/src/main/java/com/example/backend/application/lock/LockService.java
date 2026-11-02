@@ -8,5 +8,5 @@ public interface LockService {
     /**
      * 获取一个锁，返回锁句柄，使用 try-with-resources 语法自动释放锁
      */
-    LockHandler lock(String key);
+    LockHandle lock(String key);
 }

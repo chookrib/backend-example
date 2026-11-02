@@ -3,7 +3,7 @@
     /// <summary>
     /// 锁 Key 定义
     /// </summary>
-    public class LockKeys
+    public class LockKeyConstants
     {
         /// <summary>
         /// 测试锁

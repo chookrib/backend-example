@@ -3,7 +3,7 @@ package com.example.backend.adapter.driving;
 /**
  * Result 返回码定义
  */
-public class ResultCodes {
+public class ResultCodeConstants {
 
     /**
      * 成功

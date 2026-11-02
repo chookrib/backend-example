@@ -48,43 +48,43 @@ public class Result {
      */
     // @JsonProperty("isSuccess")
     public boolean isSuccess() {
-        return code == ResultCodes.SUCCESS;
+        return code == ResultCodeConstants.SUCCESS;
     }
 
     /**
      * 成功
      */
     public static Result ok() {
-        return new Result(ResultCodes.SUCCESS, "");
+        return new Result(ResultCodeConstants.SUCCESS, "");
     }
 
     /**
      * 成功，指定信息
      */
     public static Result ok(String message) {
-        return new Result(ResultCodes.SUCCESS, message);
+        return new Result(ResultCodeConstants.SUCCESS, message);
     }
 
     /**
      * 成功，指定信息和数据
      */
     public static Result ok(String message, Object data) {
-        return new Result(ResultCodes.SUCCESS, message, data);
+        return new Result(ResultCodeConstants.SUCCESS, message, data);
     }
 
     /**
      * 成功，指定数据
      */
     public static Result okData(Object data) {
-        return new Result(ResultCodes.SUCCESS, "", data);
+        return new Result(ResultCodeConstants.SUCCESS, "", data);
     }
 
     /**
      * 失败，指定返回码
      */
     public static Result error(int code) {
-        if (code == ResultCodes.SUCCESS)
-            code = ResultCodes.ERROR_DEFAULT;
+        if (code == ResultCodeConstants.SUCCESS)
+            code = ResultCodeConstants.ERROR_DEFAULT;
         return new Result(code, "");
     }
 
@@ -92,8 +92,8 @@ public class Result {
      * 失败，指定返回码和信息
      */
     public static Result error(int code, String message) {
-        if (code == ResultCodes.SUCCESS)
-            code = ResultCodes.ERROR_DEFAULT;
+        if (code == ResultCodeConstants.SUCCESS)
+            code = ResultCodeConstants.ERROR_DEFAULT;
         return new Result(code, message);
     }
 
@@ -101,8 +101,8 @@ public class Result {
      * 失败，指定返回码、信息和数据
      */
     public static Result error(int code, String message, Object data) {
-        if (code == ResultCodes.SUCCESS)
-            code = ResultCodes.ERROR_DEFAULT;
+        if (code == ResultCodeConstants.SUCCESS)
+            code = ResultCodeConstants.ERROR_DEFAULT;
         return new Result(code, message, data);
     }
 

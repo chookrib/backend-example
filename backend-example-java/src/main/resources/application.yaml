@@ -24,11 +24,11 @@ app:
   name: backend-example-java
   env: dev
 
-  #  lock-service: redisson   # reentrant[default] | redisson
-  #  lock-redisson-address: redis://localhost:6379
-  #  lock-redisson-password:
-  #  lock-redisson-database: 0
-  #  lock-redisson-key-prefix: backend-example:lock:
+  # 锁配置
+  # lock-service: redisson   # reentrant[default] | redisson
+  # lock-redisson-address: redis://localhost:6379
+  # lock-redisson-password:
+  # lock-redisson-database: 0
 
   jwt-secret: jwt-secret-string
   jwt-ttl: 30d

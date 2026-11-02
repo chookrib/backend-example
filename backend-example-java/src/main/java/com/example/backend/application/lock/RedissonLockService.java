@@ -16,14 +16,16 @@ public class RedissonLockService implements LockService {
 
     private static final Logger logger = LoggerFactory.getLogger(RedissonLockService.class);
 
-    private final String lockKeyPrefix;
+    private final String appName;
     private final boolean enableLog;
     private final RedissonClient redissonClient;
 
     // public RedissonLockService(RedissonClient redissonClient) {
-    public RedissonLockService(String lockKeyPrefix, boolean enableLog, String address, String password, int database) {
+    public RedissonLockService(
+            String appName, boolean enableLog, String address, String password, int database
+    ) {
         // this.redissonClient = redissonClient;
-        this.lockKeyPrefix = lockKeyPrefix;
+        this.appName = appName;
         this.enableLog = enableLog;
         try {
             Config config = new Config();
@@ -38,15 +40,15 @@ public class RedissonLockService implements LockService {
     }
 
     @Override
-    public LockHandler lock(String key) {
-        String lockKey = lockKeyPrefix + ":lock:" + key;
+    public LockHandle lock(String key) {
+        String lockKey = appName + ":lock:" + key;
         RLock lock = redissonClient.getLock(lockKey);
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (enableLog) {
                     logger.info("线程 {} 获取 Redisson 锁 {} 成功", Thread.currentThread().getName(), key);
                 }
-                return new RedissonLockHandler(enableLog, lock, key);
+                return new RedissonLockHandle(enableLog, lock, key);
             } else {
                 throw new LockException(String.format("获取 Redisson 锁 %s 失败", key));
             }
@@ -58,13 +60,13 @@ public class RedissonLockService implements LockService {
     /**
      * RedissonLock 锁处理器
      */
-    private static class RedissonLockHandler implements LockHandler {
+    private static class RedissonLockHandle implements LockHandle {
 
         private final boolean enableLog;
         private final RLock lock;
         private final String lockKey;
 
-        public RedissonLockHandler(boolean enableLog, RLock lock, String lockKey) {
+        public RedissonLockHandle(boolean enableLog, RLock lock, String lockKey) {
             this.enableLog = enableLog;
             this.lock = lock;
             this.lockKey = lockKey;

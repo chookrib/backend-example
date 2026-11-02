@@ -6,12 +6,9 @@ import com.example.backend.utility.AppException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * 全局异常处理器
@@ -33,7 +30,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = NotLoginException.class)
     @ResponseBody
     public Result notLoginExceptionHandler(NotLoginException ex) {
-        return Result.error(ResultCodes.ERROR_NOT_LOGIN, "未登录");
+        return Result.error(ResultCodeConstants.ERROR_NOT_LOGIN, "未登录");
     }
 
     /**
@@ -43,7 +40,7 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public Result lockExceptionHandler(LockException ex) {
         logger.error("捕捉到 LockException 异常: ", ex);
-        return Result.error(ResultCodes.ERROR_DEFAULT, "系统繁忙，请稍后再试");
+        return Result.error(ResultCodeConstants.ERROR_DEFAULT, "系统繁忙，请稍后再试");
     }
 
     // /**
@@ -73,7 +70,7 @@ public class ControllerExceptionHandler {
         if (ex instanceof AppException) {
             // 自定义异常返回异常信息
             // response.setStatus(HttpServletResponse.SC_OK);
-            return Result.error(ResultCodes.ERROR_DEFAULT, message);
+            return Result.error(ResultCodeConstants.ERROR_DEFAULT, message);
         } else {
             // 非自定义异常记录日志
             logger.error("捕捉到非自定义异常", ex);
@@ -81,10 +78,10 @@ public class ControllerExceptionHandler {
             // response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             if (applicationConfig.isAppEnvDev()) {
                 // 开发环境非自定义异常显示具体信息
-                return Result.error(ResultCodes.ERROR_DEFAULT, message);
+                return Result.error(ResultCodeConstants.ERROR_DEFAULT, message);
             } else {
                 // 生产环境非自定义异常显示统一出错信息
-                return Result.error(ResultCodes.ERROR_DEFAULT, "系统发生错误");
+                return Result.error(ResultCodeConstants.ERROR_DEFAULT, "系统发生错误");
             }
         }
     }

@@ -2,7 +2,7 @@ import secrets
 
 from src.application import id_generator
 from src.application.application_exception import ApplicationException
-from src.application.lock import lock_keys
+from src.application.lock import lock_key_constants
 from src.application.lock.lock_service import LockService
 from src.domain.ext.sms_gateway import SmsGateway
 from src.domain.user.user import User
@@ -24,7 +24,7 @@ class UserProfileService:
 
     async def register(self, username: str, password: str, nickname: str) -> str:
         """注册，仅演示使用，未防止恶意注册"""
-        async with self.lock_service.lock_async(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await User.register(
                 id=id_generator.generate_id(),
                 username=username,
@@ -42,7 +42,7 @@ class UserProfileService:
 
     async def modify_nickname(self, user_id: str, nickname: str) -> None:
         """修改昵称"""
-        async with self.lock_service.lock_async(lock_keys.USER):
+        async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await self.user_repository.select_by_id_req(user_id)
             await user.modify_nickname(nickname, self.user_unique_specification)
             await self.user_repository.update(user)

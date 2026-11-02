@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -210,6 +211,39 @@ public class RequestValueHelper {
         if (l != null)
             return l;
         throw new ControllerException(String.format("请求体 %s 值不是合法的 long", String.join(".", keys)));
+    }
+
+    //==================================================================================================================
+
+    /**
+     * 获取请求 json 数据中 decimal 值，失败返回 null
+     */
+    public static BigDecimal getRequestJsonDecimalOrNull(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValue(json, keys);
+        if (node.isMissingNode())
+            return null;
+        return ValueUtility.toDecimalOrNull(node.asText());
+    }
+
+    /**
+     * 获取请求 json 数据中 decimal 值，失败返回默认值
+     */
+    public static BigDecimal getRequestJsonDecimalOrDefault(JsonNode json, BigDecimal defaultValue, String... keys) {
+        BigDecimal d = getRequestJsonDecimalOrNull(json, keys);
+        if (d != null)
+            return d;
+        return defaultValue;
+    }
+
+    /**
+     * 获取请求 json 数据中 decimal 值，失败抛出异常
+     */
+    public static BigDecimal getRequestJsonDecimalReq(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueReq(json, keys);
+        BigDecimal d = ValueUtility.toDecimalOrNull(node.asText());
+        if (d != null)
+            return d;
+        throw new ControllerException(String.format("请求体 %s 值不是合法的 decimal", String.join(".", keys)));
     }
 
     //==================================================================================================================
@@ -455,6 +489,35 @@ public class RequestValueHelper {
         if (l != null)
             return l;
         throw new ControllerException(String.format("请求参数 %s 值不是合法的 long", key));
+    }
+
+    //==================================================================================================================
+
+    /**
+     * 获取请求参数中 decimal 值，失败返回 null
+     */
+    public static BigDecimal getRequestParamDecimalOrNull(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrEmpty(request, key);
+        return ValueUtility.toDecimalOrNull(value);
+    }
+
+    /**
+     * 获取请求参数中 decimal 值，失败返回默认值
+     */
+    public static BigDecimal getRequestParamDecimalOrDefault(HttpServletRequest request, BigDecimal defaultValue, String key) {
+        String value = getRequestParamStringTrimOrEmpty(request, key);
+        return ValueUtility.toDecimalOrDefault(value, defaultValue);
+    }
+
+    /**
+     * 获取请求参数中 decimal 值，失败抛出异常
+     */
+    public static BigDecimal getRequestParamDecimalReq(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimReq(request, key);
+        BigDecimal d = ValueUtility.toDecimalOrNull(value);
+        if (d != null)
+            return d;
+        throw new ControllerException(String.format("请求参数 %s 值不是合法的 decimal", key));
     }
 
     //==================================================================================================================

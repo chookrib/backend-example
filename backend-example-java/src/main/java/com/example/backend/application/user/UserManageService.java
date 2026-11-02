@@ -1,8 +1,8 @@
 package com.example.backend.application.user;
 
 import com.example.backend.application.IdGenerator;
-import com.example.backend.application.lock.LockHandler;
-import com.example.backend.application.lock.LockKeys;
+import com.example.backend.application.lock.LockHandle;
+import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
 import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.UserRepository;
@@ -42,7 +42,7 @@ public class UserManageService {
      * 创建用户
      */
     public String createUser(String username, String password, String nickname, String mobile) {
-        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = User.create(
                     IdGenerator.generateId(), username, password, nickname, mobile, this.userUniqueSpecification
             );
@@ -55,7 +55,7 @@ public class UserManageService {
      * 修改用户
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
-        try (LockHandler lock = lockService.lock(LockKeys.USER)) {
+        try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = userRepository.selectByIdReq(id);
             user.modify(username, nickname, mobile, userUniqueSpecification);
             userRepository.update(user);

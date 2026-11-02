@@ -24,14 +24,14 @@ public class ReentrantLockService implements LockService {
     }
 
     @Override
-    public LockHandler lock(String key) {
+    public LockHandle lock(String key) {
         ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
         try {
             if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 if (enableLog) {
                     logger.info("线程 {} 获取 ReentrantLock 锁 {} 成功", Thread.currentThread().getName(), key);
                 }
-                return new ReentrantLockHandler(enableLog, lock, key);
+                return new ReentrantLockHandle(enableLog, lock, key);
             } else {
                 throw new LockException(String.format("获取 Reentrant 锁 %s 失败", key));
             }
@@ -43,13 +43,13 @@ public class ReentrantLockService implements LockService {
     /**
      * ReentrantLock 锁处理器
      */
-    private static class ReentrantLockHandler implements LockHandler {
+    private static class ReentrantLockHandle implements LockHandle {
 
         private final boolean enableLog;
         private final ReentrantLock reentrantLock;
         private final String key;
 
-        public ReentrantLockHandler(boolean enableLog, ReentrantLock reentrantLock, String key) {
+        public ReentrantLockHandle(boolean enableLog, ReentrantLock reentrantLock, String key) {
             this.enableLog = enableLog;
             this.reentrantLock = reentrantLock;
             this.key = key;

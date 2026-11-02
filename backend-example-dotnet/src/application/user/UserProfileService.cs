@@ -37,7 +37,7 @@ namespace src.application.user
         /// </summary>
         public async Task<string> Register(string username, string password, string nickname)
         {
-            await using (await lockService.LockAsync(LockKeys.USER))
+            await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
                 User user = await User.Register(IdGenerator.GenerateId(), username, password, nickname,
                     userUniqueSpecification);
@@ -61,7 +61,7 @@ namespace src.application.user
         /// </summary>
         public async Task ModifyNickname(string userId, string nickname)
         {
-            await using (await lockService.LockAsync(LockKeys.USER))
+            await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
                 User user = await userRepository.SelectByIdReq(userId);
                 await user.ModifyNickname(nickname, userUniqueSpecification);
