@@ -1,6 +1,6 @@
 package com.example.backend.adapter.driving.test;
 
-import com.example.backend.adapter.driving.RequestValueHelper;
+import com.example.backend.adapter.driving.RequestValueExtractor;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.JsonUtility;
@@ -27,9 +27,9 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/jwt-encode", method = RequestMethod.POST)
     public Result testCryptoJwtEncode(@RequestBody String requestBody)
     {
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String secret = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "secret");
-        LocalDateTime expiresAt = RequestValueHelper.getRequestJsonDateTimeReq(requestJson, "expiresAt");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String secret = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "secret");
+        LocalDateTime expiresAt = RequestValueExtractor.getRequestJsonDateTimeOrThrow(requestJson, "expiresAt");
         var payloadNode = requestJson.path("payload");
         // System.out.println("payloadNode: " + payloadNode.toString());
         Map<String, ?> payload = JsonUtility.deserialize(payloadNode, new TypeReference<Map<String, ?>>() { });
@@ -44,9 +44,9 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/jwt-decode", method = RequestMethod.POST)
     public Result testCryptoJwtDecode(@RequestBody String requestBody)
     {
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String secret = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "secret");
-        String token = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "token");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String secret = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "secret");
+        String token = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "token");
         Map<String, ?> payload = CryptoUtility.jwtDecode(token, secret);
 
         String headerDecoded = "";
@@ -72,7 +72,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/base64-encode", method = RequestMethod.GET)
     public Result testCryptoBase64Encode(HttpServletRequest request)
     {
-        String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
+        String text = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "text");
         String base64 = CryptoUtility.base64Encode(text);
         return Result.okData(Map.of("base64", base64));
     }
@@ -83,7 +83,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/base64-decode", method = RequestMethod.GET)
     public Result testCryptoBase64Decode(HttpServletRequest request)
     {
-        String base64 = RequestValueHelper.getRequestParamStringTrimReq(request, "base64");
+        String base64 = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "base64");
         String text = CryptoUtility.base64Decode(base64);
         return Result.okData(Map.of("text", text));
     }
@@ -94,7 +94,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/md5-encode", method = RequestMethod.GET)
     public Result testCryptoMd5Encode(HttpServletRequest request)
     {
-        String text = RequestValueHelper.getRequestParamStringTrimReq(request, "text");
+        String text = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "text");
         String md5 = CryptoUtility.md5Encode(text);
         return Result.okData(Map.of("md5", md5));
     }

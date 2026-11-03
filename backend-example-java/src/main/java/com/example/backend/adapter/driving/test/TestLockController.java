@@ -1,6 +1,6 @@
 package com.example.backend.adapter.driving.test;
 
-import com.example.backend.adapter.driving.RequestValueHelper;
+import com.example.backend.adapter.driving.RequestValueExtractor;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.lock.LockException;
 import com.example.backend.application.test.TestLockService;
@@ -32,7 +32,7 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/set-count", method = RequestMethod.GET)
     public Result testLockSetCount(HttpServletRequest request) {
-        int value = RequestValueHelper.getRequestParamIntOrDefault(request, 1, "value");
+        int value = RequestValueExtractor.getRequestParamIntOrDefault(request, 1, "value");
         testLockService.setCount(value);
         return Result.okData(Map.of("count", value));
     }

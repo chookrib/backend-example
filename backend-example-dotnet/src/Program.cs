@@ -8,7 +8,6 @@ using src.adapter.driven.user;
 using src.adapter.driving;
 using src.application;
 using src.application.@lock;
-using src.application.query;
 using src.application.test;
 using src.application.user;
 using src.domain;
@@ -77,7 +76,7 @@ namespace src
             builder.Services.AddSingleton<DatabaseAdapter>();
             builder.Services.AddSingleton<UserPersistenceAdapter>();
             builder.Services.AddSingleton<UserRepository>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
-            builder.Services.AddSingleton<UserUniqueSpecification>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
+            builder.Services.AddSingleton<UserUniquenessValidator>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             builder.Services.AddSingleton<UserQueryHandler>(sp => sp.GetRequiredService<UserPersistenceAdapter>());
             // 注册 Application Service
             builder.Services.AddSingleton<UserAuthService>();

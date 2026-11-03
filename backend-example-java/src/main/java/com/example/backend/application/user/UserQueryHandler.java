@@ -1,5 +1,6 @@
-package com.example.backend.application.query;
+package com.example.backend.application.user;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public interface UserQueryHandler {
     /**
      * 根据 id 查询，找不到抛出异常
      */
-    UserDto queryByIdReq(String id);
+    UserDto queryByIdOrThrow(String id);
 
     /**
      * 查询记录数
@@ -25,10 +26,10 @@ public interface UserQueryHandler {
     /**
      * 查询
      */
-    List<UserDto> query(UserQueryCriteria criteria, List<QuerySortOption> sortOptions);
+    List<UserDto> query(UserQueryCriteria criteria, LinkedHashMap<String, String> sortOptions);
 
     /**
      * 分页查询
      */
-    List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, List<QuerySortOption> sortOptions);
+    List<UserDto> queryPage(int pageNum, int pageSize, UserQueryCriteria criteria, LinkedHashMap<String, String> sortOptions);
 }

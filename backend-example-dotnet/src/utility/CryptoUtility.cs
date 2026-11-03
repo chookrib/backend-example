@@ -10,7 +10,7 @@ namespace src.utility
     /// <summary>
     /// 加密 Utility
     /// </summary>
-    public class CryptoUtility
+    public sealed class CryptoUtility
     {
         /// <summary>
         /// JWT 编码，secret 要大于16位

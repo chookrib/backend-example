@@ -22,7 +22,7 @@ class UserAuthService:
 
     async def login(self, username, password) -> str:
         """登录，返回 AccessToken"""
-        user = await self.user_repository.select_by_username(username)
+        user = await self.user_repository.find_by_username(username)
         if user is None or not user.is_password_match(password):
             raise ApplicationException("密码错误")
 

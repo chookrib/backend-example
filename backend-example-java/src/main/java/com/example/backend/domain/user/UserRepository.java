@@ -25,21 +25,21 @@ public interface UserRepository {
     /**
      * 根据 id 查询，找不到返回 null
      */
-    User selectById(String id);
+    User findById(String id);
 
     /**
      * 根据 id 查询，找不到抛出异常
      */
-    User selectByIdReq(String id);
+    User findByIdOrThrow(String id);
 
     /**
      * 根据 id 集合查询
      */
-    List<User> selectByIds(List<String> ids);
+    List<User> findByIds(List<String> ids);
 
     /**
      * 根据用户名查询，找不到返回 null
      */
-    User selectByUsername(String username);
+    User findByUsername(String username);
 }
 

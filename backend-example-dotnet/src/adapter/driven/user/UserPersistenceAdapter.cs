@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using src.application.query;
+using src.application.user;
 using src.domain.user;
 using src.utility;
 using System.Dynamic;
@@ -9,7 +9,7 @@ namespace src.adapter.driven.user
     /// <summary>
     /// 用户持久化 Adapter
     /// </summary>
-    public class UserPersistenceAdapter : UserRepository, UserUniqueSpecification, UserQueryHandler
+    public class UserPersistenceAdapter : UserRepository, UserUniquenessValidator, UserQueryHandler
     {
         private readonly DatabaseAdapter databaseAdapter;
         private readonly string tableName;
@@ -114,7 +114,7 @@ namespace src.adapter.driven.user
             await conn.ExecuteAsync($"DELETE FROM {this.tableName} WHERE u_id = @id", new { id });
         }
 
-        public async Task<User?> SelectById(string id)
+        public async Task<User?> FindById(string id)
         {
             if (ValueUtility.IsEmptyString(id))
                 return null;
@@ -127,15 +127,15 @@ namespace src.adapter.driven.user
             return ToEntity(row);
         }
 
-        public async Task<User> SelectByIdReq(string id)
+        public async Task<User> FindByIdOrThrow(string id)
         {
-            User? entity = await SelectById(id);
+            User? entity = await FindById(id);
             if (entity == null)
                 throw new PersistenceException($"用户 {id} 不存在");
             return entity;
         }
 
-        public async Task<IList<User>> SelectByIds(List<string> ids)
+        public async Task<IList<User>> FindByIds(List<string> ids)
         {
             IList<User> list = new List<User>();
             if (ids == null || ids.Count == 0)
@@ -153,7 +153,7 @@ namespace src.adapter.driven.user
             return list;
         }
 
-        public async Task<User?> SelectByUsername(string username)
+        public async Task<User?> FindByUsername(string username)
         {
             if (ValueUtility.IsEmptyString(username))
                 return null;
@@ -169,30 +169,30 @@ namespace src.adapter.driven.user
         //==============================================================================================================
         // UserUniqueSpecification
 
-        public async Task<bool> IsUsernameUnique(string username)
+        public async Task<bool> IsUsernameAvailable(string username)
         {
             if (ValueUtility.IsEmptyString(username))
-                throw new PersistenceException("参数 username 不能为空");
+                throw new PersistenceException("无法检查 username 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_username) = LOWER(@username)", new { username }
             ) == 0;
         }
 
-        public async Task<bool> IsNicknameUnique(string nickname)
+        public async Task<bool> IsNicknameAvailable(string nickname)
         {
             if (ValueUtility.IsEmptyString(nickname))
-                throw new PersistenceException("参数 nickname 不能为空");
+                throw new PersistenceException("无法检查 nickname 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_nickname) = LOWER(@nickname)", new { nickname }
                 ) == 0;
         }
 
-        public async Task<bool> IsMobileUnique(string mobile)
+        public async Task<bool> IsMobileAvailable(string mobile)
         {
             if (ValueUtility.IsEmptyString(mobile))
-                throw new PersistenceException("参数 mobile 不能为空");
+                throw new PersistenceException("无法检查 mobile 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
                 $"SELECT COUNT(*) FROM {tableName} WHERE LOWER(u_mobile) = LOWER(@mobile)", new { mobile }
@@ -242,16 +242,16 @@ namespace src.adapter.driven.user
             { UserQuerySortFields.USERNAME, "u_username" }
         };
 
-        private string BuildQuerySortSql(IList<QuerySortOption>? sortOptions = null)
+        private string BuildQuerySortSql(OrderedDictionary<string, string>? sortOptions = null)
         {
             IList<string> sqls = new List<string>();
             if (sortOptions != null)
             {
-                foreach (QuerySortOption sortOption in sortOptions)
+                foreach (KeyValuePair<string, string> sortOption in sortOptions)
                 {
-                    if (SORT_FIELD_MAP.TryGetValue(sortOption.Field, out string? mappedField))
+                    if (SORT_FIELD_MAP.TryGetValue(sortOption.Key, out string? mappedField))
                     {
-                        sqls.Add($"{mappedField} {sortOption.Order}");
+                        sqls.Add($"{mappedField} {sortOption.Value}");
                     }
                 }
             }
@@ -276,7 +276,7 @@ namespace src.adapter.driven.user
             return ToDto(row);
         }
 
-        public async Task<UserDto> QueryByIdReq(string id)
+        public async Task<UserDto> QueryByIdOrThrow(string id)
         {
             UserDto? dto = await QueryById(id);
             if (dto == null)
@@ -294,7 +294,7 @@ namespace src.adapter.driven.user
                 );
         }
 
-        public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null)
+        public async Task<IList<UserDto>> Query(UserQueryCriteria? criteria, OrderedDictionary<string, string>? sortOptions = null)
         {
             dynamic @params;
             string crieriaSql = BuildQueryCriteriaSql(criteria, out @params);
@@ -312,8 +312,8 @@ namespace src.adapter.driven.user
             return list;
         }
 
-        public async Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
-            IList<QuerySortOption>? sortOptions = null)
+        public async Task<IList<UserDto>> QueryPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
+            OrderedDictionary<string, string>? sortOptions = null)
         {
             dynamic @params;
             string crieriaSql = BuildQueryCriteriaSql(criteria, out @params);

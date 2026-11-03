@@ -1,4 +1,6 @@
-﻿namespace src.application.query
+﻿using src.application.query;
+
+namespace src.application.user
 {
     /// <summary>
     /// 用户 Query Handler 接口
@@ -13,7 +15,7 @@
         /// <summary>
         /// 根据 id 查询，找不到抛出异常
         /// </summary>
-        Task<UserDto> QueryByIdReq(string id);
+        Task<UserDto> QueryByIdOrThrow(string id);
 
         /// <summary>
         /// 查询记录数
@@ -23,11 +25,12 @@
         /// <summary>
         /// 查询
         /// </summary>
-        Task<IList<UserDto>> Query(UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null);
+        Task<IList<UserDto>> Query(UserQueryCriteria? criteria, OrderedDictionary<string, string>? sortOptions = null);
 
         /// <summary>
         /// 分页查询
         /// </summary>
-        Task<IList<UserDto>> QueryByPage(int pageNum, int pageSize, UserQueryCriteria? criteria, IList<QuerySortOption>? sortOptions = null);
+        Task<IList<UserDto>> QueryPage(int pageNum, int pageSize, UserQueryCriteria? criteria,
+            OrderedDictionary<string, string>? sortOptions = null);
     }
 }

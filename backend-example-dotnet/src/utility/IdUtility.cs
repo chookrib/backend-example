@@ -5,7 +5,7 @@ namespace src.utility
     /// <summary>
     /// Id Utility
     /// </summary>
-    public class IdUtility
+    public sealed class IdUtility
     {
         /// <summary>
         /// 生成 UUID v4

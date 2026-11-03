@@ -59,7 +59,7 @@ public class User {
      * 注册用户
      */
     public static User register(
-            String id, String username, String password, String nickname, UserUniqueSpecification userUniqueSpecification) {
+            String id, String username, String password, String nickname, UserUniquenessValidator userUniquenessValidator) {
         if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
@@ -69,11 +69,11 @@ public class User {
         if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
-        if (userUniqueSpecification != null) {
-            if (!userUniqueSpecification.isUsernameUnique(username))
+        if (userUniquenessValidator != null) {
+            if (!userUniquenessValidator.isUsernameAvailable(username))
                 throw new DomainException("用户名已存在");
 
-            if (!userUniqueSpecification.isNicknameUnique(nickname))
+            if (!userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
         }
 
@@ -122,12 +122,12 @@ public class User {
     /**
      * 修改昵称
      */
-    public void modifyNickname(String nickname, UserUniqueSpecification userUniqueSpecification) {
+    public void modifyNickname(String nickname, UserUniquenessValidator userUniquenessValidator) {
         if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
-        if (!nickname.equalsIgnoreCase(this.nickname) && userUniqueSpecification != null) {
-            if (!userUniqueSpecification.isNicknameUnique(nickname))
+        if (!nickname.equalsIgnoreCase(this.nickname) && userUniquenessValidator != null) {
+            if (!userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
         }
 
@@ -138,12 +138,12 @@ public class User {
     /**
      * 修改手机
      */
-    public void modifyMobile(String mobile, UserUniqueSpecification userUniqueSpecification) {
+    public void modifyMobile(String mobile, UserUniquenessValidator userUniquenessValidator) {
         if (ValueUtility.isEmptyString(mobile))
             throw new DomainException("手机不能为空");
 
-        if (!mobile.equalsIgnoreCase(this.mobile) && userUniqueSpecification != null) {
-            if (!userUniqueSpecification.isMobileUnique(mobile))
+        if (!mobile.equalsIgnoreCase(this.mobile) && userUniquenessValidator != null) {
+            if (!userUniquenessValidator.isMobileAvailable(mobile))
                 throw new DomainException("手机已存在");
         }
 
@@ -155,7 +155,7 @@ public class User {
      * 创建用户
      */
     public static User create(
-            String id, String username, String password, String nickname, String mobile, UserUniqueSpecification userUniqueSpecification) {
+            String id, String username, String password, String nickname, String mobile, UserUniquenessValidator userUniquenessValidator) {
         if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
@@ -165,14 +165,14 @@ public class User {
         if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
-        if (userUniqueSpecification != null) {
-            if (!userUniqueSpecification.isUsernameUnique(username))
+        if (userUniquenessValidator != null) {
+            if (!userUniquenessValidator.isUsernameAvailable(username))
                 throw new DomainException("用户名已存在");
 
-            if (!userUniqueSpecification.isNicknameUnique(nickname))
+            if (!userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isEmptyString(mobile) && !userUniqueSpecification.isMobileUnique(mobile))
+            if (!ValueUtility.isEmptyString(mobile) && !userUniquenessValidator.isMobileAvailable(mobile))
                 throw new DomainException("手机已存在");
         }
 
@@ -191,21 +191,22 @@ public class User {
     /**
      * 修改用户
      */
-    public void modify(String username, String nickname, String mobile, UserUniqueSpecification userUniqueSpecification) {
+    public void modify(String username, String nickname, String mobile, UserUniquenessValidator userUniquenessValidator) {
         if (ValueUtility.isEmptyString(username))
             throw new DomainException("用户名不能为空");
 
         if (ValueUtility.isEmptyString(nickname))
             throw new DomainException("昵称不能为空");
 
-        if (userUniqueSpecification != null) {
-            if (!username.equalsIgnoreCase(this.username) && !userUniqueSpecification.isUsernameUnique(username))
+        if (userUniquenessValidator != null) {
+            if (!username.equalsIgnoreCase(this.username) && !userUniquenessValidator.isUsernameAvailable(username))
                 throw new DomainException("用户名已存在");
 
-            if (!nickname.equalsIgnoreCase(this.nickname) && !userUniqueSpecification.isNicknameUnique(nickname))
+            if (!nickname.equalsIgnoreCase(this.nickname) && !userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isEmptyString(mobile) && !mobile.equalsIgnoreCase(this.mobile) && !userUniqueSpecification.isMobileUnique(mobile))
+            if (!ValueUtility.isEmptyString(mobile) && !mobile.equalsIgnoreCase(this.mobile) &&
+                    !userUniquenessValidator.isMobileAvailable(mobile))
                 throw new DomainException("手机已存在");
         }
 

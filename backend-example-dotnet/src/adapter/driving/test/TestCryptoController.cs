@@ -19,9 +19,9 @@ namespace src.adapter.driving.test
         [HttpPost("/api/test/crypto/jwt-encode")]
         public async Task<Result> TestCryptoJwtEncode()
         {
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            string secret = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "secret");
-            DateTime expiresAt = RequestValueHelper.GetRequestJsonDateTimeReq(requestJson, "expiresAt");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            string secret = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "secret");
+            DateTime expiresAt = RequestValueExtractor.GetRequestJsonDateTimeOrThrow(requestJson, "expiresAt");
             IDictionary<string, object> payload = JsonUtility.JsonNodeToDictionary(requestJson["payload"]);
             string token = CryptoUtility.JwtEncode(payload, secret, expiresAt);
             return Result.OkData(new { token });
@@ -33,9 +33,9 @@ namespace src.adapter.driving.test
         [HttpPost("/api/test/crypto/jwt-decode")]
         public async Task<Result> TestCryptoJwtDecode()
         {
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            string secret = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "secret");
-            string token = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "token");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            string secret = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "secret");
+            string token = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "token");
             IDictionary<string, object> payloadDecode = CryptoUtility.JwtDecode(token, secret);
 
             string part0Decoded = string.Empty;
@@ -64,7 +64,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/base64-encode")]
         public Result TestCryptoBase64Encode()
         {
-            string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
+            string text = RequestValueExtractor.GetRequestParamStringTrimOrThrow(Request, "text");
             string base64 = CryptoUtility.Base64Encode(text);
             return Result.OkData(new { base64 });
         }
@@ -75,7 +75,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/base64-decode")]
         public Result TestCryptoBaseDecode()
         {
-            string base64 = RequestValueHelper.GetRequestParamStringTrimReq(Request, "base64");
+            string base64 = RequestValueExtractor.GetRequestParamStringTrimOrThrow(Request, "base64");
             string text = CryptoUtility.Base64Decode(base64);
             return Result.OkData(new { text });
         }
@@ -86,7 +86,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/md5-encode")]
         public Result TestCryptoMd5Encode()
         {
-            string text = RequestValueHelper.GetRequestParamStringTrimReq(Request, "text");
+            string text = RequestValueExtractor.GetRequestParamStringTrimOrThrow(Request, "text");
             string md5 = CryptoUtility.Md5Encode(text);
             return Result.OkData(new { md5 });
         }

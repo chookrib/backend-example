@@ -27,21 +27,21 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def select_by_id(self, id: str) -> User | None:
+    async def find_by_id(self, id: str) -> User | None:
         """根据 id 查询，找不到返回 None"""
         pass
 
     @abstractmethod
-    async def select_by_id_req(self, id: str) -> User:
+    async def find_by_id_or_throw(self, id: str) -> User:
         """根据 id 查询，找不到抛出异常"""
         pass
 
     @abstractmethod
-    async def select_by_ids(self, id: list[str]) -> list[User]:
+    async def find_by_ids(self, ids: list[str]) -> list[User]:
         """根据 id 集合查询"""
         pass
 
     @abstractmethod
-    async def select_by_username(self, username: str) -> User | None:
+    async def find_by_username(self, username: str) -> User | None:
         """根据用户名查询，找不到返回 None"""
         pass

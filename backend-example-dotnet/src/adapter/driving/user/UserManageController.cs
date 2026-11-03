@@ -38,24 +38,24 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.RequireLoginAdminUserId();
 
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            int pageNum = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
-            int pageSize = RequestValueHelper.GetRequestJsonIntOrDefault(requestJson, 1, "pageSize");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            int pageNum = RequestValueExtractor.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
+            int pageSize = RequestValueExtractor.GetRequestJsonIntOrDefault(requestJson, 1, "pageSize");
 
             //JsonNode? criteriaJson = requestJson["criteria"];
             UserQueryCriteria criteria = new UserQueryCriteria();
             //if (criteriaJson != null)
             //{
             //string? keyword = criteriaJson["keyword"]?.GetValue<string?>()?.Trim();
-            string keyword = RequestValueHelper.GetRequestJsonStringTrimOrEmpty(requestJson, "criteria", "keyword");
+            string keyword = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "criteria", "keyword");
             criteria.Keyword = keyword;
             //}
 
-            IList<QuerySortOption> sortOptions = RequestValueHelper.GetRequestJsonSortOptions(requestJson, "sort");
+            OrderedDictionary<string, string> sortOptions = RequestValueExtractor.GetRequestJsonSortOptions(requestJson, "sort");
 
             int totalCount = await userQueryHandler.QueryCount(criteria);
-            var paging = RequestValueHelper.FixPaging(pageNum, pageSize, totalCount);
-            IList<UserDto> list = await userQueryHandler.QueryByPage(paging.pageNum, paging.pageSize, criteria, sortOptions);
+            var paging = RequestValueExtractor.NormalizePaging(pageNum, pageSize, totalCount);
+            IList<UserDto> list = await userQueryHandler.QueryPage(paging.pageNum, paging.pageSize, criteria, sortOptions);
             return Result.OkData(new
             {
                 list = list,
@@ -76,8 +76,8 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.RequireLoginAdminUserId();
 
-            string id = RequestValueHelper.GetRequestParamStringTrimReq(Request, "id");
-            UserDto userDto = await userQueryHandler.QueryByIdReq(id);
+            string id = RequestValueExtractor.GetRequestParamStringTrimOrThrow(Request, "id");
+            UserDto userDto = await userQueryHandler.QueryByIdOrThrow(id);
             return Result.OkData(new
             {
                 detail = userDto
@@ -92,11 +92,11 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.RequireLoginAdminUserId();
 
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
-            string password = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "password");
-            string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
-            string mobile = RequestValueHelper.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
+            string password = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "password");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
             string userId = await userManageService.CreateUser(username, password, nickname, mobile);
             return Result.OkData(new
@@ -113,11 +113,11 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.RequireLoginAdminUserId();
 
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
-            string username = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "username");
-            string nickname = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "nickname");
-            string mobile = RequestValueHelper.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            string id = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "id");
+            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
             await userManageService.ModifyUser(id, username, nickname, mobile);
             return Result.Ok();
@@ -132,8 +132,8 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.RequireLoginAdminUserId();
 
-            var requestJson = await RequestValueHelper.GetRequestJsonAsync(Request);
-            string id = RequestValueHelper.GetRequestJsonStringTrimReq(requestJson, "id");
+            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
+            string id = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "id");
 
             await userManageService.RemoveUser(id);
             return Result.Ok();

@@ -3,13 +3,12 @@ from decimal import Decimal
 
 from starlette.requests import Request
 
-from src.application.query.query_sort_option import QuerySortOption
 from src.adapter.driving.controller_exception import ControllerException
 from src.utility import value_utility
 
 
-async def get_request_json(request: Request):
-    """获取请求体 json 数据"""
+async def parse_request_json(request: Request):
+    """解析请求体 json 数据"""
     try:
         return await request.json()
     except Exception as ex:
@@ -30,7 +29,7 @@ def get_request_json_value(json, *keys: str):
     return value
 
 
-def get_request_json_value_req(json, *keys: str):
+def get_request_json_value_or_throw(json, *keys: str):
     """获取请求 json 数据中的值，失败抛出异常"""
     value = get_request_json_value(json, *keys)
     if value is None:
@@ -53,9 +52,9 @@ def get_request_json_string_trim_or_empty(json, *keys: str) -> str:
     return get_request_json_string_trim_or_default(json, "", *keys)
 
 
-def get_request_json_string_trim_req(json, *keys: str) -> str:
+def get_request_json_string_trim_or_throw(json, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     s = str(value).strip()
     if value_utility.is_empty_string(s):
         raise ControllerException(f"请求体 {'.'.join(keys)} 值不能为空")
@@ -84,9 +83,9 @@ def get_request_json_bool_or_default(json, default: bool, *keys: str) -> bool:
     return value_utility.to_bool_or_default(value, default)
 
 
-def get_request_json_bool_req(json, *keys: str) -> bool:
+def get_request_json_bool_or_throw(json, *keys: str) -> bool:
     """获取请求 json 数据中 bool 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     b = value_utility.to_bool_or_none(value)
     if b is not None:
         return b
@@ -107,9 +106,9 @@ def get_request_json_int_or_default(json, default: int, *keys: str) -> int:
     return value_utility.to_int_or_default(value, default)
 
 
-def get_request_json_int_req(json, *keys: str) -> int:
+def get_request_json_int_or_throw(json, *keys: str) -> int:
     """获取请求 json 数据中 int 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     i = value_utility.to_int_or_none(value)
     if i is not None:
         return i
@@ -130,9 +129,9 @@ def get_request_json_long_or_default(json, default: int, *keys: str) -> int:
     return value_utility.to_long_or_default(value, default)
 
 
-def get_request_json_long_req(json, *keys: str) -> int:
+def get_request_json_long_or_throw(json, *keys: str) -> int:
     """获取请求 json 数据中 long 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     i = value_utility.to_long_or_none(value)
     if i is not None:
         return i
@@ -153,9 +152,9 @@ def get_request_json_decimal_or_default(json, default: Decimal, *keys: str) -> D
     return value_utility.to_decimal_or_default(value, default)
 
 
-def get_request_json_decimal_req(json, *keys: str) -> Decimal:
+def get_request_json_decimal_or_throw(json, *keys: str) -> Decimal:
     """获取请求 json 数据中 decimal 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     d = value_utility.to_decimal_or_none(value)
     if d is not None:
         return d
@@ -176,9 +175,9 @@ def get_request_json_datetime_or_default(json, default: datetime, *keys: str) ->
     return value_utility.to_datetime_or_default(value, default)
 
 
-def get_request_json_datetime_req(json, *keys: str) -> datetime:
+def get_request_json_datetime_or_throw(json, *keys: str) -> datetime:
     """获取请求 json 数据中 datetime 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     dt = value_utility.to_datetime_or_none(value)
     if dt is not None:
         return dt
@@ -199,9 +198,9 @@ def get_request_json_date_or_default(json, default: date, *keys: str) -> date:
     return value_utility.to_date_or_default(value, default)
 
 
-def get_request_json_date_req(json, *keys: str) -> date:
+def get_request_json_date_or_throw(json, *keys: str) -> date:
     """获取请求 json 数据中 date 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     d = value_utility.to_date_or_none(value)
     if d is not None:
         return d
@@ -222,9 +221,9 @@ def get_request_json_time_or_default(json, default: time, *keys: str) -> time:
     return value_utility.to_time_or_default(value, default)
 
 
-def get_request_json_time_req(json, *keys: str) -> time:
+def get_request_json_time_or_throw(json, *keys: str) -> time:
     """获取请求 json 数据中 time 值，失败抛出异常"""
-    value = get_request_json_value_req(json, *keys)
+    value = get_request_json_value_or_throw(json, *keys)
     t = value_utility.to_time_or_none(value)
     if t is not None:
         return t
@@ -246,7 +245,7 @@ def get_request_param_string_or_empty(request: Request, key: str) -> str:
     return get_request_param_string_or_default(request, "", key)
 
 
-def get_request_param_string_req(request: Request, key: str) -> str:
+def get_request_param_string_or_throw(request: Request, key: str) -> str:
     """获取请求请求参数中 string 值，失败抛出异常"""
     value = request.query_params.get(key)
     if value is None:
@@ -270,7 +269,7 @@ def get_request_param_string_trim_or_empty(request: Request, key: str) -> str:
     return get_request_param_string_trim_or_default(request, "", key)
 
 
-def get_request_param_string_trim_req(request: Request, key: str) -> str:
+def get_request_param_string_trim_or_throw(request: Request, key: str) -> str:
     """获取请求请求参数中 string 值，失败抛出异常"""
     value = request.query_params.get(key)
     if value is None:
@@ -295,9 +294,9 @@ def get_request_param_bool_or_default(request: Request, default: bool, key: str)
     return value_utility.to_bool_or_default(value, default)
 
 
-def get_request_param_bool_req(request: Request, key: str) -> bool:
+def get_request_param_bool_or_throw(request: Request, key: str) -> bool:
     """获取请求参数中 bool 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     b = value_utility.to_bool_or_none(value)
     if b is not None:
         return b
@@ -318,9 +317,9 @@ def get_request_param_int_or_default(request: Request, default: int, key: str) -
     return value_utility.to_int_or_default(value, default)
 
 
-def get_request_param_int_req(request: Request, key: str) -> int:
+def get_request_param_int_or_throw(request: Request, key: str) -> int:
     """获取请求参数中 int 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     i = value_utility.to_int_or_none(value)
     if i is not None:
         return i
@@ -341,9 +340,9 @@ def get_request_param_decimal_or_default(request: Request, default: Decimal, key
     return value_utility.to_decimal_or_default(value, default)
 
 
-def get_request_param_decimal_req(request: Request, key: str) -> Decimal:
+def get_request_param_decimal_or_throw(request: Request, key: str) -> Decimal:
     """获取请求参数中 decimal 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     d = value_utility.to_decimal_or_none(value)
     if d is not None:
         return d
@@ -364,9 +363,9 @@ def get_request_param_datetime_or_default(request: Request, default: datetime, k
     return value_utility.to_datetime_or_default(value, default)
 
 
-def get_request_param_datetime_req(request: Request, key: str) -> datetime:
+def get_request_param_datetime_or_throw(request: Request, key: str) -> datetime:
     """获取请求参数中 datetime 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     dt = value_utility.to_datetime_or_none(value)
     if dt is not None:
         return dt
@@ -387,9 +386,9 @@ def get_request_param_date_or_default(request: Request, default: date, key: str)
     return value_utility.to_date_or_default(value, default)
 
 
-def get_request_param_date_req(request: Request, key: str) -> date:
+def get_request_param_date_or_throw(request: Request, key: str) -> date:
     """获取请求参数中 date 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     d = value_utility.to_date_or_none(value)
     if d is not None:
         return d
@@ -410,9 +409,9 @@ def get_request_param_time_or_default(request: Request, default: time, key: str)
     return value_utility.to_time_or_default(value, default)
 
 
-def get_request_param_time_req(request: Request, key: str) -> time:
+def get_request_param_time_or_throw(request: Request, key: str) -> time:
     """获取请求参数中 time 值，失败抛出异常"""
-    value = get_request_param_string_trim_req(request, key)
+    value = get_request_param_string_trim_or_throw(request, key)
     t = value_utility.to_time_or_none(value)
     if t is not None:
         return t
@@ -421,7 +420,7 @@ def get_request_param_time_req(request: Request, key: str) -> time:
 
 # ======================================================================================================================
 
-def fix_paging(page_num: int, page_size: int, total_count: int) -> tuple[int, int, int]:
+def normalize_paging(page_num: int, page_size: int, total_count: int) -> tuple[int, int, int]:
     """验证并修正分页参数"""
 
     if page_size < 1:
@@ -440,10 +439,10 @@ def fix_paging(page_num: int, page_size: int, total_count: int) -> tuple[int, in
 
     return page_num, page_size, total_count  # 与入参顺序一致
 
-def get_request_json_sort_options(json, *keys: str) -> list[QuerySortOption]:
+def get_request_json_sort_options(json, *keys: str) -> dict[str, str]:
     """取排序参数"""
     node = get_request_json_value(json, *keys)
-    sort_options: list[QuerySortOption] = []
+    sort_options: dict[str, str] = {}
 
     # 检查节点是否为空或不是数组
     if node is None or not isinstance(node, list):
@@ -452,6 +451,16 @@ def get_request_json_sort_options(json, *keys: str) -> list[QuerySortOption]:
     for item in node:
         if not isinstance(item, dict):
             continue
-        sort_options.append(QuerySortOption(item.get("field", ""), item.get("order", "")))
+
+        field = item.get("field", "")
+        order = item.get("order", "")
+
+        if value_utility.is_empty_string(field):
+            raise ControllerException("排序字段不能为空")
+
+        if order is None or order.lower() not in ("asc", "desc"):
+            raise ControllerException("排序方向只能为 asc 或 desc")
+
+        sort_options[field] = order.upper()
 
     return sort_options

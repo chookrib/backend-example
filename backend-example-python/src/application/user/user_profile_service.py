@@ -6,14 +6,14 @@ from src.application.lock.lock_service import LockService
 from src.domain.ext.sms_gateway import SmsGateway
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
-from src.domain.user.user_unique_specification import UserUniqueSpecification
+from src.domain.user.user_uniqueness_validator import UserUniquenessValidator
 from src.utility import value_utility, id_utility
 
 
 class UserProfileService:
     """用户资料Service"""
 
-    def __init__(self, user_repository: UserRepository, user_unique_specification: UserUniqueSpecification,
+    def __init__(self, user_repository: UserRepository, user_unique_specification: UserUniquenessValidator,
                  sms_gateway: SmsGateway, lock_service: LockService) -> None:
         self.user_repository = user_repository
         self.user_unique_specification = user_unique_specification
@@ -35,14 +35,14 @@ class UserProfileService:
 
     async def modify_password(self, user_id: str, old_password: str, new_password: str) -> None:
         """修改密码"""
-        user = await self.user_repository.select_by_id_req(user_id)
+        user = await self.user_repository.find_by_id_or_throw(user_id)
         user.modify_password(old_password, new_password)
         await self.user_repository.update(user)
 
     async def modify_nickname(self, user_id: str, nickname: str) -> None:
         """修改昵称"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
-            user = await self.user_repository.select_by_id_req(user_id)
+            user = await self.user_repository.find_by_id_or_throw(user_id)
             await user.modify_nickname(nickname, self.user_unique_specification)
             await self.user_repository.update(user)
 
@@ -50,7 +50,7 @@ class UserProfileService:
         """发送手机验证码"""
         if value_utility.is_empty_string(mobile):
             raise ApplicationException("手机号不能为空")
-        user = await self.user_repository.select_by_id_req(user_id)
+        user = await self.user_repository.find_by_id_or_throw(user_id)
         code = f"{secrets.randbelow(1_000_000):06d}"
         self.mobile_code[user.id + "_" + mobile] = code
         await self.sms_gateway.send_code(mobile, code)
@@ -62,7 +62,7 @@ class UserProfileService:
         """绑定手机"""
         if value_utility.is_empty_string(code):
             raise ApplicationException("验证码不能为空")
-        user = await self.user_repository.select_by_id_req(user_id)
+        user = await self.user_repository.find_by_id_or_throw(user_id)
         key = user.id + "_" + mobile
         if self.mobile_code.get(key, "") != code:
             raise ApplicationException("验证码错误")

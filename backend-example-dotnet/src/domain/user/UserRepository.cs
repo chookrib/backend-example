@@ -23,21 +23,21 @@
         /// <summary>
         /// 根据 id 查询，找不到返回 null
         /// </summary>
-        Task<User?> SelectById(string id);
+        Task<User?> FindById(string id);
 
         /// <summary>
         /// 根据 id 查询，找不到抛出异常
         /// </summary>
-        Task<User> SelectByIdReq(string id);
+        Task<User> FindByIdOrThrow(string id);
 
         /// <summary>
         /// 根据 id 集合查询
         /// </summary>
-        Task<IList<User>> SelectByIds(List<string> ids);
+        Task<IList<User>> FindByIds(List<string> ids);
 
         /// <summary>
         /// 根据用户名查询，找不到返回 null
         /// </summary>
-        Task<User?> SelectByUsername(string username);
+        Task<User?> FindByUsername(string username);
     }
 }

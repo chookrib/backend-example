@@ -49,7 +49,7 @@ namespace src.domain.user
         /// 注册用户
         /// </summary>
         public static async Task<User> Register(string id, string username, string password, string nickname,
-            UserUniqueSpecification? userUniqueSpecification)
+            UserUniquenessValidator? userUniqueSpecification)
         {
             if (ValueUtility.IsEmptyString(username))
                 throw new DomainException("用户名不能为空");
@@ -62,10 +62,10 @@ namespace src.domain.user
 
             if (userUniqueSpecification != null)
             {
-                if (!await userUniqueSpecification.IsUsernameUnique(username))
+                if (!await userUniqueSpecification.IsUsernameAvailable(username))
                     throw new DomainException("用户名已存在");
 
-                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -117,14 +117,14 @@ namespace src.domain.user
         /// <summary>
         /// 修改昵称
         /// </summary>
-        public async Task ModifyNickname(string nickname, UserUniqueSpecification? userUniqueSpecification)
+        public async Task ModifyNickname(string nickname, UserUniquenessValidator? userUniqueSpecification)
         {
             if (ValueUtility.IsEmptyString(nickname))
                 throw new DomainException("昵称不能为空");
 
             if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueSpecification != null)
             {
-                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
             }
 
@@ -135,14 +135,14 @@ namespace src.domain.user
         /// <summary>
         /// 修改手机
         /// </summary>
-        public async Task ModifyMobile(string mobile, UserUniqueSpecification? userUniqueSpecification)
+        public async Task ModifyMobile(string mobile, UserUniquenessValidator? userUniqueSpecification)
         {
             if (ValueUtility.IsEmptyString(mobile))
                 throw new DomainException("手机不能为空");
 
             if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueSpecification != null)
             {
-                if (!await userUniqueSpecification.IsMobileUnique(mobile))
+                if (!await userUniqueSpecification.IsMobileAvailable(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -154,7 +154,7 @@ namespace src.domain.user
         /// 创建用户
         /// </summary>
         public static async Task<User> Create(string id, string username, string password, string nickname, string mobile,
-            UserUniqueSpecification? userUniqueSpecification)
+            UserUniquenessValidator? userUniqueSpecification)
         {
             if (ValueUtility.IsEmptyString(username))
                 throw new DomainException("用户名不能为空");
@@ -167,13 +167,13 @@ namespace src.domain.user
 
             if (userUniqueSpecification != null)
             {
-                if (!await userUniqueSpecification.IsUsernameUnique(username))
+                if (!await userUniqueSpecification.IsUsernameAvailable(username))
                     throw new DomainException("用户名已存在");
 
-                if (!await userUniqueSpecification.IsNicknameUnique(nickname))
+                if (!await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsEmptyString(mobile) && !await userUniqueSpecification.IsMobileUnique(mobile))
+                if (!ValueUtility.IsEmptyString(mobile) && !await userUniqueSpecification.IsMobileAvailable(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -193,7 +193,7 @@ namespace src.domain.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task Modify(string username, string nickname, string mobile, UserUniqueSpecification? userUniqueSpecification)
+        public async Task Modify(string username, string nickname, string mobile, UserUniquenessValidator? userUniqueSpecification)
         {
             if (ValueUtility.IsEmptyString(username))
                 throw new DomainException("用户名不能为空");
@@ -204,16 +204,16 @@ namespace src.domain.user
             if (userUniqueSpecification != null)
             {
                 if (username.ToLower() != this.Username.ToLower() &&
-                    !await userUniqueSpecification.IsUsernameUnique(username))
+                    !await userUniqueSpecification.IsUsernameAvailable(username))
                     throw new DomainException("用户名已存在");
 
                 if (nickname.ToLower() != this.Nickname.ToLower() &&
-                    !await userUniqueSpecification.IsNicknameUnique(nickname))
+                    !await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
 
                 if (!ValueUtility.IsEmptyString(mobile) &&
                     mobile.ToLower() != this.Mobile.ToLower() &&
-                    !await userUniqueSpecification.IsMobileUnique(mobile))
+                    !await userUniqueSpecification.IsMobileAvailable(mobile))
                     throw new DomainException("手机已存在");
             }
 

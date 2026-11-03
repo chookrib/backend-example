@@ -6,7 +6,7 @@ namespace src.utility
     /// <summary>
     /// dynamic Utility
     /// </summary>
-    public class DynamicUtility
+    public sealed class DynamicUtility
     {
         /// <summary>
         /// 转换为 dynamic

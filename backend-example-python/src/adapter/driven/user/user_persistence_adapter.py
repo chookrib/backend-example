@@ -4,19 +4,18 @@ import aiosqlite
 
 from src.adapter.driven.database_adapter import DatabaseAdapter
 from src.adapter.driven.persistence_exception import PersistenceException
-from src.application.query import user_query_sort_fields
-from src.application.query.query_sort_option import QuerySortOption
-from src.application.query.user_dto import UserDto
-from src.application.query.user_query_criteria import UserQueryCriteria
-from src.application.query.user_query_handler import UserQueryHandler
+from src.application.user import user_query_sort_fields
+from src.application.user.user_dto import UserDto
+from src.application.user.user_query_criteria import UserQueryCriteria
+from src.application.user.user_query_handler import UserQueryHandler
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
-from src.domain.user.user_unique_specification import UserUniqueSpecification
+from src.domain.user.user_uniqueness_validator import UserUniquenessValidator
 from src.utility import value_utility, crypto_utility
 
 
-class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryHandler):
-    """用户持久化Adapter"""
+class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryHandler):
+    """用户持久化 Adapter"""
 
     def __init__(self, database_adapter: DatabaseAdapter):
         self.database_adapter = database_adapter
@@ -116,7 +115,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
             # await conn.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", [id])
             await conn.commit()
 
-    async def select_by_id(self, id: str) -> User | None:
+    async def find_by_id(self, id: str) -> User | None:
         if value_utility.is_empty_string(id):
             return None
         async with self.database_adapter.get_connection() as conn:
@@ -127,13 +126,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                     return self.to_entity(row)
                 return None
 
-    async def select_by_id_req(self, id: str) -> User:
-        entity = await self.select_by_id(id)
+    async def find_by_id_or_throw(self, id: str) -> User:
+        entity = await self.find_by_id(id)
         if not entity:
             raise PersistenceException(f"用户 {id} 不存在")
         return entity
 
-    async def select_by_ids(self, ids: list[str]) -> list[User]:
+    async def find_by_ids(self, ids: list[str]) -> list[User]:
         if not ids or len(ids) == 0:
             return []
         placeholders = ",".join("?" for _ in ids)
@@ -143,7 +142,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 rows = await cursor.fetchall()
                 return [self.to_entity(row) for row in rows]
 
-    async def select_by_username(self, username: str) -> User | None:
+    async def find_by_username(self, username: str) -> User | None:
         if value_utility.is_empty_string(username):
             return None
         async with self.database_adapter.get_connection() as conn:
@@ -158,9 +157,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
     # ==================================================================================================================
     # UserUniqueSpecification
 
-    async def is_username_unique(self, username: str) -> bool:
+    async def is_username_available(self, username: str) -> bool:
         if value_utility.is_empty_string(username):
-            raise PersistenceException("参数 username 不能为空")
+            raise PersistenceException("无法检查 username 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
             async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_username) = LOWER(?)",
@@ -169,9 +168,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 # print(row)
                 return row is None
 
-    async def is_nickname_unique(self, nickname: str) -> bool:
+    async def is_nickname_available(self, nickname: str) -> bool:
         if value_utility.is_empty_string(nickname):
-            raise PersistenceException("参数 nickname 不能为空")
+            raise PersistenceException("无法检查 nickname 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
             async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_nickname) = LOWER(?)",
@@ -180,9 +179,9 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 # print(row)
                 return row is None
 
-    async def is_mobile_unique(self, mobile: str) -> bool:
+    async def is_mobile_available(self, mobile: str) -> bool:
         if value_utility.is_empty_string(mobile):
-            raise PersistenceException("参数 mobile 不能为空")
+            raise PersistenceException("无法检查 mobile 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
             async with conn.execute(f"SELECT * FROM {self.table_name} WHERE LOWER(u_mobile) = LOWER(?)",
@@ -226,13 +225,13 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
         user_query_sort_fields.USERNAME: "u_username"
     }
 
-    def build_query_sort_sql(self, sort_options: list[QuerySortOption] | None = None) -> str:
+    def build_query_sort_sql(self, sort_options: dict[str, str] | None = None) -> str:
         """构造排序 SQL"""
         sqls = []
         if sort_options is not None:
-            for sort_option in sort_options:
-                if sort_option.field in self.SORT_FIELD_MAP:
-                    sqls.append(f"{self.SORT_FIELD_MAP[sort_option.field]} {sort_option.order}")
+            for key, value in sort_options.items():
+                if key in self.SORT_FIELD_MAP:
+                    sqls.append(f"{self.SORT_FIELD_MAP[key]} {value}")
 
         if not sqls:
             sqls.append("u_created_at DESC")
@@ -251,7 +250,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                     return self.to_dto(row)
                 return None
 
-    async def query_by_id_req(self, id: str) -> UserDto:
+    async def query_by_id_or_throw(self, id: str) -> UserDto:
         dto = await self.query_by_id(id)
         if not dto:
             raise PersistenceException(f"用户 {id} 不存在")
@@ -265,7 +264,7 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 row = await cursor.fetchone()
                 return row[0] if row else 0
 
-    async def query(self, criteria: UserQueryCriteria, sort_options: list[QuerySortOption] | None = None) -> list[
+    async def query(self, criteria: UserQueryCriteria, sort_options: dict[str, str] | None = None) -> list[
         UserDto]:
         criteria_sql, params = self.build_query_criteria_sql(criteria)
         sort_sql = self.build_query_sort_sql(sort_options)
@@ -275,8 +274,8 @@ class UserPersistenceAdapter(UserRepository, UserUniqueSpecification, UserQueryH
                 rows = await cursor.fetchall()
                 return [self.to_dto(row) for row in rows]
 
-    async def query_by_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria,
-                            sort_options: list[QuerySortOption] | None = None) \
+    async def query_page(self, page_num: int, page_size: int, criteria: UserQueryCriteria,
+                            sort_options: dict[str, str] | None = None) \
             -> list[UserDto]:
         criteria_sql, params = self.build_query_criteria_sql(criteria)
         sort_sql = self.build_query_sort_sql(sort_options)

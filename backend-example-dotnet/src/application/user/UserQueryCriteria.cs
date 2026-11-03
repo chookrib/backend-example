@@ -1,4 +1,4 @@
-﻿namespace src.application.query
+﻿namespace src.application.user
 {
     /// <summary>
     /// 用户 Query Criteria

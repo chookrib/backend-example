@@ -10,12 +10,12 @@ namespace src.application.user
     public class UserManageService
     {
         private readonly UserRepository userRepository;
-        private readonly UserUniqueSpecification userUniqueSpecification;
+        private readonly UserUniquenessValidator userUniqueSpecification;
         private readonly LockService lockService;
 
         public UserManageService(
             UserRepository userRepository,
-            UserUniqueSpecification userUniqueSpecification,
+            UserUniquenessValidator userUniqueSpecification,
             LockService lockService)
         {
             this.userRepository = userRepository;
@@ -28,7 +28,7 @@ namespace src.application.user
         /// </summary>
         public async Task SetAdmin(string id, bool isAdmin)
         {
-            User user = await userRepository.SelectByIdReq(id);
+            User user = await userRepository.FindByIdOrThrow(id);
             user.SetAdmin(isAdmin);
             await userRepository.Update(user);
         }
@@ -54,7 +54,7 @@ namespace src.application.user
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await userRepository.SelectByIdReq(id);
+                User user = await userRepository.FindByIdOrThrow(id);
                 await user.Modify(username, nickname, mobile, userUniqueSpecification);
                 await userRepository.Update(user);
             }

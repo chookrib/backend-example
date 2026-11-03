@@ -47,7 +47,7 @@ public class UserAuthService {
      * 登录，返回 AccessToken
      */
     public String login(String username, String password) {
-        User user = userRepository.selectByUsername(username);
+        User user = userRepository.findByUsername(username);
         if (user == null || !user.isPasswordMatch(password)) {
             throw new ApplicationException("密码错误");
         }
@@ -86,6 +86,6 @@ public class UserAuthService {
             return null;
         }
 
-        return userRepository.selectById(loginUserId);
+        return userRepository.findById(loginUserId);
     }
 }

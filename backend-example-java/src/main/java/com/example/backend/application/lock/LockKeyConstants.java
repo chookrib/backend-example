@@ -3,7 +3,7 @@ package com.example.backend.application.lock;
 /**
  * 锁 Key 定义
  */
-public class LockKeyConstants {
+public final class LockKeyConstants {
     /**
      * 测试锁
      */

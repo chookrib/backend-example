@@ -27,7 +27,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/set-count")]
         public Result TestLockSetCount()
         {
-            int value = RequestValueHelper.GetRequestParamIntOrDefault(Request, 1, "value");
+            int value = RequestValueExtractor.GetRequestParamIntOrDefault(Request, 1, "value");
             testLockService.SetCount(value);
             return Result.OkData(new { count = value });
         }

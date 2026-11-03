@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * 值 Utility
  */
-public class ValueUtility {
+public final class ValueUtility {
 
     /**
      * 判断字符串是否为 null 或空字符串
@@ -376,8 +376,11 @@ public class ValueUtility {
      */
     public static class LinkedHashMapBuilder<K, V> {
 
-        private final LinkedHashMap<K, V> map = new LinkedHashMap<>();
+        private final Map<K, V> map = new LinkedHashMap<>();
 
+        /**
+         * 返回自身以便链式调用
+         */
         public LinkedHashMapBuilder<K, V> put(K key, V value) {
             map.put(key, value);
             return this;

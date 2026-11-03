@@ -1,6 +1,5 @@
 package com.example.backend.adapter.driving;
 
-import com.example.backend.application.query.QuerySortOption;
 import com.example.backend.utility.JsonUtility;
 import com.example.backend.utility.ValueUtility;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,17 +11,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * 请求 Value Helper
+ * 请求 Value Extractor
  */
-public class RequestValueHelper {
+public final class RequestValueExtractor {
 
     /**
-     * 获取请求体 json 数据
+     * 解析请求体 json 数据
      */
-    public static JsonNode getRequestJson(String requestBody) {
+    public static JsonNode parseRequestJson(String requestBody) {
         try {
             return JsonUtility.deserialize(requestBody);
         } catch (Exception ex) {
@@ -50,7 +50,7 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中的值，失败抛出异常
      */
-    public static JsonNode getRequestJsonValueReq(JsonNode json, String... keys) {
+    public static JsonNode getRequestJsonValueOrThrow(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValue(json, keys);
         if (node.isMissingNode()) {
             throw new ControllerException(String.format("请求体缺少 %s", String.join(".", keys)));
@@ -80,8 +80,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 string 值，失败抛出异常
      */
-    public static String getRequestJsonStringTrimReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static String getRequestJsonStringTrimOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         String s = node.asText().trim();
         if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
@@ -129,8 +129,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 bool 值，失败抛出异常
      */
-    public static boolean getRequestJsonBoolReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static boolean getRequestJsonBoolOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         if (node.isBoolean())
             return node.booleanValue();
         Boolean b = ValueUtility.toBoolOrNull(node.asText());
@@ -166,8 +166,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 int 值，失败抛出异常
      */
-    public static int getRequestJsonIntReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static int getRequestJsonIntOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         if (node.isInt())
             return node.intValue();
         Integer i = ValueUtility.toIntOrNull(node.asText());
@@ -203,8 +203,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 long 值，失败抛出异常
      */
-    public static long getRequestJsonLongReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static long getRequestJsonLongOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         if (node.isLong())
             return node.longValue();
         Long l = ValueUtility.toLongOrNull(node.asText());
@@ -238,8 +238,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 decimal 值，失败抛出异常
      */
-    public static BigDecimal getRequestJsonDecimalReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static BigDecimal getRequestJsonDecimalOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         BigDecimal d = ValueUtility.toDecimalOrNull(node.asText());
         if (d != null)
             return d;
@@ -271,8 +271,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 datetime 值，失败抛出异常
      */
-    public static LocalDateTime getRequestJsonDateTimeReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static LocalDateTime getRequestJsonDateTimeOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         LocalDateTime dt = ValueUtility.toDateTimeOrNull(node.asText());
         if (dt != null)
             return dt;
@@ -304,8 +304,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 date 值，失败抛出异常
      */
-    public static LocalDate getRequestJsonDateReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static LocalDate getRequestJsonDateOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         LocalDate d = ValueUtility.toDateOrNull(node.asText());
         if (d != null)
             return d;
@@ -337,8 +337,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 time 值，失败抛出异常
      */
-    public static LocalTime getRequestJsonTimeReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static LocalTime getRequestJsonTimeOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         LocalTime t = ValueUtility.toTimeOrNull(node.asText());
         if (t != null)
             return t;
@@ -367,8 +367,8 @@ public class RequestValueHelper {
     /**
      * 获取请求 json 数据中 string 值，失败抛出异常
      */
-    public static String getRequestJsonStringReq(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueReq(json, keys);
+    public static String getRequestJsonStringOrThrow(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueOrThrow(json, keys);
         String s = node.asText();
         if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
@@ -395,7 +395,7 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 string 值，失败抛出异常
      */
-    public static String getRequestParamStringTrimReq(HttpServletRequest request, String key) {
+    public static String getRequestParamStringTrimOrThrow(HttpServletRequest request, String key) {
         String value = request.getParameter(key);
         if (value == null)
             throw new ControllerException(String.format("请求参数缺少 %s", key));
@@ -425,8 +425,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 bool 值，失败抛出异常
      */
-    public static boolean getRequestParamBoolReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static boolean getRequestParamBoolOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         Boolean b = ValueUtility.toBoolOrNull(value);
         if (b != null)
             return b;
@@ -454,8 +454,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 int 值，失败抛出异常
      */
-    public static int getRequestParamIntReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static int getRequestParamIntOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         Integer i = ValueUtility.toIntOrNull(value);
         if (i != null)
             return i;
@@ -483,8 +483,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 long 值，失败抛出异常
      */
-    public static long getRequestParamLongReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static long getRequestParamLongOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         Long l = ValueUtility.toLongOrNull(value);
         if (l != null)
             return l;
@@ -512,8 +512,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 decimal 值，失败抛出异常
      */
-    public static BigDecimal getRequestParamDecimalReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static BigDecimal getRequestParamDecimalOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         BigDecimal d = ValueUtility.toDecimalOrNull(value);
         if (d != null)
             return d;
@@ -541,8 +541,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 datetime 值，失败抛出异常
      */
-    public static LocalDateTime getRequestParamDateTimeReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static LocalDateTime getRequestParamDateTimeOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         LocalDateTime dt = ValueUtility.toDateTimeOrNull(value);
         if (dt != null)
             return dt;
@@ -570,8 +570,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 date 值，失败抛出异常
      */
-    public static LocalDate getRequestParamDateReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static LocalDate getRequestParamDateOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         LocalDate d = ValueUtility.toDateOrNull(value);
         if (d != null)
             return d;
@@ -599,8 +599,8 @@ public class RequestValueHelper {
     /**
      * 获取请求参数中 time 值，失败抛出异常
      */
-    public static LocalTime getRequestParamTimeReq(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimReq(request, key);
+    public static LocalTime getRequestParamTimeOrThrow(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimOrThrow(request, key);
         LocalTime t = ValueUtility.toTimeOrNull(value);
         if (t != null)
             return t;
@@ -610,14 +610,14 @@ public class RequestValueHelper {
     //==================================================================================================================
 
     /**
-     * 分页信息
+     * 分页参数
      */
     public record Paging(int pageNum, int pageSize, int totalCount) { }
 
     /**
      * 验证并修正分页参数
      */
-    public static Paging fixPaging(int pageNum, int pageSize, int totalCount) {
+    public static Paging normalizePaging(int pageNum, int pageSize, int totalCount) {
         if (pageSize < 1)
             pageSize = 1;
         if (totalCount < 0)
@@ -636,16 +636,25 @@ public class RequestValueHelper {
     }
 
     /**
-     * 取排序参数
+     * 取排序参数，返回值为有序 Map
      */
-    public static List<QuerySortOption> getRequestJsonSortOptions(JsonNode json, String... keys) {
+    public static LinkedHashMap<String, String> getRequestJsonSortOptions(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValue(json, keys);
-        List<QuerySortOption> sortOptions = new ArrayList<>();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
         if (node.isMissingNode() || !node.isArray())
-            return sortOptions;
+            return map;
         for (JsonNode n : node) {
-            sortOptions.add(new QuerySortOption(n.get("field").asText(), n.get("order").asText()));
+            String field = n.get("field").asText();
+            String order = n.get("order").asText();
+
+            if (ValueUtility.isEmptyString(field))
+                throw new ControllerException("排序字段不能为空");
+
+            if (!order.equalsIgnoreCase("asc") && !order.equalsIgnoreCase("desc"))
+                throw new ControllerException("排序方向只能为 asc 或 desc");
+
+            map.put(field, order.toUpperCase());
         }
-        return sortOptions;
+        return map;
     }
 }

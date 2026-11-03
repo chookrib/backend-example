@@ -40,7 +40,7 @@ namespace src.application.user
         /// </summary>
         public async Task<string> Login(string username, string password)
         {
-            User? user = await userRepository.SelectByUsername(username);
+            User? user = await userRepository.FindByUsername(username);
             if (user == null || !user.IsPasswordMatch(password))
                 throw new ApplicationException("密码错误");
             return CryptoUtility.JwtEncode(new Dictionary<string, object>()
@@ -84,7 +84,7 @@ namespace src.application.user
                 return null;
             }
 
-            return await userRepository.SelectById(loginUserId);
+            return await userRepository.FindById(loginUserId);
         }
     }
 }

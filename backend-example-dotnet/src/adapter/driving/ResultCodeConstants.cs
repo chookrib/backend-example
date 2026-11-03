@@ -3,7 +3,7 @@
     /// <summary>
     /// Result 返回码定义
     /// </summary>
-    public class ResultCodeConstants
+    public sealed class ResultCodeConstants
     {
         /// <summary>
         /// 成功

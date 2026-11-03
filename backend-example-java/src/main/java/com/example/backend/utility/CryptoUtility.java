@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 加密 Utility
+ * 加解密 Utility
  */
-public class CryptoUtility {
+public final class CryptoUtility {
 
     /**
      * JWT 编码

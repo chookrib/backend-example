@@ -7,7 +7,7 @@ namespace src.utility
     /// <summary>
     /// Json Utility
     /// </summary>
-    public class JsonUtility
+    public sealed class JsonUtility
     {
         ///// <summary>
         ///// 反序列化 JSON 字符串

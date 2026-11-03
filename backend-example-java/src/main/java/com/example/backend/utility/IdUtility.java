@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Id Utility
  */
-public class IdUtility {
+public final class IdUtility {
 
     /**
      * 生成 UUID v4

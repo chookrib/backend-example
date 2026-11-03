@@ -2,14 +2,13 @@ package com.example.backend.adapter.driven.user;
 
 import com.example.backend.adapter.driven.DatabaseAdapter;
 import com.example.backend.adapter.driven.PersistenceException;
-import com.example.backend.application.query.QuerySortOption;
-import com.example.backend.application.query.UserDto;
-import com.example.backend.application.query.UserQueryCriteria;
-import com.example.backend.application.query.UserQueryHandler;
-import com.example.backend.application.query.UserQuerySortFields;
+import com.example.backend.application.user.UserDto;
+import com.example.backend.application.user.UserQueryCriteria;
+import com.example.backend.application.user.UserQueryHandler;
+import com.example.backend.application.user.UserQuerySortFields;
 import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.UserRepository;
-import com.example.backend.domain.user.UserUniqueSpecification;
+import com.example.backend.domain.user.UserUniquenessValidator;
 import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.ValueUtility;
 import org.springframework.dao.support.DataAccessUtils;
@@ -18,16 +17,13 @@ import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户持久化 Adapter
  */
 @Component
-public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecification, UserQueryHandler {
+public class UserPersistenceAdapter implements UserRepository, UserUniquenessValidator, UserQueryHandler {
 
     private final DatabaseAdapter databaseAdapter;
     private final String tableName;
@@ -161,7 +157,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public User selectById(String id) {
+    public User findById(String id) {
         if (ValueUtility.isEmptyString(id))
             return null;
         // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
@@ -182,15 +178,15 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public User selectByIdReq(String id) {
-        User entity = selectById(id);
+    public User findByIdOrThrow(String id) {
+        User entity = findById(id);
         if (entity == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));
         return entity;
     }
 
     @Override
-    public List<User> selectByIds(List<String> ids) {
+    public List<User> findByIds(List<String> ids) {
         List<User> list = new ArrayList<>();
         if (ids == null || ids.isEmpty())
             return list;
@@ -214,7 +210,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public User selectByUsername(String username) {
+    public User findByUsername(String username) {
         if (ValueUtility.isEmptyString(username))
             return null;
         // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
@@ -237,34 +233,37 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     // UserUniqueSpecification
 
     @Override
-    public boolean isUsernameUnique(String username) {
+    public boolean isUsernameAvailable(String username) {
         if (ValueUtility.isEmptyString(username)) {
-            throw new PersistenceException("参数 username 不能为空");
+            throw new PersistenceException("无法检查 username 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), Integer.class, username
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName),
+                Integer.class, username
         );
         return count == null || count == 0;
     }
 
     @Override
-    public boolean isNicknameUnique(String nickname) {
+    public boolean isNicknameAvailable(String nickname) {
         if (ValueUtility.isEmptyString(nickname)) {
-            throw new PersistenceException("参数 nickname 不能为空");
+            throw new PersistenceException("无法检查 nickname 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName), Integer.class, nickname
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_nickname) = LOWER(?)".formatted(tableName),
+                Integer.class, nickname
         );
         return count == null || count == 0;
     }
 
     @Override
-    public boolean isMobileUnique(String mobile) {
+    public boolean isMobileAvailable(String mobile) {
         if (ValueUtility.isEmptyString(mobile)) {
-            throw new PersistenceException("参数 mobile 不能为空");
+            throw new PersistenceException("无法检查 mobile 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
-                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName), Integer.class, mobile
+                "SELECT COUNT(*) FROM %s WHERE LOWER(u_mobile) = LOWER(?)".formatted(tableName),
+                Integer.class, mobile
         );
         return count == null || count == 0;
     }
@@ -333,15 +332,15 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     /**
      * 构造排序 SQL
      */
-    private String buildQuerySortSql(List<QuerySortOption> sortOptions) {
+    private String buildQuerySortSql(LinkedHashMap<String, String> sortOptions) {
         List<String> sqls = new ArrayList<>();
 
         if (sortOptions != null) {
-            for (QuerySortOption sortOption : sortOptions) {
-                if (SORT_FIELD_MAP.containsKey(sortOption.getField())) {
-                    sqls.add(String.format("%s %s", SORT_FIELD_MAP.get(sortOption.getField()), sortOption.getOrder()));
+            sortOptions.forEach((key, value) -> {
+                if (SORT_FIELD_MAP.containsKey(key)) {
+                    sqls.add(String.format("%s %s", SORT_FIELD_MAP.get(key), value));
                 }
-            }
+            });
         }
 
         if (sqls.isEmpty())
@@ -373,7 +372,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public UserDto queryByIdReq(String id) {
+    public UserDto queryByIdOrThrow(String id) {
         UserDto dto = queryById(id);
         if (dto == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));
@@ -391,7 +390,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public List<UserDto> query(UserQueryCriteria criteria, List<QuerySortOption> sortOptions) {
+    public List<UserDto> query(UserQueryCriteria criteria, LinkedHashMap<String, String> sortOptions) {
         Map<String, Object> params = new HashMap<>();
         String criteriaSql = buildQueryCriteriaSql(criteria, params);
         String sortSql = buildQuerySortSql(sortOptions);
@@ -414,7 +413,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniqueSpecifi
     }
 
     @Override
-    public List<UserDto> queryByPage(int pageNum, int pageSize, UserQueryCriteria criteria, List<QuerySortOption> sortOptions) {
+    public List<UserDto> queryPage(
+            int pageNum, int pageSize, UserQueryCriteria criteria, LinkedHashMap<String, String> sortOptions
+    ) {
         Map<String, Object> params = new HashMap<>();
         String criteriaSql = buildQueryCriteriaSql(criteria, params);
         String sortSql = buildQuerySortSql(sortOptions);

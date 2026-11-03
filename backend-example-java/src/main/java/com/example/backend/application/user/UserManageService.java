@@ -6,7 +6,7 @@ import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
 import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.UserRepository;
-import com.example.backend.domain.user.UserUniqueSpecification;
+import com.example.backend.domain.user.UserUniquenessValidator;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,16 +16,16 @@ import org.springframework.stereotype.Component;
 public class UserManageService {
 
     private final UserRepository userRepository;
-    private final UserUniqueSpecification userUniqueSpecification;
+    private final UserUniquenessValidator userUniquenessValidator;
     private final LockService lockService;
 
     public UserManageService(
             UserRepository userRepository,
-            UserUniqueSpecification userUniqueSpecification,
+            UserUniquenessValidator userUniquenessValidator,
             LockService lockService
     ) {
         this.userRepository = userRepository;
-        this.userUniqueSpecification = userUniqueSpecification;
+        this.userUniquenessValidator = userUniquenessValidator;
         this.lockService = lockService;
     }
 
@@ -33,7 +33,7 @@ public class UserManageService {
      * 设置用户管理员状态
      */
     public void setAdmin(String id, boolean isAdmin) {
-        User user = userRepository.selectByIdReq(id);
+        User user = userRepository.findByIdOrThrow(id);
         user.setAdmin(isAdmin);
         userRepository.update(user);
     }
@@ -44,7 +44,7 @@ public class UserManageService {
     public String createUser(String username, String password, String nickname, String mobile) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = User.create(
-                    IdUtility.generateUUIDv7(), username, password, nickname, mobile, this.userUniqueSpecification
+                    IdUtility.generateUUIDv7(), username, password, nickname, mobile, this.userUniquenessValidator
             );
             userRepository.insert(user);
             return user.getId();
@@ -56,8 +56,8 @@ public class UserManageService {
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = userRepository.selectByIdReq(id);
-            user.modify(username, nickname, mobile, userUniqueSpecification);
+            User user = userRepository.findByIdOrThrow(id);
+            user.modify(username, nickname, mobile, userUniquenessValidator);
             userRepository.update(user);
         }
     }

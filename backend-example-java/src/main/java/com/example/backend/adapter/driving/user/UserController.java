@@ -2,9 +2,9 @@ package com.example.backend.adapter.driving.user;
 
 import com.example.backend.adapter.driving.*;
 import com.example.backend.application.user.UserAuthService;
-import com.example.backend.application.query.UserDto;
+import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserProfileService;
-import com.example.backend.application.query.UserQueryHandler;
+import com.example.backend.application.user.UserQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,11 +44,11 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
     public Result register(@RequestBody String requestBody) {
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
-        String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
-        String confirmPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "confirmPassword");
-        String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String username = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "username");
+        String password = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "password");
+        String confirmPassword = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "confirmPassword");
+        String nickname = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "nickname");
 
         if (!confirmPassword.equals(password))
             throw new ControllerException("两次输入的密码不一致");
@@ -64,9 +64,9 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     public Result login(@RequestBody String requestBody) {
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String username = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "username");
-        String password = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "password");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String username = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "username");
+        String password = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "password");
 
         String accessToken = userAuthService.login(username, password);
         return Result.okData(Map.of(
@@ -81,7 +81,7 @@ public class UserController {
     public Result profile() {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        UserDto userDto = userQueryHandler.queryByIdReq(userId);
+        UserDto userDto = userQueryHandler.queryByIdOrThrow(userId);
         return Result.okData(Map.of(
                 "profile", userDto
         ));
@@ -94,10 +94,10 @@ public class UserController {
     public Result modifyPassword(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String oldPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "oldPassword");
-        String newPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "newPassword");
-        String confirmPassword = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "confirmPassword");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String oldPassword = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "oldPassword");
+        String newPassword = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "newPassword");
+        String confirmPassword = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "confirmPassword");
 
         if (!confirmPassword.equals(newPassword))
             throw new ControllerException("两次输入的密码不一致");
@@ -113,8 +113,8 @@ public class UserController {
     public Result modifyNickname(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String nickname = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "nickname");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String nickname = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "nickname");
         userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
     }
@@ -126,8 +126,8 @@ public class UserController {
     public Result sendMobileCode(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String mobile = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "mobile");
 
         userProfileService.sendMobileCode(userId, mobile);
         return Result.ok();
@@ -140,9 +140,9 @@ public class UserController {
     public Result bindMobile(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueHelper.getRequestJson(requestBody);
-        String mobile = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "mobile");
-        String code = RequestValueHelper.getRequestJsonStringTrimReq(requestJson, "code");
+        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
+        String mobile = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "mobile");
+        String code = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "code");
         userProfileService.bindMobile(userId, mobile, code);
         return Result.ok();
     }

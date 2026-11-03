@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * JSON Utility
  */
-public class JsonUtility {
+public final class JsonUtility {
 
     private static final ObjectMapper OBJECT_MAPPER = initObjectMapper();
 

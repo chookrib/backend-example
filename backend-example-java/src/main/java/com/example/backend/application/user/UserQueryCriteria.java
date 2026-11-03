@@ -1,4 +1,4 @@
-package com.example.backend.application.query;
+package com.example.backend.application.user;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

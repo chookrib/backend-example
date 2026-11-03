@@ -5,7 +5,7 @@ namespace src.utility
     /// <summary>
     /// 值 Utility
     /// </summary>
-    public class ValueUtility
+    public sealed class ValueUtility
     {
         /// <summary>
         /// 判断字符串是否为 null 或空字符串
