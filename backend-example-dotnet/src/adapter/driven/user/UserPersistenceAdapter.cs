@@ -1,6 +1,5 @@
 ﻿using Dapper;
-using src.application;
-using src.application.user;
+using src.application.query;
 using src.domain.user;
 using src.utility;
 using System.Dynamic;
