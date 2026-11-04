@@ -8,7 +8,6 @@ from src.application.user.user_manage_service import UserManageService
 from src.application.user.user_query_criteria import UserQueryCriteria
 from src.application.user.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
-from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -20,7 +19,7 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)
 @router.post("/api/admin/user/list")
 async def user_list(request: Request):
     """用户列表"""
-    await request_identity_resolver.require_login_admin_user_id(request)
+    await request_identity_resolver.check_admin_permission(request)
 
     request_json = await request_value_extractor.parse_request_json(request)
     page_num = request_value_extractor.get_request_json_int_or_default(request_json, 1, "pageNum")
@@ -50,24 +49,24 @@ async def user_list(request: Request):
 @router.get("/api/admin/user/get")
 async def user_get(request: Request):
     """用户详情"""
-    await request_identity_resolver.require_login_admin_user_id(request)
+    await request_identity_resolver.check_admin_permission(request)
 
-    id = request_value_extractor.get_request_param_string_trim_or_throw(request, "id")
+    id = request_value_extractor.get_request_param_string_trim_required(request, "id")
 
     user_dto = await user_query_handler.query_by_id_req(id)
     # return Result.ok(data=user_dto.to_json())
-    return Result.ok(data={"detail": user_dto})
+    return Result.ok(data={"item": user_dto})
 
 
 @router.post("/api/admin/user/create")
 async def user_create(request: Request):
     """创建用户"""
-    await request_identity_resolver.require_login_admin_user_id(request)
+    await request_identity_resolver.check_admin_permission(request)
 
     request_json = await request_value_extractor.parse_request_json(request)
-    username = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "username")
-    password = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "password")
-    nickname = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "nickname")
+    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
+    password = request_value_extractor.get_request_json_string_trim_required(request_json, "password")
+    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
     mobile = request_value_extractor.get_request_json_string_trim_or_empty(request_json, "mobile")
 
     user_id = await user_manage_service.create_user(username, password, nickname, mobile)
@@ -77,12 +76,12 @@ async def user_create(request: Request):
 @router.post("/api/admin/user/modify")
 async def user_modify(request: Request):
     """修改用户"""
-    await request_identity_resolver.require_login_admin_user_id(request)
+    await request_identity_resolver.check_admin_permission(request)
 
     request_json = await request_value_extractor.parse_request_json(request)
-    id = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "id")
-    username = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "username")
-    nickname = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "nickname")
+    id = request_value_extractor.get_request_json_string_trim_required(request_json, "id")
+    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
+    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
     mobile = request_value_extractor.get_request_json_string_trim_or_empty(request_json, "mobile")
 
     await user_manage_service.modify_user(id, username, nickname, mobile)
@@ -92,10 +91,10 @@ async def user_modify(request: Request):
 @router.post("/api/admin/user/remove")
 async def user_remove(request: Request):
     """删除用户"""
-    await request_identity_resolver.require_login_admin_user_id(request)
+    await request_identity_resolver.check_admin_permission(request)
 
     request_json = await request_value_extractor.parse_request_json(request)
-    id = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "id")
+    id = request_value_extractor.get_request_json_string_trim_required(request_json, "id")
 
     await user_manage_service.remove_user(id)
     return Result.ok()

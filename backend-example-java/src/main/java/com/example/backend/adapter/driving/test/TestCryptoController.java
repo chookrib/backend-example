@@ -28,8 +28,8 @@ public class TestCryptoController {
     public Result testCryptoJwtEncode(@RequestBody String requestBody)
     {
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String secret = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "secret");
-        LocalDateTime expiresAt = RequestValueExtractor.getRequestJsonDateTimeOrThrow(requestJson, "expiresAt");
+        String secret = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "secret");
+        LocalDateTime expiresAt = RequestValueExtractor.getRequestJsonDateTimeRequired(requestJson, "expiresAt");
         var payloadNode = requestJson.path("payload");
         // System.out.println("payloadNode: " + payloadNode.toString());
         Map<String, ?> payload = JsonUtility.deserialize(payloadNode, new TypeReference<Map<String, ?>>() { });
@@ -45,8 +45,8 @@ public class TestCryptoController {
     public Result testCryptoJwtDecode(@RequestBody String requestBody)
     {
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String secret = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "secret");
-        String token = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "token");
+        String secret = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "secret");
+        String token = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "token");
         Map<String, ?> payload = CryptoUtility.jwtDecode(token, secret);
 
         String headerDecoded = "";
@@ -72,7 +72,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/base64-encode", method = RequestMethod.GET)
     public Result testCryptoBase64Encode(HttpServletRequest request)
     {
-        String text = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "text");
+        String text = RequestValueExtractor.getRequestParamStringTrimRequired(request, "text");
         String base64 = CryptoUtility.base64Encode(text);
         return Result.okData(Map.of("base64", base64));
     }
@@ -83,7 +83,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/base64-decode", method = RequestMethod.GET)
     public Result testCryptoBase64Decode(HttpServletRequest request)
     {
-        String base64 = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "base64");
+        String base64 = RequestValueExtractor.getRequestParamStringTrimRequired(request, "base64");
         String text = CryptoUtility.base64Decode(base64);
         return Result.okData(Map.of("text", text));
     }
@@ -94,7 +94,7 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/md5-encode", method = RequestMethod.GET)
     public Result testCryptoMd5Encode(HttpServletRequest request)
     {
-        String text = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "text");
+        String text = RequestValueExtractor.getRequestParamStringTrimRequired(request, "text");
         String md5 = CryptoUtility.md5Encode(text);
         return Result.okData(Map.of("md5", md5));
     }

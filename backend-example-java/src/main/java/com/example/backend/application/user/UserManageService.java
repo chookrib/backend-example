@@ -33,7 +33,7 @@ public class UserManageService {
      * 设置用户管理员状态
      */
     public void setAdmin(String id, boolean isAdmin) {
-        User user = userRepository.findByIdOrThrow(id);
+        User user = userRepository.findByIdRequired(id);
         user.setAdmin(isAdmin);
         userRepository.update(user);
     }
@@ -56,7 +56,7 @@ public class UserManageService {
      */
     public void modifyUser(String id, String username, String nickname, String mobile) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = userRepository.findByIdOrThrow(id);
+            User user = userRepository.findByIdRequired(id);
             user.modify(username, nickname, mobile, userUniquenessValidator);
             userRepository.update(user);
         }

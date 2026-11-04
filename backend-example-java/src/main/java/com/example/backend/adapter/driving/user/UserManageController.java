@@ -46,7 +46,7 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/list", method = RequestMethod.POST)
     public Result userList(@RequestBody String requestBody) {
-        requestIdentityResolver.requireLoginAdminUserId();
+        requestIdentityResolver.checkAdminPermission();
 
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
         int pageNum = RequestValueExtractor.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -80,12 +80,12 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/get", method = RequestMethod.GET)
     public Result userGet(HttpServletRequest request) {
-        requestIdentityResolver.requireLoginAdminUserId();
+        requestIdentityResolver.checkAdminPermission();
 
-        String id = RequestValueExtractor.getRequestParamStringTrimOrThrow(request, "id");
-        UserDto userDto = userQueryHandler.queryByIdOrThrow(id);
+        String id = RequestValueExtractor.getRequestParamStringTrimRequired(request, "id");
+        UserDto userDto = userQueryHandler.queryByIdRequired(id);
         return Result.okData(Map.of(
-                "detail", userDto
+                "item", userDto
         ));
     }
 
@@ -94,12 +94,12 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/create", method = RequestMethod.POST)
     public Result userCreate(@RequestBody String requestBody) {
-        requestIdentityResolver.requireLoginAdminUserId();
+        requestIdentityResolver.checkAdminPermission();
 
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String username = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "username");
-        String password = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "password");
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "nickname");
+        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
+        String password = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "password");
+        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
         String mobile = RequestValueExtractor.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
         String userId = userManageService.createUser(username, password, nickname, mobile);
@@ -113,12 +113,12 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/modify", method = RequestMethod.POST)
     public Result userModify(@RequestBody String requestBody) {
-        requestIdentityResolver.requireLoginAdminUserId();
+        requestIdentityResolver.checkAdminPermission();
 
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String id = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "id");
-        String username = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "username");
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "nickname");
+        String id = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "id");
+        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
+        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
         String mobile = RequestValueExtractor.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
         userManageService.modifyUser(id, username, nickname, mobile);
@@ -130,10 +130,10 @@ public class UserManageController {
      */
     @RequestMapping(value = "/api/admin/user/remove", method = RequestMethod.POST)
     public Result userRemove(@RequestBody String requestBody) {
-        requestIdentityResolver.requireLoginAdminUserId();
+        requestIdentityResolver.checkAdminPermission();
 
         var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String id = RequestValueExtractor.getRequestJsonStringTrimOrThrow(requestJson, "id");
+        String id = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "id");
 
         userManageService.removeUser(id);
         return Result.ok();

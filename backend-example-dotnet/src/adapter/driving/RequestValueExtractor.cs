@@ -1,7 +1,5 @@
-﻿using src.application.query;
-using src.utility;
+﻿using src.utility;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace src.adapter.driving
@@ -85,7 +83,7 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中的值，失败抛出异常
         /// </summary>
-        public static JsonValue GetRequestJsonValueOrThrow(JsonNode json, params string[] keys)
+        public static JsonValue GetRequestJsonValueRequired(JsonNode json, params string[] keys)
         {
             JsonValue? value = GetRequestJsonValue(json, keys);
             if (value == null)
@@ -136,9 +134,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 string 值，失败抛出异常
         /// </summary>
-        public static string GetRequestJsonStringOrThrow(JsonNode json, params string[] keys)
+        public static string GetRequestJsonStringRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             string? s = null;
             if (value.TryGetValue<string>(out string? result))
                 s = result;
@@ -171,9 +169,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 string 值，失败抛出异常
         /// </summary>
-        public static string GetRequestJsonStringTrimOrThrow(JsonNode json, params string[] keys)
+        public static string GetRequestJsonStringTrimRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             string? s = null;
             if (value.TryGetValue<string>(out string? result))
                 s = result;
@@ -232,9 +230,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 bool 值，失败抛出异常
         /// </summary>
-        public static bool GetRequestJsonBoolOrThrow(JsonNode json, params string[] keys)
+        public static bool GetRequestJsonBoolRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             if (value.TryGetValue<bool>(out bool boolResult))
                 return boolResult;
             bool? b = null;
@@ -277,9 +275,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 int 值，失败抛出异常
         /// </summary>
-        public static int GetRequestJsonIntOrThrow(JsonNode json, params string[] keys)
+        public static int GetRequestJsonIntRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             if (value.TryGetValue<int>(out int intResult))
                 return intResult;
             int? i = null;
@@ -322,9 +320,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 long 值，失败抛出异常
         /// </summary>
-        public static long GetRequestJsonLongOrThrow(JsonNode json, params string[] keys)
+        public static long GetRequestJsonLongRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             if (value.TryGetValue<long>(out long longResult))
                 return longResult;
             long? l = null;
@@ -367,9 +365,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 decimal 值，失败抛出异常
         /// </summary>
-        public static decimal GetRequestJsonDecimalOrThrow(JsonNode json, params string[] keys)
+        public static decimal GetRequestJsonDecimalRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             if (value.TryGetValue<decimal>(out decimal decimalResult))
                 return decimalResult;
             decimal? d = null;
@@ -413,9 +411,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 datetime 值，失败抛出异常
         /// </summary>
-        public static DateTime GetRequestJsonDateTimeOrThrow(JsonNode json, params string[] keys)
+        public static DateTime GetRequestJsonDateTimeRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             //if (value.TryGetValue<DateTime>(out DateTime dateTimeResult))
             //    return dateTimeResult;
             DateTime? dt = null;
@@ -458,9 +456,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 date 值，失败抛出异常
         /// </summary>
-        public static DateOnly GetRequestJsonDateOrThrow(JsonNode json, params string[] keys)
+        public static DateOnly GetRequestJsonDateRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             //if (value.TryGetValue<DateOnly>(out DateOnly dateResult))
             //    return dateResult;
             DateOnly? d = null;
@@ -503,9 +501,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求 json 数据中 time 值，失败抛出异常
         /// </summary>
-        public static TimeOnly GetRequestJsonTimeOrThrow(JsonNode json, params string[] keys)
+        public static TimeOnly GetRequestJsonTimeRequired(JsonNode json, params string[] keys)
         {
-            JsonValue value = GetRequestJsonValueOrThrow(json, keys);
+            JsonValue value = GetRequestJsonValueRequired(json, keys);
             //if (value.TryGetValue<TimeOnly>(out TimeOnly timeResult))
             //    return timeResult;
             TimeOnly? t = null;
@@ -541,7 +539,7 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 string 值，失败抛出异常
         /// </summary>
-        public static string GetRequestParamStringTrimOrThrow(HttpRequest request, string key)
+        public static string GetRequestParamStringTrimRequired(HttpRequest request, string key)
         {
             if (!request.Query.ContainsKey(key))
                 throw new ControllerException($"请求参数缺少 {key}");
@@ -574,9 +572,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 bool 值，失败抛出异常
         /// </summary>
-        public static bool GetRequestParamBoolOrThrow(HttpRequest request, string key)
+        public static bool GetRequestParamBoolRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             bool? b = ValueUtility.ToBoolOrNull(value);
             if (b.HasValue)
                 return b.Value;
@@ -606,9 +604,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 int 值，失败抛出异常
         /// </summary>
-        public static int GetRequestParamIntOrThrow(HttpRequest request, string key)
+        public static int GetRequestParamIntRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             int? i = ValueUtility.ToIntOrNull(value);
             if (i.HasValue)
                 return i.Value;
@@ -638,9 +636,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 long 值，失败抛出异常
         /// </summary>
-        public static long GetRequestParamLongOrThrow(HttpRequest request, string key)
+        public static long GetRequestParamLongRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             long? l = ValueUtility.ToLongOrNull(value);
             if (l.HasValue)
                 return l.Value;
@@ -670,9 +668,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 decimal 值，失败抛出异常
         /// </summary>
-        public static decimal GetRequestParamDecimalOrThrow(HttpRequest request, string key)
+        public static decimal GetRequestParamDecimalRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             decimal? d = ValueUtility.ToDecimalOrNull(value);
             if (d.HasValue)
                 return d.Value;
@@ -703,9 +701,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 datetime 值，失败抛出异常
         /// </summary>
-        public static DateTime GetRequestParamDateTimeOrThrow(HttpRequest request, string key)
+        public static DateTime GetRequestParamDateTimeRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             DateTime? dt = ValueUtility.ToDateTimeOrNull(value);
             if (dt.HasValue)
                 return dt.Value;
@@ -735,9 +733,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 date 值，失败抛出异常
         /// </summary>
-        public static DateOnly GetRequestParamDateOrThrow(HttpRequest request, string key)
+        public static DateOnly GetRequestParamDateRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             DateOnly? d = ValueUtility.ToDateOrNull(value);
             if (d.HasValue)
                 return d.Value;
@@ -767,9 +765,9 @@ namespace src.adapter.driving
         /// <summary>
         /// 获取请求参数中 time 值，失败抛出异常
         /// </summary>
-        public static TimeOnly GetRequestParamTimeOrThrow(HttpRequest request, string key)
+        public static TimeOnly GetRequestParamTimeRequired(HttpRequest request, string key)
         {
-            string value = GetRequestParamStringTrimOrThrow(request, key);
+            string value = GetRequestParamStringTrimRequired(request, key);
             TimeOnly? t = ValueUtility.ToTimeOrNull(value);
             if (t.HasValue)
                 return t.Value;

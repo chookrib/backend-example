@@ -28,7 +28,7 @@ namespace src.application.user
         /// </summary>
         public async Task SetAdmin(string id, bool isAdmin)
         {
-            User user = await userRepository.FindByIdOrThrow(id);
+            User user = await userRepository.FindByIdRequired(id);
             user.SetAdmin(isAdmin);
             await userRepository.Update(user);
         }
@@ -54,7 +54,7 @@ namespace src.application.user
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await userRepository.FindByIdOrThrow(id);
+                User user = await userRepository.FindByIdRequired(id);
                 await user.Modify(username, nickname, mobile, userUniqueSpecification);
                 await userRepository.Update(user);
             }

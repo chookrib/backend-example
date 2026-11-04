@@ -1,6 +1,8 @@
 package com.example.backend.adapter.driving;
 
 import com.example.backend.application.user.UserAuthService;
+import com.example.backend.application.user.UserDto;
+import com.example.backend.application.user.UserQueryHandler;
 import com.example.backend.domain.user.User;
 import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,9 +17,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class RequestIdentityResolver {
 
     private final UserAuthService userAuthService;
+    private final UserQueryHandler userQueryHandler;
 
-    public RequestIdentityResolver(UserAuthService userAuthService) {
+    public RequestIdentityResolver(
+            UserAuthService userAuthService,
+            UserQueryHandler userQueryHandler) {
         this.userAuthService = userAuthService;
+        this.userQueryHandler = userQueryHandler;
     }
 
     /**
@@ -37,7 +43,7 @@ public class RequestIdentityResolver {
     }
 
     /**
-     * 获取登录用户 Id，未登录抛异常
+     * 获取登录用户 Id，未登录抛出异常
      */
     public String requireLoginUserId() {
         String accessToken = getRequest().getHeader("Access-Token");
@@ -48,13 +54,12 @@ public class RequestIdentityResolver {
     }
 
     /**
-     * 获取登录管理员用户 Id，失败抛异常
+     * 判断管理员权限
      */
-    public String requireLoginAdminUserId() {
-        String accessToken = getRequest().getHeader("Access-Token");
-        User user = userAuthService.getLoginUser(accessToken);
+    public void checkAdminPermission() {
+        String userId = requireLoginUserId();
+        UserDto user = userQueryHandler.queryById(userId);
         if (user == null || !user.getIsAdmin())
             throw new NotLoginException();
-        return user.getId();
     }
 }

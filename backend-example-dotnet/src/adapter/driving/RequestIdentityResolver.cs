@@ -1,5 +1,4 @@
 ﻿using src.application.user;
-using src.domain.user;
 using src.utility;
 
 namespace src.adapter.driving
@@ -11,14 +10,17 @@ namespace src.adapter.driving
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly UserAuthService userAuthService;
+        private readonly UserQueryHandler userQueryHandler;
 
         public RequestIdentityResolver(
             IHttpContextAccessor httpContextAccessor,
-            UserAuthService userAuthService
+            UserAuthService userAuthService,
+            UserQueryHandler userQueryHandler
             )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userAuthService = userAuthService;
+            this.userQueryHandler = userQueryHandler;
         }
 
         private HttpRequest Request => httpContextAccessor.HttpContext!.Request;
@@ -37,7 +39,7 @@ namespace src.adapter.driving
         }
 
         /// <summary>
-        /// 获取登录用户 Id，未登录抛异常
+        /// 获取登录用户 Id，未登录抛出异常
         /// </summary>
         public string RequireLoginUserId()
         {
@@ -49,15 +51,14 @@ namespace src.adapter.driving
         }
 
         /// <summary>
-        /// 获取登录管理员用户 Id，失败抛异常
+        /// 判断管理员权限
         /// </summary>
-        public async Task<string> RequireLoginAdminUserId()
+        public async Task CheckAdminPermission()
         {
-            string accessToken = Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
-            User? user = await userAuthService.GetLoginUser(accessToken);
+            string userId = RequireLoginUserId();
+            UserDto? user = await userQueryHandler.QueryById(userId);
             if (user == null || !user.IsAdmin)
                 throw new NotLoginException();
-            return user.Id;
         }
 
     }

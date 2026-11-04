@@ -126,7 +126,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                     return self.to_entity(row)
                 return None
 
-    async def find_by_id_or_throw(self, id: str) -> User:
+    async def find_by_id_required(self, id: str) -> User:
         entity = await self.find_by_id(id)
         if not entity:
             raise PersistenceException(f"用户 {id} 不存在")
@@ -250,7 +250,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                     return self.to_dto(row)
                 return None
 
-    async def query_by_id_or_throw(self, id: str) -> UserDto:
+    async def query_by_id_required(self, id: str) -> UserDto:
         dto = await self.query_by_id(id)
         if not dto:
             raise PersistenceException(f"用户 {id} 不存在")

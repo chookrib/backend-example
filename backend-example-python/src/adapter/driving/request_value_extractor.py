@@ -29,7 +29,7 @@ def get_request_json_value(json, *keys: str):
     return value
 
 
-def get_request_json_value_or_throw(json, *keys: str):
+def get_request_json_value_required(json, *keys: str):
     """获取请求 json 数据中的值，失败抛出异常"""
     value = get_request_json_value(json, *keys)
     if value is None:
@@ -52,9 +52,9 @@ def get_request_json_string_trim_or_empty(json, *keys: str) -> str:
     return get_request_json_string_trim_or_default(json, "", *keys)
 
 
-def get_request_json_string_trim_or_throw(json, *keys: str) -> str:
+def get_request_json_string_trim_required(json, *keys: str) -> str:
     """获取请求 json 数据中 string 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     s = str(value).strip()
     if value_utility.is_empty_string(s):
         raise ControllerException(f"请求体 {'.'.join(keys)} 值不能为空")
@@ -83,9 +83,9 @@ def get_request_json_bool_or_default(json, default: bool, *keys: str) -> bool:
     return value_utility.to_bool_or_default(value, default)
 
 
-def get_request_json_bool_or_throw(json, *keys: str) -> bool:
+def get_request_json_bool_required(json, *keys: str) -> bool:
     """获取请求 json 数据中 bool 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     b = value_utility.to_bool_or_none(value)
     if b is not None:
         return b
@@ -106,9 +106,9 @@ def get_request_json_int_or_default(json, default: int, *keys: str) -> int:
     return value_utility.to_int_or_default(value, default)
 
 
-def get_request_json_int_or_throw(json, *keys: str) -> int:
+def get_request_json_int_required(json, *keys: str) -> int:
     """获取请求 json 数据中 int 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     i = value_utility.to_int_or_none(value)
     if i is not None:
         return i
@@ -129,9 +129,9 @@ def get_request_json_long_or_default(json, default: int, *keys: str) -> int:
     return value_utility.to_long_or_default(value, default)
 
 
-def get_request_json_long_or_throw(json, *keys: str) -> int:
+def get_request_json_long_required(json, *keys: str) -> int:
     """获取请求 json 数据中 long 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     i = value_utility.to_long_or_none(value)
     if i is not None:
         return i
@@ -152,9 +152,9 @@ def get_request_json_decimal_or_default(json, default: Decimal, *keys: str) -> D
     return value_utility.to_decimal_or_default(value, default)
 
 
-def get_request_json_decimal_or_throw(json, *keys: str) -> Decimal:
+def get_request_json_decimal_required(json, *keys: str) -> Decimal:
     """获取请求 json 数据中 decimal 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     d = value_utility.to_decimal_or_none(value)
     if d is not None:
         return d
@@ -175,9 +175,9 @@ def get_request_json_datetime_or_default(json, default: datetime, *keys: str) ->
     return value_utility.to_datetime_or_default(value, default)
 
 
-def get_request_json_datetime_or_throw(json, *keys: str) -> datetime:
+def get_request_json_datetime_required(json, *keys: str) -> datetime:
     """获取请求 json 数据中 datetime 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     dt = value_utility.to_datetime_or_none(value)
     if dt is not None:
         return dt
@@ -198,9 +198,9 @@ def get_request_json_date_or_default(json, default: date, *keys: str) -> date:
     return value_utility.to_date_or_default(value, default)
 
 
-def get_request_json_date_or_throw(json, *keys: str) -> date:
+def get_request_json_date_required(json, *keys: str) -> date:
     """获取请求 json 数据中 date 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     d = value_utility.to_date_or_none(value)
     if d is not None:
         return d
@@ -221,9 +221,9 @@ def get_request_json_time_or_default(json, default: time, *keys: str) -> time:
     return value_utility.to_time_or_default(value, default)
 
 
-def get_request_json_time_or_throw(json, *keys: str) -> time:
+def get_request_json_time_required(json, *keys: str) -> time:
     """获取请求 json 数据中 time 值，失败抛出异常"""
-    value = get_request_json_value_or_throw(json, *keys)
+    value = get_request_json_value_required(json, *keys)
     t = value_utility.to_time_or_none(value)
     if t is not None:
         return t
@@ -245,7 +245,7 @@ def get_request_param_string_or_empty(request: Request, key: str) -> str:
     return get_request_param_string_or_default(request, "", key)
 
 
-def get_request_param_string_or_throw(request: Request, key: str) -> str:
+def get_request_param_string_required(request: Request, key: str) -> str:
     """获取请求请求参数中 string 值，失败抛出异常"""
     value = request.query_params.get(key)
     if value is None:
@@ -269,7 +269,7 @@ def get_request_param_string_trim_or_empty(request: Request, key: str) -> str:
     return get_request_param_string_trim_or_default(request, "", key)
 
 
-def get_request_param_string_trim_or_throw(request: Request, key: str) -> str:
+def get_request_param_string_trim_required(request: Request, key: str) -> str:
     """获取请求请求参数中 string 值，失败抛出异常"""
     value = request.query_params.get(key)
     if value is None:
@@ -294,9 +294,9 @@ def get_request_param_bool_or_default(request: Request, default: bool, key: str)
     return value_utility.to_bool_or_default(value, default)
 
 
-def get_request_param_bool_or_throw(request: Request, key: str) -> bool:
+def get_request_param_bool_required(request: Request, key: str) -> bool:
     """获取请求参数中 bool 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     b = value_utility.to_bool_or_none(value)
     if b is not None:
         return b
@@ -317,9 +317,9 @@ def get_request_param_int_or_default(request: Request, default: int, key: str) -
     return value_utility.to_int_or_default(value, default)
 
 
-def get_request_param_int_or_throw(request: Request, key: str) -> int:
+def get_request_param_int_required(request: Request, key: str) -> int:
     """获取请求参数中 int 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     i = value_utility.to_int_or_none(value)
     if i is not None:
         return i
@@ -340,9 +340,9 @@ def get_request_param_decimal_or_default(request: Request, default: Decimal, key
     return value_utility.to_decimal_or_default(value, default)
 
 
-def get_request_param_decimal_or_throw(request: Request, key: str) -> Decimal:
+def get_request_param_decimal_required(request: Request, key: str) -> Decimal:
     """获取请求参数中 decimal 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     d = value_utility.to_decimal_or_none(value)
     if d is not None:
         return d
@@ -363,9 +363,9 @@ def get_request_param_datetime_or_default(request: Request, default: datetime, k
     return value_utility.to_datetime_or_default(value, default)
 
 
-def get_request_param_datetime_or_throw(request: Request, key: str) -> datetime:
+def get_request_param_datetime_required(request: Request, key: str) -> datetime:
     """获取请求参数中 datetime 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     dt = value_utility.to_datetime_or_none(value)
     if dt is not None:
         return dt
@@ -386,9 +386,9 @@ def get_request_param_date_or_default(request: Request, default: date, key: str)
     return value_utility.to_date_or_default(value, default)
 
 
-def get_request_param_date_or_throw(request: Request, key: str) -> date:
+def get_request_param_date_required(request: Request, key: str) -> date:
     """获取请求参数中 date 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     d = value_utility.to_date_or_none(value)
     if d is not None:
         return d
@@ -409,9 +409,9 @@ def get_request_param_time_or_default(request: Request, default: time, key: str)
     return value_utility.to_time_or_default(value, default)
 
 
-def get_request_param_time_or_throw(request: Request, key: str) -> time:
+def get_request_param_time_required(request: Request, key: str) -> time:
     """获取请求参数中 time 值，失败抛出异常"""
-    value = get_request_param_string_trim_or_throw(request, key)
+    value = get_request_param_string_trim_required(request, key)
     t = value_utility.to_time_or_none(value)
     if t is not None:
         return t

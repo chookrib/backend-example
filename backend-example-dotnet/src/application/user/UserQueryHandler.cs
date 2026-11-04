@@ -1,6 +1,4 @@
-﻿using src.application.query;
-
-namespace src.application.user
+﻿namespace src.application.user
 {
     /// <summary>
     /// 用户 Query Handler 接口
@@ -15,7 +13,7 @@ namespace src.application.user
         /// <summary>
         /// 根据 id 查询，找不到抛出异常
         /// </summary>
-        Task<UserDto> QueryByIdOrThrow(string id);
+        Task<UserDto> QueryByIdRequired(string id);
 
         /// <summary>
         /// 查询记录数

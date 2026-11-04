@@ -16,7 +16,7 @@ public interface UserQueryHandler {
     /**
      * 根据 id 查询，找不到抛出异常
      */
-    UserDto queryByIdOrThrow(String id);
+    UserDto queryByIdRequired(String id);
 
     /**
      * 查询记录数

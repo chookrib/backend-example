@@ -17,7 +17,7 @@ class UserManageService:
 
     async def set_admin(self, id: str, is_admin: bool) -> None:
         """设置用户管理员状态"""
-        user = await self.user_repository.find_by_id_or_throw(id)
+        user = await self.user_repository.find_by_id_required(id)
         user.set_admin(is_admin)
         await self.user_repository.update(user)
 
@@ -37,7 +37,7 @@ class UserManageService:
     async def modify_user(self, id: str, username: str, nickname: str, mobile: str) -> None:
         """修改用户"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
-            user = await self.user_repository.find_by_id_or_throw(id)
+            user = await self.user_repository.find_by_id_required(id)
             await user.modify(
                 username=username,
                 nickname=nickname,

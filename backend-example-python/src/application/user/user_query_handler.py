@@ -13,7 +13,7 @@ class UserQueryHandler(ABC):
         pass
 
     @abstractmethod
-    async def query_by_id_or_throw(self, id: str) -> UserDto:
+    async def query_by_id_required(self, id: str) -> UserDto:
         """根据 id 查询，找不到抛出异常"""
         pass
 

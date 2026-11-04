@@ -73,18 +73,5 @@ namespace src.application.user
             }
         }
 
-        /// <summary>
-        /// 根据 AccessToken 获取登录用户
-        /// </summary>
-        public async Task<User?> GetLoginUser(string accessToken)
-        {
-            string loginUserId = GetLoginUserId(accessToken);
-            if (ValueUtility.IsEmptyString(loginUserId))
-            {
-                return null;
-            }
-
-            return await userRepository.FindById(loginUserId);
-        }
     }
 }

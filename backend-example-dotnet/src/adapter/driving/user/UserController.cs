@@ -37,10 +37,10 @@ namespace src.adapter.driving.user
         public async Task<Result> Register()
         {
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "password");
-            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "confirmPassword");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
+            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
+            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "confirmPassword");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
 
             if (confirmPassword != password)
                 throw new ControllerException("两次输入的密码不一致");
@@ -56,8 +56,8 @@ namespace src.adapter.driving.user
         public async Task<Result> Login()
         {
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "password");
+            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
+            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
 
             string accessToken = await userAuthService.Login(username, password);
             return Result.OkData(new { accessToken = accessToken });
@@ -71,7 +71,7 @@ namespace src.adapter.driving.user
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
-            UserDto userDto = await userQueryHandler.QueryByIdOrThrow(userId);
+            UserDto userDto = await userQueryHandler.QueryByIdRequired(userId);
             return Result.OkData(new { profile = userDto});
         }
 
@@ -84,9 +84,9 @@ namespace src.adapter.driving.user
             string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string oldPassword = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "oldPassword");
-            string newPassword = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "newPassword");
-            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "confirmPassword");
+            string oldPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "oldPassword");
+            string newPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "newPassword");
+            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "confirmPassword");
 
             if (confirmPassword != newPassword)
                 throw new ControllerException("两次输入的密码不一致");
@@ -104,7 +104,7 @@ namespace src.adapter.driving.user
             string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
             await userProfileService.ModifyNickname(userId, nickname);
             return Result.Ok();
         }
@@ -118,7 +118,7 @@ namespace src.adapter.driving.user
             string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "mobile");
+            string mobile = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "mobile");
 
             await userProfileService.SendMobileCode(userId, mobile);
             return Result.Ok();
@@ -133,8 +133,8 @@ namespace src.adapter.driving.user
             string userId = requestIdentityResolver.RequireLoginUserId();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "mobile");
-            string code = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "code");
+            string mobile = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "mobile");
+            string code = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "code");
             await userProfileService.BindMobile(userId, mobile, code);
             return Result.Ok();
         }

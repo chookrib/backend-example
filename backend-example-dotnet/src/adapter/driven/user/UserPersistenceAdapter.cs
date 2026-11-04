@@ -127,7 +127,7 @@ namespace src.adapter.driven.user
             return ToEntity(row);
         }
 
-        public async Task<User> FindByIdOrThrow(string id)
+        public async Task<User> FindByIdRequired(string id)
         {
             User? entity = await FindById(id);
             if (entity == null)
@@ -276,7 +276,7 @@ namespace src.adapter.driven.user
             return ToDto(row);
         }
 
-        public async Task<UserDto> QueryByIdOrThrow(string id)
+        public async Task<UserDto> QueryByIdRequired(string id)
         {
             UserDto? dto = await QueryById(id);
             if (dto == null)

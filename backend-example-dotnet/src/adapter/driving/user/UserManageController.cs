@@ -1,6 +1,5 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
-using src.application.query;
 using src.application.user;
 
 namespace src.adapter.driving.user
@@ -36,7 +35,7 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/list")]
         public async Task<Result> UserList()
         {
-            await requestIdentityResolver.RequireLoginAdminUserId();
+            await requestIdentityResolver.CheckAdminPermission();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
             int pageNum = RequestValueExtractor.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
@@ -74,13 +73,13 @@ namespace src.adapter.driving.user
         [HttpGet("/api/admin/user/get")]
         public async Task<Result> UserGet()
         {
-            await requestIdentityResolver.RequireLoginAdminUserId();
+            await requestIdentityResolver.CheckAdminPermission();
 
-            string id = RequestValueExtractor.GetRequestParamStringTrimOrThrow(Request, "id");
-            UserDto userDto = await userQueryHandler.QueryByIdOrThrow(id);
+            string id = RequestValueExtractor.GetRequestParamStringTrimRequired(Request, "id");
+            UserDto userDto = await userQueryHandler.QueryByIdRequired(id);
             return Result.OkData(new
             {
-                detail = userDto
+                item = userDto
             });
         }
 
@@ -90,12 +89,12 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/create")]
         public async Task<Result> UserCreate()
         {
-            await requestIdentityResolver.RequireLoginAdminUserId();
+            await requestIdentityResolver.CheckAdminPermission();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "password");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
+            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
             string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
             string userId = await userManageService.CreateUser(username, password, nickname, mobile);
@@ -111,12 +110,12 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/modify")]
         public async Task<Result> UserModify()
         {
-            await requestIdentityResolver.RequireLoginAdminUserId();
+            await requestIdentityResolver.CheckAdminPermission();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string id = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "id");
-            string username = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "username");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "nickname");
+            string id = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "id");
+            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
+            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
             string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
 
             await userManageService.ModifyUser(id, username, nickname, mobile);
@@ -130,10 +129,10 @@ namespace src.adapter.driving.user
         [HttpPost("/api/admin/user/remove")]
         public async Task<Result> UserRemove()
         {
-            await requestIdentityResolver.RequireLoginAdminUserId();
+            await requestIdentityResolver.CheckAdminPermission();
 
             var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string id = RequestValueExtractor.GetRequestJsonStringTrimOrThrow(requestJson, "id");
+            string id = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "id");
 
             await userManageService.RemoveUser(id);
             return Result.Ok();

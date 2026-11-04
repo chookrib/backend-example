@@ -28,7 +28,7 @@
         /// <summary>
         /// 根据 id 查询，找不到抛出异常
         /// </summary>
-        Task<User> FindByIdOrThrow(string id);
+        Task<User> FindByIdRequired(string id);
 
         /// <summary>
         /// 根据 id 集合查询

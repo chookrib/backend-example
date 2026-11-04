@@ -11,23 +11,22 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)
 
 
 def get_login_user_id(request: Request) -> str:
-    """获取登录用户 Id，失败返回空字符串"""
+    """获取登录用户 Id，未登录返回空字符串"""
     access_token = request.headers.get("Access-Token", "")
     return user_auth_service.get_login_user_id(access_token)
 
 
 def require_login_user_id(request: Request) -> str:
-    """获取登录用户 Id，失败抛出异常"""
+    """获取登录用户 Id，未登录抛出异常"""
     user_id = get_login_user_id(request)
     if value_utility.is_empty_string(user_id):
         raise NotLoginException()
     return user_id
 
-
-async def require_login_admin_user_id(request: Request) -> str:
-    """获取登录管理员用户 Id，失败抛出异常"""
-    user_id = get_login_user_id(request)
+async def check_admin_permission(request: Request) -> None:
+    """判断管理员权限"""
+    user_id = require_login_user_id(request)
     user_dto = await user_query_handler.query_by_id(user_id)
     if user_dto is None or not user_dto.is_admin:
         raise NotLoginException()
-    return user_dto
+

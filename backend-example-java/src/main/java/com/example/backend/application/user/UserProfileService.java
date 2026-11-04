@@ -55,7 +55,7 @@ public class UserProfileService {
      * 修改密码
      */
     public void modifyPassword(String userId, String oldPassword, String newPassword) {
-        User user = userRepository.findByIdOrThrow(userId);
+        User user = userRepository.findByIdRequired(userId);
         user.modifyPassword(oldPassword, newPassword);
         userRepository.update(user);
     }
@@ -65,7 +65,7 @@ public class UserProfileService {
      */
     public void modifyNickname(String userId, String nickname) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = userRepository.findByIdOrThrow(userId);
+            User user = userRepository.findByIdRequired(userId);
             user.modifyNickname(nickname, userUniquenessValidator);
             userRepository.update(user);
         }
@@ -80,7 +80,7 @@ public class UserProfileService {
         if (ValueUtility.isEmptyString(mobile))
             throw new ApplicationException("手机号不能为空");
 
-        User user = userRepository.findByIdOrThrow(userId);
+        User user = userRepository.findByIdRequired(userId);
         String code =  String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
         mobileCodeMap.put(user.getId() + "_" + mobile, code);
         smsGateway.sendCode(mobile, code);
@@ -93,7 +93,7 @@ public class UserProfileService {
         if (ValueUtility.isEmptyString(code))
             throw new ApplicationException("验证码不能为空");
 
-        User user = userRepository.findByIdOrThrow(userId);
+        User user = userRepository.findByIdRequired(userId);
         String key = user.getId() + "_" + mobile;
         if (!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("验证码错误");

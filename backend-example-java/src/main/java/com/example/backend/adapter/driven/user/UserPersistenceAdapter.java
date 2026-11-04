@@ -178,7 +178,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     }
 
     @Override
-    public User findByIdOrThrow(String id) {
+    public User findByIdRequired(String id) {
         User entity = findById(id);
         if (entity == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));
@@ -372,7 +372,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     }
 
     @Override
-    public UserDto queryByIdOrThrow(String id) {
+    public UserDto queryByIdRequired(String id) {
         UserDto dto = queryById(id);
         if (dto == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));

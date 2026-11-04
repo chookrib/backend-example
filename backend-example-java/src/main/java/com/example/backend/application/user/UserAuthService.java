@@ -76,16 +76,4 @@ public class UserAuthService {
             return "";
         }
     }
-
-    /**
-     * 根据 AccessToken 获取登录用户
-     */
-    public User getLoginUser(String accessToken) {
-        String loginUserId = getLoginUserId(accessToken);
-        if (ValueUtility.isEmptyString(loginUserId)) {
-            return null;
-        }
-
-        return userRepository.findById(loginUserId);
-    }
 }

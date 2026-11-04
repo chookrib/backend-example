@@ -50,7 +50,7 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中的值，失败抛出异常
      */
-    public static JsonNode getRequestJsonValueOrThrow(JsonNode json, String... keys) {
+    public static JsonNode getRequestJsonValueRequired(JsonNode json, String... keys) {
         JsonNode node = getRequestJsonValue(json, keys);
         if (node.isMissingNode()) {
             throw new ControllerException(String.format("请求体缺少 %s", String.join(".", keys)));
@@ -80,8 +80,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 string 值，失败抛出异常
      */
-    public static String getRequestJsonStringTrimOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static String getRequestJsonStringTrimRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         String s = node.asText().trim();
         if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
@@ -129,8 +129,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 bool 值，失败抛出异常
      */
-    public static boolean getRequestJsonBoolOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static boolean getRequestJsonBoolRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         if (node.isBoolean())
             return node.booleanValue();
         Boolean b = ValueUtility.toBoolOrNull(node.asText());
@@ -166,8 +166,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 int 值，失败抛出异常
      */
-    public static int getRequestJsonIntOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static int getRequestJsonIntRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         if (node.isInt())
             return node.intValue();
         Integer i = ValueUtility.toIntOrNull(node.asText());
@@ -203,8 +203,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 long 值，失败抛出异常
      */
-    public static long getRequestJsonLongOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static long getRequestJsonLongRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         if (node.isLong())
             return node.longValue();
         Long l = ValueUtility.toLongOrNull(node.asText());
@@ -238,8 +238,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 decimal 值，失败抛出异常
      */
-    public static BigDecimal getRequestJsonDecimalOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static BigDecimal getRequestJsonDecimalRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         BigDecimal d = ValueUtility.toDecimalOrNull(node.asText());
         if (d != null)
             return d;
@@ -271,8 +271,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 datetime 值，失败抛出异常
      */
-    public static LocalDateTime getRequestJsonDateTimeOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static LocalDateTime getRequestJsonDateTimeRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         LocalDateTime dt = ValueUtility.toDateTimeOrNull(node.asText());
         if (dt != null)
             return dt;
@@ -304,8 +304,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 date 值，失败抛出异常
      */
-    public static LocalDate getRequestJsonDateOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static LocalDate getRequestJsonDateRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         LocalDate d = ValueUtility.toDateOrNull(node.asText());
         if (d != null)
             return d;
@@ -337,8 +337,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 time 值，失败抛出异常
      */
-    public static LocalTime getRequestJsonTimeOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static LocalTime getRequestJsonTimeRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         LocalTime t = ValueUtility.toTimeOrNull(node.asText());
         if (t != null)
             return t;
@@ -367,8 +367,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求 json 数据中 string 值，失败抛出异常
      */
-    public static String getRequestJsonStringOrThrow(JsonNode json, String... keys) {
-        JsonNode node = getRequestJsonValueOrThrow(json, keys);
+    public static String getRequestJsonStringRequired(JsonNode json, String... keys) {
+        JsonNode node = getRequestJsonValueRequired(json, keys);
         String s = node.asText();
         if (ValueUtility.isEmptyString(s))
             throw new ControllerException(String.format("请求体 %s 值不能为空", String.join(".", keys)));
@@ -395,7 +395,7 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 string 值，失败抛出异常
      */
-    public static String getRequestParamStringTrimOrThrow(HttpServletRequest request, String key) {
+    public static String getRequestParamStringTrimRequired(HttpServletRequest request, String key) {
         String value = request.getParameter(key);
         if (value == null)
             throw new ControllerException(String.format("请求参数缺少 %s", key));
@@ -425,8 +425,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 bool 值，失败抛出异常
      */
-    public static boolean getRequestParamBoolOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static boolean getRequestParamBoolRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         Boolean b = ValueUtility.toBoolOrNull(value);
         if (b != null)
             return b;
@@ -454,8 +454,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 int 值，失败抛出异常
      */
-    public static int getRequestParamIntOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static int getRequestParamIntRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         Integer i = ValueUtility.toIntOrNull(value);
         if (i != null)
             return i;
@@ -483,8 +483,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 long 值，失败抛出异常
      */
-    public static long getRequestParamLongOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static long getRequestParamLongRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         Long l = ValueUtility.toLongOrNull(value);
         if (l != null)
             return l;
@@ -512,8 +512,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 decimal 值，失败抛出异常
      */
-    public static BigDecimal getRequestParamDecimalOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static BigDecimal getRequestParamDecimalRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         BigDecimal d = ValueUtility.toDecimalOrNull(value);
         if (d != null)
             return d;
@@ -541,8 +541,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 datetime 值，失败抛出异常
      */
-    public static LocalDateTime getRequestParamDateTimeOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static LocalDateTime getRequestParamDateTimeRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         LocalDateTime dt = ValueUtility.toDateTimeOrNull(value);
         if (dt != null)
             return dt;
@@ -570,8 +570,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 date 值，失败抛出异常
      */
-    public static LocalDate getRequestParamDateOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static LocalDate getRequestParamDateRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         LocalDate d = ValueUtility.toDateOrNull(value);
         if (d != null)
             return d;
@@ -599,8 +599,8 @@ public final class RequestValueExtractor {
     /**
      * 获取请求参数中 time 值，失败抛出异常
      */
-    public static LocalTime getRequestParamTimeOrThrow(HttpServletRequest request, String key) {
-        String value = getRequestParamStringTrimOrThrow(request, key);
+    public static LocalTime getRequestParamTimeRequired(HttpServletRequest request, String key) {
+        String value = getRequestParamStringTrimRequired(request, key);
         LocalTime t = ValueUtility.toTimeOrNull(value);
         if (t != null)
             return t;

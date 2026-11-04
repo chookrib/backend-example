@@ -13,8 +13,8 @@ router = APIRouter()
 async def test_crypto_jwt_encode(request: Request):
     """JWT 编码"""
     request_json = await request_value_extractor.parse_request_json(request)
-    secret = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "secret")
-    expires_at = request_value_extractor.get_request_json_datetime_or_throw(request_json, "expiresAt")
+    secret = request_value_extractor.get_request_json_string_trim_required(request_json, "secret")
+    expires_at = request_value_extractor.get_request_json_datetime_required(request_json, "expiresAt")
     payload = request_json.get("payload", {})
     token = crypto_utility.jwt_encode(payload, secret, expires_at)
     return Result.ok(data={"token": token})
@@ -23,8 +23,8 @@ async def test_crypto_jwt_encode(request: Request):
 async def test_crypto_jwt_decode(request: Request):
     """JWT 解码"""
     request_json = await request_value_extractor.parse_request_json(request)
-    secret = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "secret")
-    token = request_value_extractor.get_request_json_string_trim_or_throw(request_json, "token")
+    secret = request_value_extractor.get_request_json_string_trim_required(request_json, "secret")
+    token = request_value_extractor.get_request_json_string_trim_required(request_json, "token")
     payload = crypto_utility.jwt_decode(token, secret)
 
     header_decoded = ""
@@ -44,21 +44,21 @@ async def test_crypto_jwt_decode(request: Request):
 @router.get("/api/test/crypto/base64-encode")
 def test_crypto_base64_encode(request: Request):
     """BASE64 编码"""
-    text = request_value_extractor.get_request_param_string_trim_or_throw(request, "text")
+    text = request_value_extractor.get_request_param_string_trim_required(request, "text")
     base64 = crypto_utility.base64_encode(text)
     return Result.ok(data={"base64": base64})
 
 @router.get("/api/test/crypto/base64-decode")
 def test_crypto_base64_decode(request: Request):
     """BASE64 解码"""
-    base64 = request_value_extractor.get_request_param_string_trim_or_throw(request, "base64")
+    base64 = request_value_extractor.get_request_param_string_trim_required(request, "base64")
     text = crypto_utility.base64_decode(base64)
     return Result.ok(data={"text": text})
 
 @router.get("/api/test/crypto/md5-encode")
 def test_crypto_md5_encode(request: Request):
     """MD5 编码"""
-    text = request_value_extractor.get_request_param_string_trim_or_throw(request, "text")
+    text = request_value_extractor.get_request_param_string_trim_required(request, "text")
     md5 = crypto_utility.md5_encode(text)
     return Result.ok(data={"md5": md5})
 
