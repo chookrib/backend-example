@@ -1,7 +1,8 @@
 package com.example.backend.application.user;
 
+import com.example.backend.utility.ValueUtility;
+
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 用户 DTO
@@ -45,12 +46,12 @@ public class UserDto {
     public UserDto(
             String id, String username, String nickname, String mobile, boolean isAdmin,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = Objects.requireNonNull(id);
-        this.username = Objects.requireNonNull(username);
-        this.nickname = Objects.requireNonNull(nickname);
-        this.mobile = Objects.requireNonNull(mobile);
+        this.id = ValueUtility.requireNotBlank(id);
+        this.username = ValueUtility.requireNotBlank(username);
+        this.nickname = ValueUtility.requireNotBlank(nickname);
+        this.mobile = ValueUtility.requireNonNull(mobile);
         this.isAdmin = isAdmin;
-        this.createdAt = Objects.requireNonNull(createdAt);
+        this.createdAt = ValueUtility.requireNonNull(createdAt);
         this.updatedAt = updatedAt;
     }
 }

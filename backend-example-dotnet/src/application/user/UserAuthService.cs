@@ -14,7 +14,7 @@ namespace src.application.user
 
         public UserAuthService(IConfiguration configuration, UserRepository userRepository)
         {
-            if (!ValueUtility.IsEmptyString(configuration.GetValue<string>("App:JwtSecret", string.Empty)))
+            if (!ValueUtility.IsBlank(configuration.GetValue<string>("App:JwtSecret", string.Empty)))
             {
                 this.jwtSecret = configuration.GetValue<string>("App:JwtSecret", string.Empty);
             }
@@ -54,7 +54,7 @@ namespace src.application.user
         /// </summary>
         public string GetLoginUserId(string accessToken)
         {
-            if (ValueUtility.IsEmptyString(accessToken))
+            if (ValueUtility.IsBlank(accessToken))
             {
                 return string.Empty;
             }

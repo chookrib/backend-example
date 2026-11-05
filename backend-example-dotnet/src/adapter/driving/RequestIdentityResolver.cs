@@ -45,7 +45,7 @@ namespace src.adapter.driving
         {
             string accessToken = Request.Headers["Access-Token"].FirstOrDefault() ?? string.Empty;
             string userId = userAuthService.GetLoginUserId(accessToken);
-            if (ValueUtility.IsEmptyString(userId))
+            if (ValueUtility.IsBlank(userId))
                 throw new NotLoginException();
             return userId;
         }

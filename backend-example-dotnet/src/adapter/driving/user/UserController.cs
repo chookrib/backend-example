@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
 using src.application.user;
+using src.utility;
 
 
 namespace src.adapter.driving.user
@@ -36,11 +37,11 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/register")]
         public async Task<Result> Register()
         {
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
-            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "confirmPassword");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string username = jsonExtractor.GetNotBlankStringOrThrow("username", "用户名不能为空");
+            string password = jsonExtractor.GetNotBlankStringOrThrow("password", "密码不能为空");
+            string confirmPassword = jsonExtractor.GetNotBlankStringOrThrow("confirmPassword", "确认密码不能为空");
+            string nickname = jsonExtractor.GetNotBlankStringOrThrow("nickname", "昵称不能为空");
 
             if (confirmPassword != password)
                 throw new ControllerException("两次输入的密码不一致");
@@ -55,9 +56,9 @@ namespace src.adapter.driving.user
         [HttpPost("/api/user/login")]
         public async Task<Result> Login()
         {
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string username = jsonExtractor.GetNotBlankStringOrThrow("username", "用户名不能为空");
+            string password = jsonExtractor.GetNotBlankStringOrThrow("password", "密码不能为空");
 
             string accessToken = await userAuthService.Login(username, password);
             return Result.OkData(new { accessToken = accessToken });
@@ -71,7 +72,7 @@ namespace src.adapter.driving.user
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
-            UserDto userDto = await userQueryHandler.QueryByIdRequired(userId);
+            UserDto userDto = await userQueryHandler.QueryByIdOrThrow(userId);
             return Result.OkData(new { profile = userDto});
         }
 
@@ -83,10 +84,10 @@ namespace src.adapter.driving.user
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string oldPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "oldPassword");
-            string newPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "newPassword");
-            string confirmPassword = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "confirmPassword");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string oldPassword = jsonExtractor.GetNotBlankStringOrThrow("oldPassword", "旧密码不能为空");
+            string newPassword = jsonExtractor.GetNotBlankStringOrThrow("newPassword", "新密码不能为空");
+            string confirmPassword = jsonExtractor.GetNotBlankStringOrThrow("confirmPassword", "确认密码不能为空");
 
             if (confirmPassword != newPassword)
                 throw new ControllerException("两次输入的密码不一致");
@@ -103,8 +104,8 @@ namespace src.adapter.driving.user
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string nickname = jsonExtractor.GetNotBlankStringOrThrow("nickname", "昵称不能为空");
             await userProfileService.ModifyNickname(userId, nickname);
             return Result.Ok();
         }
@@ -116,11 +117,7 @@ namespace src.adapter.driving.user
         public async Task<Result> SendMobileCode()
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
-
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "mobile");
-
-            await userProfileService.SendMobileCode(userId, mobile);
+            await userProfileService.SendMobileCode(userId);
             return Result.Ok();
         }
 
@@ -132,9 +129,10 @@ namespace src.adapter.driving.user
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "mobile");
-            string code = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "code");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            String mobile = jsonExtractor.GetNotBlankStringOrThrow("mobile", "手机号码不能为空");
+            String code = jsonExtractor.GetNotBlankStringOrThrow("code", "验证码不能为空");
+
             await userProfileService.BindMobile(userId, mobile, code);
             return Result.Ok();
         }

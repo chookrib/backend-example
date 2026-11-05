@@ -5,7 +5,7 @@ namespace src.utility
     /// <summary>
     /// Id Utility
     /// </summary>
-    public sealed class IdUtility
+    public sealed class IdentifierUtility
     {
         /// <summary>
         /// 生成 UUID v4
@@ -39,7 +39,7 @@ namespace src.utility
             StringBuilder sb = new StringBuilder();
             foreach (string id in ids)
             {
-                if (!ValueUtility.IsEmptyString(id))
+                if (!ValueUtility.IsBlank(id))
                     sb.Append(id).Append(DELIMITER);
             }
 
@@ -54,7 +54,7 @@ namespace src.utility
         /// </summary>
         public static string Wrap(string id)
         {
-            if (ValueUtility.IsEmptyString(id))
+            if (ValueUtility.IsBlank(id))
                 throw new UtilityException("不能包裹一个空的 Id");
 
             return DELIMITER + id + DELIMITER;
@@ -65,12 +65,12 @@ namespace src.utility
         /// </summary>
         public static List<string> Split(string ids)
         {
-            if (ValueUtility.IsEmptyString(ids))
+            if (ValueUtility.IsBlank(ids))
                 return new List<string>();
 
             return ids.Split(DELIMITER)
                       // .Select(s => s.Trim())
-                      .Where(s => !ValueUtility.IsEmptyString(s))
+                      .Where(s => !ValueUtility.IsBlank(s))
                       .ToList();
         }
     }

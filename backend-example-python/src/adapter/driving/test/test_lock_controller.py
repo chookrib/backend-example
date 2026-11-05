@@ -3,9 +3,9 @@ import time
 
 from fastapi import APIRouter, Request
 
-from src.adapter.driving import request_value_extractor
 from src.adapter.driving.result import Result
 from src.application.lock.lock_exception import LockException
+from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -19,7 +19,7 @@ test_lock_service = ioc_container.resolve(TestLockService)
 @router.get("/api/test/lock/set-count")
 def test_lock_set_count(request: Request):
     """设置 count"""
-    value = request_value_extractor.get_request_param_int_or_default(request, 1, "value")
+    value = value_utility.to_int_or_default(request.query_params.get("value"), 1)
     test_lock_service.set_count(value)
     return Result.ok(data={"count": value})
 

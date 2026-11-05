@@ -10,7 +10,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 值 Utility
@@ -18,10 +21,62 @@ import java.util.*;
 public final class ValueUtility {
 
     /**
-     * 判断字符串是否为 null 或空字符串
+     * 当值为 null 时抛出异常，否则返回值
      */
-    public static boolean isEmptyString(String value) {
-        return value == null || value.isBlank();    // isEmpty()
+    public static <T> T requireNonNull(T value) {
+        if (value == null)
+            throw new UtilityException("值不能为 null");
+        return value;
+    }
+
+    /**
+     * 当值为 null 时抛出指定消息异常，否则返回值
+     */
+    public static <T> T requireNonNull(T value, String message) {
+        if (value == null)
+            throw new UtilityException(message);
+        return value;
+    }
+
+    /**
+     * 当值为 null 时返回默认值，否则返回值，此方法不判断提供的默认值是否为 null
+     */
+    public static <T> T defaultIfNull(T value, T defaultValue) {
+        return (value != null) ? value : defaultValue;
+    }
+
+    //==================================================================================================================
+
+    /**
+     * 判断字符串是否为 null 或空字符串（包括仅含空格的字符串）
+     */
+    public static boolean isBlank(String value) {
+        return value == null || value.isBlank();    // value.isEmpty()
+    }
+
+    /**
+     * 当值为 null 或空字符串（包括仅含空格的字符串）时抛出异常，否则返回值
+     */
+    public static String requireNotBlank(String value) {
+        if (isBlank(value))
+            throw new UtilityException("值不能为空字符串");
+        return value;
+    }
+
+    /**
+     * 当值为 null 或空字符串（包括仅含空格的字符串）时抛出指定消息异常，否则返回值
+     */
+    public static String requireNotBlank(String value, String message) {
+        if (isBlank(value))
+            throw new UtilityException(message);
+        return value;
+    }
+
+    /**
+     * 当值为 null 时返回空字符串 ""，否则返回值
+     */
+    public static String emptyIfNull(String value) {
+        return value != null ? value : "";
     }
 
     //==================================================================================================================
@@ -34,7 +89,7 @@ public final class ValueUtility {
      * 转 bool，失败返回 null
      */
     public static Boolean toBoolOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
         String b = value.trim().toLowerCase();
         if (BOOL_TRUE.contains(b))
@@ -54,13 +109,30 @@ public final class ValueUtility {
         return defaultValue;
     }
 
+    /**
+     * 转 bool，失败抛出指定消息异常
+     */
+    public static boolean toBoolOrThrow(String value, String message) {
+        Boolean b = toBoolOrNull(value);
+        if (b == null)
+            throw new UtilityException(message);
+        return b;
+    }
+
+    /**
+     * 转 bool，失败抛出异常
+     */
+    public static boolean toBoolOrThrow(String value) {
+        return toBoolOrThrow(value, "无效的 bool 值");
+    }
+
     //==================================================================================================================
 
     /**
      * 转 int，失败返回 null
      */
     public static Integer toIntOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
         try {
             return Integer.valueOf(value.trim());
@@ -79,13 +151,30 @@ public final class ValueUtility {
         return defaultValue;
     }
 
+    /**
+     * 转 int，失败抛出指定消息异常
+     */
+    public static int toIntOrThrow(String value, String message) {
+        Integer i = toIntOrNull(value);
+        if (i == null)
+            throw new UtilityException(message);
+        return i;
+    }
+
+    /**
+     * 转 int，失败抛出异常
+     */
+    public static int toIntOrThrow(String value) {
+        return toIntOrThrow(value, "无效的 int 值");
+    }
+
     //==================================================================================================================
 
     /**
      * 转 long，失败返回 null
      */
     public static Long toLongOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
         try {
             return Long.valueOf(value.trim());
@@ -104,6 +193,23 @@ public final class ValueUtility {
         return defaultValue;
     }
 
+    /**
+     * 转 long，失败抛出指定消息异常
+     */
+    public static long toLongOrThrow(String value, String message) {
+        Long l = toLongOrNull(value);
+        if (l == null)
+            throw new UtilityException(message);
+        return l;
+    }
+
+    /**
+     * 转 long，失败抛出异常
+     */
+    public static long toLongOrThrow(String value) {
+        return toLongOrThrow(value, "无效的 long 值");
+    }
+
     //==================================================================================================================
 
     // 定义 decimal 边界值 DECIMAL(28, 8)，满足绝大部分场景
@@ -115,7 +221,7 @@ public final class ValueUtility {
      * 转 decimal，失败返回 null
      */
     public static BigDecimal toDecimalOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
         try {
             // return new BigDecimal(value.trim());
@@ -123,6 +229,8 @@ public final class ValueUtility {
             BigDecimal d = new BigDecimal(value.trim());
             // 规范化小数位（四舍五入）
             d = d.setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);
+            // 去掉末尾多余的 0
+            d = d.stripTrailingZeros();
             // 检查是否超出边界
             if (d.compareTo(DECIMAL_MIN_VALUE) < 0 || d.compareTo(DECIMAL_MAX_VALUE) > 0) {
                 return null;
@@ -143,8 +251,25 @@ public final class ValueUtility {
         if (defaultValue == null)
             return null;
         if (defaultValue.compareTo(DECIMAL_MIN_VALUE) < 0 || defaultValue.compareTo(DECIMAL_MAX_VALUE) > 0)
-            throw new UtilityException("默认值超出 deciaml 范围");
+            throw new UtilityException("默认值超出 decimal 范围");
         return defaultValue;
+    }
+
+    /**
+     * 转 decimal，失败抛出指定消息异常
+     */
+    public static BigDecimal toDecimalOrThrow(String value, String message) {
+        BigDecimal d = toDecimalOrNull(value);
+        if (d == null)
+            throw new UtilityException(message);
+        return d;
+    }
+
+    /**
+     * 转 decimal，失败抛出异常
+     */
+    public static BigDecimal toDecimalOrThrow(String value) {
+        return toDecimalOrThrow(value, "无效的 decimal 值");
     }
 
     //==================================================================================================================
@@ -153,7 +278,7 @@ public final class ValueUtility {
     /**
      * 获取当前时间，精度到毫秒
      */
-    public static LocalDateTime getDateTimeNow() {
+    public static LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
     }
 
@@ -194,7 +319,7 @@ public final class ValueUtility {
      * 转 datetime，精度到毫秒，失败返回 null
      */
     public static LocalDateTime toDateTimeOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
 
         // DateUtils.parseDate(value.trim(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd");
@@ -238,6 +363,23 @@ public final class ValueUtility {
         return defaultValue.truncatedTo(ChronoUnit.MILLIS);
     }
 
+    /**
+     * 转 datetime，失败抛出指定消息异常
+     */
+    public static LocalDateTime toDateTimeOrThrow(String value, String message) {
+        LocalDateTime dt = toDateTimeOrNull(value);
+        if (dt == null)
+            throw new UtilityException(message);
+        return dt;
+    }
+
+    /**
+     * 转 datetime，失败抛出异常
+     */
+    public static LocalDateTime toDateTimeOrThrow(String value) {
+        return toDateTimeOrThrow(value, "无效的 datetime 值");
+    }
+
     //==================================================================================================================
 
     /**
@@ -253,7 +395,7 @@ public final class ValueUtility {
      * 转 date，失败返回 null
      */
     public static LocalDate toDateOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
 
         // LocalDate.parse(value.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -292,6 +434,23 @@ public final class ValueUtility {
         return defaultValue;
     }
 
+    /**
+     * 转 date，失败抛出指定消息异常
+     */
+    public static LocalDate toDateOrThrow(String value, String message) {
+        LocalDate d = toDateOrNull(value);
+        if (d == null)
+            throw new UtilityException(message);
+        return d;
+    }
+
+    /**
+     * 转 date，失败抛出异常
+     */
+    public static LocalDate toDateOrThrow(String value) {
+        return toDateOrThrow(value, "无效的 date 值");
+    }
+
     //==================================================================================================================
     // time 精度统一为秒
 
@@ -326,7 +485,7 @@ public final class ValueUtility {
      * 转 time，精度到秒，失败返回 null
      */
     public static LocalTime toTimeOrNull(String value) {
-        if (isEmptyString(value))
+        if (isBlank(value))
             return null;
 
         // try {
@@ -369,6 +528,23 @@ public final class ValueUtility {
         return defaultValue.truncatedTo(ChronoUnit.SECONDS);
     }
 
+    /**
+     * 转 time，失败抛出指定消息异常
+     */
+    public static LocalTime toTimeOrThrow(String value, String message) {
+        LocalTime t = toTimeOrNull(value);
+        if (t == null)
+            throw new UtilityException(message);
+        return t;
+    }
+
+    /**
+     * 转 time，失败抛出异常
+     */
+    public static LocalTime toTimeOrThrow(String value) {
+        return toTimeOrThrow(value, "无效的 time 值");
+    }
+
     //==================================================================================================================
 
     /**
@@ -390,4 +566,5 @@ public final class ValueUtility {
             return Collections.unmodifiableMap(map);
         }
     }
+
 }

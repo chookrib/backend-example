@@ -1,9 +1,10 @@
 package com.example.backend.adapter.driving.test;
 
-import com.example.backend.adapter.driving.RequestValueExtractor;
+import com.example.backend.adapter.driving.RequestValueResolver;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.lock.LockException;
 import com.example.backend.application.test.TestLockService;
+import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/set-count", method = RequestMethod.GET)
     public Result testLockSetCount(HttpServletRequest request) {
-        int value = RequestValueExtractor.getRequestParamIntOrDefault(request, 1, "value");
+        int value = ValueUtility.toIntOrDefault(request.getParameter("value"), 1);
         testLockService.setCount(value);
         return Result.okData(Map.of("count", value));
     }

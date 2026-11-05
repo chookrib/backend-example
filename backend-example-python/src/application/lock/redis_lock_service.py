@@ -31,7 +31,7 @@ class RedisLockService(LockService):
 
     # def __init__(self, redis_client: redis.Redis):
     def __init__(self):
-        if value_utility.is_empty_string(application_config.APP_LOCK_REDIS_URL):
+        if value_utility.is_blank(application_config.APP_LOCK_REDIS_URL):
             raise ApplicationException("未配置 APP_LOCK_REDIS_URL")
 
         self.redis = redis.from_url(application_config.APP_LOCK_REDIS_URL)

@@ -5,6 +5,8 @@ import com.example.backend.application.user.UserAuthService;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserProfileService;
 import com.example.backend.application.user.UserQueryHandler;
+import com.example.backend.utility.JsonExtractor;
+import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,11 +46,11 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
     public Result register(@RequestBody String requestBody) {
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
-        String password = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "password");
-        String confirmPassword = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "confirmPassword");
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String username = jsonExtractor.getNotBlankStringOrThrow("username", "用户名不能为空");
+        String password = jsonExtractor.getNotBlankStringOrThrow("password", "密码不能为空");
+        String confirmPassword = jsonExtractor.getNotBlankStringOrThrow("confirmPassword", "确认密码不能为空");
+        String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
 
         if (!confirmPassword.equals(password))
             throw new ControllerException("两次输入的密码不一致");
@@ -64,9 +66,9 @@ public class UserController {
      */
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     public Result login(@RequestBody String requestBody) {
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
-        String password = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "password");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String username = jsonExtractor.getNotBlankStringOrThrow("username", "用户名不能为空");
+        String password = jsonExtractor.getNotBlankStringOrThrow("password", "密码不能为空");
 
         String accessToken = userAuthService.login(username, password);
         return Result.okData(Map.of(
@@ -80,8 +82,7 @@ public class UserController {
     @RequestMapping(value = "/api/user/profile", method = RequestMethod.GET)
     public Result profile() {
         String userId = requestIdentityResolver.requireLoginUserId();
-
-        UserDto userDto = userQueryHandler.queryByIdRequired(userId);
+        UserDto userDto = userQueryHandler.queryByIdOrThrow(userId);
         return Result.okData(Map.of(
                 "profile", userDto
         ));
@@ -94,10 +95,10 @@ public class UserController {
     public Result modifyPassword(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String oldPassword = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "oldPassword");
-        String newPassword = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "newPassword");
-        String confirmPassword = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "confirmPassword");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String oldPassword = jsonExtractor.getNotBlankStringOrThrow("oldPassword", "旧密码不能为空");
+        String newPassword = jsonExtractor.getNotBlankStringOrThrow("newPassword", "新密码不能为空");
+        String confirmPassword = jsonExtractor.getNotBlankStringOrThrow("confirmPassword", "确认密码不能为空");
 
         if (!confirmPassword.equals(newPassword))
             throw new ControllerException("两次输入的密码不一致");
@@ -113,8 +114,9 @@ public class UserController {
     public Result modifyNickname(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
+
         userProfileService.modifyNickname(userId, nickname);
         return Result.ok();
     }
@@ -125,11 +127,7 @@ public class UserController {
     @RequestMapping(value = "/api/user/send-mobile-code", method = RequestMethod.POST)
     public Result sendMobileCode(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
-
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String mobile = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "mobile");
-
-        userProfileService.sendMobileCode(userId, mobile);
+        userProfileService.sendMobileCode(userId);
         return Result.ok();
     }
 
@@ -140,9 +138,10 @@ public class UserController {
     public Result bindMobile(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String mobile = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "mobile");
-        String code = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "code");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String mobile = jsonExtractor.getNotBlankStringOrThrow("mobile", "手机号码不能为空");
+        String code = jsonExtractor.getNotBlankStringOrThrow("code", "验证码不能为空");
+
         userProfileService.bindMobile(userId, mobile, code);
         return Result.ok();
     }

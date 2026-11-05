@@ -1,12 +1,14 @@
 package com.example.backend.adapter.driving.user;
 
 import com.example.backend.adapter.driving.RequestIdentityResolver;
-import com.example.backend.adapter.driving.RequestValueExtractor;
+import com.example.backend.adapter.driving.RequestValueResolver;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserQueryCriteria;
 import com.example.backend.application.user.UserQueryHandler;
 import com.example.backend.application.user.UserManageService;
+import com.example.backend.utility.JsonExtractor;
+import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,22 +50,19 @@ public class UserManageController {
     public Result userList(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        int pageNum = RequestValueExtractor.getRequestJsonIntOrDefault(requestJson, 1, "pageNum");
-        int pageSize = RequestValueExtractor.getRequestJsonIntOrDefault(requestJson, 1, "pageSize");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        int pageNum = RequestValueResolver.normalizePageNum(jsonExtractor.getString("pageNum"));
+        int pageSize = RequestValueResolver.normalizePageSize(jsonExtractor.getString("pageSize"));
 
-        // JsonNode criteriaJson = requestJson.path("criteria");
         UserQueryCriteria criteria = new UserQueryCriteria();
-        // if (!criteriaJson.isMissingNode()) {
-        // String keyword = criteriaJson.path("keyword").asText().trim();
-        String keyword = RequestValueExtractor.getRequestJsonStringTrimOrEmpty(requestJson, "criteria", "keyword");
-        criteria.setKeyword(keyword);
-        //}
+        criteria.setKeyword(jsonExtractor.getStringOrEmpty("criteria.keyword"));
 
-        LinkedHashMap<String, String> sortOptions = RequestValueExtractor.getRequestJsonSortOptions(requestJson, "sort");
+        LinkedHashMap<String, String> sortOptions = RequestValueResolver.getSortOptions(
+                jsonExtractor.getNode("sort")
+        );
 
         int totalCount = userQueryHandler.queryCount(criteria);
-        RequestValueExtractor.Paging paging = RequestValueExtractor.normalizePaging(pageNum, pageSize, totalCount);
+        RequestValueResolver.Paging paging = RequestValueResolver.normalizePaging(pageNum, pageSize, totalCount);
         List<UserDto> list = userQueryHandler.queryPage(paging.pageNum(), paging.pageSize(), criteria, sortOptions);
         return Result.okData(Map.of(
                 "list", list,
@@ -82,8 +81,8 @@ public class UserManageController {
     public Result userGet(HttpServletRequest request) {
         requestIdentityResolver.checkAdminPermission();
 
-        String id = RequestValueExtractor.getRequestParamStringTrimRequired(request, "id");
-        UserDto userDto = userQueryHandler.queryByIdRequired(id);
+        String id = ValueUtility.requireNotBlank(request.getParameter("id"), "缺少 Id 参数");
+        UserDto userDto = userQueryHandler.queryByIdOrThrow(id);
         return Result.okData(Map.of(
                 "item", userDto
         ));
@@ -96,13 +95,14 @@ public class UserManageController {
     public Result userCreate(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
-        String password = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "password");
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
-        String mobile = RequestValueExtractor.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String username = jsonExtractor.getNotBlankStringOrThrow("username", "用户名不能为空");
+        String password = jsonExtractor.getNotBlankStringOrThrow("password", "密码不能为空");
+        String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
+        String mobile = jsonExtractor.getStringOrEmpty("mobile");
+        boolean isAdmin = ValueUtility.toBoolOrThrow(jsonExtractor.getString("isAdmin"), "是否管理员值无效");
 
-        String userId = userManageService.createUser(username, password, nickname, mobile);
+        String userId = userManageService.createUser(username, password, nickname, mobile, isAdmin);
         return Result.okData(Map.of(
                 "id", userId
         ));
@@ -115,13 +115,14 @@ public class UserManageController {
     public Result userModify(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String id = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "id");
-        String username = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "username");
-        String nickname = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "nickname");
-        String mobile = RequestValueExtractor.getRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String id = jsonExtractor.getNotBlankStringOrThrow("id", "Id 不能为空");
+        String username = jsonExtractor.getNotBlankStringOrThrow("username", "用户名不能为空");
+        String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
+        String mobile = jsonExtractor.getStringOrEmpty("mobile");
+        boolean isAdmin = ValueUtility.toBoolOrThrow(jsonExtractor.getString("isAdmin"), "是否管理员值无效");
 
-        userManageService.modifyUser(id, username, nickname, mobile);
+        userManageService.modifyUser(id, username, nickname, mobile, isAdmin);
         return Result.ok();
     }
 
@@ -132,8 +133,8 @@ public class UserManageController {
     public Result userRemove(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String id = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "id");
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String id = jsonExtractor.getNotBlankStringOrThrow("id", "Id 不能为空");
 
         userManageService.removeUser(id);
         return Result.ok();

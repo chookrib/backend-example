@@ -29,7 +29,7 @@ public class UserAuthService {
             @Value("${app.jwt-ttl}") String jwtTtl) {
         this.userRepository = userRepository;
 
-        if (!ValueUtility.isEmptyString(jwtSecret)) {
+        if (!ValueUtility.isBlank(jwtSecret)) {
             this.jwtSecret = jwtSecret;
         } else {
             throw new ApplicationException("app.jwt-secret 配置错误");
@@ -64,7 +64,7 @@ public class UserAuthService {
      * 根据 AccessToken 获取登录用户 Id
      */
     public String getLoginUserId(String accessToken) {
-        if (ValueUtility.isEmptyString(accessToken)) {
+        if (ValueUtility.isBlank(accessToken)) {
             return "";
         }
 

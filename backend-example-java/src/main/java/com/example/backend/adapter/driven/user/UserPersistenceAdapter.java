@@ -96,10 +96,9 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
         } catch (Exception ex) {
-            throw new PersistenceException("从数据库获取 User 时发生异常", ex);
+            throw new PersistenceException("还原 User 失败", ex);
         }
     }
-
 
     @Override
     public void insert(User entity) {
@@ -149,7 +148,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public void deleteById(String id) {
-        if (ValueUtility.isEmptyString(id))
+        if (ValueUtility.isBlank(id))
             return;
         databaseAdapter.getJdbcTemplate().update(
                 "DELETE FROM %s WHERE u_id = ?".formatted(tableName), id
@@ -158,7 +157,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public User findById(String id) {
-        if (ValueUtility.isEmptyString(id))
+        if (ValueUtility.isBlank(id))
             return null;
         // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
         //         "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
@@ -178,7 +177,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     }
 
     @Override
-    public User findByIdRequired(String id) {
+    public User findByIdOrThrow(String id) {
         User entity = findById(id);
         if (entity == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));
@@ -211,7 +210,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public User findByUsername(String username) {
-        if (ValueUtility.isEmptyString(username))
+        if (ValueUtility.isBlank(username))
             return null;
         // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
         //         "SELECT * FROM %s WHERE LOWER(u_username) = LOWER(?)".formatted(tableName), username
@@ -234,7 +233,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public boolean isUsernameAvailable(String username) {
-        if (ValueUtility.isEmptyString(username)) {
+        if (ValueUtility.isBlank(username)) {
             throw new PersistenceException("无法检查 username 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
@@ -246,7 +245,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public boolean isNicknameAvailable(String nickname) {
-        if (ValueUtility.isEmptyString(nickname)) {
+        if (ValueUtility.isBlank(nickname)) {
             throw new PersistenceException("无法检查 nickname 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
@@ -258,7 +257,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public boolean isMobileAvailable(String mobile) {
-        if (ValueUtility.isEmptyString(mobile)) {
+        if (ValueUtility.isBlank(mobile)) {
             throw new PersistenceException("无法检查 mobile 为空字符串时是否可用");
         }
         Integer count = databaseAdapter.getJdbcTemplate().queryForObject(
@@ -302,7 +301,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
         } catch (Exception ex) {
-            throw new PersistenceException("从数据库获取 UserDto 时发生异常", ex);
+            throw new PersistenceException("还原 UserDto 失败", ex);
         }
     }
 
@@ -314,7 +313,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
             return "";
 
         List<String> sqls = new ArrayList<>();
-        if (!ValueUtility.isEmptyString(criteria.getKeyword())) {
+        if (!ValueUtility.isBlank(criteria.getKeyword())) {
             sqls.add("(u_username LIKE :keyword ESCAPE '\\' OR u_nickname LIKE :keyword ESCAPE '\\')");
             params.put("keyword", databaseAdapter.escapeLikePattern(criteria.getKeyword()));
         }
@@ -352,7 +351,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
 
     @Override
     public UserDto queryById(String id) {
-        if (ValueUtility.isEmptyString(id))
+        if (ValueUtility.isBlank(id))
             return null;
         // SqlRowSet sqlRowSet = databaseAdapter.getJdbcTemplate().queryForRowSet(
         //         "SELECT * FROM %s WHERE u_id = ?".formatted(tableName), id
@@ -372,7 +371,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     }
 
     @Override
-    public UserDto queryByIdRequired(String id) {
+    public UserDto queryByIdOrThrow(String id) {
         UserDto dto = queryById(id);
         if (dto == null)
             throw new PersistenceException(String.format("用户 %s 不存在", id));

@@ -29,10 +29,10 @@ def wrap_join(ids: list[str] | None) -> str:
 
     s = ""
     for id in ids:
-        if not value_utility.is_empty_string(id):
+        if not value_utility.is_blank(id):
             s += id + DELIMITER
 
-    if not value_utility.is_empty_string(s):
+    if not value_utility.is_blank(s):
         return DELIMITER + s
     else:
         return ""
@@ -40,7 +40,7 @@ def wrap_join(ids: list[str] | None) -> str:
 
 def wrap(id: str) -> str:
     """包裹 Id 字符串"""
-    if value_utility.is_empty_string(id):
+    if value_utility.is_blank(id):
         raise UtilityException("不能包裹一个空的 Id")
 
     return DELIMITER + id + DELIMITER
@@ -48,7 +48,7 @@ def wrap(id: str) -> str:
 
 def split(ids: str | None) -> list[str]:
     """拆分 Id 字符串"""
-    if value_utility.is_empty_string(ids):
+    if value_utility.is_blank(ids):
         return []
 
-    return [id for id in str(ids).split(DELIMITER) if not value_utility.is_empty_string(id)]
+    return [id for id in str(ids).split(DELIMITER) if not value_utility.is_blank(id)]

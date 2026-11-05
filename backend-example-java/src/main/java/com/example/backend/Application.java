@@ -11,10 +11,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -50,7 +46,7 @@ public class Application {
 
         // ConfigurableEnvironment environment = applicationContext.getEnvironment();
         // String appName = environment.getProperty("app.name", "");
-        if (ValueUtility.isEmptyString(applicationConfig.getAppName())) {
+        if (ValueUtility.isBlank(applicationConfig.getAppName())) {
             logger.warn("app.name 配置缺失");
         }
 

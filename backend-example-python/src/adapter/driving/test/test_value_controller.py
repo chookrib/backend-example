@@ -1,6 +1,7 @@
 import logging
 import sys
 from datetime import datetime, time, date
+from decimal import Decimal
 
 from fastapi import APIRouter
 
@@ -9,6 +10,7 @@ from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
 
 @router.get("/api/test/value/bounds")
 def test_value_bounds():
@@ -24,15 +26,35 @@ def test_value_bounds():
     })
 
 
+@router.get("/api/test/value/to-decimal")
+def test_value_to_decimal():
+    """测试 Decimal 转换"""
+    decimal_dict = {
+        "d0": Decimal("0"),
+        "d0.0": Decimal("0.0"),
+        "d1": Decimal("1"),
+        "d1.1": Decimal("1.1"),
+        "d0.1": Decimal("0.1"),
+        "v0": value_utility.to_decimal_or_none("0"),
+        "v0.0": value_utility.to_decimal_or_none("0.0"),
+        "v1": value_utility.to_decimal_or_none("1"),
+        "v1.1": value_utility.to_decimal_or_none("1.1"),
+        "v0.1": value_utility.to_decimal_or_none("0.1")
+    }
+    return Result.ok(data=decimal_dict)
+
+
 def format_datetime(value: datetime | None) -> str | None:
     if value is None:
         return None
     return value.strftime("%Y-%m-%d %H:%M:%S.%f")
 
+
 def format_time(value: time | None) -> str | None:
     if value is None:
         return None
     return value.strftime("%H:%M:%S.%f")
+
 
 @router.get("/api/test/value/to-datetime")
 def test_value_to_datetime():
@@ -50,10 +72,14 @@ def test_value_to_datetime():
         "yyyy-MM-dd HH:mm:ss.ffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.1234")),
         "yyyy-MM-dd HH:mm:ss.fffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.12345")),
         "yyyy-MM-dd HH:mm:ss.ffffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.123456")),
-        "yyyy-MM-dd HH:mm:ss.fffffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.1234567")),
-        "yyyy-MM-dd HH:mm:ss.ffffffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.12345678")),
-        "yyyy-MM-dd HH:mm:ss.fffffffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.123456789")),
-        "yyyy-MM-dd HH:mm:ss.ffffffffff": format_datetime(value_utility.to_datetime_or_none("2026-01-02 03:04:05.0123456789")),
+        "yyyy-MM-dd HH:mm:ss.fffffff": format_datetime(
+            value_utility.to_datetime_or_none("2026-01-02 03:04:05.1234567")),
+        "yyyy-MM-dd HH:mm:ss.ffffffff": format_datetime(
+            value_utility.to_datetime_or_none("2026-01-02 03:04:05.12345678")),
+        "yyyy-MM-dd HH:mm:ss.fffffffff": format_datetime(
+            value_utility.to_datetime_or_none("2026-01-02 03:04:05.123456789")),
+        "yyyy-MM-dd HH:mm:ss.ffffffffff": format_datetime(
+            value_utility.to_datetime_or_none("2026-01-02 03:04:05.0123456789")),
         "HH": format_datetime(value_utility.to_datetime_or_none("03")),
         "HH:mm": format_datetime(value_utility.to_datetime_or_none("03:04")),
         "HH:mm:ss": format_datetime(value_utility.to_datetime_or_none("03:04:05")),

@@ -43,9 +43,9 @@ public class LockServiceConfig {
             havingValue = "redisson"
     )
     public LockService redissonLockService(ApplicationConfig applicationConfig) {
-        if(ValueUtility.isEmptyString(redissonAddress))
+        if(ValueUtility.isBlank(redissonAddress))
             throw new ApplicationException("未配置 app.lock-redisson-address");
-        if(ValueUtility.isEmptyString(redissonKeyPrefix))
+        if(ValueUtility.isBlank(redissonKeyPrefix))
             throw new ApplicationException("未配置 app.lock-redisson-key-prefix");
         return new RedissonLockService(
                 applicationConfig.getAppName(),

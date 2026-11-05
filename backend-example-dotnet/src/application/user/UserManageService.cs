@@ -28,7 +28,7 @@ namespace src.application.user
         /// </summary>
         public async Task SetAdmin(string id, bool isAdmin)
         {
-            User user = await userRepository.FindByIdRequired(id);
+            User user = await userRepository.FindByIdOrThrow(id);
             user.SetAdmin(isAdmin);
             await userRepository.Update(user);
         }
@@ -36,11 +36,11 @@ namespace src.application.user
         /// <summary>
         /// 创建用户
         /// </summary>
-        public async Task<string> CreateUser(string username, string password, string nickname, string mobile)
+        public async Task<string> CreateUser(string username, string password, string nickname, string mobile, bool isAdmin)
         {
             await using(await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await User.Create(IdUtility.GenerateUUIDv7(), username, password, nickname, mobile,
+                User user = await User.Create(IdentifierUtility.GenerateUUIDv7(), username, password, nickname, mobile, isAdmin,
                     userUniqueSpecification);
                 await userRepository.Insert(user);
                 return user.Id;
@@ -50,12 +50,12 @@ namespace src.application.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task ModifyUser(string id, string username, string nickname, string mobile)
+        public async Task ModifyUser(string id, string username, string nickname, string mobile, bool isAdmin)
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await userRepository.FindByIdRequired(id);
-                await user.Modify(username, nickname, mobile, userUniqueSpecification);
+                User user = await userRepository.FindByIdOrThrow(id);
+                await user.Modify(username, nickname, mobile, isAdmin, userUniqueSpecification);
                 await userRepository.Update(user);
             }
         }

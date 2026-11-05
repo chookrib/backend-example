@@ -13,7 +13,7 @@
         /// <summary>
         /// 根据 id 查询，找不到抛出异常
         /// </summary>
-        Task<UserDto> QueryByIdRequired(string id);
+        Task<UserDto> QueryByIdOrThrow(string id);
 
         /// <summary>
         /// 查询记录数

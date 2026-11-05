@@ -1,9 +1,9 @@
-from src.utility import id_utility
 from src.application.lock import lock_key_constants
 from src.application.lock.lock_service import LockService
 from src.domain.user.user import User
 from src.domain.user.user_repository import UserRepository
 from src.domain.user.user_uniqueness_validator import UserUniquenessValidator
+from src.utility import identifier_utility
 
 
 class UserManageService:
@@ -17,31 +17,33 @@ class UserManageService:
 
     async def set_admin(self, id: str, is_admin: bool) -> None:
         """设置用户管理员状态"""
-        user = await self.user_repository.find_by_id_required(id)
+        user = await self.user_repository.find_by_id_or_throw(id)
         user.set_admin(is_admin)
         await self.user_repository.update(user)
 
-    async def create_user(self, username: str, password: str, nickname: str, mobile: str = "") -> str:
+    async def create_user(self, username: str, password: str, nickname: str, mobile: str, is_admin: bool) -> str:
         """创建用户"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await User.create(
-                id=id_utility.generate_uuid_v7(),
+                id=identifier_utility.generate_uuid_v7(),
                 username=username,
                 password=password,
                 nickname=nickname,
                 mobile=mobile,
+                is_admin=is_admin,
                 user_unique_specification=self.user_unique_specification)
             await self.user_repository.insert(user)
             return user.id
 
-    async def modify_user(self, id: str, username: str, nickname: str, mobile: str) -> None:
+    async def modify_user(self, id: str, username: str, nickname: str, mobile: str, is_admin: bool) -> None:
         """修改用户"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
-            user = await self.user_repository.find_by_id_required(id)
+            user = await self.user_repository.find_by_id_or_throw(id)
             await user.modify(
                 username=username,
                 nickname=nickname,
                 mobile=mobile,
+                is_admin=is_admin,
                 user_unique_specification=self.user_unique_specification)
             await self.user_repository.update(user)
 

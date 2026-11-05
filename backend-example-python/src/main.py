@@ -71,7 +71,7 @@ async def lifespan(app: FastAPI):
             # + "\033[0m"
         )
 
-    if value_utility.is_empty_string(application_config.APP_NAME):
+    if value_utility.is_blank(application_config.APP_NAME):
         logger.warning(f"APP_NAME 配置缺失")
     logger.info(f"应用启动完成: {application_config.APP_NAME}")
 
@@ -247,6 +247,8 @@ encoders.jsonable_encoder = cast(Any, json_utility.custom_jsonable_encoder)
 from src.adapter.driving import well_known_controller
 from src.adapter.driving.test import test_crypto_controller
 from src.adapter.driving.test import test_exception_controller
+from src.adapter.driving.test import test_identifier_controller
+from src.adapter.driving.test import test_json_controller
 from src.adapter.driving.test import test_lock_controller
 from src.adapter.driving.test import test_request_controller
 from src.adapter.driving.test import test_response_code_controller
@@ -258,6 +260,8 @@ from src.adapter.driving.user import user_manage_controller
 app.include_router(well_known_controller.router)
 app.include_router(test_crypto_controller.router)
 app.include_router(test_exception_controller.router)
+app.include_router(test_identifier_controller.router)
+app.include_router(test_json_controller.router)
 app.include_router(test_lock_controller.router)
 app.include_router(test_request_controller.router)
 app.include_router(test_response_code_controller.router)

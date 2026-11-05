@@ -1,6 +1,6 @@
 package com.example.backend.application.user;
 
-import com.example.backend.utility.IdUtility;
+import com.example.backend.utility.IdentifierUtility;
 import com.example.backend.application.lock.LockHandle;
 import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
@@ -33,7 +33,7 @@ public class UserManageService {
      * 设置用户管理员状态
      */
     public void setAdmin(String id, boolean isAdmin) {
-        User user = userRepository.findByIdRequired(id);
+        User user = userRepository.findByIdOrThrow(id);
         user.setAdmin(isAdmin);
         userRepository.update(user);
     }
@@ -41,10 +41,11 @@ public class UserManageService {
     /**
      * 创建用户
      */
-    public String createUser(String username, String password, String nickname, String mobile) {
+    public String createUser(String username, String password, String nickname, String mobile, boolean isAdmin) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = User.create(
-                    IdUtility.generateUUIDv7(), username, password, nickname, mobile, this.userUniquenessValidator
+                    IdentifierUtility.generateUUIDv7(), username, password, nickname, mobile, isAdmin,
+                    this.userUniquenessValidator
             );
             userRepository.insert(user);
             return user.getId();
@@ -54,10 +55,10 @@ public class UserManageService {
     /**
      * 修改用户
      */
-    public void modifyUser(String id, String username, String nickname, String mobile) {
+    public void modifyUser(String id, String username, String nickname, String mobile, boolean isAdmin) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = userRepository.findByIdRequired(id);
-            user.modify(username, nickname, mobile, userUniquenessValidator);
+            User user = userRepository.findByIdOrThrow(id);
+            user.modify(username, nickname, mobile, isAdmin, userUniquenessValidator);
             userRepository.update(user);
         }
     }

@@ -1,32 +1,45 @@
 from datetime import datetime, date, time
 from decimal import Decimal, ROUND_HALF_UP
+from typing import Any
 
 from src.utility.utility_exception import UtilityException
 
 
-def is_empty_string(value) -> bool:
-    """判断字符串是否为 None 或空字符串"""
+def require_non_none(value: Any, message: str = "值不能为 None") -> Any:
+    """当值为 None 时抛出指定消息异常，否则返回值"""
+    if value is None:
+        raise UtilityException(message)
+    return value
+
+
+def default_if_none(value: Any, default_value: Any) -> Any:
+    """当值为 None 时返回默认值，否则返回值，此方法不判断提供的默认值是否为 null"""
+    if value is None:
+        return default_value
+    return value
+
+
+# =======================================================================================================================
+
+def is_blank(value: str | None) -> bool:
+    """判断字符串是否为 None 或空字符串（包括仅含空格的字符串）"""
     if value is None:
         return True
-    s = str(value).strip()  # 去空格
-    return not s
+    return not str(value).strip()
 
 
-# ======================================================================================================================
+def require_not_blank(value: str | None, message: str = "值不能为空字符串") -> str:
+    """当值为 null 或空字符串（包括仅含空格的字符串）时抛出指定消息异常，否则返回值"""
+    if value is None or is_blank(value):
+        raise UtilityException(message)
+    return value
 
 
-def to_string_or_empty(value) -> str:
-    """转 string，失败返回空字符串"""
-    if value is None:
+def empty_if_none(value: str | None) -> str:
+    """当值为 null 时返回空字符串 ""，否则返回值"""
+    if value is None or is_blank(value):
         return ""
-    return str(value)  # 不去空格
-
-
-# def to_string_or_default(value, default: str) -> str:
-#     """转 string，失败返回默认值"""
-#     if value is None:
-#         return default
-#     return str(value)  # 不去空格
+    return value
 
 
 # ======================================================================================================================
@@ -58,10 +71,19 @@ def to_bool_or_default(value, default: bool) -> bool:
     return default
 
 
+def to_bool_or_throw(value, message: str = "无效的 bool 值") -> bool:
+    """转 bool，失败抛出指定消息异常"""
+    b = to_bool_or_none(value)
+    if b is None:
+        raise UtilityException(message)
+    return b
+
+
 # ======================================================================================================================
 
 INT_MIN_VALUE = -2147483648
 INT_MAX_VALUE = 2147483647
+
 
 def to_int_or_none(value) -> int | None:
     """
@@ -70,9 +92,9 @@ def to_int_or_none(value) -> int | None:
     """
     if value is None:
         return None
-    if isinstance(value, bool):     # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
+    if isinstance(value, bool):  # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
         return None
-    if isinstance(value, float):    # python 会截断 float，此处返回 None 保持与其他语言一致
+    if isinstance(value, float):  # python 会截断 float，此处返回 None 保持与其他语言一致
         return None
     if isinstance(value, int):
         if INT_MIN_VALUE <= value <= INT_MAX_VALUE:
@@ -100,18 +122,27 @@ def to_int_or_default(value, default: int) -> int:
         raise UtilityException("默认值超出 int 范围")
 
 
+def to_int_or_throw(value, message: str = "无效的 int 值") -> int:
+    """转 int，失败抛出指定消息异常"""
+    i = to_int_or_none(value)
+    if i is None:
+        raise UtilityException(message)
+    return i
+
+
 # ======================================================================================================================
 
 LONG_MIN_VALUE = -9223372036854775808
 LONG_MAX_VALUE = 9223372036854775807
 
+
 def to_long_or_none(value) -> int | None:
     """转 long，失败返回 None，注意此方法限制范围与主流语言一致，超出范围的值返回 None"""
     if value is None:
         return None
-    if isinstance(value, bool):     # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
+    if isinstance(value, bool):  # bool 是 int 子类，true = 1，此处返回 None 保持与其他语言一致
         return None
-    if isinstance(value, float):    # python 会截断 float，此处返回 None 保持与其他语言一致
+    if isinstance(value, float):  # python 会截断 float，此处返回 None 保持与其他语言一致
         return None
     if isinstance(value, int):
         if LONG_MIN_VALUE <= value <= LONG_MAX_VALUE:
@@ -137,6 +168,14 @@ def to_long_or_default(value, default: int) -> int:
         return default
     else:
         raise UtilityException("默认值超出 long 范围")
+
+
+def to_long_or_throw(value, message: str = "无效的 long 值") -> int:
+    """转 long，失败抛出指定消息异常"""
+    l = to_long_or_none(value)
+    if l is None:
+        raise UtilityException(message)
+    return l
 
 
 # ======================================================================================================================
@@ -181,10 +220,18 @@ def to_decimal_or_default(value, default: Decimal) -> Decimal:
     return default
 
 
+def to_decimal_or_throw(value, message: str = "无效的 decimal 值") -> Decimal:
+    """转 decimal，失败抛出指定消息异常"""
+    d = to_decimal_or_none(value)
+    if d is None:
+        raise UtilityException(message)
+    return d
+
+
 # ======================================================================================================================
 # datetime 精度统一为毫秒
 
-def get_datetime_now() -> datetime:
+def get_current_datetime() -> datetime:
     """获取当前时间，精度到毫秒"""
     now = datetime.now()
     return now.replace(microsecond=(now.microsecond // 1000) * 1000)
@@ -243,6 +290,14 @@ def to_datetime_or_default(value, default: datetime) -> datetime:
     return default.replace(microsecond=(default.microsecond // 1000) * 1000)
 
 
+def to_datetime_or_throw(value, message: str = "无效的 datetime 值") -> datetime:
+    """转 datetime，失败抛出指定消息异常"""
+    dt = to_datetime_or_none(value)
+    if dt is None:
+        raise UtilityException(message)
+    return dt
+
+
 # ======================================================================================================================
 
 
@@ -289,6 +344,14 @@ def to_date_or_default(value, default: date) -> date:
     if d is not None:
         return d
     return default
+
+
+def to_date_or_throw(value, message: str = "无效的 date 值") -> date:
+    """转 date，失败抛出指定消息异常"""
+    d = to_date_or_none(value)
+    if d is None:
+        raise UtilityException(message)
+    return d
 
 
 # ======================================================================================================================
@@ -358,3 +421,11 @@ def to_time_or_default(value, default: time) -> time:
     if t is not None:
         return t
     return default.replace(microsecond=0)
+
+
+def to_time_or_throw(value, message: str = "无效的 time 值") -> time:
+    """转 time，失败抛出指定消息异常"""
+    t = to_time_or_none(value)
+    if t is None:
+        raise UtilityException(message)
+    return t

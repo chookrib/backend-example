@@ -20,7 +20,8 @@ Access-Token: {{login.response.body.$.data.accessToken}}
   "password": "password",
   "confirmPassword": "password",
   "nickname": "{{username}}",
-  "mobile": ""
+  "mobile": "",
+  "isAdmin": true
 }
 
 ### 创建后获取
@@ -38,10 +39,11 @@ Access-Token: {{login.response.body.$.data.accessToken}}
   "password": "password",
   "confirmPassword": "password",
   "nickname": "{{username}}",
-  "mobile": "138{{$randomInt 10000000 99999999}}"
+  "mobile": "138{{$randomInt 10000000 99999999}}",
+  "isAdmin": false
 }
 
-### 更新手机后获取
+### 更新后获取
 GET http://{{host}}/api/admin/user/get?id={{create.response.body.$.data.id}}
 Access-Token: {{login.response.body.$.data.accessToken}}
 

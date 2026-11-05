@@ -1,7 +1,7 @@
 package com.example.backend.application.user;
 
 import com.example.backend.application.ApplicationException;
-import com.example.backend.utility.IdUtility;
+import com.example.backend.utility.IdentifierUtility;
 import com.example.backend.application.lock.LockHandle;
 import com.example.backend.application.lock.LockKeyConstants;
 import com.example.backend.application.lock.LockService;
@@ -45,7 +45,7 @@ public class UserProfileService {
      */
     public String register(String username, String password, String nickname) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = User.register(IdUtility.generateUUIDv7(), username, password, nickname, userUniquenessValidator);
+            User user = User.register(IdentifierUtility.generateUUIDv7(), username, password, nickname, userUniquenessValidator);
             userRepository.insert(user);
             return user.getId();
         }
@@ -55,7 +55,7 @@ public class UserProfileService {
      * 修改密码
      */
     public void modifyPassword(String userId, String oldPassword, String newPassword) {
-        User user = userRepository.findByIdRequired(userId);
+        User user = userRepository.findByIdOrThrow(userId);
         user.modifyPassword(oldPassword, newPassword);
         userRepository.update(user);
     }
@@ -65,7 +65,7 @@ public class UserProfileService {
      */
     public void modifyNickname(String userId, String nickname) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
-            User user = userRepository.findByIdRequired(userId);
+            User user = userRepository.findByIdOrThrow(userId);
             user.modifyNickname(nickname, userUniquenessValidator);
             userRepository.update(user);
         }
@@ -76,24 +76,24 @@ public class UserProfileService {
     /**
      * 发送手机验证码
      */
-    public void sendMobileCode(String userId, String mobile) {
-        if (ValueUtility.isEmptyString(mobile))
-            throw new ApplicationException("手机号不能为空");
+    public void sendMobileCode(String userId) {
+        User user = userRepository.findByIdOrThrow(userId);
+        if (ValueUtility.isBlank(user.getMobile()))
+            throw new ApplicationException("用户未绑定手机，无法发送验证码");
 
-        User user = userRepository.findByIdRequired(userId);
         String code =  String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
-        mobileCodeMap.put(user.getId() + "_" + mobile, code);
-        smsGateway.sendCode(mobile, code);
+        mobileCodeMap.put(user.getId() + "_" + user.getMobile(), code);
+        smsGateway.sendCode(user.getMobile(), code);
     }
 
     /**
      * 绑定手机
      */
     public void bindMobile(String userId, String mobile, String code) {
-        if (ValueUtility.isEmptyString(code))
+        if (ValueUtility.isBlank(code))
             throw new ApplicationException("验证码不能为空");
 
-        User user = userRepository.findByIdRequired(userId);
+        User user = userRepository.findByIdOrThrow(userId);
         String key = user.getId() + "_" + mobile;
         if (!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("验证码错误");

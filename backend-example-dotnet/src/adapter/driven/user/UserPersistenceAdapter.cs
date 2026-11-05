@@ -44,16 +44,23 @@ namespace src.adapter.driven.user
 
         private User ToEntity(dynamic row)
         {
-            return User.Restore(
-                row.u_id,
-                row.u_username,
-                row.u_password,
-                row.u_nickname,
-                row.u_mobile,
-                ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrNull((string?)row.u_updated_at)
-                );
+            try
+            {
+                return User.Restore(
+                    row.u_id,
+                    row.u_username,
+                    row.u_password,
+                    row.u_nickname,
+                    row.u_mobile,
+                    ValueUtility.ToBoolOrThrow(row.u_is_admin.ToString()),
+                    ValueUtility.ToDateTimeOrThrow(row.u_created_at.ToString()),
+                    ValueUtility.ToDateTimeOrNull((string?)row.u_updated_at)
+                    );
+            }
+            catch (Exception ex)
+            {
+                throw new PersistenceException("还原 User 失败", ex);
+            }
         }
 
         public async Task Insert(User entity)
@@ -108,7 +115,7 @@ namespace src.adapter.driven.user
 
         public async Task DeleteById(string id)
         {
-            if (ValueUtility.IsEmptyString(id))
+            if (ValueUtility.IsBlank(id))
                 return;
             using var conn = databaseAdapter.GetConnection();
             await conn.ExecuteAsync($"DELETE FROM {this.tableName} WHERE u_id = @id", new { id });
@@ -116,7 +123,7 @@ namespace src.adapter.driven.user
 
         public async Task<User?> FindById(string id)
         {
-            if (ValueUtility.IsEmptyString(id))
+            if (ValueUtility.IsBlank(id))
                 return null;
             using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
@@ -127,7 +134,7 @@ namespace src.adapter.driven.user
             return ToEntity(row);
         }
 
-        public async Task<User> FindByIdRequired(string id)
+        public async Task<User> FindByIdOrThrow(string id)
         {
             User? entity = await FindById(id);
             if (entity == null)
@@ -155,7 +162,7 @@ namespace src.adapter.driven.user
 
         public async Task<User?> FindByUsername(string username)
         {
-            if (ValueUtility.IsEmptyString(username))
+            if (ValueUtility.IsBlank(username))
                 return null;
             using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
@@ -171,7 +178,7 @@ namespace src.adapter.driven.user
 
         public async Task<bool> IsUsernameAvailable(string username)
         {
-            if (ValueUtility.IsEmptyString(username))
+            if (ValueUtility.IsBlank(username))
                 throw new PersistenceException("无法检查 username 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
@@ -181,7 +188,7 @@ namespace src.adapter.driven.user
 
         public async Task<bool> IsNicknameAvailable(string nickname)
         {
-            if (ValueUtility.IsEmptyString(nickname))
+            if (ValueUtility.IsBlank(nickname))
                 throw new PersistenceException("无法检查 nickname 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
@@ -191,7 +198,7 @@ namespace src.adapter.driven.user
 
         public async Task<bool> IsMobileAvailable(string mobile)
         {
-            if (ValueUtility.IsEmptyString(mobile))
+            if (ValueUtility.IsBlank(mobile))
                 throw new PersistenceException("无法检查 mobile 为空字符串时是否可用");
             using var conn = databaseAdapter.GetConnection();
             return await conn.ExecuteScalarAsync<int>(
@@ -204,16 +211,23 @@ namespace src.adapter.driven.user
 
         private UserDto ToDto(dynamic row)
         {
-            return new UserDto(
-                row.u_id,
-                row.u_username,
-                //row.u_password,
-                row.u_nickname,
-                row.u_mobile,
-                ValueUtility.ToBoolOrDefault(row.u_is_admin.ToString(), false),
-                ValueUtility.ToDateTimeOrDefault(row.u_created_at.ToString(), DateTime.MinValue),
-                ValueUtility.ToDateTimeOrNull((string?)row.u_updated_at)
-                );
+            try
+            {
+                return new UserDto(
+                    row.u_id,
+                    row.u_username,
+                    //row.u_password,
+                    row.u_nickname,
+                    row.u_mobile,
+                    ValueUtility.ToBoolOrThrow(row.u_is_admin.ToString()),
+                    ValueUtility.ToDateTimeOrThrow(row.u_created_at.ToString()),
+                    ValueUtility.ToDateTimeOrNull((string?)row.u_updated_at)
+                    );
+            }
+            catch (Exception ex)
+            {
+                throw new PersistenceException("还原 UserDto 失败", ex);
+            }
         }
 
         private string BuildQueryCriteriaSql(UserQueryCriteria? criteria, out dynamic @params)
@@ -224,7 +238,7 @@ namespace src.adapter.driven.user
                 return string.Empty;
 
             IList<string> sqls = new List<string>();
-            if (!ValueUtility.IsEmptyString(criteria.Keyword))
+            if (!ValueUtility.IsBlank(criteria.Keyword))
             {
                 sqls.Add("(u_username LIKE @keyword ESCAPE '\\' OR u_nickname LIKE @keyword ESCAPE '\\')");
                 @params.keyword = databaseAdapter.EscapeLikePattern(criteria.Keyword);
@@ -265,7 +279,7 @@ namespace src.adapter.driven.user
 
         public async Task<UserDto?> QueryById(string id)
         {
-            if (ValueUtility.IsEmptyString(id))
+            if (ValueUtility.IsBlank(id))
                 return null;
             using var conn = databaseAdapter.GetConnection();
             dynamic? row = await conn.QuerySingleOrDefaultAsync(
@@ -276,7 +290,7 @@ namespace src.adapter.driven.user
             return ToDto(row);
         }
 
-        public async Task<UserDto> QueryByIdRequired(string id)
+        public async Task<UserDto> QueryByIdOrThrow(string id)
         {
             UserDto? dto = await QueryById(id);
             if (dto == null)

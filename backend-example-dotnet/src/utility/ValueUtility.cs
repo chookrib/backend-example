@@ -8,11 +8,49 @@ namespace src.utility
     public sealed class ValueUtility
     {
         /// <summary>
-        /// 判断字符串是否为 null 或空字符串
+        /// 当值为 null 时抛出指定消息异常，否则返回值
         /// </summary>
-        public static bool IsEmptyString(string? value)
+        public static T RequireNonNull<T>(T value, string message = "值不能为 null")
+        {
+            if (value == null)
+                throw new UtilityException(message);
+            return value;
+        }
+
+        /// <summary>
+        /// 当值为 null 时返回默认值，否则返回值，此方法不判断提供的默认值是否为 null
+        /// </summary>
+        public static T DefaultIfNull<T>(T value, T defaultValue)
+        {
+            return (value != null) ? value : defaultValue;
+        }
+
+        //==================================================================================================================
+
+        /// <summary>
+        /// 判断字符串是否为 null 或空字符串（包括仅含空格的字符串）
+        /// </summary>
+        public static bool IsBlank(string? value)
         {
             return string.IsNullOrWhiteSpace(value);
+        }
+
+        /// <summary>
+        /// 当值为 null 或空字符串（包括仅含空格的字符串）时抛出指定消息异常，否则返回值
+        /// </summary>
+        public static string RequireNotBlank(string? value, string message = "值不能为空字符串")
+        {
+            if (IsBlank(value))
+                throw new UtilityException(message);
+            return value!;
+        }
+
+        /// <summary>
+        /// 当值为 null 时返回空字符串 ""，否则返回值
+        /// </summary>
+        public static string EmptyIfNull(string? value)
+        {
+            return value != null ? value : "";
         }
 
         //==============================================================================================================
@@ -26,7 +64,7 @@ namespace src.utility
         /// </summary>
         public static bool? ToBoolOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
             string b = value!.Trim().ToLower();
             if (BOOL_TRUE.Contains(b))
@@ -47,6 +85,17 @@ namespace src.utility
             return defaultValue;
         }
 
+        /// <summary>
+        /// 转 bool，失败抛出指定消息异常
+        /// </summary>
+        public static bool ToBoolOrThrow(string? value, string message = "无效的 bool 值")
+        {
+            bool? b = ToBoolOrNull(value);
+            if (!b.HasValue)
+                throw new UtilityException(message);
+            return b.Value;
+        }
+
         //==============================================================================================================
 
         /// <summary>
@@ -54,7 +103,7 @@ namespace src.utility
         /// </summary>
         public static int? ToIntOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
             if (int.TryParse(value!.Trim(), out int result))
                 return result;
@@ -72,6 +121,17 @@ namespace src.utility
             return defaultValue;
         }
 
+        /// <summary>
+        /// 转 int，失败抛出指定消息异常
+        /// </summary>
+        public static int ToIntOrThrow(string? value, string message = "无效的 int 值")
+        {
+            int? i = ToIntOrNull(value);
+            if (!i.HasValue)
+                throw new UtilityException(message);
+            return i.Value;
+        }
+
         //==============================================================================================================
 
         /// <summary>
@@ -79,7 +139,7 @@ namespace src.utility
         /// </summary>
         public static long? ToLongOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
             if (long.TryParse(value!.Trim(), out long result))
                 return result;
@@ -97,6 +157,17 @@ namespace src.utility
             return defaultValue;
         }
 
+        /// <summary>
+        /// 转 long，失败抛出指定消息异常
+        /// </summary>
+        public static long ToLongOrThrow(string? value, string message = "无效的 long 值")
+        {
+            long? l = ToLongOrNull(value);
+            if (!l.HasValue)
+                throw new UtilityException(message);
+            return l.Value;
+        }
+
         //==============================================================================================================
 
         // 定义 decimal 边界值 DECIMAL(28, 8)，满足绝大部分场景
@@ -109,7 +180,7 @@ namespace src.utility
         /// </summary>
         public static decimal? ToDecimalOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
 
             //if (decimal.TryParse(value!.Trim(), out decimal result))
@@ -142,13 +213,24 @@ namespace src.utility
             return defaultValue;
         }
 
+        /// <summary>
+        /// 转 decimal，失败抛出指定消息异常
+        /// </summary>
+        public static decimal ToDecimalOrThrow(string? value, string message = "无效的 decimal 值")
+        {
+            decimal? d = ToDecimalOrNull(value);
+            if (!d.HasValue)
+                throw new UtilityException(message);
+            return d.Value;
+        }
+
         //==============================================================================================================
         // datetime 精度统一为毫秒
 
         /**
          * 获取当前时间，精度到毫秒
          */
-        public static DateTime GetDateTimeNow()
+        public static DateTime GetCurrentDateTime()
         {
             DateTime now = DateTime.Now;
             return new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond);
@@ -182,7 +264,7 @@ namespace src.utility
         /// </summary>
         public static DateTime? ToDateTimeOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
 
             //if (DateTime.TryParse(value!.Trim(), out DateTime result))
@@ -224,6 +306,17 @@ namespace src.utility
                 defaultValue.Millisecond);
         }
 
+        /// <summary>
+        /// 转 datetime，失败抛出指定消息异常
+        /// </summary>
+        public static DateTime ToDateTimeOrThrow(string? value, string message = "无效的 datetime 值")
+        {
+            DateTime? dt = ToDateTimeOrNull(value);
+            if (!dt.HasValue)
+                throw new UtilityException(message);
+            return dt.Value;
+        }
+
         //==============================================================================================================
 
         /// <summary>
@@ -239,7 +332,7 @@ namespace src.utility
         /// </summary>
         public static DateOnly? ToDateOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
 
             //if (DateOnly.TryParse(value!.Trim(), out DateOnly date))
@@ -283,6 +376,18 @@ namespace src.utility
             return defaultValue;
         }
 
+        /// <summary>
+        /// 转 date，失败抛出指定消息异常
+        /// </summary>
+        public static DateOnly ToDateOrThrow(string? value, string message = "无效的 date 值")
+        {
+            DateOnly? d = ToDateOrNull(value);
+            if (!d.HasValue)
+                throw new UtilityException(message);
+            return d.Value;
+        }
+
+
         //==============================================================================================================
         // time 精度统一为秒
 
@@ -312,7 +417,7 @@ namespace src.utility
         /// </summary>
         public static TimeOnly? ToTimeOrNull(string? value)
         {
-            if (IsEmptyString(value))
+            if (IsBlank(value))
                 return null;
 
             //if (TimeOnly.TryParse(value!.Trim(), out TimeOnly time))
@@ -354,6 +459,17 @@ namespace src.utility
             if (t.HasValue)
                 return t.Value;
             return new TimeOnly(defaultValue.Hour, defaultValue.Minute, defaultValue.Second);
+        }
+
+        /// <summary>
+        /// 转 time，失败抛出指定消息异常
+        /// </summary>
+        public static TimeOnly ToTimeOrThrow(string? value, string message = "无效的 time 值")
+        {
+            TimeOnly? t = ToTimeOrNull(value);
+            if (!t.HasValue)
+                throw new UtilityException(message);
+            return t.Value;
         }
     }
 }

@@ -5,12 +5,13 @@ import com.fasterxml.uuid.Generators;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Id Utility
+ * Identifier Utility
  */
-public final class IdUtility {
+public final class IdentifierUtility {
 
     /**
      * 生成 UUID v4
@@ -42,7 +43,7 @@ public final class IdUtility {
             return "";
         StringBuilder sb = new StringBuilder();
         for(String id : ids){
-            if (!ValueUtility.isEmptyString(id)) {
+            if (!ValueUtility.isBlank(id)) {
                 sb.append(id).append(DELIMITER);
             }
         }
@@ -56,7 +57,7 @@ public final class IdUtility {
      * 包裹 Id 字符串
      */
     public static String wrap(String id) {
-        if(ValueUtility.isEmptyString(id))
+        if(ValueUtility.isBlank(id))
             throw new UtilityException("不能包裹一个空的 Id");
         return DELIMITER + id + DELIMITER;
     }
@@ -65,11 +66,11 @@ public final class IdUtility {
      * 拆分 Id 字符串
      */
     public static List<String> split(String ids) {
-        if(ValueUtility.isEmptyString(ids))
+        if(ValueUtility.isBlank(ids))
             return new ArrayList<>();
-        return Arrays.stream(ids.split(DELIMITER))
+        return Arrays.stream(ids.split(Pattern.quote(DELIMITER)))
                 // .map(String::trim)
-                .filter(s -> !ValueUtility.isEmptyString(s))
+                .filter(s -> !ValueUtility.isBlank(s))
                 .collect(Collectors.toList());
     }
 }

@@ -51,17 +51,22 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
 
     def to_entity(self, row: aiosqlite.Row) -> User:
         """转换成 Entity"""
-        row_dict = dict(row)
-        return User.restore(
-            id=row_dict.get("u_id", ""),
-            username=row_dict.get("u_username", ""),
-            password=row_dict.get("u_password", ""),
-            nickname=row_dict.get("u_nickname", ""),
-            mobile=row_dict.get("u_mobile", ""),
-            is_admin=bool(row_dict.get("u_is_admin", False)),
-            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min),
-            updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
-        )
+        try:
+            row_dict = dict(row)
+            return User.restore(
+                id=row_dict.get("u_id", ""),
+                username=row_dict.get("u_username", ""),
+                password=row_dict.get("u_password", ""),
+                nickname=row_dict.get("u_nickname", ""),
+                mobile=row_dict.get("u_mobile", ""),
+                # is_admin=bool(row_dict.get("u_is_admin", False)),
+                is_admin = value_utility.to_bool_or_throw(row_dict.get("u_is_admin")),
+                created_at=value_utility.to_datetime_or_throw(row_dict.get("u_created_at")),
+                updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
+            )
+        except Exception as ex:
+            raise PersistenceException("还原 User 失败") from ex
+
 
     async def insert(self, entity: User) -> None:
         async with self.database_adapter.get_connection() as conn:
@@ -108,7 +113,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
             await conn.commit()
 
     async def delete_by_id(self, id: str) -> None:
-        if value_utility.is_empty_string(id):
+        if value_utility.is_blank(id):
             return None
         async with self.database_adapter.get_connection() as conn:
             await conn.execute(f"DELETE FROM {self.table_name} WHERE u_id = ?", (id,))
@@ -116,7 +121,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
             await conn.commit()
 
     async def find_by_id(self, id: str) -> User | None:
-        if value_utility.is_empty_string(id):
+        if value_utility.is_blank(id):
             return None
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -126,7 +131,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                     return self.to_entity(row)
                 return None
 
-    async def find_by_id_required(self, id: str) -> User:
+    async def find_by_id_or_throw(self, id: str) -> User:
         entity = await self.find_by_id(id)
         if not entity:
             raise PersistenceException(f"用户 {id} 不存在")
@@ -143,7 +148,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                 return [self.to_entity(row) for row in rows]
 
     async def find_by_username(self, username: str) -> User | None:
-        if value_utility.is_empty_string(username):
+        if value_utility.is_blank(username):
             return None
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -158,7 +163,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
     # UserUniqueSpecification
 
     async def is_username_available(self, username: str) -> bool:
-        if value_utility.is_empty_string(username):
+        if value_utility.is_blank(username):
             raise PersistenceException("无法检查 username 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -169,7 +174,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                 return row is None
 
     async def is_nickname_available(self, nickname: str) -> bool:
-        if value_utility.is_empty_string(nickname):
+        if value_utility.is_blank(nickname):
             raise PersistenceException("无法检查 nickname 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -180,7 +185,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                 return row is None
 
     async def is_mobile_available(self, mobile: str) -> bool:
-        if value_utility.is_empty_string(mobile):
+        if value_utility.is_blank(mobile):
             raise PersistenceException("无法检查 mobile 为空字符串时是否可用")
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -195,23 +200,27 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
 
     def to_dto(self, row: aiosqlite.Row) -> UserDto:
         """转换成DTO"""
-        row_dict = dict(row)
-        return UserDto(
-            id=row_dict.get("u_id", ""),
-            username=row_dict.get("u_username", ""),
-            # password=row_dict.get("u_password", ""),
-            nickname=row_dict.get("u_nickname", ""),
-            mobile=row_dict.get("u_mobile", ""),
-            is_admin=bool(row_dict.get("u_is_admin", False)),
-            created_at=value_utility.to_datetime_or_default(row_dict.get("u_created_at"), datetime.min),
-            updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
-        )
+        try:
+            row_dict = dict(row)
+            return UserDto(
+                id=row_dict.get("u_id", ""),
+                username=row_dict.get("u_username", ""),
+                # password=row_dict.get("u_password", ""),
+                nickname=row_dict.get("u_nickname", ""),
+                mobile=row_dict.get("u_mobile", ""),
+                # is_admin=bool(row_dict.get("u_is_admin", False)),
+                is_admin=value_utility.to_bool_or_throw(row_dict.get("u_is_admin")),
+                created_at=value_utility.to_datetime_or_throw(row_dict.get("u_created_at")),
+                updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
+            )
+        except Exception as ex:
+            raise PersistenceException("还原 UserDto 失败") from ex
 
     def build_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:
         """构造查询 SQL"""
         sqls = []
         params = []
-        if not value_utility.is_empty_string(criteria.keyword):
+        if not value_utility.is_blank(criteria.keyword):
             sqls.append("(u_username LIKE ? ESCAPE '\\' OR u_nickname LIKE ? ESCAPE '\\')")
             params.append(self.database_adapter.escape_like_pattern(criteria.keyword))
             params.append(self.database_adapter.escape_like_pattern(criteria.keyword))
@@ -240,7 +249,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
         return " ORDER BY " + ", ".join(sqls)
 
     async def query_by_id(self, id: str) -> UserDto | None:
-        if value_utility.is_empty_string(id):
+        if value_utility.is_blank(id):
             return None
         async with self.database_adapter.get_connection() as conn:
             conn.row_factory = aiosqlite.Row
@@ -250,7 +259,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                     return self.to_dto(row)
                 return None
 
-    async def query_by_id_required(self, id: str) -> UserDto:
+    async def query_by_id_or_throw(self, id: str) -> UserDto:
         dto = await self.query_by_id(id)
         if not dto:
             raise PersistenceException(f"用户 {id} 不存在")

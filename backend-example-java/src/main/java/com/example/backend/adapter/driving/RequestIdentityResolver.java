@@ -3,7 +3,6 @@ package com.example.backend.adapter.driving;
 import com.example.backend.application.user.UserAuthService;
 import com.example.backend.application.user.UserDto;
 import com.example.backend.application.user.UserQueryHandler;
-import com.example.backend.domain.user.User;
 import com.example.backend.utility.ValueUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,7 @@ public class RequestIdentityResolver {
     public String requireLoginUserId() {
         String accessToken = getRequest().getHeader("Access-Token");
         String userId = userAuthService.getLoginUserId(accessToken);
-        if (ValueUtility.isEmptyString(userId))
+        if (ValueUtility.isBlank(userId))
             throw new NotLoginException();
         return userId;
     }

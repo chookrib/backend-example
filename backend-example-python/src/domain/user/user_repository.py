@@ -32,7 +32,7 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def find_by_id_required(self, id: str) -> User:
+    async def find_by_id_or_throw(self, id: str) -> User:
         """根据 id 查询，找不到抛出异常"""
         pass
 

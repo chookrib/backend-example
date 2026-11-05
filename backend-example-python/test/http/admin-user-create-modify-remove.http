@@ -12,7 +12,8 @@ Access-Token: {{accessToken}}
   "password": "password",
   "confirmPassword": "password",
   "nickname": "{{username}}",
-  "mobile": ""
+  "mobile": "",
+  "isAdmin": true
 }
 
 > {%
@@ -23,7 +24,7 @@ Access-Token: {{accessToken}}
 GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 
-### 更新手机
+### 更新
 POST http://{{host}}/api/admin/user/modify
 Content-Type: application/json
 Access-Token: {{accessToken}}
@@ -34,10 +35,11 @@ Access-Token: {{accessToken}}
   "password": "password",
   "confirmPassword": "password",
   "nickname": "{{username}}",
-  "mobile": "138{{$random.integer(10000000, 99999999)}}"
+  "mobile": "138{{$random.integer(10000000, 99999999)}}",
+  "isAdmin": false
 }
 
-### 更新手机后获取
+### 更新后获取
 GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 

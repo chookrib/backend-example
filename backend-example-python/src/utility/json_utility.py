@@ -14,7 +14,7 @@ def deserialize(data):
 
 def serialize(data):
     """序列化为 JSON 字符串"""
-    return json.dumps(data)
+    return json.dumps(data, separators=(',', ':'))
 
 
 def to_camel_case(value: Any) -> str:

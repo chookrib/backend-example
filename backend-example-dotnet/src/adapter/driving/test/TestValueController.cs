@@ -64,6 +64,26 @@ namespace src.adapter.driving.test
         /// <summary>
         /// 测试日期时间转换
         /// </summary>
+        [HttpGet("/api/test/value/to-decimal")]
+        public Result TestValueToDecimal()
+        {
+            Dictionary<string, decimal?> dict = new Dictionary<string, decimal?>();
+            dict.Add("d0", 0m);
+            dict.Add("d0.0", 0.0m);
+            dict.Add("d1", 1m);
+            dict.Add("d1.1", 1.1m);
+            dict.Add("d0.1", 0.1m);
+            dict.Add("v0", ValueUtility.ToDecimalOrNull("0"));
+            dict.Add("v0.0", ValueUtility.ToDecimalOrNull("0.0"));
+            dict.Add("v1", ValueUtility.ToDecimalOrNull("1"));
+            dict.Add("v1.1", ValueUtility.ToDecimalOrNull("1.1"));
+            dict.Add("v0.1", ValueUtility.ToDecimalOrNull("0.1"));
+            return Result.OkData(dict);
+        }
+
+        /// <summary>
+        /// 测试日期时间转换
+        /// </summary>
         [HttpGet("/api/test/value/to-datetime")]
         public Result TestValueToDateTime()
         {

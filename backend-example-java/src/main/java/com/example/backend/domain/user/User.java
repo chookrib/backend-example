@@ -5,7 +5,6 @@ import com.example.backend.utility.CryptoUtility;
 import com.example.backend.utility.ValueUtility;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 用户 Entity
@@ -44,13 +43,13 @@ public class User {
             String id, String username, String password, String nickname, String mobile, boolean isAdmin,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         User user = new User();
-        user.id = Objects.requireNonNull(id);
-        user.username = Objects.requireNonNull(username);
-        user.password = Objects.requireNonNull(password);
-        user.nickname = Objects.requireNonNull(nickname);
-        user.mobile = Objects.requireNonNull(mobile);
+        user.id = ValueUtility.requireNotBlank(id);
+        user.username = ValueUtility.requireNotBlank(username);
+        user.password = ValueUtility.requireNotBlank(password);
+        user.nickname = ValueUtility.requireNotBlank(nickname);
+        user.mobile = ValueUtility.requireNonNull(mobile);
         user.isAdmin = isAdmin;
-        user.createdAt = Objects.requireNonNull(createdAt);
+        user.createdAt = ValueUtility.requireNonNull(createdAt);
         user.updatedAt = updatedAt;
         return user;
     }
@@ -60,14 +59,10 @@ public class User {
      */
     public static User register(
             String id, String username, String password, String nickname, UserUniquenessValidator userUniquenessValidator) {
-        if (ValueUtility.isEmptyString(username))
-            throw new DomainException("用户名不能为空");
-
-        if (ValueUtility.isEmptyString(password))
-            throw new DomainException("密码不能为空");
-
-        if (ValueUtility.isEmptyString(nickname))
-            throw new DomainException("昵称不能为空");
+        id = ValueUtility.requireNotBlank(id, "用户 Id 不能为空");
+        username = ValueUtility.requireNotBlank(username, "用户名不能为空");
+        password = ValueUtility.requireNotBlank(password, "密码不能为空");
+        nickname = ValueUtility.requireNotBlank(nickname, "昵称不能为空");
 
         if (userUniquenessValidator != null) {
             if (!userUniquenessValidator.isUsernameAvailable(username))
@@ -84,7 +79,7 @@ public class User {
         user.nickname = nickname;
         user.mobile = "";
         user.isAdmin = false;
-        user.createdAt = ValueUtility.getDateTimeNow();
+        user.createdAt = ValueUtility.getCurrentDateTime();
         user.updatedAt = null;
         return user;
     }
@@ -93,6 +88,8 @@ public class User {
      * 检查密码是否匹配
      */
     public boolean isPasswordMatch(String password) {
+        if(ValueUtility.isBlank(password))
+            return false;   // 空密码永远返回否
         return this.password.equals(CryptoUtility.md5Encode(password));
     }
 
@@ -101,30 +98,29 @@ public class User {
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
-        this.updatedAt = ValueUtility.getDateTimeNow();
+        this.updatedAt = ValueUtility.getCurrentDateTime();
     }
 
     /**
      * 修改密码
      */
     public void modifyPassword(String oldPassword, String newPassword) {
-        if (ValueUtility.isEmptyString(newPassword))
-            throw new DomainException("密码不能为空");
+        oldPassword = ValueUtility.requireNotBlank(oldPassword, "旧密码不能为空");
+        newPassword = ValueUtility.requireNotBlank(newPassword, "新密码不能为空");
 
         if (!isPasswordMatch(oldPassword)) {
             throw new DomainException("密码错误");
         }
 
         this.password = CryptoUtility.md5Encode(newPassword);
-        this.updatedAt = ValueUtility.getDateTimeNow();
+        this.updatedAt = ValueUtility.getCurrentDateTime();
     }
 
     /**
      * 修改昵称
      */
     public void modifyNickname(String nickname, UserUniquenessValidator userUniquenessValidator) {
-        if (ValueUtility.isEmptyString(nickname))
-            throw new DomainException("昵称不能为空");
+        nickname = ValueUtility.requireNotBlank(nickname, "昵称不能为空");
 
         if (!nickname.equalsIgnoreCase(this.nickname) && userUniquenessValidator != null) {
             if (!userUniquenessValidator.isNicknameAvailable(nickname))
@@ -132,15 +128,14 @@ public class User {
         }
 
         this.nickname = nickname;
-        this.updatedAt = ValueUtility.getDateTimeNow();
+        this.updatedAt = ValueUtility.getCurrentDateTime();
     }
 
     /**
      * 修改手机
      */
     public void modifyMobile(String mobile, UserUniquenessValidator userUniquenessValidator) {
-        if (ValueUtility.isEmptyString(mobile))
-            throw new DomainException("手机不能为空");
+        mobile = ValueUtility.requireNotBlank(mobile, "手机不能为空");
 
         if (!mobile.equalsIgnoreCase(this.mobile) && userUniquenessValidator != null) {
             if (!userUniquenessValidator.isMobileAvailable(mobile))
@@ -148,22 +143,20 @@ public class User {
         }
 
         this.mobile = mobile;
-        this.updatedAt = ValueUtility.getDateTimeNow();
+        this.updatedAt = ValueUtility.getCurrentDateTime();
     }
 
     /**
      * 创建用户
      */
     public static User create(
-            String id, String username, String password, String nickname, String mobile, UserUniquenessValidator userUniquenessValidator) {
-        if (ValueUtility.isEmptyString(username))
-            throw new DomainException("用户名不能为空");
-
-        if (ValueUtility.isEmptyString(password))
-            throw new DomainException("密码不能为空");
-
-        if (ValueUtility.isEmptyString(nickname))
-            throw new DomainException("昵称不能为空");
+            String id, String username, String password, String nickname, String mobile, boolean isAdmin,
+            UserUniquenessValidator userUniquenessValidator) {
+        id = ValueUtility.requireNotBlank(id, "用户 Id 不能为空");
+        username = ValueUtility.requireNotBlank(username, "用户名不能为空");
+        password = ValueUtility.requireNotBlank(password, "密码不能为空");
+        nickname = ValueUtility.requireNotBlank(nickname, "昵称不能为空");
+        mobile = ValueUtility.emptyIfNull(mobile);
 
         if (userUniquenessValidator != null) {
             if (!userUniquenessValidator.isUsernameAvailable(username))
@@ -172,7 +165,7 @@ public class User {
             if (!userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isEmptyString(mobile) && !userUniquenessValidator.isMobileAvailable(mobile))
+            if (!ValueUtility.isBlank(mobile) && !userUniquenessValidator.isMobileAvailable(mobile))
                 throw new DomainException("手机已存在");
         }
 
@@ -182,8 +175,8 @@ public class User {
         user.password = CryptoUtility.md5Encode(password);
         user.nickname = nickname;
         user.mobile = mobile;
-        user.isAdmin = false;
-        user.createdAt = ValueUtility.getDateTimeNow();
+        user.isAdmin = isAdmin;
+        user.createdAt = ValueUtility.getCurrentDateTime();
         user.updatedAt = null;
         return user;
     }
@@ -191,12 +184,13 @@ public class User {
     /**
      * 修改用户
      */
-    public void modify(String username, String nickname, String mobile, UserUniquenessValidator userUniquenessValidator) {
-        if (ValueUtility.isEmptyString(username))
-            throw new DomainException("用户名不能为空");
-
-        if (ValueUtility.isEmptyString(nickname))
-            throw new DomainException("昵称不能为空");
+    public void modify(
+            String username, String nickname, String mobile, boolean isAdmin,
+            UserUniquenessValidator userUniquenessValidator
+    ) {
+        username = ValueUtility.requireNotBlank(username, "用户名不能为空");
+        nickname = ValueUtility.requireNotBlank(nickname, "昵称不能为空");
+        mobile = ValueUtility.emptyIfNull(mobile);
 
         if (userUniquenessValidator != null) {
             if (!username.equalsIgnoreCase(this.username) && !userUniquenessValidator.isUsernameAvailable(username))
@@ -205,7 +199,7 @@ public class User {
             if (!nickname.equalsIgnoreCase(this.nickname) && !userUniquenessValidator.isNicknameAvailable(nickname))
                 throw new DomainException("昵称已存在");
 
-            if (!ValueUtility.isEmptyString(mobile) && !mobile.equalsIgnoreCase(this.mobile) &&
+            if (!ValueUtility.isBlank(mobile) && !mobile.equalsIgnoreCase(this.mobile) &&
                     !userUniquenessValidator.isMobileAvailable(mobile))
                 throw new DomainException("手机已存在");
         }
@@ -213,6 +207,7 @@ public class User {
         this.username = username;
         this.nickname = nickname;
         this.mobile = mobile;
-        this.updatedAt = ValueUtility.getDateTimeNow();
+        this.isAdmin = isAdmin;
+        this.updatedAt = ValueUtility.getCurrentDateTime();
     }
 }

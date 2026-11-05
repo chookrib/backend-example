@@ -1,14 +1,20 @@
 package com.example.backend.adapter.driving.test;
 
-import com.example.backend.adapter.driving.RequestValueExtractor;
+import com.example.backend.adapter.driving.ControllerException;
+import com.example.backend.adapter.driving.RequestValueResolver;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.utility.CryptoUtility;
+import com.example.backend.utility.JsonExtractor;
 import com.example.backend.utility.JsonUtility;
+import com.example.backend.utility.ValueUtility;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -25,14 +31,18 @@ public class TestCryptoController {
      * JWT 编码
      */
     @RequestMapping(value = "/api/test/crypto/jwt-encode", method = RequestMethod.POST)
-    public Result testCryptoJwtEncode(@RequestBody String requestBody)
-    {
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String secret = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "secret");
-        LocalDateTime expiresAt = RequestValueExtractor.getRequestJsonDateTimeRequired(requestJson, "expiresAt");
-        var payloadNode = requestJson.path("payload");
+    public Result testCryptoJwtEncode(@RequestBody String requestBody) {
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String secret = ValueUtility.requireNotBlank(jsonExtractor.getString("secret"), "密钥不能为空");
+        LocalDateTime expiresAt = ValueUtility.toDateTimeOrThrow(jsonExtractor.getString("expiresAt"), "到期时间无效");
+        var payloadNode = jsonExtractor.getNode("payload");
         // System.out.println("payloadNode: " + payloadNode.toString());
-        Map<String, ?> payload = JsonUtility.deserialize(payloadNode, new TypeReference<Map<String, ?>>() { });
+        Map<String, ?> payload = null;
+        try {
+            payload = JsonUtility.deserialize(payloadNode, new TypeReference<Map<String, ?>>() { });
+        } catch (Exception ex) {
+            throw new ControllerException("payload 无效");
+        }
         // System.out.print("payload: " + JsonUtility.serialize(payload));
         String token = CryptoUtility.jwtEncode(payload, secret, expiresAt);
         return Result.okData(Map.of("token", token));
@@ -42,11 +52,10 @@ public class TestCryptoController {
      * JWT 解码
      */
     @RequestMapping(value = "/api/test/crypto/jwt-decode", method = RequestMethod.POST)
-    public Result testCryptoJwtDecode(@RequestBody String requestBody)
-    {
-        var requestJson = RequestValueExtractor.parseRequestJson(requestBody);
-        String secret = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "secret");
-        String token = RequestValueExtractor.getRequestJsonStringTrimRequired(requestJson, "token");
+    public Result testCryptoJwtDecode(@RequestBody String requestBody) {
+        JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
+        String secret = ValueUtility.requireNotBlank(jsonExtractor.getString("secret"), "密钥不能为空");
+        String token = ValueUtility.requireNotBlank(jsonExtractor.getString("token"), "令牌不能为空");
         Map<String, ?> payload = CryptoUtility.jwtDecode(token, secret);
 
         String headerDecoded = "";
@@ -70,9 +79,8 @@ public class TestCryptoController {
      * BASE64 编码
      */
     @RequestMapping(value = "/api/test/crypto/base64-encode", method = RequestMethod.GET)
-    public Result testCryptoBase64Encode(HttpServletRequest request)
-    {
-        String text = RequestValueExtractor.getRequestParamStringTrimRequired(request, "text");
+    public Result testCryptoBase64Encode(HttpServletRequest request) {
+        String text = ValueUtility.emptyIfNull(request.getParameter("text"));
         String base64 = CryptoUtility.base64Encode(text);
         return Result.okData(Map.of("base64", base64));
     }
@@ -81,9 +89,8 @@ public class TestCryptoController {
      * BASE64 解码
      */
     @RequestMapping(value = "/api/test/crypto/base64-decode", method = RequestMethod.GET)
-    public Result testCryptoBase64Decode(HttpServletRequest request)
-    {
-        String base64 = RequestValueExtractor.getRequestParamStringTrimRequired(request, "base64");
+    public Result testCryptoBase64Decode(HttpServletRequest request) {
+        String base64 = ValueUtility.emptyIfNull(request.getParameter("base64"));
         String text = CryptoUtility.base64Decode(base64);
         return Result.okData(Map.of("text", text));
     }
@@ -92,9 +99,8 @@ public class TestCryptoController {
      * MD5 编码
      */
     @RequestMapping(value = "/api/test/crypto/md5-encode", method = RequestMethod.GET)
-    public Result testCryptoMd5Encode(HttpServletRequest request)
-    {
-        String text = RequestValueExtractor.getRequestParamStringTrimRequired(request, "text");
+    public Result testCryptoMd5Encode(HttpServletRequest request) {
+        String text = ValueUtility.emptyIfNull(request.getParameter("text"));
         String md5 = CryptoUtility.md5Encode(text);
         return Result.okData(Map.of("md5", md5));
     }

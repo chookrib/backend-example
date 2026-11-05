@@ -19,7 +19,7 @@ def get_login_user_id(request: Request) -> str:
 def require_login_user_id(request: Request) -> str:
     """获取登录用户 Id，未登录抛出异常"""
     user_id = get_login_user_id(request)
-    if value_utility.is_empty_string(user_id):
+    if value_utility.is_blank(user_id):
         raise NotLoginException()
     return user_id
 

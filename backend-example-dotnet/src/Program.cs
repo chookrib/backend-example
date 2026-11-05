@@ -195,7 +195,7 @@ namespace src
                 PrintConfiguration(builder.Configuration);
             }
 
-            if (ValueUtility.IsEmptyString(applicationConfig.GetAppName()))
+            if (ValueUtility.IsBlank(applicationConfig.GetAppName()))
                 logger.Warn("App:Name 配置缺失");
 
             logger.Info($"应用启动完成: {applicationConfig.GetAppName()}");

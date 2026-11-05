@@ -1,8 +1,7 @@
-﻿using src.utility;
-
-using log4net;
-
+﻿using log4net;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
+using src.utility;
 
 namespace src.adapter.driving.test
 {
@@ -19,10 +18,11 @@ namespace src.adapter.driving.test
         [HttpPost("/api/test/crypto/jwt-encode")]
         public async Task<Result> TestCryptoJwtEncode()
         {
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string secret = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "secret");
-            DateTime expiresAt = RequestValueExtractor.GetRequestJsonDateTimeRequired(requestJson, "expiresAt");
-            IDictionary<string, object> payload = JsonUtility.JsonNodeToDictionary(requestJson["payload"]);
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string secret = jsonExtractor.GetNotBlankStringOrThrow("secret", "密钥不能为空");
+            DateTime expiresAt = ValueUtility.ToDateTimeOrThrow(jsonExtractor.GetString("expiresAt"), "到期时间无效");
+            var payloadNode = jsonExtractor.GetNode("payload");
+            IDictionary<string, object> payload = JsonUtility.JsonNodeToDictionary(payloadNode);
             string token = CryptoUtility.JwtEncode(payload, secret, expiresAt);
             return Result.OkData(new { token });
         }
@@ -33,9 +33,9 @@ namespace src.adapter.driving.test
         [HttpPost("/api/test/crypto/jwt-decode")]
         public async Task<Result> TestCryptoJwtDecode()
         {
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string secret = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "secret");
-            string token = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "token");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string secret = jsonExtractor.GetNotBlankStringOrThrow("secret", "密钥不能为空");
+            string token = jsonExtractor.GetNotBlankStringOrThrow("token", "令牌不能为空");
             IDictionary<string, object> payloadDecode = CryptoUtility.JwtDecode(token, secret);
 
             string part0Decoded = string.Empty;
@@ -64,7 +64,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/base64-encode")]
         public Result TestCryptoBase64Encode()
         {
-            string text = RequestValueExtractor.GetRequestParamStringTrimRequired(Request, "text");
+            string text = ValueUtility.EmptyIfNull(Request.Query["text"]);
             string base64 = CryptoUtility.Base64Encode(text);
             return Result.OkData(new { base64 });
         }
@@ -75,7 +75,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/base64-decode")]
         public Result TestCryptoBaseDecode()
         {
-            string base64 = RequestValueExtractor.GetRequestParamStringTrimRequired(Request, "base64");
+            string base64 = ValueUtility.EmptyIfNull(Request.Query["base64"]);
             string text = CryptoUtility.Base64Decode(base64);
             return Result.OkData(new { text });
         }
@@ -86,7 +86,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/crypto/md5-encode")]
         public Result TestCryptoMd5Encode()
         {
-            string text = RequestValueExtractor.GetRequestParamStringTrimRequired(Request, "text");
+            string text = ValueUtility.EmptyIfNull(Request.Query["text"]);
             string md5 = CryptoUtility.Md5Encode(text);
             return Result.OkData(new { md5 });
         }

@@ -22,7 +22,7 @@ namespace src.application.@lock
         public RedisLockService(ApplicationConfig applicationConfig, IConfiguration configuration)
         {
             string redisUrl = configuration.GetValue<string>("App:LockRedisUrl") ?? string.Empty;
-            if (ValueUtility.IsEmptyString(redisUrl))
+            if (ValueUtility.IsBlank(redisUrl))
                 throw new ApplicationException("未配置 App:LockRedisUrl");
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisUrl);

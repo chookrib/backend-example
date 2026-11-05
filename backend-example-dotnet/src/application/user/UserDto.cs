@@ -1,4 +1,6 @@
-﻿namespace src.application.user
+﻿using src.utility;
+
+namespace src.application.user
 {
     /// <summary>
     /// 用户 DTO
@@ -23,9 +25,9 @@
 
         public UserDto(string id, string username, string nickname, string mobile, bool isAdmin, DateTime createdAt, DateTime? updatedAt)
         {
-            Id = id;
-            Username = username;
-            Nickname = nickname;
+            Id = ValueUtility.RequireNotBlank(id);
+            Username = ValueUtility.RequireNotBlank(username);
+            Nickname = ValueUtility.RequireNotBlank(nickname);
             Mobile = mobile;
             IsAdmin = isAdmin;
             CreatedAt = createdAt;

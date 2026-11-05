@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from src.adapter.driving import request_identity_resolver, request_value_extractor
+from src.adapter.driving import request_identity_resolver, request_value_resolver
 from src.adapter.driving.controller_exception import ControllerException
 from src.adapter.driving.result import Result
 from src.application.user.user_auth_service import UserAuthService
@@ -21,11 +21,11 @@ user_query_handler = ioc_container.resolve(UserQueryHandler)
 @router.post("/api/user/register")
 async def register(request: Request):
     """注册"""
-    request_json = await request_value_extractor.parse_request_json(request)
-    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
-    password = request_value_extractor.get_request_json_string_trim_required(request_json, "password")
-    confirm_password = request_value_extractor.get_request_json_string_trim_required(request_json, "confirmPassword")
-    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    username = json_extractor.get_not_blank_string_or_throw("username", "用户名不能为空")
+    password = json_extractor.get_not_blank_string_or_throw("password", "密码不能为空")
+    confirm_password = json_extractor.get_not_blank_string_or_throw("confirmPassword", "确认密码不能为空")
+    nickname = json_extractor.get_not_blank_string_or_throw("nickname", "昵称不能为空")
 
     if password != confirm_password:
         raise ControllerException("两次输入的密码不一致")
@@ -37,9 +37,9 @@ async def register(request: Request):
 @router.post("/api/user/login")
 async def login(request: Request):
     """登录"""
-    request_json = await request_value_extractor.parse_request_json(request)
-    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
-    password = request_value_extractor.get_request_json_string_trim_required(request_json, "password")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    username = json_extractor.get_not_blank_string_or_throw("username", "用户名不能为空")
+    password = json_extractor.get_not_blank_string_or_throw("password", "密码不能为空")
 
     access_token = await user_auth_service.login(username, password)
     return Result.ok(data={"accessToken": access_token})
@@ -59,10 +59,10 @@ async def modify_password(request: Request):
     """修改密码"""
     user_id = request_identity_resolver.require_login_user_id(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    old_password = request_value_extractor.get_request_json_string_trim_required(request_json, "oldPassword")
-    new_password = request_value_extractor.get_request_json_string_trim_required(request_json, "newPassword")
-    confirm_password = request_value_extractor.get_request_json_string_trim_required(request_json, "confirmPassword")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    old_password = json_extractor.get_not_blank_string_or_throw("oldPassword", "旧密码不能为空")
+    new_password = json_extractor.get_not_blank_string_or_throw("newPassword", "新密码不能为空")
+    confirm_password = json_extractor.get_not_blank_string_or_throw("confirmPassword", "确认密码不能为空")
 
     if confirm_password != new_password:
         raise ControllerException("两次输入的密码不一致")
@@ -76,8 +76,9 @@ async def modify_nickname(request: Request):
     """修改昵称"""
     user_id = request_identity_resolver.require_login_user_id(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    nickname = json_extractor.get_not_blank_string_or_throw("nickname", "昵称不能为空")
+
     await user_profile_service.modify_nickname(user_id, nickname)
     return Result.ok()
 
@@ -86,10 +87,7 @@ async def modify_nickname(request: Request):
 async def send_mobile_code(request: Request):
     """发送手机验证码"""
     user_id = request_identity_resolver.require_login_user_id(request)
-
-    request_json = await request_value_extractor.parse_request_json(request)
-    mobile = request_value_extractor.get_request_json_string_trim_required(request_json, "mobile")
-    await user_profile_service.send_mobile_code(user_id, mobile)
+    await user_profile_service.send_mobile_code(user_id)
     return Result.ok()
 
 
@@ -98,8 +96,8 @@ async def bind_mobile(request: Request):
     """绑定手机"""
     user_id = request_identity_resolver.require_login_user_id(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    mobile = request_value_extractor.get_request_json_string_trim_required(request_json, "mobile")
-    code = request_value_extractor.get_request_json_string_trim_required(request_json, "code")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    mobile = json_extractor.get_not_blank_string_or_throw("mobile", "手机不能为空")
+    code = json_extractor.get_not_blank_string_or_throw("code", "验证码不能为空")
     await user_profile_service.bind_mobile(user_id, mobile, code)
     return Result.ok()

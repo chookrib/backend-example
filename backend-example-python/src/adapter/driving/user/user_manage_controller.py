@@ -2,12 +2,13 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from src.adapter.driving import request_identity_resolver, request_value_extractor
+from src.adapter.driving import request_identity_resolver, request_value_resolver
 from src.adapter.driving.result import Result
 from src.application.user.user_manage_service import UserManageService
 from src.application.user.user_query_criteria import UserQueryCriteria
 from src.application.user.user_query_handler import UserQueryHandler
 from src.ioc_container import ioc_container
+from src.utility import value_utility
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -21,19 +22,17 @@ async def user_list(request: Request):
     """用户列表"""
     await request_identity_resolver.check_admin_permission(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    page_num = request_value_extractor.get_request_json_int_or_default(request_json, 1, "pageNum")
-    page_size = request_value_extractor.get_request_json_int_or_default(request_json, 1, "pageSize")
-    # criteria_json = request_json.get("criteria", {})
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    page_num = request_value_resolver.normalize_page_num(json_extractor.get_string_or_empty("pageNum"))
+    page_size = request_value_resolver.normalize_page_size(json_extractor.get_string_or_empty("pageSize"))
 
     criteria = UserQueryCriteria()
-    # criteria.keyword = request_value_extractor.get_request_json_string_trim(criteria_json, "", "keyword")
-    criteria.keyword = request_value_extractor.get_request_json_string_trim_or_empty(request_json, "criteria", "keyword")
+    criteria.keyword = json_extractor.get_string_or_empty("criteria.keyword")
 
-    sort_options = request_value_extractor.get_request_json_sort_options(request_json, "sort")
+    sort_options = request_value_resolver.get_sort_options(json_extractor.get_node("sort"))
 
     total_count = await user_query_handler.query_count(criteria)
-    page_num, page_size, total_count = request_value_extractor.normalize_paging(page_num, page_size, total_count)
+    page_num, page_size, total_count = request_value_resolver.normalize_paging(page_num, page_size, total_count)
     list = await user_query_handler.query_by_page(page_num, page_size, criteria, sort_options)
     return Result.ok(data={
         # "list": [user.to_json() for user in list],
@@ -51,7 +50,7 @@ async def user_get(request: Request):
     """用户详情"""
     await request_identity_resolver.check_admin_permission(request)
 
-    id = request_value_extractor.get_request_param_string_trim_required(request, "id")
+    id = value_utility.empty_if_none(request.query_params.get("id"))
 
     user_dto = await user_query_handler.query_by_id_req(id)
     # return Result.ok(data=user_dto.to_json())
@@ -63,13 +62,14 @@ async def user_create(request: Request):
     """创建用户"""
     await request_identity_resolver.check_admin_permission(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
-    password = request_value_extractor.get_request_json_string_trim_required(request_json, "password")
-    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
-    mobile = request_value_extractor.get_request_json_string_trim_or_empty(request_json, "mobile")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    username = json_extractor.get_not_blank_string_or_throw("username", "用户名不能为空")
+    password = json_extractor.get_not_blank_string_or_throw("password", "密码不能为空")
+    nickname = json_extractor.get_not_blank_string_or_throw("nickname", "昵称不能为空")
+    mobile = json_extractor.get_string_or_empty("mobile")
+    is_admin = value_utility.to_bool_or_throw(json_extractor.get_string_or_empty("isAdmin"), "是否管理员值无效")
 
-    user_id = await user_manage_service.create_user(username, password, nickname, mobile)
+    user_id = await user_manage_service.create_user(username, password, nickname, mobile, is_admin)
     return Result.ok(data={"id": user_id})
 
 
@@ -78,13 +78,14 @@ async def user_modify(request: Request):
     """修改用户"""
     await request_identity_resolver.check_admin_permission(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    id = request_value_extractor.get_request_json_string_trim_required(request_json, "id")
-    username = request_value_extractor.get_request_json_string_trim_required(request_json, "username")
-    nickname = request_value_extractor.get_request_json_string_trim_required(request_json, "nickname")
-    mobile = request_value_extractor.get_request_json_string_trim_or_empty(request_json, "mobile")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    id = json_extractor.get_not_blank_string_or_throw("id", "Id 不能为空")
+    username = json_extractor.get_not_blank_string_or_throw("username", "用户名不能为空")
+    nickname = json_extractor.get_not_blank_string_or_throw("nickname", "昵称不能为空")
+    mobile = json_extractor.get_string_or_empty("mobile")
+    is_admin = value_utility.to_bool_or_throw(json_extractor.get_string_or_empty("isAdmin"), "是否管理员值无效")
 
-    await user_manage_service.modify_user(id, username, nickname, mobile)
+    await user_manage_service.modify_user(id, username, nickname, mobile, is_admin)
     return Result.ok()
 
 
@@ -93,8 +94,8 @@ async def user_remove(request: Request):
     """删除用户"""
     await request_identity_resolver.check_admin_permission(request)
 
-    request_json = await request_value_extractor.parse_request_json(request)
-    id = request_value_extractor.get_request_json_string_trim_required(request_json, "id")
+    json_extractor = await request_value_resolver.build_json_extractor(request)
+    id = json_extractor.get_not_blank_string_or_throw("id", "Id 不能为空")
 
     await user_manage_service.remove_user(id)
     return Result.ok()

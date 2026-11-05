@@ -34,10 +34,10 @@ namespace src.domain.user
         {
             return new User
             {
-                Id = id,
-                Username = username,
-                Password = password,
-                Nickname = nickname,
+                Id = ValueUtility.RequireNotBlank(id),
+                Username = ValueUtility.RequireNotBlank(username),
+                Password = ValueUtility.RequireNotBlank(password),
+                Nickname = ValueUtility.RequireNotBlank(nickname),
                 Mobile = mobile,
                 IsAdmin = isAdmin,
                 CreatedAt = createdAt,
@@ -51,14 +51,9 @@ namespace src.domain.user
         public static async Task<User> Register(string id, string username, string password, string nickname,
             UserUniquenessValidator? userUniqueSpecification)
         {
-            if (ValueUtility.IsEmptyString(username))
-                throw new DomainException("用户名不能为空");
-
-            if (ValueUtility.IsEmptyString(password))
-                throw new DomainException("密码不能为空");
-
-            if (ValueUtility.IsEmptyString(nickname))
-                throw new DomainException("昵称不能为空");
+            username = ValueUtility.RequireNotBlank(username, "用户名不能为空");
+            password = ValueUtility.RequireNotBlank(password, "密码不能为空");
+            nickname = ValueUtility.RequireNotBlank(nickname, "昵称不能为空");
 
             if (userUniqueSpecification != null)
             {
@@ -77,7 +72,7 @@ namespace src.domain.user
                 Nickname = nickname,
                 Mobile = "",
                 IsAdmin = false,
-                CreatedAt = ValueUtility.GetDateTimeNow(),
+                CreatedAt = ValueUtility.GetCurrentDateTime(),
                 UpdatedAt = null
             };
         }
@@ -87,6 +82,8 @@ namespace src.domain.user
         /// </summary>
         public bool IsPasswordMatch(string password)
         {
+            if (ValueUtility.IsBlank(password))
+                return false;
             return this.Password == CryptoUtility.Md5Encode(password);
         }
 
@@ -96,7 +93,7 @@ namespace src.domain.user
         public void SetAdmin(bool isAdmin)
         {
             this.IsAdmin = isAdmin;
-            this.UpdatedAt = ValueUtility.GetDateTimeNow();
+            this.UpdatedAt = ValueUtility.GetCurrentDateTime();
         }
 
         /// <summary>
@@ -104,14 +101,14 @@ namespace src.domain.user
         /// </summary>
         public void ModifyPassword(string oldPassword, string newPassword)
         {
-            if (ValueUtility.IsEmptyString(newPassword))
-                throw new DomainException("密码不能为空");
+            oldPassword = ValueUtility.RequireNotBlank(oldPassword, "旧密码不能为空");
+            newPassword = ValueUtility.RequireNotBlank(newPassword, "新密码不能为空");
 
             if (!IsPasswordMatch(oldPassword))
                 throw new DomainException("密码错误");
 
             this.Password = CryptoUtility.Md5Encode(newPassword);
-            this.UpdatedAt = ValueUtility.GetDateTimeNow();
+            this.UpdatedAt = ValueUtility.GetCurrentDateTime();
         }
 
         /// <summary>
@@ -119,8 +116,7 @@ namespace src.domain.user
         /// </summary>
         public async Task ModifyNickname(string nickname, UserUniquenessValidator? userUniqueSpecification)
         {
-            if (ValueUtility.IsEmptyString(nickname))
-                throw new DomainException("昵称不能为空");
+            nickname = ValueUtility.RequireNotBlank(nickname, "昵称不能为空");
 
             if (nickname.ToLower() != this.Nickname.ToLower() && userUniqueSpecification != null)
             {
@@ -129,7 +125,7 @@ namespace src.domain.user
             }
 
             this.Nickname = nickname;
-            this.UpdatedAt = ValueUtility.GetDateTimeNow();
+            this.UpdatedAt = ValueUtility.GetCurrentDateTime();
         }
 
         /// <summary>
@@ -137,8 +133,7 @@ namespace src.domain.user
         /// </summary>
         public async Task ModifyMobile(string mobile, UserUniquenessValidator? userUniqueSpecification)
         {
-            if (ValueUtility.IsEmptyString(mobile))
-                throw new DomainException("手机不能为空");
+            mobile = ValueUtility.RequireNotBlank(mobile, "手机不能为空");
 
             if (mobile.ToLower() != this.Mobile.ToLower() && userUniqueSpecification != null)
             {
@@ -147,23 +142,18 @@ namespace src.domain.user
             }
 
             this.Mobile = mobile;
-            this.UpdatedAt = ValueUtility.GetDateTimeNow();
+            this.UpdatedAt = ValueUtility.GetCurrentDateTime();
         }
 
         /// <summary>
         /// 创建用户
         /// </summary>
-        public static async Task<User> Create(string id, string username, string password, string nickname, string mobile,
+        public static async Task<User> Create(string id, string username, string password, string nickname, string mobile, bool isAdmin,
             UserUniquenessValidator? userUniqueSpecification)
         {
-            if (ValueUtility.IsEmptyString(username))
-                throw new DomainException("用户名不能为空");
-
-            if (ValueUtility.IsEmptyString(password))
-                throw new DomainException("密码不能为空");
-
-            if (ValueUtility.IsEmptyString(nickname))
-                throw new DomainException("昵称不能为空");
+            username = ValueUtility.RequireNotBlank(username, "用户名不能为空");
+            password = ValueUtility.RequireNotBlank(password, "密码不能为空");
+            nickname = ValueUtility.RequireNotBlank(nickname, "昵称不能为空");
 
             if (userUniqueSpecification != null)
             {
@@ -173,7 +163,7 @@ namespace src.domain.user
                 if (!await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsEmptyString(mobile) && !await userUniqueSpecification.IsMobileAvailable(mobile))
+                if (!ValueUtility.IsBlank(mobile) && !await userUniqueSpecification.IsMobileAvailable(mobile))
                     throw new DomainException("手机已存在");
             }
 
@@ -184,8 +174,8 @@ namespace src.domain.user
                 Password = CryptoUtility.Md5Encode(password),
                 Nickname = nickname,
                 Mobile = mobile,
-                IsAdmin = false,
-                CreatedAt = ValueUtility.GetDateTimeNow(),
+                IsAdmin = isAdmin,
+                CreatedAt = ValueUtility.GetCurrentDateTime(),
                 UpdatedAt = null
             };
         }
@@ -193,13 +183,11 @@ namespace src.domain.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task Modify(string username, string nickname, string mobile, UserUniquenessValidator? userUniqueSpecification)
+        public async Task Modify(string username, string nickname, string mobile, bool isAdmin,
+            UserUniquenessValidator? userUniqueSpecification)
         {
-            if (ValueUtility.IsEmptyString(username))
-                throw new DomainException("用户名不能为空");
-
-            if (ValueUtility.IsEmptyString(nickname))
-                throw new DomainException("昵称不能为空");
+            username = ValueUtility.RequireNotBlank(username, "用户名不能为空");
+            nickname = ValueUtility.RequireNotBlank(nickname, "昵称不能为空");
 
             if (userUniqueSpecification != null)
             {
@@ -211,7 +199,7 @@ namespace src.domain.user
                     !await userUniqueSpecification.IsNicknameAvailable(nickname))
                     throw new DomainException("昵称已存在");
 
-                if (!ValueUtility.IsEmptyString(mobile) &&
+                if (!ValueUtility.IsBlank(mobile) &&
                     mobile.ToLower() != this.Mobile.ToLower() &&
                     !await userUniqueSpecification.IsMobileAvailable(mobile))
                     throw new DomainException("手机已存在");
@@ -220,7 +208,8 @@ namespace src.domain.user
             this.Username = username;
             this.Nickname = nickname;
             this.Mobile = mobile;
-            this.UpdatedAt = ValueUtility.GetDateTimeNow();
+            this.IsAdmin = isAdmin;
+            this.UpdatedAt = ValueUtility.GetCurrentDateTime();
         }
     }
 }

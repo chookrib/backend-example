@@ -14,7 +14,7 @@ class DatabaseAdapter:
     """数据库 Adapter"""
 
     def __init__(self) -> None:
-        if value_utility.is_empty_string(application_config.APP_SQLITE_PATH):
+        if value_utility.is_blank(application_config.APP_SQLITE_PATH):
             raise PersistenceException("APP_SQLITE_PATH 配置错误")
         # self.db_path = str(Path(__file__).resolve().parents[4] / settings.APP_SQLITE_PATH)
         self.db_path = os.path.join(os.getcwd(), application_config.APP_SQLITE_PATH)

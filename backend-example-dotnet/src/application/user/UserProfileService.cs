@@ -39,7 +39,7 @@ namespace src.application.user
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await User.Register(IdUtility.GenerateUUIDv7(), username, password, nickname,
+                User user = await User.Register(IdentifierUtility.GenerateUUIDv7(), username, password, nickname,
                     userUniqueSpecification);
                 await userRepository.Insert(user);
                 return user.Id;
@@ -51,7 +51,7 @@ namespace src.application.user
         /// </summary>
         public async Task ModifyPassword(string userId, string oldPassword, string newPassword)
         {
-            User user = await userRepository.FindByIdRequired(userId);
+            User user = await userRepository.FindByIdOrThrow(userId);
             user.ModifyPassword(oldPassword, newPassword);
             await userRepository.Update(user);
         }
@@ -63,7 +63,7 @@ namespace src.application.user
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
-                User user = await userRepository.FindByIdRequired(userId);
+                User user = await userRepository.FindByIdOrThrow(userId);
                 await user.ModifyNickname(nickname, userUniqueSpecification);
                 await userRepository.Update(user);
             }
@@ -72,15 +72,15 @@ namespace src.application.user
         /// <summary>
         /// 发送手机验证码
         /// </summary>
-        public async Task SendMobileCode(string userId, string mobile)
+        public async Task SendMobileCode(string userId)
         {
-            if (ValueUtility.IsEmptyString(mobile))
-                throw new ApplicationException("手机号不能为空");
+            User user = await userRepository.FindByIdOrThrow(userId);
+            if (ValueUtility.IsBlank(user.Mobile))
+                throw new ApplicationException("用户未绑定手机，无法发送验证码");
 
-            User user = await userRepository.FindByIdRequired(userId);
             string code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
-            mobileCodeDict.AddOrUpdate(user.Id + "_" + mobile, code, (k, v) => code);
-            await smsGateway.SendCode(mobile, code);
+            mobileCodeDict.AddOrUpdate(user.Id + "_" + user.Mobile, code, (k, v) => code);
+            await smsGateway.SendCode(user.Mobile, code);
         }
 
         /// <summary>
@@ -88,10 +88,10 @@ namespace src.application.user
         /// </summary>
         public async Task BindMobile(string userId, string mobile, string code)
         {
-            if (ValueUtility.IsEmptyString(code))
+            if (ValueUtility.IsBlank(code))
                 throw new ApplicationException("验证码不能为空");
 
-            User user = await userRepository.FindByIdRequired(userId);
+            User user = await userRepository.FindByIdOrThrow(userId);
             string key = user.Id + "_" + mobile;
             if (!mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
                 throw new ApplicationException("验证码错误");

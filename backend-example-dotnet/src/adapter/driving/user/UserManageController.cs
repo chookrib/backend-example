@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
 using src.application.user;
+using src.utility;
 
 namespace src.adapter.driving.user
 {
@@ -37,23 +38,17 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.CheckAdminPermission();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            int pageNum = RequestValueExtractor.GetRequestJsonIntOrDefault(requestJson, 1, "pageNum");
-            int pageSize = RequestValueExtractor.GetRequestJsonIntOrDefault(requestJson, 1, "pageSize");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            int pageNum = RequestValueResolver.NormalizePageNum(jsonExtractor.GetString("pageNum"));
+            int pageSize = RequestValueResolver.NormalizePageNum(jsonExtractor.GetString("pageSize"));
 
-            //JsonNode? criteriaJson = requestJson["criteria"];
             UserQueryCriteria criteria = new UserQueryCriteria();
-            //if (criteriaJson != null)
-            //{
-            //string? keyword = criteriaJson["keyword"]?.GetValue<string?>()?.Trim();
-            string keyword = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "criteria", "keyword");
-            criteria.Keyword = keyword;
-            //}
+            criteria.Keyword = jsonExtractor.GetStringOrEmpty("criteria.keyword");
 
-            OrderedDictionary<string, string> sortOptions = RequestValueExtractor.GetRequestJsonSortOptions(requestJson, "sort");
+            OrderedDictionary<string, string> sortOptions = RequestValueResolver.GetSortOptions(jsonExtractor.GetNode("sort"));
 
             int totalCount = await userQueryHandler.QueryCount(criteria);
-            var paging = RequestValueExtractor.NormalizePaging(pageNum, pageSize, totalCount);
+            var paging = RequestValueResolver.NormalizePaging(pageNum, pageSize, totalCount);
             IList<UserDto> list = await userQueryHandler.QueryPage(paging.pageNum, paging.pageSize, criteria, sortOptions);
             return Result.OkData(new
             {
@@ -74,9 +69,8 @@ namespace src.adapter.driving.user
         public async Task<Result> UserGet()
         {
             await requestIdentityResolver.CheckAdminPermission();
-
-            string id = RequestValueExtractor.GetRequestParamStringTrimRequired(Request, "id");
-            UserDto userDto = await userQueryHandler.QueryByIdRequired(id);
+            string id = ValueUtility.RequireNotBlank(Request.Query["id"], "Id 不能为空");
+            UserDto userDto = await userQueryHandler.QueryByIdOrThrow(id);
             return Result.OkData(new
             {
                 item = userDto
@@ -91,13 +85,14 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.CheckAdminPermission();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
-            string password = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "password");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string username = jsonExtractor.GetNotBlankStringOrThrow("username", "用户名不能为空");
+            string password = jsonExtractor.GetNotBlankStringOrThrow("password", "密码不能为空");
+            string nickname = jsonExtractor.GetNotBlankStringOrThrow("nickname", "昵称不能为空");
+            string mobile = jsonExtractor.GetStringOrEmpty("mobile");
+            bool isAdmin = ValueUtility.ToBoolOrThrow(jsonExtractor.GetString("isAdmin"), "是否管理员值无效");
 
-            string userId = await userManageService.CreateUser(username, password, nickname, mobile);
+            string userId = await userManageService.CreateUser(username, password, nickname, mobile, isAdmin);
             return Result.OkData(new
             {
                 id = userId
@@ -112,13 +107,15 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.CheckAdminPermission();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string id = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "id");
-            string username = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "username");
-            string nickname = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "nickname");
-            string mobile = RequestValueExtractor.GetRequestJsonStringTrimOrEmpty(requestJson, "mobile");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string id = jsonExtractor.GetNotBlankStringOrThrow("id", "Id 不能为空");
+            string username = jsonExtractor.GetNotBlankStringOrThrow("username", "用户名不能为空");
+            string password = jsonExtractor.GetNotBlankStringOrThrow("password", "密码不能为空");
+            string nickname = jsonExtractor.GetNotBlankStringOrThrow("nickname", "昵称不能为空");
+            string mobile = jsonExtractor.GetStringOrEmpty("mobile");
+            bool isAdmin = ValueUtility.ToBoolOrThrow(jsonExtractor.GetString("isAdmin"), "是否管理员值无效");
 
-            await userManageService.ModifyUser(id, username, nickname, mobile);
+            await userManageService.ModifyUser(id, username, nickname, mobile, isAdmin);
             return Result.Ok();
         }
 
@@ -131,8 +128,8 @@ namespace src.adapter.driving.user
         {
             await requestIdentityResolver.CheckAdminPermission();
 
-            var requestJson = await RequestValueExtractor.ParseRequestJsonAsync(Request);
-            string id = RequestValueExtractor.GetRequestJsonStringTrimRequired(requestJson, "id");
+            JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
+            string id = jsonExtractor.GetNotBlankStringOrThrow("id", "Id 不能为空");
 
             await userManageService.RemoveUser(id);
             return Result.Ok();

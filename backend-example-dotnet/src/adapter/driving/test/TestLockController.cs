@@ -4,6 +4,7 @@ using src.application.test;
 using log4net;
 
 using Microsoft.AspNetCore.Mvc;
+using src.utility;
 
 namespace src.adapter.driving.test
 {
@@ -27,7 +28,7 @@ namespace src.adapter.driving.test
         [HttpGet("/api/test/lock/set-count")]
         public Result TestLockSetCount()
         {
-            int value = RequestValueExtractor.GetRequestParamIntOrDefault(Request, 1, "value");
+            int value = ValueUtility.ToIntOrDefault(Request.Query["value"], 1);
             testLockService.SetCount(value);
             return Result.OkData(new { count = value });
         }

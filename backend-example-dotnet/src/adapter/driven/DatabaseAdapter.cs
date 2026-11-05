@@ -15,7 +15,7 @@ namespace src.adapter.driven
         public DatabaseAdapter(IConfiguration configuration)
         {
             this.connectionString = configuration.GetConnectionString("SQLite") ?? string.Empty;
-            if (ValueUtility.IsEmptyString(this.connectionString))
+            if (ValueUtility.IsBlank(this.connectionString))
                 throw new PersistenceException("ConnectionString:SQLite 配置错误");
         }
 
