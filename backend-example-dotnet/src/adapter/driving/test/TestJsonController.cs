@@ -20,7 +20,8 @@ namespace src.adapter.driving.test
                     "2":{
                         "2_1": 21,
                         "2_2": 22
-                    }
+                    },
+                    "3": ["31", 32]
                 }
                 """;
             JsonExtractor jsonExtractor = new JsonExtractor(jsonString);
@@ -30,7 +31,8 @@ namespace src.adapter.driving.test
                 test1 = jsonExtractor.GetString("1"),
                 test2 = jsonExtractor.GetString("1.1_1"),
                 test3 = jsonExtractor.GetStringOrEmpty("1.1_1.1_1_1"),
-                test4 = jsonExtractor.GetString("2.2_1")
+                test4 = jsonExtractor.GetString("2.2_1"),
+                test5 = jsonExtractor.GetStringList("3")
             });
         }
     }

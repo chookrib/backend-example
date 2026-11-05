@@ -19,7 +19,8 @@ async def test_json(request: Request):
                     "2":{
                         "2_1": 21,
                         "2_2": 22
-                    }
+                    },
+                    "3": ["31", 32]
                 }
                 """
     json_extractor = JsonExtractor(json_string)
@@ -27,5 +28,6 @@ async def test_json(request: Request):
         "test1": json_extractor.get_string("1"),
         "test2": json_extractor.get_string("1.1_1"),
         "test3": json_extractor.get_string_or_empty("1.1_1.1_1_1"),
-        "test4": json_extractor.get_string("2.2_1")
+        "test4": json_extractor.get_string("2.2_1"),
+        "test5": json_extractor.get_string_list("3")
     })

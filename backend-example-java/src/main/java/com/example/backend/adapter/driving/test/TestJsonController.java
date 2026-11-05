@@ -28,17 +28,19 @@ public class TestJsonController {
                     "2":{
                         "2_1": 21,
                         "2_2": 22
-                    }
+                    },
+                    "3": ["31", 32]
                 }
                 """;
         JsonExtractor jsonExtractor = new JsonExtractor(jsonString);
 
         return Result.okData(
-                new ValueUtility.LinkedHashMapBuilder<String, String>()
+                new ValueUtility.LinkedHashMapBuilder<String, Object>()
                         .put("test1", jsonExtractor.getString("1"))
                         .put("test2", jsonExtractor.getString("1.1_1"))
                         .put("test3", jsonExtractor.getStringOrEmpty("1.1_1.1_1_1"))
                         .put("test4", jsonExtractor.getString("2.2_1"))
+                        .put("test5", jsonExtractor.getStringList("3"))
                         .build()
                 // Map.of(
                 //         "test1", jsonExtractor.getString("1"),

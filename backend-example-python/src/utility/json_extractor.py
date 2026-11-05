@@ -63,3 +63,10 @@ class JsonExtractor:
         if value is None:
             return ""
         return value
+
+    def get_string_list(self, path: str) -> list[str]:
+        """获取字符串列表，多级路径以 . 拼接"""
+        value = self.get_node(path)
+        if value is not None and isinstance(value, list):
+            return [str(v).strip() for v in value]
+        return []

@@ -3,6 +3,8 @@ package com.example.backend.utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -98,5 +100,19 @@ public class JsonExtractor {
         if(value == null)
             return "";
         return value;
+    }
+
+    /**
+     * 获取字符串列表，多级路径以 . 拼接
+     */
+    public List<String> getStringList(String path) {
+        JsonNode node = getNode(path);
+        List<String> ss = new ArrayList<>();
+        if (node.isMissingNode() || !node.isArray())
+            return ss;
+        for (JsonNode n : node) {
+            ss.add(n.asText().trim());
+        }
+        return ss;
     }
 }

@@ -70,10 +70,10 @@ namespace src.utility
                 return null;
             if (node is JsonValue value)
             {
-                return value.ToString();
                 //if (value.TryGetValue<string>(out string? result) && result != null)
                 //    return result;
                 //return null;
+                return value.ToString();
             }
             return node.ToJsonString();
         }
@@ -102,6 +102,26 @@ namespace src.utility
             if (value == null)
                 return "";
             return value;
+        }
+
+        /// <summary>
+        /// 获取字符串列表，多级路径以 . 拼接
+        /// </summary>
+        public IList<string> GetStringList(string path)
+        {
+            IList<string> ss = new List<string>();
+            JsonNode? node = GetNode(path);
+            if (node != null && node is JsonArray a)
+            {
+                foreach (JsonNode? n in a)
+                {
+                    //if (n != null && n is JsonValue v && v.TryGetValue<string>(out string? s))
+                    //    ss.Add(s?.Trim() ?? string.Empty);
+                    if (n != null)
+                        ss.Add(n.ToString());
+                }
+            }
+            return ss;
         }
 
     }
