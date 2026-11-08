@@ -5,17 +5,26 @@ from enum import Enum
 from typing import Any
 
 from src.utility import value_utility
+from src.utility.utility_exception import UtilityException
 
 
-def deserialize(data):
-    """反序列化 JSON 字符串"""
-    return json.loads(data)
-
-
-def serialize(data):
+def serialize(data: Any, message: str = "序列化 JSON 失败"):
     """序列化为 JSON 字符串"""
-    return json.dumps(data, separators=(',', ':'))
+    try:
+        return json.dumps(data, separators=(',', ':'))
+    except Exception as ex:
+        raise UtilityException(message) from ex
 
+
+def deserialize(data: str, message: str = "反序列化 JSON 失败"):
+    """反序列化 JSON 字符串"""
+    try:
+        return json.loads(data)
+    except Exception as ex:
+        raise UtilityException(message) from ex
+
+
+# ======================================================================================================================
 
 def to_camel_case(value: Any) -> str:
     """键名转为 camelCase 风格"""
@@ -45,7 +54,7 @@ def custom_jsonable_encoder(obj, **kwargs):
         if value_utility.INT_MIN_VALUE <= obj <= value_utility.INT_MAX_VALUE:
             return obj
         else:
-            return str(obj)         # long 转字符串，python 中没有 long 类型，这里效果与 java/c# 有区别
+            return str(obj)  # long 转字符串，python 中没有 long 类型，这里效果与 java/c# 有区别
 
     if isinstance(obj, Decimal):
         # return str(obj)

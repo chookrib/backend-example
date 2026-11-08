@@ -54,19 +54,19 @@ public class UserProfileService {
     /**
      * 修改密码
      */
-    public void modifyPassword(String userId, String oldPassword, String newPassword) {
+    public void changePassword(String userId, String oldPassword, String newPassword) {
         User user = userRepository.findByIdOrThrow(userId);
-        user.modifyPassword(oldPassword, newPassword);
+        user.changePassword(oldPassword, newPassword);
         userRepository.update(user);
     }
 
     /**
      * 修改昵称
      */
-    public void modifyNickname(String userId, String nickname) {
+    public void changeNickname(String userId, String nickname) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = userRepository.findByIdOrThrow(userId);
-            user.modifyNickname(nickname, userUniquenessValidator);
+            user.changeNickname(nickname, userUniquenessValidator);
             userRepository.update(user);
         }
     }
@@ -98,7 +98,7 @@ public class UserProfileService {
         if (!mobileCodeMap.getOrDefault(key, "").equals(code))
             throw new ApplicationException("验证码错误");
 
-        user.modifyMobile(mobile, userUniquenessValidator);
+        user.changeMobile(mobile, userUniquenessValidator);
         userRepository.update(user);
         mobileCodeMap.remove(key);
     }

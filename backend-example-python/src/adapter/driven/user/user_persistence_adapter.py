@@ -53,7 +53,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
         """转换成 Entity"""
         try:
             row_dict = dict(row)
-            return User.restore(
+            return User.reconstitute(
                 id=row_dict.get("u_id", ""),
                 username=row_dict.get("u_username", ""),
                 password=row_dict.get("u_password", ""),
@@ -65,7 +65,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                 updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
             )
         except Exception as ex:
-            raise PersistenceException("还原 User 失败") from ex
+            raise PersistenceException("重建 User 失败") from ex
 
 
     async def insert(self, entity: User) -> None:
@@ -214,7 +214,7 @@ class UserPersistenceAdapter(UserRepository, UserUniquenessValidator, UserQueryH
                 updated_at=value_utility.to_datetime_or_none(row_dict.get("u_updated_at"))
             )
         except Exception as ex:
-            raise PersistenceException("还原 UserDto 失败") from ex
+            raise PersistenceException("重建 UserDto 失败") from ex
 
     def build_query_criteria_sql(self, criteria: UserQueryCriteria) -> tuple[str, list]:
         """构造查询 SQL"""

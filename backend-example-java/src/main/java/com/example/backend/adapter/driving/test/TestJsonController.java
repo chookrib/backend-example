@@ -2,6 +2,7 @@ package com.example.backend.adapter.driving.test;
 
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.utility.JsonExtractor;
+import com.example.backend.utility.JsonUtility;
 import com.example.backend.utility.ValueUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,20 @@ public class TestJsonController {
 
     private static final Logger logger = LoggerFactory.getLogger(TestJsonController.class);
 
-    @RequestMapping(value = "/api/test/json", method = RequestMethod.GET)
-    public Result testJson() {
+    @RequestMapping(value = "/api/test/json/basic", method = RequestMethod.GET)
+    public Result testJsonBasic() {
+        return Result.okData(
+                new ValueUtility.LinkedHashMapBuilder<String, Object>()
+                        .put("serializeEmpty", JsonUtility.serialize(""))
+                        .put("serializeNull", JsonUtility.serialize(null))
+                        .put("deserializeEmpty", JsonUtility.deserialize(""))
+                        .put("deserializeNull", JsonUtility.deserialize("null"))
+                        .build()
+        );
+    }
+
+    @RequestMapping(value = "/api/test/json/extractor", method = RequestMethod.GET)
+    public Result testJsonExtractor() {
         String jsonString = """
                 {
                     "1": {

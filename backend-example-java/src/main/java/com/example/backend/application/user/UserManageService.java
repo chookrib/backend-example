@@ -55,10 +55,10 @@ public class UserManageService {
     /**
      * 修改用户
      */
-    public void modifyUser(String id, String username, String nickname, String mobile, boolean isAdmin) {
+    public void updateUser(String id, String username, String nickname, String mobile, boolean isAdmin) {
         try (LockHandle lock = lockService.lock(LockKeyConstants.USER)) {
             User user = userRepository.findByIdOrThrow(id);
-            user.modify(username, nickname, mobile, isAdmin, userUniquenessValidator);
+            user.update(username, nickname, mobile, isAdmin, userUniquenessValidator);
             userRepository.update(user);
         }
     }
@@ -66,7 +66,7 @@ public class UserManageService {
     /**
      * 删除用户
      */
-    public void removeUser(String id) {
+    public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
 }

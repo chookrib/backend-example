@@ -36,10 +36,13 @@ public class User {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
+    private User() {
+    }
+
     /**
-     * 还原用户
+     * 重建
      */
-    public static User restore(
+    public static User reconstitute(
             String id, String username, String password, String nickname, String mobile, boolean isAdmin,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         User user = new User();
@@ -55,7 +58,7 @@ public class User {
     }
 
     /**
-     * 注册用户
+     * 注册
      */
     public static User register(
             String id, String username, String password, String nickname, UserUniquenessValidator userUniquenessValidator) {
@@ -88,7 +91,7 @@ public class User {
      * 检查密码是否匹配
      */
     public boolean isPasswordMatch(String password) {
-        if(ValueUtility.isBlank(password))
+        if (ValueUtility.isBlank(password))
             return false;   // 空密码永远返回否
         return this.password.equals(CryptoUtility.md5Encode(password));
     }
@@ -104,7 +107,7 @@ public class User {
     /**
      * 修改密码
      */
-    public void modifyPassword(String oldPassword, String newPassword) {
+    public void changePassword(String oldPassword, String newPassword) {
         oldPassword = ValueUtility.requireNotBlank(oldPassword, "旧密码不能为空");
         newPassword = ValueUtility.requireNotBlank(newPassword, "新密码不能为空");
 
@@ -119,7 +122,7 @@ public class User {
     /**
      * 修改昵称
      */
-    public void modifyNickname(String nickname, UserUniquenessValidator userUniquenessValidator) {
+    public void changeNickname(String nickname, UserUniquenessValidator userUniquenessValidator) {
         nickname = ValueUtility.requireNotBlank(nickname, "昵称不能为空");
 
         if (!nickname.equalsIgnoreCase(this.nickname) && userUniquenessValidator != null) {
@@ -134,7 +137,7 @@ public class User {
     /**
      * 修改手机
      */
-    public void modifyMobile(String mobile, UserUniquenessValidator userUniquenessValidator) {
+    public void changeMobile(String mobile, UserUniquenessValidator userUniquenessValidator) {
         mobile = ValueUtility.requireNotBlank(mobile, "手机不能为空");
 
         if (!mobile.equalsIgnoreCase(this.mobile) && userUniquenessValidator != null) {
@@ -184,7 +187,7 @@ public class User {
     /**
      * 修改用户
      */
-    public void modify(
+    public void update(
             String username, String nickname, String mobile, boolean isAdmin,
             UserUniquenessValidator userUniquenessValidator
     ) {

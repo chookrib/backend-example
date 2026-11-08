@@ -54,8 +54,8 @@ async def profile(request: Request):
     return Result.ok(data={"profile": user_dto})
 
 
-@router.post("/api/user/modify-password")
-async def modify_password(request: Request):
+@router.post("/api/user/change-password")
+async def change_password(request: Request):
     """修改密码"""
     user_id = request_identity_resolver.require_login_user_id(request)
 
@@ -67,19 +67,19 @@ async def modify_password(request: Request):
     if confirm_password != new_password:
         raise ControllerException("两次输入的密码不一致")
 
-    await user_profile_service.modify_password(user_id, old_password, new_password)
+    await user_profile_service.change_password(user_id, old_password, new_password)
     return Result.ok()
 
 
-@router.post("/api/user/modify-nickname")
-async def modify_nickname(request: Request):
+@router.post("/api/user/change-nickname")
+async def change_nickname(request: Request):
     """修改昵称"""
     user_id = request_identity_resolver.require_login_user_id(request)
 
     json_extractor = await request_value_resolver.build_json_extractor(request)
     nickname = json_extractor.get_not_blank_string_or_throw("nickname", "昵称不能为空")
 
-    await user_profile_service.modify_nickname(user_id, nickname)
+    await user_profile_service.change_nickname(user_id, nickname)
     return Result.ok()
 
 

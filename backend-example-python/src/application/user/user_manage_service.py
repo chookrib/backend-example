@@ -35,11 +35,11 @@ class UserManageService:
             await self.user_repository.insert(user)
             return user.id
 
-    async def modify_user(self, id: str, username: str, nickname: str, mobile: str, is_admin: bool) -> None:
+    async def update_user(self, id: str, username: str, nickname: str, mobile: str, is_admin: bool) -> None:
         """修改用户"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await self.user_repository.find_by_id_or_throw(id)
-            await user.modify(
+            await user.update(
                 username=username,
                 nickname=nickname,
                 mobile=mobile,
@@ -47,6 +47,6 @@ class UserManageService:
                 user_unique_specification=self.user_unique_specification)
             await self.user_repository.update(user)
 
-    async def remove_user(self, id: str) -> None:
+    async def delete_user(self, id: str) -> None:
         """删除用户"""
         return await self.user_repository.delete_by_id(id)

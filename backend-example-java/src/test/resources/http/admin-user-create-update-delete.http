@@ -25,7 +25,7 @@ GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 
 ### 更新
-POST http://{{host}}/api/admin/user/modify
+POST http://{{host}}/api/admin/user/update
 Content-Type: application/json
 Access-Token: {{accessToken}}
 
@@ -44,7 +44,7 @@ GET http://{{host}}/api/admin/user/get?id={{userId}}
 Access-Token: {{accessToken}}
 
 ### 删除
-POST http://{{host}}/api/admin/user/remove
+POST http://{{host}}/api/admin/user/delete
 Access-Token: {{accessToken}}
 
 {

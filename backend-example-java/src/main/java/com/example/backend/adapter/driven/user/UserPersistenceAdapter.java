@@ -68,7 +68,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     //  * 转换成 Entity
     //  */
     // private User toEntity(SqlRowSet sqlRowSet) {
-    //     return User.restore(
+    //     return User.reconstitute(
     //             sqlRowSet.getString("u_id"),
     //             sqlRowSet.getString("u_username"),
     //             sqlRowSet.getString("u_password"),
@@ -85,7 +85,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
      */
     private User toEntity(ResultSet rs) {
         try {
-            return User.restore(
+            return User.reconstitute(
                     rs.getString("u_id"),
                     rs.getString("u_username"),
                     rs.getString("u_password"),
@@ -96,7 +96,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
         } catch (Exception ex) {
-            throw new PersistenceException("还原 User 失败", ex);
+            throw new PersistenceException("重建 User 失败", ex);
         }
     }
 
@@ -301,7 +301,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
                     ValueUtility.toDateTimeOrNull(rs.getString("u_updated_at"))
             );
         } catch (Exception ex) {
-            throw new PersistenceException("还原 UserDto 失败", ex);
+            throw new PersistenceException("重建 UserDto 失败", ex);
         }
     }
 

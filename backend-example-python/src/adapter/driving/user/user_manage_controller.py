@@ -73,8 +73,8 @@ async def user_create(request: Request):
     return Result.ok(data={"id": user_id})
 
 
-@router.post("/api/admin/user/modify")
-async def user_modify(request: Request):
+@router.post("/api/admin/user/update")
+async def user_update(request: Request):
     """修改用户"""
     await request_identity_resolver.check_admin_permission(request)
 
@@ -85,17 +85,17 @@ async def user_modify(request: Request):
     mobile = json_extractor.get_string_or_empty("mobile")
     is_admin = value_utility.to_bool_or_throw(json_extractor.get_string_or_empty("isAdmin"), "是否管理员值无效")
 
-    await user_manage_service.modify_user(id, username, nickname, mobile, is_admin)
+    await user_manage_service.update_user(id, username, nickname, mobile, is_admin)
     return Result.ok()
 
 
-@router.post("/api/admin/user/remove")
-async def user_remove(request: Request):
+@router.post("/api/admin/user/delete")
+async def user_delete(request: Request):
     """删除用户"""
     await request_identity_resolver.check_admin_permission(request)
 
     json_extractor = await request_value_resolver.build_json_extractor(request)
     id = json_extractor.get_not_blank_string_or_throw("id", "Id 不能为空")
 
-    await user_manage_service.remove_user(id)
+    await user_manage_service.delete_user(id)
     return Result.ok()

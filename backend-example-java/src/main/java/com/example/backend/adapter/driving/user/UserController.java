@@ -93,8 +93,8 @@ public class UserController {
     /**
      * 修改密码
      */
-    @RequestMapping(value = "/api/user/modify-password", method = RequestMethod.POST)
-    public Result modifyPassword(@RequestBody String requestBody) {
+    @RequestMapping(value = "/api/user/change-password", method = RequestMethod.POST)
+    public Result changePassword(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
@@ -105,21 +105,21 @@ public class UserController {
         if (!confirmPassword.equals(newPassword))
             throw new ControllerException("两次输入的密码不一致");
 
-        userProfileService.modifyPassword(userId, oldPassword, newPassword);
+        userProfileService.changePassword(userId, oldPassword, newPassword);
         return Result.ok();
     }
 
     /**
      * 修改昵称
      */
-    @RequestMapping(value = "/api/user/modify-nickname", method = RequestMethod.POST)
-    public Result modifyNickname(@RequestBody String requestBody) {
+    @RequestMapping(value = "/api/user/change-nickname", method = RequestMethod.POST)
+    public Result changeNickname(@RequestBody String requestBody) {
         String userId = requestIdentityResolver.requireLoginUserId();
 
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
         String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
 
-        userProfileService.modifyNickname(userId, nickname);
+        userProfileService.changeNickname(userId, nickname);
         return Result.ok();
     }
 

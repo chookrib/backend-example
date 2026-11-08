@@ -111,8 +111,8 @@ public class UserManageController {
     /**
      * 修改用户
      */
-    @RequestMapping(value = "/api/admin/user/modify", method = RequestMethod.POST)
-    public Result userModify(@RequestBody String requestBody) {
+    @RequestMapping(value = "/api/admin/user/update", method = RequestMethod.POST)
+    public Result userUpdate(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
@@ -122,21 +122,21 @@ public class UserManageController {
         String mobile = jsonExtractor.getStringOrEmpty("mobile");
         boolean isAdmin = ValueUtility.toBoolOrThrow(jsonExtractor.getString("isAdmin"), "是否管理员值无效");
 
-        userManageService.modifyUser(id, username, nickname, mobile, isAdmin);
+        userManageService.updateUser(id, username, nickname, mobile, isAdmin);
         return Result.ok();
     }
 
     /**
      * 删除用户
      */
-    @RequestMapping(value = "/api/admin/user/remove", method = RequestMethod.POST)
-    public Result userRemove(@RequestBody String requestBody) {
+    @RequestMapping(value = "/api/admin/user/delete", method = RequestMethod.POST)
+    public Result userDelete(@RequestBody String requestBody) {
         requestIdentityResolver.checkAdminPermission();
 
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
         String id = jsonExtractor.getNotBlankStringOrThrow("id", "Id 不能为空");
 
-        userManageService.removeUser(id);
+        userManageService.deleteUser(id);
         return Result.ok();
     }
 }

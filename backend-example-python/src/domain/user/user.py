@@ -20,7 +20,7 @@ class User(BaseModel):
     updated_at: datetime | None
 
     @staticmethod
-    def restore(
+    def reconstitute(
             id: str,
             username: str,
             password: str,
@@ -30,7 +30,7 @@ class User(BaseModel):
             created_at: datetime,
             updated_at: datetime | None
     ) -> "User":
-        """还原用户"""
+        """重建"""
         return User(
             id=value_utility.require_not_blank(id),
             username=value_utility.require_not_blank(username),
@@ -49,7 +49,7 @@ class User(BaseModel):
             password: str,
             nickname: str,
             user_unique_specification: UserUniquenessValidator | None) -> "User":
-        """注册用户"""
+        """注册"""
         username = value_utility.require_not_blank(username, "用户名不能为空")
         password = value_utility.require_not_blank(password, "密码不能为空")
         nickname = value_utility.require_not_blank(nickname, "昵称不能为空")
@@ -83,7 +83,7 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.updated_at = value_utility.get_current_datetime()
 
-    def modify_password(self, old_password: str, new_password: str) -> None:
+    def change_password(self, old_password: str, new_password: str) -> None:
         """修改密码"""
         old_password = value_utility.require_not_blank(old_password, "旧密码不能为空")
         new_password = value_utility.require_not_blank(new_password, "新密码不能为空")
@@ -94,7 +94,7 @@ class User(BaseModel):
         self.password = crypto_utility.md5_encode(new_password)
         self.updated_at = value_utility.get_current_datetime()
 
-    async def modify_nickname(self, nickname: str, user_unique_specification: UserUniquenessValidator | None) -> None:
+    async def change_nickname(self, nickname: str, user_unique_specification: UserUniquenessValidator | None) -> None:
         """修改昵称"""
         nickname = value_utility.require_not_blank(nickname, "昵称不能为空");
 
@@ -105,7 +105,7 @@ class User(BaseModel):
         self.nickname = nickname
         self.updated_at = value_utility.get_current_datetime()
 
-    async def modify_mobile(self, mobile: str, user_unique_specification: UserUniquenessValidator | None) -> None:
+    async def change_mobile(self, mobile: str, user_unique_specification: UserUniquenessValidator | None) -> None:
         """修改手机"""
         mobile = value_utility.require_not_blank(mobile, "手机不能为空");
 
@@ -153,7 +153,7 @@ class User(BaseModel):
             updated_at=None
         )
 
-    async def modify(self, username: str,
+    async def update(self, username: str,
                      nickname: str,
                      mobile: str,
                      is_admin: bool,

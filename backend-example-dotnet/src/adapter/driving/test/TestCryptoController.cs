@@ -22,7 +22,7 @@ namespace src.adapter.driving.test
             string secret = jsonExtractor.GetNotBlankStringOrThrow("secret", "密钥不能为空");
             DateTime expiresAt = ValueUtility.ToDateTimeOrThrow(jsonExtractor.GetString("expiresAt"), "到期时间无效");
             var payloadNode = jsonExtractor.GetNode("payload");
-            IDictionary<string, object> payload = JsonUtility.JsonNodeToDictionary(payloadNode);
+            IDictionary<string, object> payload = JsonUtility.DeserializeDictionary(payloadNode);
             string token = CryptoUtility.JwtEncode(payload, secret, expiresAt);
             return Result.OkData(new { token });
         }

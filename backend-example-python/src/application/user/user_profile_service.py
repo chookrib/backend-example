@@ -33,17 +33,17 @@ class UserProfileService:
             await self.user_repository.insert(user)
             return user.id
 
-    async def modify_password(self, user_id: str, old_password: str, new_password: str) -> None:
+    async def change_password(self, user_id: str, old_password: str, new_password: str) -> None:
         """修改密码"""
         user = await self.user_repository.find_by_id_or_throw(user_id)
-        user.modify_password(old_password, new_password)
+        user.change_password(old_password, new_password)
         await self.user_repository.update(user)
 
-    async def modify_nickname(self, user_id: str, nickname: str) -> None:
+    async def change_nickname(self, user_id: str, nickname: str) -> None:
         """修改昵称"""
         async with self.lock_service.lock_async(lock_key_constants.USER):
             user = await self.user_repository.find_by_id_or_throw(user_id)
-            await user.modify_nickname(nickname, self.user_unique_specification)
+            await user.change_nickname(nickname, self.user_unique_specification)
             await self.user_repository.update(user)
 
     async def send_mobile_code(self, user_id: str) -> None:
@@ -67,6 +67,6 @@ class UserProfileService:
         key = user.id + "_" + mobile
         if self.mobile_code.get(key, "") != code:
             raise ApplicationException("验证码错误")
-        await user.modify_mobile(mobile, self.user_unique_specification)
+        await user.change_mobile(mobile, self.user_unique_specification)
         await self.user_repository.update(user)
         self.mobile_code.pop(key, None)
