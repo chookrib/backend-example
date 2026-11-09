@@ -8,8 +8,6 @@ import java.util.Map;
  */
 public class UserQueryCriteria {
 
-    // 查询条件
-
     private String keyword;
 
     public String getKeyword() {
@@ -18,13 +16,5 @@ public class UserQueryCriteria {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
-    }
-
-    // 排序条件
-
-    private Map<String, String> sortMap = new LinkedHashMap<>();
-
-    public void addSort(String field, String order) {
-        sortMap.put(field, order);
     }
 }

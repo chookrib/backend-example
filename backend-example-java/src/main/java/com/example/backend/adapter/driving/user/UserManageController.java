@@ -66,11 +66,7 @@ public class UserManageController {
         List<UserDto> list = userQueryHandler.queryPage(paging.pageNum(), paging.pageSize(), criteria, sortOptions);
         return Result.okData(Map.of(
                 "list", list,
-                "paging", Map.of(
-                        "pageNum", paging.pageNum(),
-                        "pageSize", paging.pageSize(),
-                        "totalCount", paging.totalCount()
-                )
+                "paging", paging
         ));
     }
 

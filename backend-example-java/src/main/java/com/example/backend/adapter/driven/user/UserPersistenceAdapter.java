@@ -61,7 +61,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
         );
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
     // UserRepository
 
     // /**
@@ -104,7 +104,14 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
     public void insert(User entity) {
         databaseAdapter.getJdbcTemplate().update("""
                         INSERT INTO %s (
-                            u_id, u_username, u_password, u_nickname, u_mobile, u_is_admin, u_created_at, u_updated_at
+                            u_id,
+                            u_username,
+                            u_password,
+                            u_nickname,
+                            u_mobile,
+                            u_is_admin,
+                            u_created_at,
+                            u_updated_at
                         ) VALUES (
                             ?, ?, ?, ?, ?, ?, ?, ?
                         )
@@ -228,7 +235,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
         return DataAccessUtils.singleResult(list);
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
     // UserUniqueSpecification
 
     @Override
@@ -267,7 +274,7 @@ public class UserPersistenceAdapter implements UserRepository, UserUniquenessVal
         return count == null || count == 0;
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
     // UserQueryHandler
 
     // /**

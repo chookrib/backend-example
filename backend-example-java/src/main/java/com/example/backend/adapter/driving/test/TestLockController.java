@@ -1,6 +1,5 @@
 package com.example.backend.adapter.driving.test;
 
-import com.example.backend.adapter.driving.RequestValueResolver;
 import com.example.backend.adapter.driving.Result;
 import com.example.backend.application.lock.LockException;
 import com.example.backend.application.test.TestLockService;
@@ -33,7 +32,9 @@ public class TestLockController {
      */
     @RequestMapping(value = "/api/test/lock/set-count", method = RequestMethod.GET)
     public Result testLockSetCount(HttpServletRequest request) {
-        int value = ValueUtility.toIntOrDefault(request.getParameter("value"), 1);
+        int value = ValueUtility.defaultIfNull(
+                ValueUtility.toIntOrNull(request.getParameter("value")),
+                1);
         testLockService.setCount(value);
         return Result.okData(Map.of("count", value));
     }
@@ -56,7 +57,7 @@ public class TestLockController {
         return Result.ok();
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
 
     /**
      * Thread.Sleep
@@ -67,7 +68,7 @@ public class TestLockController {
         return Result.ok();
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
 
     /**
      * 测试 LockException 异常

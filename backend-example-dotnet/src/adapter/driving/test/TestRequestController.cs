@@ -48,7 +48,7 @@ namespace src.adapter.driving.test
             return Result.OkData(body);
         }
 
-        //==============================================================================================================
+        // =============================================================================================================
 
         [HttpGet("/api/test/request/from-query")]
         public Result TestRequestFromQuery([FromQuery][BindRequired] string id)

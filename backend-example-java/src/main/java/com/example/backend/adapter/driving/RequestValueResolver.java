@@ -22,7 +22,7 @@ public final class RequestValueResolver {
         }
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
 
     public static final int DEFAULT_PAGE_NUM = 1;
     public static final int DEFAULT_PAGE_SIZE = 10;
@@ -31,7 +31,10 @@ public final class RequestValueResolver {
      * 规范化页码
      */
     public static int normalizePageNum(String pageNum) {
-        int pn = ValueUtility.toIntOrDefault(pageNum, DEFAULT_PAGE_NUM);
+        int pn = ValueUtility.defaultIfNull(
+                ValueUtility.toIntNullOrThrow(pageNum, "页码无效"),
+                DEFAULT_PAGE_NUM
+        );
         return pn >= 1 ? pn : DEFAULT_PAGE_NUM;
     }
 
@@ -39,7 +42,10 @@ public final class RequestValueResolver {
      * 规范化页大小
      */
     public static int normalizePageSize(String pageSize) {
-        int ps = ValueUtility.toIntOrDefault(pageSize, DEFAULT_PAGE_SIZE);
+        int ps = ValueUtility.defaultIfNull(
+                ValueUtility.toIntNullOrThrow(pageSize, "页大小无效"),
+                DEFAULT_PAGE_SIZE
+        );
         return ps >= 1 && ps <= 100 ? ps : DEFAULT_PAGE_SIZE;
     }
 
@@ -69,7 +75,7 @@ public final class RequestValueResolver {
         return new Paging(pageNum, pageSize, totalCount);
     }
 
-    //==================================================================================================================
+    // =================================================================================================================
 
     /**
      * 取排序参数，返回值为有序 Map
