@@ -46,7 +46,7 @@ namespace src.adapter.driven.user
         {
             try
             {
-                return User.Restore(
+                return User.Reconstitute(
                     row.u_id,
                     row.u_username,
                     row.u_password,

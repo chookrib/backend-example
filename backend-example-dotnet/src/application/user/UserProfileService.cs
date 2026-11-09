@@ -49,22 +49,22 @@ namespace src.application.user
         /// <summary>
         /// 修改密码
         /// </summary>
-        public async Task ModifyPassword(string userId, string oldPassword, string newPassword)
+        public async Task ChangePassword(string userId, string oldPassword, string newPassword)
         {
             User user = await userRepository.FindByIdOrThrow(userId);
-            user.ModifyPassword(oldPassword, newPassword);
+            user.ChangePassword(oldPassword, newPassword);
             await userRepository.Update(user);
         }
 
         /// <summary>
         /// 修改昵称
         /// </summary>
-        public async Task ModifyNickname(string userId, string nickname)
+        public async Task ChangeNickname(string userId, string nickname)
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
                 User user = await userRepository.FindByIdOrThrow(userId);
-                await user.ModifyNickname(nickname, userUniqueSpecification);
+                await user.ChangeNickname(nickname, userUniqueSpecification);
                 await userRepository.Update(user);
             }
         }
@@ -96,7 +96,7 @@ namespace src.application.user
             if (!mobileCodeDict.TryGetValue(key, out string? sendCode) || sendCode != code)
                 throw new ApplicationException("验证码错误");
 
-            await user.ModifyMobile(mobile, userUniqueSpecification);
+            await user.ChangeMobile(mobile, userUniqueSpecification);
             await userRepository.Update(user);
             mobileCodeDict.TryRemove(key, out _);
         }

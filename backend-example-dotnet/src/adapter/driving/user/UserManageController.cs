@@ -102,8 +102,8 @@ namespace src.adapter.driving.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        [HttpPost("/api/admin/user/modify")]
-        public async Task<Result> UserModify()
+        [HttpPost("/api/admin/user/update")]
+        public async Task<Result> UserUpdate()
         {
             await requestIdentityResolver.CheckAdminPermission();
 
@@ -115,7 +115,7 @@ namespace src.adapter.driving.user
             string mobile = jsonExtractor.GetStringOrEmpty("mobile");
             bool isAdmin = ValueUtility.ToBoolOrThrow(jsonExtractor.GetString("isAdmin"), "是否管理员值无效");
 
-            await userManageService.ModifyUser(id, username, nickname, mobile, isAdmin);
+            await userManageService.UpdateUser(id, username, nickname, mobile, isAdmin);
             return Result.Ok();
         }
 
@@ -123,15 +123,15 @@ namespace src.adapter.driving.user
         /// <summary>
         /// 删除用户
         /// </summary>
-        [HttpPost("/api/admin/user/remove")]
-        public async Task<Result> UserRemove()
+        [HttpPost("/api/admin/user/delete")]
+        public async Task<Result> UserDelete()
         {
             await requestIdentityResolver.CheckAdminPermission();
 
             JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
             string id = jsonExtractor.GetNotBlankStringOrThrow("id", "Id 不能为空");
 
-            await userManageService.RemoveUser(id);
+            await userManageService.DeleteUser(id);
             return Result.Ok();
         }
     }

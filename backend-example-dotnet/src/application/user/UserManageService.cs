@@ -50,12 +50,12 @@ namespace src.application.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task ModifyUser(string id, string username, string nickname, string mobile, bool isAdmin)
+        public async Task UpdateUser(string id, string username, string nickname, string mobile, bool isAdmin)
         {
             await using (await lockService.LockAsync(LockKeyConstants.USER))
             {
                 User user = await userRepository.FindByIdOrThrow(id);
-                await user.Modify(username, nickname, mobile, isAdmin, userUniqueSpecification);
+                await user.Update(username, nickname, mobile, isAdmin, userUniqueSpecification);
                 await userRepository.Update(user);
             }
         }
@@ -63,7 +63,7 @@ namespace src.application.user
         /// <summary>
         /// 删除用户
         /// </summary>
-        public async Task RemoveUser(string id)
+        public async Task DeleteUser(string id)
         {
             await userRepository.DeleteById(id);
         }

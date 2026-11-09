@@ -27,9 +27,9 @@ namespace src.domain.user
         public DateTime? UpdatedAt { get; private set; }
 
         /// <summary>
-        /// 还原用户
+        /// 重建
         /// </summary>
-        public static User Restore(string id, string username, string password, string nickname, string mobile,
+        public static User Reconstitute(string id, string username, string password, string nickname, string mobile,
             bool isAdmin, DateTime createdAt, DateTime? updatedAt)
         {
             return new User
@@ -99,7 +99,7 @@ namespace src.domain.user
         /// <summary>
         /// 修改密码
         /// </summary>
-        public void ModifyPassword(string oldPassword, string newPassword)
+        public void ChangePassword(string oldPassword, string newPassword)
         {
             oldPassword = ValueUtility.RequireNotBlank(oldPassword, "旧密码不能为空");
             newPassword = ValueUtility.RequireNotBlank(newPassword, "新密码不能为空");
@@ -114,7 +114,7 @@ namespace src.domain.user
         /// <summary>
         /// 修改昵称
         /// </summary>
-        public async Task ModifyNickname(string nickname, UserUniquenessValidator? userUniqueSpecification)
+        public async Task ChangeNickname(string nickname, UserUniquenessValidator? userUniqueSpecification)
         {
             nickname = ValueUtility.RequireNotBlank(nickname, "昵称不能为空");
 
@@ -131,7 +131,7 @@ namespace src.domain.user
         /// <summary>
         /// 修改手机
         /// </summary>
-        public async Task ModifyMobile(string mobile, UserUniquenessValidator? userUniqueSpecification)
+        public async Task ChangeMobile(string mobile, UserUniquenessValidator? userUniqueSpecification)
         {
             mobile = ValueUtility.RequireNotBlank(mobile, "手机不能为空");
 
@@ -183,7 +183,7 @@ namespace src.domain.user
         /// <summary>
         /// 修改用户
         /// </summary>
-        public async Task Modify(string username, string nickname, string mobile, bool isAdmin,
+        public async Task Update(string username, string nickname, string mobile, bool isAdmin,
             UserUniquenessValidator? userUniqueSpecification)
         {
             username = ValueUtility.RequireNotBlank(username, "用户名不能为空");

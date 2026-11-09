@@ -79,8 +79,8 @@ namespace src.adapter.driving.user
         /// <summary>
         /// 修改密码
         /// </summary>
-        [HttpPost("/api/user/modify-password")]
-        public async Task<Result> ModifyPassword()
+        [HttpPost("/api/user/change-password")]
+        public async Task<Result> ChangePassword()
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
@@ -92,21 +92,21 @@ namespace src.adapter.driving.user
             if (confirmPassword != newPassword)
                 throw new ControllerException("两次输入的密码不一致");
 
-            await userProfileService.ModifyPassword(userId, oldPassword, newPassword);
+            await userProfileService.ChangePassword(userId, oldPassword, newPassword);
             return Result.Ok();
         }
 
         /// <summary>
         /// 修改昵称
         /// </summary>
-        [HttpPost("/api/user/modify-nickname")]
-        public async Task<Result> ModifyNickname()
+        [HttpPost("/api/user/change-nickname")]
+        public async Task<Result> ChangeNickname()
         {
             string userId = requestIdentityResolver.RequireLoginUserId();
 
             JsonExtractor jsonExtractor = await RequestValueResolver.BuildJsonExtractor(Request);
             string nickname = jsonExtractor.GetNotBlankStringOrThrow("nickname", "昵称不能为空");
-            await userProfileService.ModifyNickname(userId, nickname);
+            await userProfileService.ChangeNickname(userId, nickname);
             return Result.Ok();
         }
 
