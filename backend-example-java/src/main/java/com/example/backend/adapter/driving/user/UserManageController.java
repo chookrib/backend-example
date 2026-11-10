@@ -51,8 +51,8 @@ public class UserManageController {
         requestIdentityResolver.checkAdminPermission();
 
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
-        int pageNum = RequestValueResolver.normalizePageNum(jsonExtractor.getString("pageNum"));
-        int pageSize = RequestValueResolver.normalizePageSize(jsonExtractor.getString("pageSize"));
+        int pageNum = RequestValueResolver.normalizePageNum(jsonExtractor.getStringOrEmpty("pageNum"));
+        int pageSize = RequestValueResolver.normalizePageSize(jsonExtractor.getStringOrEmpty("pageSize"));
 
         UserQueryCriteria criteria = new UserQueryCriteria();
         criteria.setKeyword(jsonExtractor.getStringOrEmpty("criteria.keyword"));
@@ -96,7 +96,7 @@ public class UserManageController {
         String password = jsonExtractor.getNotBlankStringOrThrow("password", "密码不能为空");
         String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
         String mobile = jsonExtractor.getStringOrEmpty("mobile");
-        boolean isAdmin = ValueUtility.toBoolOrThrow(jsonExtractor.getString("isAdmin"), "是否管理员值无效");
+        boolean isAdmin = jsonExtractor.getBoolOrThrow("isAdmin", "是否管理员值无效");
 
         String userId = userManageService.createUser(username, password, nickname, mobile, isAdmin);
         return Result.okData(Map.of(
@@ -116,7 +116,7 @@ public class UserManageController {
         String username = jsonExtractor.getNotBlankStringOrThrow("username", "用户名不能为空");
         String nickname = jsonExtractor.getNotBlankStringOrThrow("nickname", "昵称不能为空");
         String mobile = jsonExtractor.getStringOrEmpty("mobile");
-        boolean isAdmin = ValueUtility.toBoolOrThrow(jsonExtractor.getString("isAdmin"), "是否管理员值无效");
+        boolean isAdmin = jsonExtractor.getBoolOrThrow("isAdmin", "是否管理员值无效");
 
         userManageService.updateUser(id, username, nickname, mobile, isAdmin);
         return Result.ok();

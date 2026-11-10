@@ -32,7 +32,7 @@ public final class RequestValueResolver {
      */
     public static int normalizePageNum(String pageNum) {
         int pn = ValueUtility.defaultIfNull(
-                ValueUtility.toIntNullOrThrow(pageNum, "页码无效"),
+                ValueUtility.toIntAllowBlankOrThrow(pageNum, "页码无效"),
                 DEFAULT_PAGE_NUM
         );
         return pn >= 1 ? pn : DEFAULT_PAGE_NUM;
@@ -43,7 +43,7 @@ public final class RequestValueResolver {
      */
     public static int normalizePageSize(String pageSize) {
         int ps = ValueUtility.defaultIfNull(
-                ValueUtility.toIntNullOrThrow(pageSize, "页大小无效"),
+                ValueUtility.toIntAllowBlankOrThrow(pageSize, "页大小无效"),
                 DEFAULT_PAGE_SIZE
         );
         return ps >= 1 && ps <= 100 ? ps : DEFAULT_PAGE_SIZE;

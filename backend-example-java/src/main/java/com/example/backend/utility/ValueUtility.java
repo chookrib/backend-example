@@ -129,7 +129,7 @@ public final class ValueUtility {
     /**
      * 转 bool，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static Boolean toBoolNullOrThrow(String value, String message) {
+    public static Boolean toBoolAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toBoolOrThrow(value, message);
@@ -138,7 +138,7 @@ public final class ValueUtility {
     /**
      * 转 bool，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static Boolean toBoolNullOrThrow(String value) {
+    public static Boolean toBoolAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toBoolOrThrow(value);
@@ -189,7 +189,7 @@ public final class ValueUtility {
     /**
      * 转 int，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static Integer toIntNullOrThrow(String value, String message) {
+    public static Integer toIntAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toIntOrThrow(value, message);
@@ -198,7 +198,7 @@ public final class ValueUtility {
     /**
      * 转 int，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static Integer toIntNullOrThrow(String value) {
+    public static Integer toIntAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toIntOrThrow(value);
@@ -249,7 +249,7 @@ public final class ValueUtility {
     /**
      * 转 long，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static Long toLongNullOrThrow(String value, String message) {
+    public static Long toLongAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toLongOrThrow(value, message);
@@ -258,7 +258,7 @@ public final class ValueUtility {
     /**
      * 转 long，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static Long toLongNullOrThrow(String value) {
+    public static Long toLongAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toLongOrThrow(value);
@@ -279,12 +279,9 @@ public final class ValueUtility {
             return null;
         try {
             // return new BigDecimal(value.trim());
-
             BigDecimal d = new BigDecimal(value.trim());
-            // 规范化小数位（四舍五入）
-            d = d.setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);
-            // 去掉末尾多余的 0
-            d = d.stripTrailingZeros();
+            d = d.setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);    // 规范化小数位（四舍五入）
+            d = d.stripTrailingZeros();                             // 去掉末尾多余的 0
             // 检查是否超出边界
             if (d.compareTo(DECIMAL_MIN_VALUE) < 0 || d.compareTo(DECIMAL_MAX_VALUE) > 0) {
                 return null;
@@ -329,7 +326,7 @@ public final class ValueUtility {
     /**
      * 转 decimal，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static BigDecimal toDecimalNullOrThrow(String value, String message) {
+    public static BigDecimal toDecimalAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toDecimalOrThrow(value, message);
@@ -338,7 +335,7 @@ public final class ValueUtility {
     /**
      * 转 decimal，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static BigDecimal toDecimalNullOrThrow(String value) {
+    public static BigDecimal toDecimalAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toDecimalOrThrow(value);
@@ -455,7 +452,7 @@ public final class ValueUtility {
     /**
      * 转 datetime，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static LocalDateTime toDateTimeNullOrThrow(String value, String message) {
+    public static LocalDateTime toDateTimeAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toDateTimeOrThrow(value, message);
@@ -464,7 +461,7 @@ public final class ValueUtility {
     /**
      * 转 datetime，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static LocalDateTime toDateTimeNullOrThrow(String value) {
+    public static LocalDateTime toDateTimeAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toDateTimeOrThrow(value);
@@ -544,7 +541,7 @@ public final class ValueUtility {
     /**
      * 转 date，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static LocalDate toDateNullOrThrow(String value, String message) {
+    public static LocalDate toDateAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toDateOrThrow(value, message);
@@ -553,7 +550,7 @@ public final class ValueUtility {
     /**
      * 转 date，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static LocalDate toDateNullOrThrow(String value) {
+    public static LocalDate toDateAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toDateOrThrow(value);
@@ -656,7 +653,7 @@ public final class ValueUtility {
     /**
      * 转 time，传入值为 null 或空字符串返回 null，否则抛出指定消息异常
      */
-    public static LocalTime toTimeNullOrThrow(String value, String message) {
+    public static LocalTime toTimeAllowBlankOrThrow(String value, String message) {
         if (isBlank(value))
             return null;
         return toTimeOrThrow(value, message);
@@ -665,7 +662,7 @@ public final class ValueUtility {
     /**
      * 转 time，传入值为 null 或空字符串返回 null，否则抛出异常
      */
-    public static LocalTime toTimeNullOrThrow(String value) {
+    public static LocalTime toTimeAllowBlankOrThrow(String value) {
         if (isBlank(value))
             return null;
         return toTimeOrThrow(value);
@@ -694,4 +691,3 @@ public final class ValueUtility {
     }
 
 }
-

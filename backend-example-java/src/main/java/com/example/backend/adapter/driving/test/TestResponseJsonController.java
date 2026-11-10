@@ -50,8 +50,14 @@ public class TestResponseJsonController {
      */
     public class TestDataClass {
 
+        private boolean isActive = false;
+
+        public boolean getIsActive() {
+            return this.isActive;
+        }
+
         private Object objectNull = null;
-        //private Object objectNew = new Object();  //无法转换
+        // private Object objectNew = new Object();  //无法转换
 
         private String stringNull = null;
         private String stringEmpty = "";
@@ -66,30 +72,30 @@ public class TestResponseJsonController {
 
         private int intZero = 0;
         private int intMin = Integer.MIN_VALUE;     //-2147483648
-        private int intMax = Integer.MAX_VALUE;     //2147483647
+        private int intMax = Integer.MAX_VALUE;     // 2147483647
 
         private Integer intClassNull = null;
         private Integer intClassZero = 0;
         private Integer intClassMin = Integer.MIN_VALUE;    //-2147483648
-        private Integer intClassMax = Integer.MAX_VALUE;    //2147483647
+        private Integer intClassMax = Integer.MAX_VALUE;    // 2147483647
 
         private long longZero = 0;
         private long longMin = Long.MIN_VALUE;      //-9223372036854775808
-        private long longMax = Long.MAX_VALUE;      //9223372036854775807
+        private long longMax = Long.MAX_VALUE;      // 9223372036854775807
 
         private Long longClassNull = null;
         private Long longClassZero = 0L;
         private Long longClassMin = Long.MIN_VALUE;     //-9223372036854775808
-        private Long longClassMax = Long.MAX_VALUE;     //9223372036854775807
+        private Long longClassMax = Long.MAX_VALUE;     // 9223372036854775807
 
         private BigDecimal bigDecimalNull = null;
-        private BigDecimal bigDecimalMin = BigDecimal.valueOf(Double.MIN_VALUE);    //5e-324    "4.9E-324"
-        private BigDecimal bigDecimalMax = BigDecimal.valueOf(Double.MAX_VALUE);    //1.7976931348623157e+308   "1.7976931348623157E+308"
+        private BigDecimal bigDecimalMin = BigDecimal.valueOf(Double.MIN_VALUE);    // 5e-324    "4.9E-324"
+        private BigDecimal bigDecimalMax = BigDecimal.valueOf(Double.MAX_VALUE);    // 1.7976931348623157e+308   "1.7976931348623157E+308"
 
         private Date dateNull = null;
         private Date dateNow = new Date();
-        private Date dateMin = new Date(0L);            //0     "1970-01-01 08:00:00"
-        private Date dateMax = new Date(Long.MAX_VALUE);    //9.223372036854776e+18     "292278994-08-17 15:12:55"
+        private Date dateMin = new Date(0L);            // 0     "1970-01-01 08:00:00"
+        private Date dateMax = new Date(Long.MAX_VALUE);    // 9.223372036854776e+18     "292278994-08-17 15:12:55"
 
         private LocalDateTime localDateTimeNull = null;
         private LocalDateTime localDateTimeNow = LocalDateTime.now();
@@ -112,7 +118,7 @@ public class TestResponseJsonController {
 
         public Object getObjectNull() { return objectNull; }
 
-        //public Object getObjectNew() { return objectNew; }
+        // public Object getObjectNew() { return objectNew; }
 
         public String getStringTest() { return stringTest; }
 
@@ -234,8 +240,8 @@ public class TestResponseJsonController {
         ENUM_2(2, "枚举2"),
         ENUM_3(3, "枚举3");
 
-        private int value;      //值
-        private String text;    //文本
+        private int value;      // 值
+        private String text;    // 文本
 
         public int getValue() { return value; }
 

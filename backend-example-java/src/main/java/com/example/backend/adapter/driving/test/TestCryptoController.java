@@ -33,8 +33,8 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/jwt-encode", method = RequestMethod.POST)
     public Result testCryptoJwtEncode(@RequestBody String requestBody) {
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
-        String secret = ValueUtility.requireNotBlank(jsonExtractor.getString("secret"), "密钥不能为空");
-        LocalDateTime expiresAt = ValueUtility.toDateTimeOrThrow(jsonExtractor.getString("expiresAt"), "到期时间无效");
+        String secret = jsonExtractor.getNotBlankStringOrThrow("secret", "密钥不能为空");
+        LocalDateTime expiresAt = jsonExtractor.getDateTimeOrThrow("expiresAt", "到期时间无效");
         var payloadNode = jsonExtractor.getNode("payload");
         // System.out.println("payloadNode: " + payloadNode.toString());
         Map<String, ?> payload = null;
@@ -54,8 +54,8 @@ public class TestCryptoController {
     @RequestMapping(value = "/api/test/crypto/jwt-decode", method = RequestMethod.POST)
     public Result testCryptoJwtDecode(@RequestBody String requestBody) {
         JsonExtractor jsonExtractor = RequestValueResolver.buildJsonExtractor(requestBody);
-        String secret = ValueUtility.requireNotBlank(jsonExtractor.getString("secret"), "密钥不能为空");
-        String token = ValueUtility.requireNotBlank(jsonExtractor.getString("token"), "令牌不能为空");
+        String secret = jsonExtractor.getNotBlankStringOrThrow("secret", "密钥不能为空");
+        String token = jsonExtractor.getNotBlankStringOrThrow("token", "令牌不能为空");
         Map<String, ?> payload = CryptoUtility.jwtDecode(token, secret);
 
         String headerDecoded = "";
